@@ -21,9 +21,9 @@ Esta decisión **no** significa aprobación constitucional completa, firma, cong
 
 Se actualizó `tests/nexo/entrypoint.test.mjs` para:
 1. Rechazar comandos genéricos o potencialmente efectuales (`execute`, `run`, `simulate`, `shell`, `http`, `effect`, `repair`) antes de dispatch, con `NEXO_COMMAND_UNSUPPORTED` y `dispatchAttempted: false`.
-2. Excluir `effect-adapter.js` del grafo de importaciones alcanzable desde los entrypoints públicos de Nexo, junto con las rutas legacy previamente excluidas.
+2. Mantener excluidas las rutas legacy de Lúmina del grafo de importaciones de los entrypoints públicos. `effect-adapter.js` sí es una dependencia interna del caso de uso Chronicle; no se exporta en la API pública y el runtime owner-backed limita el dispatch a `chronicle_append`. La primera versión del guard que lo prohibía en todo el grafo era demasiado amplia y falló correctamente al encontrar esa dependencia legítima.
 
-Commit del cambio de prueba: `39ee2f5996fd0586ce4c666a448a290371601de4`. El resultado CI del SHA final que incluya esta decisión debe comprobarse por separado antes de declarar PASS.
+Commit del cambio de prueba: `39ee2f5996fd0586ce4c666a448a290371601de4`. El CI inicial detectó que el guard de imports era más amplio que la frontera real: `chronicle-append.mjs` usa el adaptador genérico internamente, pero la API pública no lo exporta y el owner-backed runtime restringe acciones. Se corrigió el guard en commit `9d2e6f41a59c46eec6cd019d9c32211b8426f523`; el resultado CI del SHA final debe comprobarse antes de declarar PASS.
 
 ## Siguiente trabajo
 
