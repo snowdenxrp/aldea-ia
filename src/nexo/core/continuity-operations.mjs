@@ -1,5 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { assertContractInput } from "./contracts.mjs";
+import { assertNexoContinuityDataBounded } from "./continuity-data-guard.mjs";
 import { assertNexoMissionAdmission } from "./mission-admission-contract.mjs";
 import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
 import { isValidNexoChronicleOutcomeEvidence, isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
@@ -161,7 +162,21 @@ export function recordNexoMissionInSnapshot(snapshot, mission) {
 }
 
 /** Record an adapter result for lineage only; it does not settle an effect journal. */
-export function recordNexoExecutionInSnapshot(snapshot, { idempotencyKey, missionId, stepId, action, target = null, result } = {}) {
+export function recordNexoExecutionInSnapshot(snapshot, input = {}) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw operationError("NEXO_EXECUTION_CONTEXT_INVALID");
+  }
+  try {
+    assertNexoContinuityDataBounded(input, {
+      resourceLimitCode: "NEXO_CONTINUITY_INPUT_RESOURCE_LIMIT_EXCEEDED",
+      invalidCode: "NEXO_EXECUTION_CONTEXT_INVALID"
+    });
+    assertMissionPersistableData(input);
+  } catch (error) {
+    if (error?.code === "NEXO_CONTINUITY_INPUT_RESOURCE_LIMIT_EXCEEDED") throw error;
+    throw operationError("NEXO_EXECUTION_CONTEXT_INVALID");
+  }
+  const { idempotencyKey, missionId, stepId, action, target = null, result } = input;
   const next = cloneSnapshot(snapshot);
   if (!idempotencyKey || !missionId || !stepId || !action || !result) {
     throw operationError("NEXO_EXECUTION_CONTEXT_INVALID");
@@ -182,10 +197,24 @@ export function recordNexoExecutionInSnapshot(snapshot, { idempotencyKey, missio
 }
 
 /** Record a verified outcome without allowing replay/late result to overwrite an attempt. */
-export function recordNexoOutcomeInSnapshot(snapshot, {
-  missionId, stepId, action, target = null, status, evidence = null,
-  doNotRepeat = false, parentMissionId = null, replanReason = null
-} = {}) {
+export function recordNexoOutcomeInSnapshot(snapshot, input = {}) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    throw operationError("NEXO_OUTCOME_CONTEXT_INVALID");
+  }
+  try {
+    assertNexoContinuityDataBounded(input, {
+      resourceLimitCode: "NEXO_CONTINUITY_INPUT_RESOURCE_LIMIT_EXCEEDED",
+      invalidCode: "NEXO_OUTCOME_CONTEXT_INVALID"
+    });
+    assertMissionPersistableData(input);
+  } catch (error) {
+    if (error?.code === "NEXO_CONTINUITY_INPUT_RESOURCE_LIMIT_EXCEEDED") throw error;
+    throw operationError("NEXO_OUTCOME_CONTEXT_INVALID");
+  }
+  const {
+    missionId, stepId, action, target = null, status, evidence = null,
+    doNotRepeat = false, parentMissionId = null, replanReason = null
+  } = input;
   const next = cloneSnapshot(snapshot);
   if (!missionId || !stepId || !action || !["completed", "failed", "blocked"].includes(status)) {
     throw operationError("NEXO_OUTCOME_CONTEXT_INVALID");
