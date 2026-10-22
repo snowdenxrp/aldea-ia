@@ -85,49 +85,47 @@ export function publicChronicleResult(result, missionId, stepId) {
   return safe;
 }
 
+function readMissionAdmissionOptions(options) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(options);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const values = Object.create(null);
+    for (const key of ["owner", "expectedRevision", "mission"]) {
+      const descriptor = Object.getOwnPropertyDescriptor(options, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      values[key] = descriptor.value;
+    }
+    if (!values.owner || typeof values.owner.recordMission !== "function" ||
+        !Number.isSafeInteger(values.expectedRevision) || values.expectedRevision < 0 ||
+        !values.mission || typeof values.mission !== "object" || Array.isArray(values.mission)) {
+      return null;
+    }
+    return values;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Mission admission can persist before its response is lost. Do not let a raw
  * store exception escape or claim that admission definitely failed.
  */
-export async function recordNexoMissionSafely({ owner, expectedRevision, mission } = {}) {
-  try {
-    const result = await owner.recordMission({ expectedRevision, mission });
-    // The store may confirm the envelope was committed but fail to hand off the
-    // transaction because lock release failed. Preserve that durable fact while
-    // blocking dispatch; do not collapse it into an unqualified failure.
-    if (result?.persistenceStatus === "committed") {
-      return {
-        status: "blocked",
-        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_HANDOFF_UNSAFE",
-        missionAdmissionCommitted: true,
-        dispatchAttempted: false,
-        redispatchAuthorized: false,
-        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
-      };
-    }
-    if (result?.status === "unknown" || result?.missionAdmissionCommitted === "UNKNOWN" ||
-        result?.persistenceStatus === "unknown") {
-      return {
-        status: "unknown",
-        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
-        missionAdmissionCommitted: "UNKNOWN",
-        dispatchAttempted: false,
-        redispatchAuthorized: false,
-        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
-      };
-    }
-    return result;
-  } catch (error) {
+export async function recordNexoMissionSafely(options) {
+  const input = readMissionAdmissionOptions(options);
+  if (!input) {
     return {
-      status: "unknown",
-      code: error?.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
-      missionAdmissionCommitted: "UNKNOWN",
+      status: "blocked",
+      code: "NEXO_CHRONICLE_MISSION_ADMISSION_INPUT_INVALID",
+      missionAdmissionCommitted: false,
       dispatchAttempted: false,
       redispatchAuthorized: false
     };
   }
-}
-
+  const { owner, expectedRevision, mission } = input;
+  try {
+    const result = await owner.recordMission({ expectedRevision, mission });
 export async function runNexoChronicleAppend(options) {
   const input = readChronicleSessionOptions(options);
   if (!input) return blocked("NEXO_CHRONICLE_SESSION_INPUT_INVALID");
