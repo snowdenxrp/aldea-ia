@@ -205,7 +205,27 @@ async function writeDocument(fsModule, filePath, document) {
  * trusted local directory and prevent untrusted processes from mutating paths or
  * lock entries. Symlink/path-attack resistance is not claimed.
  */
-export function createNexoChronicleStore({ filePath, fsModule = fs, lockDeadline = null, lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS } = {}) {
+export function createNexoChronicleStore(options = {}) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) throw fail("NEXO_CHRONICLE_PATH_REQUIRED");
+  let optionsPrototype;
+  const optionValues = {};
+  try {
+    optionsPrototype = Object.getPrototypeOf(options);
+    for (const key of ["filePath", "fsModule", "lockDeadline", "lockWaitMs"]) {
+      const descriptor = Object.getOwnPropertyDescriptor(options, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) throw fail(key === "filePath" ? "NEXO_CHRONICLE_PATH_REQUIRED" : "NEXO_STORE_OPTIONS_INVALID");
+      optionValues[key] = descriptor.value;
+    }
+  } catch (error) {
+    if (error?.code === "NEXO_CHRONICLE_PATH_REQUIRED" || error?.code === "NEXO_STORE_OPTIONS_INVALID") throw error;
+    throw fail("NEXO_STORE_OPTIONS_INVALID");
+  }
+  if (optionsPrototype !== Object.prototype && optionsPrototype !== null) throw fail("NEXO_STORE_OPTIONS_INVALID");
+  const filePath = optionValues.filePath;
+  const fsModule = optionValues.fsModule === undefined ? fs : optionValues.fsModule;
+  const lockDeadline = optionValues.lockDeadline === undefined ? null : optionValues.lockDeadline;
+  const lockWaitMs = optionValues.lockWaitMs === undefined ? NEXO_DEFAULT_LOCK_WAIT_MS : optionValues.lockWaitMs;
   if (typeof filePath !== "string" || !filePath.trim()) throw fail("NEXO_CHRONICLE_PATH_REQUIRED");
   if (lockDeadline == null && (typeof lockWaitMs !== "number" || !Number.isFinite(lockWaitMs) || lockWaitMs <= 0)) {
     throw fail("NEXO_LOCK_WAIT_BUDGET_INVALID");
