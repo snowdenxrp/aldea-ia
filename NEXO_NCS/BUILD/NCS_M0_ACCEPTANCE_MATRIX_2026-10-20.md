@@ -218,3 +218,18 @@ Este mapa separa cobertura de contratos locales ya probados de la garantía aún
 - La brecha de presupuesto de Chronicle/Continuity registrada arriba es un subcriterio operativo separado; resolverla no cierra la raíz constitucional ni viceversa.
 
 Conclusión: las pruebas actuales son útiles para control de flujo, persistencia y reconciliación, pero M0-E sigue bloqueado por la ausencia de un camino de autoridad legítima demostrado hasta el punto de mutación real. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Ingreso de Chronicle: lectura de stdin sin límite previo (2026-10-22)
+
+Inspección directa de `scripts/nexo-chronicle-session.mjs` encontró que la ruta `--content-stdin` acumula todos los chunks de `process.stdin` en un array, los concatena con `Buffer.concat(chunks)` y después los convierte a UTF-8 antes de invocar `runNexoChronicleAppend`. No hay un límite de bytes visible antes de completar esa lectura.
+
+Esto hace que la brecha de presupuesto no sea solo una cuestión de crecimiento posterior de los archivos: una entrada excesiva puede consumir memoria del proceso antes de que la validación de Chronicle/Continuity tenga oportunidad de rechazarla. La inspección del código demuestra ausencia de un límite explícito en esta ruta, no demuestra que alguien haya explotado el proceso ni prueba por sí sola un impacto fuera del proceso.
+
+- Clasificación: brecha de contrato y de control de recursos de entrada; severidad final pendiente del modelo de amenazas.
+- No se introduce una cifra ni un parche local arbitrario.
+- Para cerrar: definir presupuesto máximo de contenido en bytes, lectura limitada que detenga/rehúse el flujo al superar el máximo sin seguir acumulando, respuesta terminal explícita y prueba de que no se crea/admite misión ni se escribe Chronicle/Continuity cuando el límite se excede.
+- La misma política de capacidad debe ser coherente entre CLI, caso de uso y store; no confiar solo en que un caller respete un máximo.
+- Este caso se añade a la puerta de aceptación como test de entrada previa a mutación. No cierra la brecha separada de raíz/Constitución/Policy.
+
+Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
