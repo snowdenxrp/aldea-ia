@@ -4,7 +4,7 @@
 - Corrección runtime: se ejecuta `assertNexoMissionAdmission(missionDraft)` antes de leer `missionId` y antes de abrir el store. La guardia existente valida descriptores propios de datos, límites estructurales y forma JSON-like.
 - Regresión nueva: `tests/nexo/mission-draft-preview-input-guard.test.mjs` instala un getter centinela y verifica bloqueo, `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `persisted: false` y cero ejecución del getter. Integrada en `npm test`.
 - Commits: runtime `e34e3f1f8cda735c7926cf5dcf593991c6940492`; test `e60f06d7217f8c7eb5a90a62e43f07a03b6fa263`; integración `ed9a4885900d0f04487fb3d7554d8c56ed556f91`.
-- CI: pendiente de consultar para el SHA integrado exacto.
+- CI verificado el 2026-10-22: SHA del checkpoint `0902d4748e5378c02367f5cddc40281cc7b1ce08`, persistencia determinista [SUCCESS, run 39864429149](https://github.com/snowdenxrp/aldea-ia/actions/runs/39864429149). SHA integrado previo `ed9a4885900d0f04487fb3d7554d8c56ed556f91`: admisión/continuidad [SUCCESS, run 39864412972](https://github.com/snowdenxrp/aldea-ia/actions/runs/39864412972), Chronicle nativo [SUCCESS, run 39864412981](https://github.com/snowdenxrp/aldea-ia/actions/runs/39864412981), aceptación integrada [SUCCESS, run 39864412923](https://github.com/snowdenxrp/aldea-ia/actions/runs/39864412923). Persistencia en `ed9a4885` fue cancelada por commit posterior y no se cuenta como resultado.
 - Límite: los Proxy traps siguen fuera de la garantía de esta guardia; validar la forma del draft no demuestra que intención y draft estén alineados, no persiste la misión y no evalúa autoridad.
 - Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
