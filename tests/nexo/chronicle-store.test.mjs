@@ -38,10 +38,21 @@ try {
   assert.equal((await store.initialize()).status, "committed");
   assert.equal((await store.initialize()).status, "conflict");
 
+  // Abandoned temporaries from a prior interrupted write/version are reconciled
+  // under the existing lock before reusing the one stable temp path.
+  await fs.writeFile(filePath + ".tmp-old-process-1", "abandoned", "utf8");
+  await fs.writeFile(filePath + ".tmp", "abandoned stable temp", "utf8");
+
   const writes = await Promise.all([
     store.append({ operationKey: "mission-1:step-1", content: "record" }),
     store.append({ operationKey: "mission-1:step-1", content: "record" })
   ]);
+  assert.equal((await store.append({ operationKey: "mission-1:step-1", content: "record" })).status, "committed");
+  assert.deepEqual(
+    (await fs.readdir(root)).filter(name => name.startsWith("chronicle.json.tmp")),
+    [],
+    "successful Chronicle write must not leave stable or legacy temporary files"
+  );
   assert.equal(writes.filter(result => result.status === "committed").length, 1);
   assert.equal(writes.filter(result => result.status === "already_present").length, 1);
   assert.equal((await store.append({ operationKey: "mission-1:step-1", content: "different" })).status, "conflict");
