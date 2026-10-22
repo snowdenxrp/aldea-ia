@@ -2983,3 +2983,15 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 ### Precisión del alcance — Continuity también requiere presupuesto
 
 La inspección posterior de `src/nexo/core/continuity-snapshot.mjs` encontró validación estructural de `missions`, `attempts`, `doNotRepeat`, `executions` y `effectJournal`, pero no máximos cuantitativos explícitos de cardinalidad/tamaño. La matriz de aceptación refleja ahora que la brecha de presupuesto afecta a Chronicle y a las colecciones de Continuity inspeccionadas. No se afirma explotación; el contrato de capacidad sigue pendiente y no se modifica runtime con cifras inventadas.
+
+
+---
+
+## M0-E — cobertura adversarial separada de autoridad real (2026-10-22)
+
+- La matriz de aceptación ahora relaciona E-01…E-10 con la evidencia existente y el hueco exacto que permanece.
+- Las suites de transición, root-bootstrap, effect-adapter, Chronicle y reconciliación se reutilizan solo para lo que realmente prueban: control de flujo, primitiva criptográfica de prueba, persistencia y outcomes. Ninguna fixture `AUTHORIZED` ni vector P-256 se trata como raíz legítima de Nexo.
+- E-01/E-03/E-05/E-06/E-07/E-08 tienen cobertura parcial de piezas, pero falta demostrar enforcement en el punto de mutación real. E-02/E-04 no están demostrados; E-09 reutiliza M0-D; E-10 está bloqueado por las dependencias de legitimidad.
+- Los nuevos negativos deben verificar resultado fail-closed y cero invocaciones al punto de mutación. E-08 requiere completar el inventario de callers/rutas legacy dentro del alcance Opción A.
+- El presupuesto cuantitativo de Chronicle y Continuity sigue pendiente por separado. No se duplica el trabajo cerrado de reconciliación/UNKNOWN y no se cambia runtime en ausencia de contrato exacto.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
