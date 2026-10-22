@@ -3216,3 +3216,14 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - No se modificó runtime en este cambio. El presupuesto agregado de heap/disco sigue OPEN; los límites individuales no demuestran seguridad agregada.
 - La tarea de correspondencia intención→borrador documentada en `BUILD/NCS_M0_INTENT_DRAFT_CORRESPONDENCE_CONTRACT_2026-10-22.md` queda posterior a este bloqueo, no lo sustituye.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Resultado verificado — Continuity candidate limits y concurrencia (2026-10-22)
+
+- CI confirmado como `completed/success` en el SHA de código/pruebas `cd9082d8e81bf2fe2c38f849f39de7429d300ea0`.
+- Cinco workflows del mismo SHA: [persistencia determinista](https://github.com/snowdenxrp/aldea-ia/actions/runs/39788783628), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39788783712), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39788783868), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39788783772), [admisión/continuidad](https://github.com/snowdenxrp/aldea-ia/actions/runs/39788783802). En el job de continuidad, el test `tests/nexo/continuity-store.test.mjs` terminó SUCCESS.
+- Se confirmó la prueba de candidato de snapshot válido pero sobredimensionado: rechazo por límite conocido, bytes preservados y revisión sin avance. Se confirmó también la carrera de dos candidatos válidos de 14 MiB contra una misma revisión: un único commit, un conflicto y envelope final dentro del límite.
+- Checkpoint de continuidad: [NCS_M0_RESOURCE_BUDGET_CONTINUITY_CHECKPOINT_2026-10-22.md](BUILD/NCS_M0_RESOURCE_BUDGET_CONTINUITY_CHECKPOINT_2026-10-22.md), commit documental `c34bf4a30e238c0a82f5cfecd123cd2085843651`.
+- **Siguiente bloqueo:** derivar el presupuesto agregado de heap/disco desde las rutas reales y las copias simultáneas. No inferir que 32 MiB Chronicle + 16 MiB Continuity equivale al pico de memoria. No declarar segura la concurrencia multiusuario sin una cota justificada.
+- La correspondencia intención→borrador queda en espera hasta atender este bloqueo.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
