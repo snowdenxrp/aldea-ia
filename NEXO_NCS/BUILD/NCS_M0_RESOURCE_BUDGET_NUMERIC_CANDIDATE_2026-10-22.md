@@ -67,3 +67,17 @@ Este documento no modifica la decisión de alcance inicial, no aprueba la Consti
 - `authorization: NOT_EVALUATED`.
 - Raíz legítima: `PENDING/UNKNOWN`.
 - Efectos protegidos: `STOP`.
+
+
+## Cross-check with prior aggregate-budget research
+
+The earlier research `docs/nexo/NEXO_SCOPE_ENVELOPE_CARDINALITY_FANOUT_AGGREGATE_SAFETY_RESEARCH_V1_2026-09-24.md` establishes that individual limits do not prove aggregate safety, that count differs from resource cost, and that capacity relevant to safety must not be overcommitted under concurrent admissions.
+
+That research concerns broader ScopeEnvelope/effect budgets and must not be re-run or collapsed into this local-persistence task. Its principle does, however, constrain interpretation of this candidate:
+
+- The per-store maxima here are **local document bounds only**; they do not prove a combined disk budget, peak heap bound, throughput bound, or global Nexo resource budget.
+- The table's “no combined budget” entry means only that no aggregate limit is proposed for this first local persistence slice; it must not be interpreted as proof that aggregate use is safe or unbounded by design.
+- Before Nexo gains concurrent/multi-session service operation or broader effect admission, aggregate capacity and serialized admission/reservation must be designed from a concrete capacity model. Do not add a fake reservation layer to the current local store.
+- For this slice, test that each store enforces its own bound and explicitly retain combined storage/peak-heap capacity as a separate **OPEN** question.
+
+No numeric aggregate quota is added because there is no measured capacity baseline or accepted allocation policy. This is an explicit uncertainty, not an implicit pass.
