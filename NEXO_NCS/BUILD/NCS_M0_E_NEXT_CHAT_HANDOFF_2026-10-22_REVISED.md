@@ -231,3 +231,11 @@ Nuevo hallazgo: [NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md](htt
 - Por ello, heap agregado, disco agregado y capacidad multiusuario siguen OPEN. No se introdujo un límite arbitrario ni una nueva cola/semaforo. No se ejecutaron tests ni se modificó runtime en este análisis.
 - Próximo paso: fijar explícitamente el modo operativo de M0 que se soportará primero y el ámbito del presupuesto; diseñar enforcement solo después de conocer esa unidad. No sumar tamaños serializados como si fueran heap.
 - Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## Continuidad — ajuste acotado de stdin (2026-10-22)
+
+- Commit de código/prueba: `26eb412ed84fef1c10779b7a1046f97fe5275282`.
+- El lector CLI conserva los chunks Buffer ya entregados por Node en vez de duplicarlos antes del chequeo de bytes. La prueba de integración agrega stdin 256 KiB + 1 y verifica rechazo sin crear los stores.
+- Esto reduce una copia transitoria, pero no limita la asignación del chunk original de Node ni el heap agregado. CI para este SHA no está confirmado; no afirmar tests pasados.
+- Presupuesto agregado OPEN; modo concurrente/multiusuario no aprobado. Estado M0 INCOMPLETO; autorización NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
