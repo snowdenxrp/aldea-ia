@@ -80,7 +80,7 @@ La prueba de bytes fue reforzada en commit `20b3e1b51616c93862a2cad2e502c143c35b
 
 No declarar que los seis workflows posibles corrieron en ese SHA: el resultado verificado es cinco de cinco workflows disparados. Tampoco ejecutar de nuevo esas pruebas solo para repetirlas.
 
-Leer `NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md` antes de seguir: el alcance inicial es CLI local con límites por entrada/documento/operación; varios procesos simultáneos no están bloqueados globalmente. Siguiente paso: revisar si los límites por-store son suficientes para ese alcance declarado y registrar exactamente qué propiedad de recursos falta para el siguiente nivel. Mantener el presupuesto agregado de heap/disco OPEN; no inventar cuotas ni añadir semáforos, locks globales o wrappers sin diseñar la unidad de admisión y demostrar que cubre todas las rutas.
+Leer `NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md` antes de seguir: el alcance inicial es CLI local con límites por entrada/documento/operación; varios procesos simultáneos no están bloqueados globalmente. Siguiente paso: inventariar las rutas de entrada a los stores, confirmar la cobertura real de los validadores y delimitar qué no cubren los topes por-store. No repetir las pruebas Continuity ya verificadas. Mantener el presupuesto agregado de heap/disco OPEN; no inventar cuotas ni añadir semáforos, locks globales o wrappers sin diseñar la unidad de admisión y demostrar que cubre todas las rutas.
 
 ## Estado canónico — no modificar por inferencia
 
@@ -100,7 +100,7 @@ Leer `NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md` antes de seguir: el alca
 - No crear IDs, colas, retries, tombstones, transacciones ni contratos paralelos por conveniencia.
 - No convertir un rechazo de capacidad conocido en `UNKNOWN`; reservar `UNKNOWN` para resultados realmente ambiguos.
 - Mantener documentación y tests sincronizados con el runtime.
-- El siguiente chat debe empezar ejecutando la tarea concreta de Continuity, no investigando RATS, Step 7, AB/P, M1 ni noticias externas.
+- Las pruebas de Continuity ya están cubiertas y CI verificada; no repetirlas sin una contradicción nueva. Continuar con la evaluación de suficiencia por capas, sin volver a investigaciones históricas que no sean necesarias para esa tarea.
 
 ## Referencias esenciales
 
