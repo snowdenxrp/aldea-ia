@@ -3256,3 +3256,9 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Próxima decisión de arquitectura: especificar una frontera acotada para temporales bajo los locks existentes y definir el modo de concurrencia soportado para M0 antes de declarar presupuesto agregado. No introducir borrado de temporales a ciegas, colas ni semáforos como parches ocultos.
 - El análisis es documental; no cambia runtime ni tiene CI atribuible. Las cinco suites del SHA `cd9082d8e81bf2fe2c38f849f39de7429d300ea0` permanecen SUCCESS, pero no prueban una cota agregada.
 - Estado canónico: presupuesto agregado de disco OPEN; presupuesto agregado de heap OPEN; M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Corrección de prueba Continuity sobre límite — CI pendiente
+
+- El primer commit de la prueba (`7ef9550df703be902baa7ce7f608a59ac72f2449`) falló en CI por un error de importación del helper de validación estructural (`assertNexoContinuitySnapshot` no estaba importado). No fue un fallo de la regla de límite ni evidencia de que la mutación ocurriera.
+- Se añadió la importación explícita en `e7dc744b9ad71ed00c89a1f645508aad82ed3fec`. Los cinco workflows de ese SHA están en cola; no se declara PASS hasta que terminen.
