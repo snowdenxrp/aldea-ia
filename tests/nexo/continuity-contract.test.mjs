@@ -38,6 +38,29 @@ const validMemory = {
 assert.equal(assertNexoContinuityMemoryShape(null), true);
 assert.equal(assertNexoContinuityMemoryShape(validMemory), true);
 
+// Persisted snapshot validation must enforce the same per-mission admission ceiling
+// as new mission admission. Otherwise direct store initialize/commit paths could
+// bypass the 256-step limit by supplying a prebuilt snapshot.
+const overLimitPersistedMissionSnapshot = {
+  schema: NEXO_CONTINUITY_SCHEMA,
+  schemaVersion: 1,
+  missions: [{
+    missionId: "mission-over-limit",
+    steps: Array.from({ length: 257 }, (_, index) => ({
+      id: `step-${index}`, action: "inspect_input", dependsOn: []
+    }))
+  }],
+  attempts: [],
+  doNotRepeat: [],
+  executions: [],
+  effectJournal: []
+};
+assert.throws(
+  () => assertNexoContinuitySnapshot(overLimitPersistedMissionSnapshot),
+  error => error?.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED",
+  "persisted snapshots must not bypass the shared per-mission step ceiling"
+);
+
 const duplicateStepMemory = structuredClone(validMemory);
 duplicateStepMemory.nexo.missions[0].steps.push({
   id: "step-a", action: "repair_agent_needs", target: { agentId: "bravo" }, status: "planned", dependsOn: []
