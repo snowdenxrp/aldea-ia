@@ -1,3 +1,15 @@
+# CHECKPOINT NUEVO — 2026-10-22 — CONDITIONAL COMMIT ADAPTER OPTIONS GUARD
+
+- Hallazgo concreto: `createPersistStateConditionalCommit({ ... } = {})` leía `persistState`, `statePath` y `clock` mediante destructuring de opciones antes de validar. Un getter ordinario podía ejecutarse al construir el adaptador.
+- Corrección runtime: el constructor ahora extrae los tres campos con descriptores propios de datos enumerables, restringe el contenedor a objeto plano o prototipo nulo, y valida explícitamente `persistState`, ruta y `clock`. Las opciones inválidas se rechazan antes de crear el adaptador.
+- Regresión añadida al test existente `tests/nexo/conditional-commit-persist-state.test.mjs`: getter centinela en `persistState` debe ser rechazado sin ejecución. El test ya forma parte de `npm test`.
+- Commits: runtime `58ea41eef5f57cfc5626e00adfd2405dc552424f`; regresión `a782be8a449ee567263d701b7d42fb4ef6914708`.
+- CI: pendiente de consultar para el SHA integrado más reciente; no declarar PASS hasta revisar conclusiones.
+- Límite: el cambio protege la extracción de opciones del constructor; no demuestra que el `persistState` suministrado sea confiable ni cambia la evaluación de autoridad o el estado de los efectos protegidos.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## Incidente y corrección — guard de observación de reparación — 2026-10-22
 
 - La primera ejecución del workflow `Nexo M0 — repair settlement crash cuts` sobre el commit runtime `ddecd9b10eac1d01f275f3c271ee90b30735373c` falló antes de ejecutar las pruebas: una edición generó secuencias literales `\\n` en dos declaraciones y Node reportó `SyntaxError`. No fue un fallo semántico de la regresión; tampoco cuenta como PASS.
