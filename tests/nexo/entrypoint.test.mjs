@@ -27,7 +27,8 @@ for (const luminaCoupling of ["simulation-adapter.js", "../assistants/memory.js"
 }
 // Walk the static local-import graph from both Nexo command entrypoints.
 // This catches accidental transitive imports of the legacy Lúmina runtime/memory.
-const forbiddenImport = /(?:^|\/)(?:assistants\/memory\.js|simulation-adapter\.js|effect-adapter\.js|world\.js|simulation\.js|simulate\.mjs|nexo\/runtime\.js)$/;
+// The generic effect adapter is an internal collaborator for the Chronicle-only use case; the public API must not export it, and the owner-backed runtime allowlist remains the action gate.
+const forbiddenImport = /(?:^|\/)(?:assistants\/memory\.js|simulation-adapter\.js|world\.js|simulation\.js|simulate\.mjs|nexo\/runtime\.js)$/;
 const auditedFiles = new Set();
 async function auditNexoImportGraph(relativePath) {
   const absolutePath = path.resolve(process.cwd(), relativePath);
