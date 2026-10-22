@@ -196,8 +196,8 @@ try {
   const missionPlanSummary = JSON.parse(missionPlan.stdout);
   assert.equal(missionPlanSummary.status, "planned");
   assert.equal(missionPlanSummary.missionStatus, "awaiting_verification");
-  assert.equal(missionPlanSummary.steps[0].status, "awaiting_verification");
-  assert.equal(missionPlanSummary.steps[0].planningState, "not_plannable", "awaiting verification must not be misreported as dependency-ready");
+  assert.equal(missionPlanSummary.steps[0].status, "completed");
+  assert.equal(missionPlanSummary.steps[0].planningState, "completed", "a completed step must not be represented as pending planning work");
   assert.deepEqual(missionPlanSummary.steps[0].dependsOn, []);
   assert.equal(missionPlanSummary.authorization, "NOT_EVALUATED");
   assert.equal(missionPlanSummary.dispatchAttempted, false);
