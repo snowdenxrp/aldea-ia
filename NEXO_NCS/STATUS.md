@@ -1,8 +1,8 @@
 ## Incidente y corrección — guard de observación de reparación — 2026-10-22
 
 - La primera ejecución del workflow `Nexo M0 — repair settlement crash cuts` sobre el commit runtime `ddecd9b10eac1d01f275f3c271ee90b30735373c` falló antes de ejecutar las pruebas: una edición generó secuencias literales `\\n` en dos declaraciones y Node reportó `SyntaxError`. No fue un fallo semántico de la regresión; tampoco cuenta como PASS.
-- Corrección de sintaxis publicada en `e662afe24269e6f832a178aedfb9f413dbb2f042`. La integración de prueba sigue en `2541df081dc34410b3c0c7565c1ae559ad9de4c4`; los workflows del runtime corregido deben volver a comprobarse por SHA antes de darlo por validado.
-- Mantener el resultado de esta línea como pendiente hasta que los workflows disparados para el código corregido concluyan. No ocultar ni reinterpretar el fallo inicial.
+- Corrección de sintaxis publicada en `e662afe24269e6f832a178aedfb9f413dbb2f042`. En ese SHA exacto concluyeron `success` tanto [repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863728233) como [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863728328). La regresión nueva estaba integrada en el `package.json` de ese SHA.
+- El fallo inicial se conserva en el historial; el runtime corregido queda validado por esos dos workflows, no por todos los workflows del repositorio. La ejecución de persistencia en el SHA documental posterior se encuentra en cola al momento del último chequeo.
 
 ---
 
