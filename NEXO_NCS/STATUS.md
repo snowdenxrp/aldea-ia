@@ -2927,3 +2927,13 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 
 
 - CI del HEAD documental actual `e736e59e03374cf0eaaf7b89e1f6ca2a86abf3d1`: [run 39695510462](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695510462), job [tests 119551825257](https://github.com/snowdenxrp/aldea-ia/actions/runs/39695510462/job/119551825257), `completed/success`; `Run tests`: SUCCESS. Este resultado cubre ese SHA exacto; el siguiente commit de registro requiere su propia comprobación.
+
+
+## Seguimiento NCS — alcance de invocación CLI y rutas (2026-10-22)
+
+- Revisión acotada guardada en `BUILD/NCS_M0_E_OPTION_A_ENTRYPOINT_ENFORCEMENT_EVIDENCE_2026-10-21.md`, commit `f6518cf3c571ccd8377de8588164ef72a1310ca5`.
+- Se resolvió solo el alcance del prototipo en el repositorio: `package.json` expone `nexo` como CLI; `scripts/nexo.mjs` invoca el wrapper Chronicle mediante ruta fija y `spawnSync`; las rutas `--continuity`/ `--chronicle` son argumentos de operador. No se encontró evidencia en la rama de un caller automático de producto, sin afirmar que no pueda existir fuera de este árbol.
+- Supuesto válido únicamente para opción A: operador local confiable controla invocación y rutas. No hay sandboxing general del filesystem demostrado; rutas no deben venir de misión/claim/contenido no confiable.
+- El workflow determinista del commit `f6518cf3c571ccd8377de8588164ef72a1310ca5` está en curso: [run 39697156065](https://github.com/snowdenxrp/aldea-ia/actions/runs/39697156065). No declarar PASS hasta conclusión del run del SHA exacto.
+- Próximo trabajo sustantivo: retomar M0-E usando los contratos Genesis y Constitución→Policy ya existentes; no duplicarlos ni reabrir las auditorías de entrypoint/filesystem/import graph. El borrador constitucional sigue aceptado solo como base, no aprobado ni congelado.
+- Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
