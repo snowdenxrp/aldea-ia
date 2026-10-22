@@ -2937,3 +2937,12 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - El workflow determinista del commit `f6518cf3c571ccd8377de8588164ef72a1310ca5` está en curso: [run 39697156065](https://github.com/snowdenxrp/aldea-ia/actions/runs/39697156065). No declarar PASS hasta conclusión del run del SHA exacto.
 - Próximo trabajo sustantivo: retomar M0-E usando los contratos Genesis y Constitución→Policy ya existentes; no duplicarlos ni reabrir las auditorías de entrypoint/filesystem/import graph. El borrador constitucional sigue aceptado solo como base, no aprobado ni congelado.
 - Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0-E — precisión de separación Nexo/Lúmina y gate de reparación (2026-10-22)
+
+- Seguimiento guardado en [NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md](BUILD/NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md): la CLI independiente de Nexo mantiene un grafo de imports aislado de Lúmina según `tests/nexo/entrypoint.test.mjs`; no debe extrapolarse a todo script heredado.
+- `scripts/assistants.mjs` sigue siendo un puente legado que mezcla simulación/estado de Lúmina con continuidad y misiones Nexo. El argumento `--nexo-repair-once` permanece, pero su integración actual `scripts/nexo-runtime-session.mjs` bloquea con `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`; `tests/nexo/repair-session.test.mjs` prueba el gate y separa el protocolo de bajo nivel.
+- No se repite la auditoría del gate ni se modifica runtime en este seguimiento. El desacoplamiento total del script heredado requiere una migración deliberada para no romper `npm run assistants`; hasta entonces, la afirmación exacta es “entry points independientes de Nexo aislados”, no “todo el repositorio está desacoplado”.
+- Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
