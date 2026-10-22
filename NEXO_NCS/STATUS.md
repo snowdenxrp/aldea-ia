@@ -3313,3 +3313,13 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Los límites de bytes/cardinalidad se aplican en los stores y en la entrada stdin, pero no existe presupuesto compartido entre lectores, documentos, rutas o procesos. Lectura acotada sigue seguida de concatenación, decodificación, parseo y posibles clones; por tanto no se demuestra límite agregado de heap.
 - Siguiente paso: cotejar el inventario con el perfil numérico aceptado y definir el cierre documental del subcriterio por-store, dejando separado el agregado OPEN. No añadir mecanismo global parcial sin una unidad de admisión especificada.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0-E — brecha de contrato para límites de preview de misión (2026-10-22)
+
+- Hallazgo: [NCS_M0_E_MISSION_PREVIEW_RESOURCE_LIMIT_CONTRACT_GAP_2026-10-22.md](BUILD/NCS_M0_E_MISSION_PREVIEW_RESOURCE_LIMIT_CONTRACT_GAP_2026-10-22.md), commit documental `e6818c42c15f04da7699abef37eff8068f1b58f9`.
+- El runtime actual declara `missionPreviewInputBytes = 4 MiB` y los dos comandos CLI usan `readUtf8FileBounded` antes de `JSON.parse`. Esto confirma una defensa por archivo, no que 4 MiB sea el máximo contractualmente correcto.
+- La ruta de validación de misión no muestra límites explícitos de pasos ni de longitudes/tamaños de campos. El envelope de petición añade `intent`, también sin un máximo estructural separado en el contrato inspeccionado. El límite de 16 MiB del store Continuity no resuelve estas diferencias ni equivale a un presupuesto de heap.
+- No se cambia runtime ni se declaran pruebas/CI nuevos. No elevar automáticamente el límite a 16 MiB ni presentar 4 MiB como capacidad demostrada.
+- Próximo paso: especificar límites estructurales de misión e intención, derivar máximos de bytes para cada envelope y agregar pruebas de frontera para ambos comandos; después verificar CI en el SHA exacto. El presupuesto agregado de heap/disco y la concurrencia multiproceso permanecen abiertos.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
