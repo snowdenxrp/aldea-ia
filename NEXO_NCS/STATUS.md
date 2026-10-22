@@ -3304,3 +3304,12 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Prueba: [tests/nexo/entrypoint.test.mjs](https://github.com/snowdenxrp/aldea-ia/blob/094314aa3284d1b4a5d7957badafb1ecc6588ced/tests/nexo/entrypoint.test.mjs) envía stdin de 256 KiB + 1, espera `NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED` y verifica que los stores no se inicialicen ni se creen archivos.
 - SHA original de código/prueba: `094314aa3284d1b4a5d7957badafb1ecc6588ced`. Su workflow de persistencia quedó cancelado; el mismo código y la prueba de stdin permanecen sin cambios en `20b3e1b51616c93862a2cad2e502c143c35b77ef`, donde la suite de persistencia determinista y cuatro workflows adicionales terminaron SUCCESS. No atribuir esos resultados al SHA original; la evidencia posterior corresponde al SHA `20b3e1b...`.
 - El presupuesto agregado de heap/disco sigue OPEN; modo de servicio concurrente/multiusuario no declarado. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## M0-E — inventario de cobertura por ruta (2026-10-22)
+
+- Inventario documentado: [NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md](BUILD/NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md).
+- Rutas inspeccionadas: CLI Chronicle → aplicación → stores; consultas Continuity; apertura del propietario; runtime owner-backed; acceso directo al store.
+- Los límites de bytes/cardinalidad se aplican en los stores y en la entrada stdin, pero no existe presupuesto compartido entre lectores, documentos, rutas o procesos. Lectura acotada sigue seguida de concatenación, decodificación, parseo y posibles clones; por tanto no se demuestra límite agregado de heap.
+- Siguiente paso: cotejar el inventario con el perfil numérico aceptado y definir el cierre documental del subcriterio por-store, dejando separado el agregado OPEN. No añadir mecanismo global parcial sin una unidad de admisión especificada.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
