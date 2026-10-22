@@ -528,6 +528,29 @@ if (result.status !== "committed") process.exitCode = 1;`;
   );
   assert.equal((await fs.stat(oversizedChroniclePath)).size, oversizedChronicleBefore.size,
     "oversized Chronicle bytes remain unchanged");
+  const boundaryContentPath = path.join(root, "boundary-content.json");
+  const boundaryContentStore = createNexoChronicleStore({ filePath: boundaryContentPath });
+  assert.equal((await boundaryContentStore.initialize()).status, "committed");
+  assert.equal((await boundaryContentStore.append({
+    operationKey: "below-limit:step",
+    content: "a".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes - 1)
+  })).status, "committed", "content at limit minus one byte is accepted");
+  assert.equal((await boundaryContentStore.append({
+    operationKey: "exact-limit:step",
+    content: "b".repeat(NEXO_RESOURCE_LIMITS.chronicleEntryBytes)
+  })).status, "committed", "content at the exact byte limit is accepted");
+  const boundaryBytesBefore = await fs.readFile(boundaryContentPath);
+  const boundaryOversize = await boundaryContentStore.append({
+    operationKey: "over-limit:step",
+    content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2) + 1)
+  });
+  assert.deepEqual(boundaryOversize, {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"
+  }, "multibyte UTF-8 content above the byte limit is rejected");
+  assert.deepEqual(await fs.readFile(boundaryContentPath), boundaryBytesBefore,
+    "over-limit append preserves prior Chronicle bytes");
+
   const oversizedContentPath = path.join(root, "oversized-content.json");
   const oversizedContentStore = createNexoChronicleStore({ filePath: oversizedContentPath });
   assert.equal((await oversizedContentStore.initialize()).status, "committed");
