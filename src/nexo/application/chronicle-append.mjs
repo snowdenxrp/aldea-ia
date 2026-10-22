@@ -5,6 +5,7 @@ import { createNexoChronicleEffectContracts, NEXO_CHRONICLE_APPEND_ACTION } from
 import { createEffectAdapter } from "../effect-adapter.js";
 import { executeNexoStepWithContinuityOwner } from "../core/owner-backed-runtime.mjs";
 import { NEXO_DEFAULT_LOCK_WAIT_MS, createNexoLockDeadline } from "../core/lock-deadline.mjs";
+import { NEXO_RESOURCE_LIMITS, assertUtf8ByteLimit } from "../core/resource-limits.mjs";
 
 function blocked(code, details = null) {
   return {
@@ -117,6 +118,8 @@ export async function runNexoChronicleAppend({
       typeof lockWaitMs !== "number" || !Number.isFinite(lockWaitMs) || lockWaitMs <= 0) {
     return blocked("NEXO_CHRONICLE_SESSION_INPUT_INVALID");
   }
+  try { assertUtf8ByteLimit(content, NEXO_RESOURCE_LIMITS.chronicleEntryBytes, "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"); }
+  catch (error) { return blocked(error?.code ?? "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"); }
 
   // The continuity journal currently defines operation identity as
   // `${missionId}:${stepId}`; reject separators to prevent tuple collisions.
