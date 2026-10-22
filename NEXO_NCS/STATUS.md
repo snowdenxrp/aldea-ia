@@ -3227,3 +3227,12 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - **Siguiente bloqueo:** derivar el presupuesto agregado de heap/disco desde las rutas reales y las copias simultáneas. No inferir que 32 MiB Chronicle + 16 MiB Continuity equivale al pico de memoria. No declarar segura la concurrencia multiusuario sin una cota justificada.
 - La correspondencia intención→borrador queda en espera hasta atender este bloqueo.
 - Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Precisión posterior — contrato de intención contrastado con runtime existente (2026-10-22)
+
+- Se contrastó el contrato documental con `mission-request-preview.mjs`, `continuity-queries.mjs`, `core/contracts.mjs` y el contrato de intención existente en PG-009; no se repitieron pruebas.
+- Hallazgo: la ruta actual valida estructuralmente el borrador, pero no interpreta la intención ni verifica su correspondencia. El contrato de runtime genérico no incluye aún un tipo de interpretación de intención.
+- Corrección importante: el preview actual no persiste ni devuelve el texto de intención; por tanto, no debe afirmarse que la intención queda conservada como evidencia durable. Cualquier retención futura requiere definir referencia, procedencia, privacidad y vigencia con los contratos existentes.
+- El documento de correspondencia se actualizó para reflejar estas condiciones. Es un cambio documental; no hay cambio de runtime ni CI nuevo asociado.
+- Próximo paso: definir la representación de una **propuesta de interpretación no confiable** reutilizando PG-009, y el límite de evidencia que permitiría verificar correspondencia sin fingir que un chequeo estructural demuestra significado. Mantener autorización `NOT_EVALUATED` y efectos protegidos `STOP`.
