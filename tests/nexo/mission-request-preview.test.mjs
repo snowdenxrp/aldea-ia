@@ -175,7 +175,7 @@ try {
     missionDraft: validAdmissionDraft
   });
   assert.equal(oversizedIntent.status, "blocked");
-  assert.equal(oversizedIntent.code, "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
+  assert.equal(oversizedIntent.code, "NEXO_MISSION_REQUEST_INTENT_RESOURCE_LIMIT_EXCEEDED");
   assert.equal(oversizedIntent.authorization, "NOT_EVALUATED");
   assert.equal(oversizedIntent.dispatchAttempted, false);
   assert.equal(oversizedIntent.persisted, false);
