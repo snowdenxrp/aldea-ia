@@ -669,6 +669,11 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     } catch (error) {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_VERIFIER_FAILED", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
     }
+    try {
+      validateCallerRecord(observation, "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID");
+    } catch {
+      return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID", storeRevision: current.storeRevision, preparedCommitted: false, journalSettled: false, authorization: "NOT_EVALUATED" };
+    }
     if (!observation || typeof observation !== "object" || Array.isArray(observation) ||
         !["applied", "not_applied", "unknown"].includes(observation.status) ||
         observation.idempotencyKey !== operation.idempotencyKey ||
