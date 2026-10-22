@@ -667,11 +667,19 @@ const notOwnedBase = createNexoContinuityStore({ filePath: notOwnedLockPath });
 assert.equal((await notOwnedBase.initialize(emptySnapshot)).status, "committed");
 const fsWithNotOwnedRelease = {
   ...fs,
-  readFile: async (target, ...args) => {
-    if (String(target) === notOwnedLockPath + ".lock/owner.json") {
-      return JSON.stringify({ pid: process.pid, token: "different-owner", createdAt: Date.now() });
-    }
-    return fs.readFile(target, ...args);
+  open: async (target, ...args) => {
+    if (String(target) !== notOwnedLockPath + ".lock/owner.json") return fs.open(target, ...args);
+    const bytes = Buffer.from(JSON.stringify({ pid: process.pid, token: "different-owner", createdAt: Date.now() }));
+    let offset = 0;
+    return {
+      read: async (buffer, bufferOffset, length) => {
+        const bytesRead = Math.min(length, bytes.length - offset);
+        if (bytesRead > 0) bytes.copy(buffer, bufferOffset, offset, offset + bytesRead);
+        offset += bytesRead;
+        return { bytesRead };
+      },
+      close: async () => {}
+    };
   }
 };
 const notOwnedStore = createNexoContinuityStore({ filePath: notOwnedLockPath, fsModule: fsWithNotOwnedRelease });
