@@ -233,3 +233,12 @@ Esto hace que la brecha de presupuesto no sea solo una cuestión de crecimiento 
 - Este caso se añade a la puerta de aceptación como test de entrada previa a mutación. No cierra la brecha separada de raíz/Constitución/Policy.
 
 Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Propuesta de contrato de presupuesto de recursos (2026-10-22)
+
+- Propuesta nueva: [NCS_M0_RESOURCE_BUDGET_CONTRACT_PROPOSAL_2026-10-22.md](NCS_M0_RESOURCE_BUDGET_CONTRACT_PROPOSAL_2026-10-22.md).
+- Convierte en decisiones explícitas los límites de stdin, bytes por entrada, cardinalidad/tamaño total de Chronicle y Continuity, presupuesto combinado y política al agotarse la capacidad.
+- Estado: **PROPUESTA / NO ACEPTADA / NO IMPLEMENTADA**. No fija números ni añade identificadores de outcome por inferencia. La política conservadora propuesta es rechazar la nueva admisión/escritura antes de mutar y preservar los datos existentes; rotación/compactación requiere decisión separada.
+- Los tests deben cubrir límites exactos en bytes, rechazo antes de acumular stdin sin límite, ausencia de admisión/escrituras en casos negativos y preservación del estado previo.
+- Este subcriterio es independiente de M0-E: cerrar recursos no demuestra raíz/Constitución/Policy conectadas al sink real.
