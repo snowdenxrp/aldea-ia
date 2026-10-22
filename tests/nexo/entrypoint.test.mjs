@@ -145,6 +145,35 @@ try {
   assert.equal(persistedChronicle.entries[0].content, privateSentinel);
   const persistedContinuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
 
+  // Oversized stdin must be rejected before opening/initializing either store.
+  const oversizedContinuityPath = path.join(root, "oversized-stdin-continuity.json");
+  const oversizedChroniclePath = path.join(root, "oversized-stdin-chronicle.json");
+  const oversizedInput = spawnSync(process.execPath, [
+    entrypointPath, "chronicle-append",
+    "--continuity", oversizedContinuityPath,
+    "--chronicle", oversizedChroniclePath,
+    "--mission", "oversized-stdin-mission",
+    "--step", "oversized-stdin-step",
+    "--initialize-continuity",
+    "--initialize-chronicle",
+    "--content-stdin"
+  ], {
+    cwd: process.cwd(),
+    input: "x".repeat(256 * 1024 + 1),
+    encoding: "utf8"
+  });
+  assert.equal(oversizedInput.status, 1);
+  assert.equal(oversizedInput.stderr, "");
+  assert.equal(oversizedInput.stdout.includes("x".repeat(128)), false,
+    "oversized stdin payload must not be echoed to output");
+  assert.deepEqual(JSON.parse(oversizedInput.stdout), {
+    status: "blocked",
+    code: "NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED",
+    dispatchAttempted: false
+  });
+  await assert.rejects(fs.access(oversizedContinuityPath), { code: "ENOENT" });
+  await assert.rejects(fs.access(oversizedChroniclePath), { code: "ENOENT" });
+
   // A second OS process simulates restart: replay the same mission/step and
   // prove the existing Chronicle append is observed without a second dispatch.
   const replayBytesBefore = await fs.readFile(continuityPath, "utf8");
