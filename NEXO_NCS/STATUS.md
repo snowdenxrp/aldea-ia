@@ -1,3 +1,11 @@
+## Incidente y corrección — guard de observación de reparación — 2026-10-22
+
+- La primera ejecución del workflow `Nexo M0 — repair settlement crash cuts` sobre el commit runtime `ddecd9b10eac1d01f275f3c271ee90b30735373c` falló antes de ejecutar las pruebas: una edición generó secuencias literales `\\n` en dos declaraciones y Node reportó `SyntaxError`. No fue un fallo semántico de la regresión; tampoco cuenta como PASS.
+- Corrección de sintaxis publicada en `e662afe24269e6f832a178aedfb9f413dbb2f042`. La integración de prueba sigue en `2541df081dc34410b3c0c7565c1ae559ad9de4c4`; los workflows del runtime corregido deben volver a comprobarse por SHA antes de darlo por validado.
+- Mantener el resultado de esta línea como pendiente hasta que los workflows disparados para el código corregido concluyan. No ocultar ni reinterpretar el fallo inicial.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — PERSISTED REPAIR OBSERVATION INPUT GUARD
 
 - Hallazgo concreto: las funciones exportadas `observePersistedRepairInvariant(options)` y `comparePersistedRepairRevision(options)` recibían opciones por destructuring. Un getter ordinario en `snapshot` o `expectedStateRevision` podía ejecutarse antes de validar el contexto.
