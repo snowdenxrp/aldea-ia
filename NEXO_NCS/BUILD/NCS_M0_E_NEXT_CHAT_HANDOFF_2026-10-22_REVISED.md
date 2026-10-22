@@ -129,3 +129,15 @@ La siguiente tarea es inspección dirigida de callers/sinks y cruce de tests exi
 - HEAD conocido al añadir esta nota: `128bc1a0ec6b662a8d3269656684008b1923f40e`; comprobar el HEAD actual y CI antes de afirmar estado de ejecución.
 - Próxima tarea: confirmar el workflow completo del SHA final y el job/paso `Run tests`. Si pasa, construir una capacidad real dentro del alcance A, reutilizando los contratos y consultas existentes. No repetir auditorías AB/P cerradas ni recrear la matriz de tests.
 - Estado no alterado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`. La decisión A no es aprobación constitucional ni permiso para efectos protegidos.
+
+## Continuidad posterior — primera capacidad pública de planificación (2026-10-22)
+
+- La opción A ya fue aceptada explícitamente y está registrada en `NEXO_NCS/DECISIONS/NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md`. Esta decisión prevalece sobre cualquier sección histórica anterior de este handoff que todavía describa A como pendiente.
+- Se implementó `loadNexoMissionPlan(continuityPath, missionId)` en `src/nexo/application/continuity-queries.mjs`, exportada por `src/nexo/application/index.mjs`; se añadió el comando de solo lectura `mission-plan --continuity <ruta> --mission <id>` en `scripts/nexo.mjs`.
+- La proyección reconstruye desde una sola revisión canónica, muestra los estados de dependencias por identificador y el estado de planificación, y omite los payloads `target/context`. `dependencies_satisfied` solo significa que las dependencias registradas figuran como completadas: no es un juicio de seguridad, no autoriza ejecución y no equivale a que el paso sea despachable.
+- La respuesta conserva `authorization: NOT_EVALUATED` y `dispatchAttempted: false`; la consulta no escribe. El test de entrypoint comprueba API pública estrecha, parser, estado reconstruido, ausencia de payload privado y bytes de Continuity sin cambios.
+- Commits de implementación/prueba: `16b374d22da5ce23a4176fa9bb28edd34b0dd8ce`, `da625716c7a10ba36759a43f25dd1abf056ed7b4`, `5509341fa1756f14fbb2e2630b2e1a968dad4fe1`, `ccdb7a189dad7c62170ba5484654a15107fd05bc`. Registro canónico actualizado en `STATUS.md` por commit `c3e4484cbc66e39a8613df4854f9a111c25fc7b0`.
+- No se ha declarado CI PASS para el SHA final posterior a la actualización de documentación. Verificar el workflow completo del HEAD real y el paso `Run tests` antes de adjudicar PASS. Si falla, recuperar el log y corregir solo el defecto observado.
+- Siguiente unidad de trabajo tras CI: pruebas de planificación para misión inexistente, dependencia no completada y misión bloqueada; todas deben mantener lectura sin mutación, ocultación de payloads y `dispatchAttempted: false`. No crear un dispatcher ni ampliar acciones.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
