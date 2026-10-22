@@ -1,3 +1,17 @@
+## M0-E — capacidad inicial de planificación de misiones (2026-10-22)
+
+- Implementación nueva en la API pública: `loadNexoMissionPlan`, exportada desde `src/nexo/application/index.mjs`; CLI: `mission-plan --continuity <ruta> --mission <id>`.
+- La consulta carga una sola revisión canónica de Continuity, reconstruye la misión existente y proyecta estado de dependencias sin exponer `target` ni `context`. El resultado separa `dependencyState` y `planningState`; `dependencies_satisfied` **no** significa autorización ni seguridad de ejecución.
+- Contrato de seguridad del resultado: `authorization: NOT_EVALUATED`, `dispatchAttempted: false`. Consulta de solo lectura; el test de entrypoint compara los bytes de Continuity antes/después y comprueba que no sale el payload privado.
+- Prueba añadida a `tests/nexo/entrypoint.test.mjs`: export público exacto, parsing del comando, proyección de misión reconstruida, ocultación de payload y ausencia de escritura. El workflow disparado por el commit de prueba aún debe terminar en estado final para atribuir PASS al SHA correspondiente.
+- Commits de implementación: `16b374d22da5ce23a4176fa9bb28edd34b0dd8ce` (consulta), `da625716c7a10ba36759a43f25dd1abf056ed7b4` (API pública), `5509341fa1756f14fbb2e2630b2e1a968dad4fe1` (CLI), `ccdb7a189dad7c62170ba5484654a15107fd05bc` (pruebas).
+- Esto añade diagnóstico de planificación; no implementa planner autónomo, dispatch nuevo, raíz constitucional ni efectos protegidos. No modifica el estado de autorización.
+- Continuidad de alcance: la aceptación explícita de opción A está registrada en `DECISIONS/NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md`. Cualquier nota antigua que diga que A sigue sin decidir queda supersedida por esa decisión.
+- Próximo paso: verificar el workflow de pruebas del SHA final de documentación; corregir cualquier fallo observado, y después añadir casos negativos para misión ausente, estado bloqueado y dependencias no satisfechas sin ampliar el dispatch.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## M0-E — frontera de autoridad del owner-backed runtime (2026-10-21)
 
 - Nuevo análisis de código: [NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md](BUILD/NCS_M0_E_OWNER_BACKED_RUNTIME_AUTHORITY_BOUNDARY_FINDING_2026-10-21.md), commit `db08ac35f2bb31b071da8c3dca550dd67ae579b0`.
