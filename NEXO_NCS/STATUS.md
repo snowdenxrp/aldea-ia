@@ -2956,3 +2956,15 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - M0-B/C/D siguen PENDING para aceptación final hasta congelar las assertions/workflows obligatorios; no se repiten las investigaciones de continuidad, resultados terminales ni journal UNKNOWN.
 - M0-E permanece como bloqueo sustantivo: raíz/procedencia constitucional runtime conectada al sink real no demostrada.
 - Sin cambio de runtime ni de decisiones constitucionales. Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## M0 — ensamblaje de aceptación finita y precedencia canónica (2026-10-22)
+
+- Matriz actualizada: [NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md), commit `647d7ae97f744a6bad31ffc1bbd9d3c6ef931655`.
+- La matriz consolida puerta candidata finita A–E y corrige precedencia: Opción A está aceptada como alcance inicial provisional; puntos constitucionales 1–7 aceptados solo como base del borrador. No son aprobación constitucional completa ni autorización de efectos.
+- A–D reutilizan assertions y runs históricos existentes; el cierre requiere una puerta determinista completa en el SHA candidato exacto. No repetir auditorías cerradas ni extrapolar CI entre SHA.
+- E permanece bloqueante: exclusiones Opción A y rutas en alcance deben quedar bloqueadas antes de dispatch/mutación; raíz/Constitución/contexto legítimos aún no están integrados hasta el sink real. No crear autoridad ficticia ni habilitar efectos protegidos.
+- CI para la matriz nueva se está ejecutando en el momento de esta nota; consultar el run del SHA exacto antes de afirmar PASS.
+- Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
