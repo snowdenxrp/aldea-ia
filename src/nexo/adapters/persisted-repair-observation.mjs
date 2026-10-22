@@ -1,3 +1,21 @@
+function readObservationOptions(options, fields) {
+  if (options === undefined || !options || typeof options !== "object" || Array.isArray(options)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(options);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const values = Object.create(null);
+    for (const key of fields) {
+      const descriptor = Object.getOwnPropertyDescriptor(options, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      values[key] = descriptor.value;
+    }
+    return values;
+  } catch {
+    return null;
+  }
+}
+
 const REPAIR_ACTIONS = new Set([
   "repair_agent_state",
   "repair_agent_needs",
@@ -57,7 +75,7 @@ function present(action, target, stateRevision) {
  * the observed state, not authorization to retry, and not terminal settlement.
  * Unknown schema/life-state/target shapes fail closed.
  */
-export function observePersistedRepairInvariant({ snapshot, action, target } = {}) {
+export function observePersistedRepairInvariant(options) {\n  const input = readObservationOptions(options, ["snapshot", "action", "target"]);\n  if (!input) return unknown("REPAIR_OPERATION_CONTEXT_INVALID");\n  const { snapshot, action, target } = input;
   const revision = snapshot?.stateRevision;
   if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot) ||
       !Number.isSafeInteger(revision) || revision < 0 ||
@@ -133,7 +151,7 @@ export function observePersistedRepairInvariant({ snapshot, action, target } = {
  * The current PREPARED schema does not contain that field, so omission returns
  * UNKNOWN rather than treating the current revision as the original revision.
  */
-export function comparePersistedRepairRevision({ expectedStateRevision, currentSnapshot } = {}) {
+export function comparePersistedRepairRevision(options) {\n  const input = readObservationOptions(options, ["expectedStateRevision", "currentSnapshot"]);\n  if (!input) {\n    return { status: "observed", outcome: "unknown", reason: "REPAIR_REVISION_CONTEXT_INVALID", expectedStateRevision: null, currentStateRevision: null };\n  }\n  const { expectedStateRevision, currentSnapshot } = input;
   const currentRevision = currentSnapshot?.stateRevision;
   if (!Number.isSafeInteger(expectedStateRevision) || expectedStateRevision < 0) {
     return {
