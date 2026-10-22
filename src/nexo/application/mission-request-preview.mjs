@@ -1,4 +1,5 @@
 import { assertContractInput } from "../core/contracts.mjs";
+import { assertNexoMissionAdmission } from "../core/mission-admission-contract.mjs";
 import { previewNexoMissionDraft } from "./continuity-queries.mjs";
 
 /**
@@ -15,6 +16,7 @@ export async function previewNexoMissionRequest(continuityPath, requestEnvelope)
     dispatchAttempted: false, persisted: false
   });
   try {
+    assertNexoMissionAdmission(requestEnvelope, { requestIntent: true });
     assertContractInput(requestEnvelope, "Nexo mission request");
     const keys = Reflect.ownKeys(requestEnvelope);
     if (keys.some(key => key !== "intent" && key !== "missionDraft") ||
