@@ -7,15 +7,35 @@ import { COMMIT, createCommitResult } from "../core/contracts.mjs";
  * The candidate state is intentionally opaque here. The adapter only forwards
  * it to the supplied persistence primitive; Core remains schema-independent.
  */
-export function createPersistStateConditionalCommit({
-  persistState,
-  statePath,
-  clock = () => Date.now()
-} = {}) {
+function readConditionalCommitOptions(options) {
+  if (options === undefined) return { clock: () => Date.now() };
+  if (!options || typeof options !== "object" || Array.isArray(options)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(options);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const values = Object.create(null);
+    for (const key of ["persistState", "statePath", "clock"]) {
+      const descriptor = Object.getOwnPropertyDescriptor(options, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      values[key] = descriptor.value;
+    }
+    if (!Object.hasOwn(values, "clock")) values.clock = () => Date.now();
+    return values;
+  } catch {
+    return null;
+  }
+}
+
+export function createPersistStateConditionalCommit(options) {
+  const input = readConditionalCommitOptions(options);
+  if (!input) throw new TypeError("conditional commit options are invalid");
+  const { persistState, statePath, clock } = input;
   if (typeof persistState !== "function") {
     throw new TypeError("persistState function is required");
   }
-  if (!statePath) throw new TypeError("statePath is required");
+  if (typeof statePath !== "string" || !statePath.trim()) throw new TypeError("statePath is required");
+  if (typeof clock !== "function") throw new TypeError("clock function is required");
 
   return Object.freeze({
     async commit(candidate) {
