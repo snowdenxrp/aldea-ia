@@ -6,3 +6,4 @@
  */
 export { runNexoChronicleAppend } from "./chronicle-append.mjs";
 export { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan, previewNexoMissionDraft } from "./continuity-queries.mjs";
+export { previewNexoMissionRequest } from "./mission-request-preview.mjs";

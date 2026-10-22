@@ -162,3 +162,8 @@ La siguiente tarea es inspección dirigida de callers/sinks y cruce de tests exi
 - Próximo trabajo: definir el contrato entre petición/objetivo no confiable y borrador de misión. No conectar todavía un modelo generativo, no permitirle elegir acciones fuera del conjunto contractual y no convertir el preview en persistencia/ejecución sin gate independiente.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
+
+
+## Actualización posterior — frontera intención→borrador (2026-10-22)
+
+Se añadió `previewNexoMissionRequest(continuityPath, requestEnvelope)` y `tests/nexo/mission-request-preview.test.mjs`; el test se incorporó a `npm test`. El contrato acepta únicamente `intent` no vacía y `missionDraft` separado, rechaza claves adicionales y usa el validador de borradores existente. La intención es dato no confiable y no se interpreta ni se devuelve. El resultado marca `requestInterpretation: NOT_PERFORMED` y `intentDraftAlignment: NOT_EVALUATED`; no persiste ni despacha. Esta capacidad no afirma traducción semántica. Verificar CI en el SHA exacto del commit que contiene esta actualización antes de declararla validada.

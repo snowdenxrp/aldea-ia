@@ -3152,3 +3152,14 @@ Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamient
 ## Corrección de precisión — guard de importaciones M0-E (2026-10-22)
 
 La primera versión del test intentó prohibir `effect-adapter.js` en todo el grafo importado por el entrypoint y falló: `chronicle-append.mjs` lo usa como colaborador interno. Ese guard era demasiado amplio, no evidencia de un dispatcher expuesto. El test se corrigió en `9d2e6f41a59c46eec6cd019d9c32211b8426f523`: la API pública sigue limitada a tres casos de uso y el runtime owner-backed mantiene `chronicle_append` como única acción habilitada en esa ruta. CI determinista completo: run 3271, SHA `6c1f516c067e0fd5d481b524e7e20db809e94b12`, `completed/success`.
+
+
+## M0-E — frontera explícita entre intención no confiable y borrador (2026-10-22)
+
+- API nueva: `previewNexoMissionRequest(continuityPath, requestEnvelope)`, en `src/nexo/application/mission-request-preview.mjs`, exportada por la API pública.
+- Contrato de entrada estrecho: `{ intent: string no vacía, missionDraft: borrador con el esquema canónico existente }`. Se rechazan claves extra, envoltorios inválidos y texto de intención vacío.
+- Esta frontera **no interpreta lenguaje natural** ni prueba que el borrador corresponda a la intención. La intención se trata como dato no confiable, no se pasa al validador de misión, no se devuelve en la salida y nunca selecciona acciones. El resultado marca `requestInterpretation: NOT_PERFORMED` e `intentDraftAlignment: NOT_EVALUATED`.
+- El borrador separado se valida mediante `previewNexoMissionDraft`; se conserva el contrato existente y no se crea un segundo esquema. No hay persistencia ni dispatch; `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `persisted: false`.
+- Pruebas agregadas a `npm test`: petición válida, intento de inyección como texto inerte, ausencia de filtración del texto/payload privado, claves inesperadas, intención vacía, borrador ausente y bytes de Continuity idénticos antes/después.
+- Límite deliberado: esto es una frontera de validación para un futuro intérprete, **no** un traductor semántico, un modelo de IA ni un planificador autónomo. No se conecta ningún modelo hasta definir una salida propuesta y cómo se verifica la correspondencia intención→borrador.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
