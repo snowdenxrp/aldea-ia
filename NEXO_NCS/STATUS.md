@@ -1,3 +1,9 @@
+# M0-E — presupuesto de recursos aceptado como base (2026-10-22)
+
+- **Decisión del propietario registrada:** acepta el perfil numérico inicial como base de implementación. Ver `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`.
+- Esto sustituye el estado previo de «no aceptado» como estado de decisión actual; no afirma que el runtime esté implementado ni validado. La implementación y las pruebas de fronteras siguen pendientes.
+- Prioridad técnica: lectura acotada de documentos preexistentes antes de parseo; topes de contenido/cardinalidad/tamaño aplicados antes de mutación; preservar bytes/revisión en rechazo. No se acepta presupuesto agregado de heap/disco.
+
 ## M0-E — planificación de misión y validación de borradores (2026-10-22)
 
 - Capacidad previa conservada: `loadNexoMissionPlan` y CLI `mission-plan --continuity <ruta> --mission <id>` proyectan dependencias desde una sola revisión canónica, sin payloads privados, escritura ni dispatch.
