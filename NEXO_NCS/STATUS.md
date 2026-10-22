@@ -3292,8 +3292,9 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 
 - Hallazgo nuevo: [NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_E_AGGREGATE_RESOURCE_ENVELOPE_FINDING_2026-10-22.md).
 - Los topes existentes son por entrada/documento/store; serializedUtf8Bytes mide JSON serializado, no heap V8 ni memoria transitoria máxima. Lecturas, decodificación, JSON.parse y structuredClone añaden buffers/objetos; los lectores no quedan limitados por el lock de escritura. El CLI limita stdin por invocación, no el número de procesos simultáneos.
-- No se demuestra una cota agregada de heap o disco ni capacidad multiusuario. No se eligió un número agregado, no se añadió un semáforo/cola/wrapper, y no se ejecutaron tests para este análisis documental.
-- Siguiente bloqueo concreto: definir el modo operativo inicial (CLI aislado, proceso único persistente o servicio concurrente), delimitar a qué ámbito aplica el presupuesto y solo entonces diseñar enforcement verificable. No declarar agregado cerrado ni servicio concurrente listo antes de eso.
+- No se demuestra una cota agregada de heap o disco ni capacidad multiusuario. No se eligió un número agregado ni se añadió un semáforo/cola/wrapper global.
+- Alcance inicial ya documentado en [NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md](BUILD/NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md): CLI local con límites por entrada/documento/operación; varios procesos simultáneos no quedan bloqueados globalmente. Esto es una restricción de alcance, no enforcement de exclusividad.
+- Las pruebas reales de Continuity y cinco workflows CI en SHA `20b3e1b51616c93862a2cad2e502c143c35b77ef` se detallan en la sección M0-E superior de este STATUS. Siguiente paso: evaluar si los límites por-store son suficientes para el alcance declarado y concretar qué garantía adicional requeriría un futuro modo multi-proceso; no inventar cuota agregada.
 - Estado canónico sin cambios: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
 
 
