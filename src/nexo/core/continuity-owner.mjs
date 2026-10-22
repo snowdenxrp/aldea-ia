@@ -1,4 +1,7 @@
 import { isDeepStrictEqual } from "node:util";
+import { assertContractInput } from "./contracts.mjs";
+import { assertNexoMissionAdmission } from "./mission-admission-contract.mjs";
+import { assertNexoContinuityDataBounded } from "./continuity-data-guard.mjs";
 import { NEXO_CONTINUITY_SCHEMA, assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
 import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "./continuity-operations.mjs";
 import { isValidNexoChronicleOutcomeEvidence, isValidNexoChronicleSettlementRecord } from "./chronicle-settlement-contract.mjs";
@@ -7,6 +10,19 @@ function ownerError(code) {
   const error = new Error(code);
   error.code = code;
   return error;
+}
+
+
+function validateCallerRecord(value, invalidCode) {
+  assertNexoContinuityDataBounded(value, {
+    resourceLimitCode: "NEXO_CONTINUITY_INPUT_RESOURCE_LIMIT_EXCEEDED",
+    invalidCode
+  });
+  try {
+    assertContractInput(value, "Nexo continuity operation");
+  } catch {
+    throw ownerError(invalidCode);
+  }
 }
 
 function validateOperation(operation) {
@@ -88,6 +104,10 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
   }
 
   async function recordMission({ expectedRevision, mission } = {}) {
+    try { assertNexoMissionAdmission(mission); }
+    catch (error) {
+      return { status: "conflict", code: error?.code ?? "NEXO_MISSION_CONTEXT_INVALID" };
+    }
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0 ||
         !mission || typeof mission.missionId !== "string" || !mission.missionId.trim() ||
         !Array.isArray(mission.steps)) {
@@ -127,6 +147,10 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
    * This records an outcome claim; it never settles effectJournal or authorizes effects.
    */
   async function recordOutcome({ expectedRevision, outcome } = {}) {
+    try { validateCallerRecord(outcome, "NEXO_OUTCOME_CONTEXT_INVALID"); }
+    catch (error) {
+      return { status: "failed", code: error?.code ?? "NEXO_OUTCOME_CONTEXT_INVALID" };
+    }
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
     }
@@ -271,7 +295,10 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
   }
 
   async function recordPrepared({ expectedRevision, operation } = {}) {
-    try { validateOperation(operation); }
+    try {
+      validateCallerRecord(operation, "NEXO_OPERATION_CONTEXT_INVALID");
+      validateOperation(operation);
+    }
     catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID" }; }
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
@@ -392,7 +419,11 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
    * operation-specific reconciliation contract exists.
    */
   async function recordExecutionLineage({ expectedRevision, operation, result } = {}) {
-    try { validateOperation(operation); }
+    try {
+      validateCallerRecord(operation, "NEXO_OPERATION_CONTEXT_INVALID");
+      validateOperation(operation);
+      validateCallerRecord(result, "NEXO_EXECUTION_RESULT_INVALID");
+    }
     catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID" }; }
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID" };
@@ -532,8 +563,10 @@ export function createNexoContinuityOwner({ store, effectVerifiers = {} } = {}) 
     if (!operation) {
       return { status: "blocked", code: "NEXO_EFFECT_RECONCILIATION_REQUIRED", verified: false, preparedCommitted: false, authorization: "NOT_EVALUATED" };
     }
-    try { validateOperation(operation); }
-    catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" }; }
+    try {
+      validateCallerRecord(operation, "NEXO_OPERATION_CONTEXT_INVALID");
+      validateOperation(operation);
+    } catch (error) { return { status: "failed", code: error?.code ?? "NEXO_OPERATION_CONTEXT_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" }; }
     if (!Number.isSafeInteger(expectedRevision) || expectedRevision < 0) {
       return { status: "failed", code: "NEXO_CONTINUITY_STORE_EXPECTED_REVISION_INVALID", preparedCommitted: false, authorization: "NOT_EVALUATED" };
     }
