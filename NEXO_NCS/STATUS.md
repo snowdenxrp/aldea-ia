@@ -3097,3 +3097,11 @@ Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamient
 - Siguiente puerta: prueba adversarial integrada contra los límites existentes; no implementar un verificador que simule raíz hasta poder establecer provisión/reconocimiento independiente y binding constitucional exacto. La lectura acotada de Chronicle/Continuity sigue siendo una brecha separada; el presupuesto numérico continúa no aceptado/no implementado.
 - Este commit es documental; no cambia runtime ni tests. No se declara CI para este SHA hasta consultar su run exacto.
 - Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Continuidad M0-E — handoff para chat nuevo (2026-10-22)
+
+- Se guardó [NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22.md](BUILD/NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22.md), commit `f5ffa4baddf7efb128028482436a1664e3dccc94`.
+- Incluye estado canónico, SHA/blob de evidencia, contratos Genesis y Constitución→Policy a reutilizar, límites de lo demostrado por tests, criterios de la futura prueba integrada y pasos concretos para continuar sin repetir auditorías ni inventar una raíz.
+- Este handoff es documentación; no modifica runtime ni tests y no cierra M0-E. Antes de trabajar en el próximo chat, comprobar el HEAD actual de `ncs-clean-architecture` y leer `STATUS.md` más el handoff.
+- Estado canónico intacto: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`. Presupuesto numérico de recursos continúa no aceptado/no implementado.
