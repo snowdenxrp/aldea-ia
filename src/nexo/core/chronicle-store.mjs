@@ -277,11 +277,15 @@ export function createNexoChronicleStore({ filePath, fsModule = fs, lockDeadline
           storeRevision: current.storeRevision + 1,
           entries: [...current.entries, { operationKey, content }]
         };
+        try { assertChronicleResourceLimits(candidate); }
+        catch (error) {
+          return {
+            status: "blocked",
+            code: error?.code ?? "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED",
+            storeRevision: current.storeRevision
+          };
+        }
         try {
-          assertChronicleResourceLimits(candidate);
-          if (serializedUtf8Bytes(candidate) > NEXO_RESOURCE_LIMITS.chronicleDocumentBytes) {
-            return { status: "blocked", code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED", storeRevision: current.storeRevision };
-          }
           await writeDocument(fsModule, filePath, candidate);
           return { status: "committed", storeRevision: candidate.storeRevision, entry: { operationKey, content } };
         } catch {
