@@ -34,7 +34,7 @@ Al comenzar:
 - El propietario aceptó explícitamente el perfil numérico inicial de presupuesto de recursos el 2026-10-22. Esa aceptación queda limitada a los valores y semánticas del perfil; no aprueba Constitución completa, autoridad raíz, commissioning ni efectos protegidos.
 - Meta actual: crear Nexo y progresar en M0; no desviarse a M1 ni convertirlo en un chatbot.
 
-## HEAD y evidencia observada durante esta revisión
+## Evidencia histórica anterior al checkpoint actual — no usar como HEAD vigente
 - La búsqueda más reciente de commits del repositorio devolvió como primer commit `8b7f4e690de76832393dc854ff7433953c51d4a4`; es un commit observado, pero antes de continuar hay que volver a consultar el HEAD actual de la rama.
 - `src/nexo/core/protected-transition.mjs`, blob observado `39a602b80cda8f3939b2ffed7e726d06c21b077f`.
 - `src/nexo/core/ownership.mjs`, blob observado `3b66d07e67df09b058b37716716573f6c17a2099`.
@@ -43,7 +43,7 @@ Al comenzar:
 - `NEXO_NCS/BUILD/NCS_M0_E_ADVERSARIAL_ACCEPTANCE_TEST_PLAN_2026-10-21.md`, blob observado `35b0c222f19310147f7daf3ba786d08ba5bc0389`.
 - Contrato Genesis: `NEXO_NCS/BUILD/STEP_7_MINIMUM_GENESIS_TRUST_FOUNDATION_CONTRACT_2026-10-08.md`, blob previamente observado `e65df41ff98f7e53a8574ca5295a947023cb8b30`.
 - Contrato Constitución→Policy: `NEXO_NCS/BUILD/STEP_7_MINIMUM_CONSTITUTION_TO_POLICY_AUTHORITY_BINDING_CONTRACT_2026-10-08.md`, blob `34a4a8ecef267bb1d27cb50e927b613d0ff0f499`.
-- No se hicieron cambios de runtime/tests en esta revisión y no se ejecutó CI nuevo.
+- Nota histórica de la revisión anterior: entonces no se hicieron cambios de runtime/tests ni se ejecutó CI nuevo. El checkpoint posterior arriba registra los cambios y runs posteriores.
 
 ## Hallazgos técnicos vigentes
 1. `createCorePorts()` en `ownership.mjs` expone puertos capability-separated. El fallback de `effectBoundary.prepare` es `NOT_IMPLEMENTED`; que exista el puerto no significa que esté conectado.
