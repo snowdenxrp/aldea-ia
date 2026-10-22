@@ -1196,3 +1196,23 @@ assert.throws(
 );
 assert.equal(constructorOptionsGetterInvoked, false, "constructor options validation must not execute accessors");
 
+
+
+// Store adapter methods are part of the injected boundary. Reject accessor-backed
+// methods before reading them, and never execute a getter during owner construction.
+let storeMethodGetterInvoked = false;
+const accessorStore = {
+  commitIfCurrent: async () => ({ status: "committed" })
+};
+Object.defineProperty(accessorStore, "loadCurrent", {
+  enumerable: true,
+  get() {
+    storeMethodGetterInvoked = true;
+    return async () => ({ storeRevision: 0, snapshot: {} });
+  }
+});
+assert.throws(
+  () => createNexoContinuityOwner({ store: accessorStore }),
+  error => error?.code === "NEXO_CONTINUITY_STORE_REQUIRED"
+);
+assert.equal(storeMethodGetterInvoked, false, "store adapter method validation must not execute getters");
