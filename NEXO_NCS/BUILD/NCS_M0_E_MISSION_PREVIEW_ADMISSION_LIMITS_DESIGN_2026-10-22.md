@@ -33,15 +33,15 @@ Los máximos estructurales son **presupuestos de admisión v1 explícitos**, no 
 
 ## Pruebas y CI
 
-Código y pruebas de admisión en SHA exacto:
+Código y pruebas de admisión, incluidos máximos exactos y máximo+1 para pasos, dependencias, profundidad, nodos, cadena individual y volumen agregado, en SHA exacto:
 
-`b51cdc7998f671371a9e80b8b75e5294bdadea86`
+`9f97f61a5517f0b591a677f91607a9ef05696c9e`
 
-- [Nexo — deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909146) — SUCCESS.
+- [Nexo — deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39828236600) — SUCCESS.
 - [Nexo — STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909056) — SUCCESS.
 - [Nexo — STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909080) — SUCCESS.
 
-Las pruebas agregadas cubren los dos entrypoints CLI en 4 MiB y 4 MiB + 1 byte; límites excedidos de intención, pasos, dependencias, profundidad y volumen agregado de cadenas; y preservación de Continuity, ausencia de dispatch/persistencia y salida sanitizada.
+Las pruebas agregadas cubren los dos entrypoints CLI en 4 MiB y 4 MiB + 1 byte; máximo exacto y máximo+1 para pasos, dependencias, profundidad, nodos JSON, cadena individual y suma agregada de cadenas/claves; exceso de intent; y preservación de Continuity, ausencia de dispatch/persistencia y salida sanitizada.
 
 ## Límite importante de la evidencia
 
