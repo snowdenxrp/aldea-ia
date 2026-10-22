@@ -2,18 +2,17 @@
 
 El usuario iniciará el chat escribiendo exactamente `NCS`.
 
-**Instrucción prioritaria:** continuar M0-E desde el contrato compartido de admisión de misión implementado. No reiniciar Step 7/M1 ni reauditar AB/P cerrados. Primero leer este checkpoint y el diseño enlazado.
+**Instrucción prioritaria:** continuar M0-E desde el contrato compartido de admisión implementado y probado. No reiniciar Step 7/M1 ni reauditar AB/P cerrados. Leer este checkpoint y el diseño enlazado antes de modificar código.
 
-## Último checkpoint — contrato estructural de admisión implementado
+## Último checkpoint — contrato de admisión de misión v1
 
-- Código: `src/nexo/core/mission-admission-contract.mjs`; aplicado antes de la validación recursiva/clonación en `missionRecord` y a `mission-request-preview`.
-- Límites v1 explícitos: 256 pasos; 64 dependencias por paso; 20,000 nodos visitados; profundidad 32; 256 KiB por cadena/clave; 4 MiB acumulados de cadenas/claves; `intent` máximo 16 KiB; los archivos CLI siguen limitados a 4 MiB raw bytes.
-- Pruebas agregadas: límite de archivo exacto y +1 para ambos comandos; exceso de intent, pasos, dependencias, profundidad y volumen acumulado; rechazo no persiste, no despacha y mantiene la salida sanitizada.
-- **CI SUCCESS en SHA exacto** `b51cdc7998f671371a9e80b8b75e5294bdadea86`: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909146), [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909056), [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909080). El SHA siguiente de corrección de clasificación `5485f7d...` también pasó los tres workflows principales, pero el checkpoint de pruebas estructurales corresponde a `b51cdc7...`.
-- Diseño/evidencia actualizados: [contrato de admisión y límites](BUILD/NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md); [evidencia de frontera raw bytes](BUILD/NCS_M0_E_MISSION_PREVIEW_BYTE_BOUNDARY_TEST_EVIDENCE_2026-10-22.md).
-- Los límites v1 son presupuestos explícitos de admisión, no mediciones de heap ni capacidades de producto validadas. Falta completar pruebas exactas de frontera para cada dimensión estructural y validar fixtures representativos.
-- Presupuesto de heap/procesos/disco agregado y concurrencia multiproceso siguen OPEN. No improvisar locks/colas ni cambiar el límite histórico de ocho pasos de P112.
-- **Workflow separado en FAILURE:** [repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827598938), en SHA `5485f7d...`. La prueba `assistants-runtime-cli.test.mjs` espera un efecto persistido mientras `scripts/nexo-runtime-session.mjs` devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`. No cambiar el runtime para hacer pasar la prueba: reconciliar test/workflow con la decisión de alcance Option A como trabajo separado.
+- Código Core: `src/nexo/core/mission-admission-contract.mjs`; se ejecuta antes de la validación recursiva/clonación en `missionRecord` y en `mission-request-preview`.
+- Límites v1: 256 pasos; 64 dependencias por paso; 20,000 nodos; profundidad 32; 256 KiB por cadena/clave; 4 MiB acumulados de cadenas/claves; `intent` de petición 16 KiB; archivos CLI 4 MiB raw bytes.
+- Pruebas de frontera en SHA exacto `9f97f61a5517f0b591a677f91607a9ef05696c9e`: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39828236600) SUCCESS; [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909056) SUCCESS; [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827909080) SUCCESS. Las pruebas cubren exacto y +1 para pasos, dependencias, profundidad, nodos, cadena individual y volumen agregado, además de límites raw bytes de ambos CLI y preservación de estado/no-dispatch.
+- Diseño/evidencia: [contrato de admisión](BUILD/NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md); [evidencia de frontera raw bytes](BUILD/NCS_M0_E_MISSION_PREVIEW_BYTE_BOUNDARY_TEST_EVIDENCE_2026-10-22.md).
+- Los valores v1 son presupuestos de admisión explícitos, no mediciones de heap ni capacidades de producto validadas. Próximo paso: probar fixtures representativos y revisar que no se rechace trabajo legítimo antes de tratar los valores como estables.
+- Heap agregado, concurrencia multiproceso y disco agregado siguen OPEN. No inventar locks/colas. No trasladar el límite histórico de ocho pasos de P112.
+- **Workflow separado en FAILURE** en SHA `5485f7d9180918b5dc110dc4d9ed8ffc87569789`: [repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39827598938). La prueba `assistants-runtime-cli.test.mjs` espera un efecto persistido mientras `scripts/nexo-runtime-session.mjs` devuelve explícitamente `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`. No cambiar el runtime para hacer pasar la prueba; reconciliar test/workflow con la decisión Option A en trabajo separado. Este workflow no se declara PASS.
 
 **Estado canónico:** M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
