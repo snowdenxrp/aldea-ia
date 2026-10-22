@@ -1,6 +1,7 @@
 import { isDeepStrictEqual } from "node:util";
 import { assertContractInput } from "./contracts.mjs";
 import { assertNexoMissionAdmission } from "./mission-admission-contract.mjs";
+import { assertNexoContinuityDataBounded } from "./continuity-data-guard.mjs";
 
 const REQUIRED_COLLECTIONS = Object.freeze([
   "missions",
@@ -36,10 +37,15 @@ export function assertNexoContinuityMemoryShape(memory) {
   if (memory === null || memory === undefined) return true;
 
   try {
-    // Reuse the canonical core data-shape guard so this public contract rejects
-    // accessors, symbol keys, exotic records and non-data properties before reading fields.
+    // Bound nesting iteratively before the generic recursive guard. This also
+    // protects legacy-memory projection, which does not enter via a snapshot.
+    assertNexoContinuityDataBounded(memory, {
+      resourceLimitCode: "NEXO_CONTINUITY_MEMORY_RESOURCE_LIMIT_EXCEEDED",
+      invalidCode: "NEXO_MEMORY_SCHEMA_UNKNOWN"
+    });
     assertContractInput(memory, "nexo continuity memory");
-  } catch {
+  } catch (error) {
+    if (error?.code === "NEXO_CONTINUITY_MEMORY_RESOURCE_LIMIT_EXCEEDED") throw error;
     throw contractError("NEXO_MEMORY_SCHEMA_UNKNOWN");
   }
   if (!memory.nexo || typeof memory.nexo !== "object" || Array.isArray(memory.nexo) ||
