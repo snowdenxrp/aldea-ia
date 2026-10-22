@@ -56,7 +56,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const chunks = [];
     let totalBytes = 0;
     for await (const chunk of process.stdin) {
-      const bytes = Buffer.from(chunk);
+      // Node stdin chunks are already Buffers; retain the chunk instead of copying
+      // the entire chunk before checking the cumulative input limit.
+      const bytes = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
       totalBytes += bytes.length;
       if (totalBytes > NEXO_RESOURCE_LIMITS.stdinBytes) {
         const error = new Error("NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED");
