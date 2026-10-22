@@ -139,4 +139,14 @@ Esta conclusión está limitada a las rutas revisadas y a directorios locales de
 
 ### Próximo trabajo de Nexo
 
-Continuar con la frontera entre interpretar una petición y producir una vista previa de borrador de misión, reutilizando `previewNexoMissionDraft` y el contrato de misión existente. Antes de conectar un modelo, definir entradas no confiables, validación del objetivo/evidencia y restricción de acciones admitidas. Mantener la vista previa sin persistencia ni dispatch, y `authorization: NOT_EVALUATED`. No reabrir el presupuesto agregado salvo que se pretenda soportar concurrencia de servicio o exista una contradicción nueva.
+Antes de avanzar la frontera de interpretación, resolver el hallazgo nuevo de recursos: `scripts/nexo.mjs` usa `fs.readFile` + `JSON.parse` sin tope previo para `mission-draft-preview --draft` y `mission-request-preview --request`. Leer [NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md). Definir el máximo de bytes de esos archivos sin inferir automáticamente los 256 KiB de stdin Chronicle; después reutilizar `readUtf8FileBounded`, añadir pruebas de frontera y verificar CI en el SHA exacto. No conectar un modelo ni persistir/despachar estas vistas previas.
+
+
+## Corrección de alcance — entradas de misión sin límite previo (2026-10-22)
+
+La inspección posterior a la evaluación de callers descubrió dos rutas adicionales de entrada local: `mission-draft-preview` y `mission-request-preview`. Ambas leen el archivo JSON completo con `fs.readFile` antes de `JSON.parse`; no aplican un límite de bytes previo.
+
+- Hallazgo: [NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md).
+- Inventario corregido: [NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md](NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md).
+- El resultado de límites por-store queda acotado a los stores y a stdin Chronicle; no cerrar el límite de entrada local general hasta resolver esas dos rutas.
+- No reutilizar el máximo de 256 KiB de Chronicle stdin sin una decisión explícita para borradores/solicitudes. No se modificó runtime ni se ejecutaron tests en esta inspección.
