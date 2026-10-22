@@ -218,7 +218,6 @@ export async function previewNexoMissionDraft(continuityPath, missionDraft) {
     const mission = reconstructNexoMissionFromSnapshot(candidateSnapshot, missionDraft.missionId);
     if (!mission) return fail("NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE", { storeRevision: current.storeRevision });
 
-    const byId = new Map(mission.steps.map(step => [step.id, step]));
     const remaining = new Set(mission.steps.map(step => step.id));
     const ordered = [];
     while (remaining.size > 0) {
