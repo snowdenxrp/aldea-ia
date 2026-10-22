@@ -29,7 +29,11 @@ export async function previewNexoMissionRequest(continuityPath, requestEnvelope)
     // inferred from its contents. Only the separately supplied draft is checked.
     const preview = await previewNexoMissionDraft(continuityPath, requestEnvelope.missionDraft);
     return { ...preview, requestInterpretation: "NOT_PERFORMED", intentDraftAlignment: "NOT_EVALUATED" };
-  } catch {
-    return fail("NEXO_MISSION_REQUEST_INVALID");
+  } catch (error) {
+    const code = [
+      "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED",
+      "NEXO_MISSION_REQUEST_INTENT_RESOURCE_LIMIT_EXCEEDED"
+    ].includes(error?.code) ? error.code : "NEXO_MISSION_REQUEST_INVALID";
+    return fail(code);
   }
 }
