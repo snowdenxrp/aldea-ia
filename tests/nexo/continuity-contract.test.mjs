@@ -825,6 +825,57 @@ assert.equal(wrongOperation.authorization, "NOT_EVALUATED");
 assert.equal((await owner.reconcilePrepared()).code, "NEXO_EFFECT_RECONCILIATION_REQUIRED");
 await fs.rm(ownerDirectory, { recursive: true, force: true });
 
+// Verifier output is data too: reject accessors before inspecting observation fields.
+const verifierDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-continuity-verifier-"));
+const verifierStore = createNexoContinuityStore({ filePath: path.join(verifierDirectory, "nexo-continuity.json") });
+assert.equal((await verifierStore.initialize(emptySnapshot)).status, "committed");
+let verifierObservationGetterInvoked = false;
+const verifierOwner = createNexoContinuityOwner({
+  store: verifierStore,
+  effectVerifiers: {
+    local_analysis: async () => ({
+      get status() {
+        verifierObservationGetterInvoked = true;
+        return "applied";
+      },
+      idempotencyKey: "verifier-mission:step-1",
+      action: "local_analysis",
+      target: "alex",
+      observedRevision: 1,
+      source: "test-verifier",
+      evidence: { checked: true }
+    })
+  }
+});
+const verifierMissionResult = await verifierOwner.recordMission({
+  expectedRevision: 0,
+  mission: {
+    missionId: "verifier-mission",
+    objective: "local_analysis",
+    status: "planned",
+    steps: [{ id: "step-1", action: "local_analysis", target: "alex", status: "planned", dependsOn: [] }]
+  }
+});
+assert.equal(verifierMissionResult.status, "committed");
+const verifierOperation = {
+  idempotencyKey: "verifier-mission:step-1",
+  missionId: "verifier-mission",
+  stepId: "step-1",
+  action: "local_analysis",
+  target: "alex"
+};
+assert.equal((await verifierOwner.recordPrepared({ expectedRevision: 1, operation })).status, "committed");
+const invalidVerifierObservation = await verifierOwner.reconcilePrepared({
+  expectedRevision: 2,
+  operation: verifierOperation
+});
+assert.equal(verifierObservationGetterInvoked, false, "verifier output accessors must be rejected without invocation");
+assert.equal(invalidVerifierObservation.status, "blocked");
+assert.equal(invalidVerifierObservation.code, "NEXO_EFFECT_RECONCILIATION_EVIDENCE_INVALID");
+assert.equal(invalidVerifierObservation.journalSettled, false);
+assert.equal((await verifierOwner.loadCurrent()).storeRevision, 2, "invalid verifier output must not mutate continuity");
+await fs.rm(verifierDirectory, { recursive: true, force: true });
+
 console.log("Nexo continuity owner: mission admission, durable PREPARED-before-dispatch, identity binding and no redispatch OK.");
 
 
