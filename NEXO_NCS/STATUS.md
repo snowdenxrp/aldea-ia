@@ -3117,3 +3117,8 @@ Conclusión: aislamiento demostrado para el entrypoint Nexo auditado; aislamient
 - La propuesta de scope A/B/C sigue sin aceptación explícita. No asumir A por inferencia; si el propietario selecciona A, la primera unidad sería hacer cumplir ausencia de efectos protegidos en todos los entry points soportados, sin crear camino positivo de autoridad.
 - No se modificó runtime/tests y no se ejecutó CI nuevo en estos cambios. El status check del commit documental consultado devolvió lista vacía; no declarar PASS.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+- Handoff revisado nuevamente: [NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22_REVISED.md](BUILD/NCS_M0_E_NEXT_CHAT_HANDOFF_2026-10-22_REVISED.md), commit `a4b2b0506ce5ae9e4b97bf416ef4bc34d5fd022a`, blob `73f1eb28ec0faf98b53fee1cfc82f632a876087f`.
+- CI posterior a la matriz: run [39726077797](https://github.com/snowdenxrp/aldea-ia/actions/runs/39726077797), SHA `b83ebf1048277ea3782c7b6eda36b323499b32a6). Job `tests`: paso `Run tests` completado con `success`, pero al consultar el job todavía estaba en progreso durante limpieza; no declarar aún el workflow completo `completed/success`.
+- El handoff posterior disparó run [39726101702](https://github.com/snowdenxrp/aldea-ia/actions/runs/39726101702), SHA `a4b2b0506ce5ae9e4b97bf416ef4bc34d5fd022a); en la última consulta permanecía `pending`. No atribuir el resultado de un run al otro SHA.
