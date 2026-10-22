@@ -3262,3 +3262,14 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 
 - El primer commit de la prueba (`7ef9550df703be902baa7ce7f608a59ac72f2449`) falló en CI por un error de importación del helper de validación estructural (`assertNexoContinuitySnapshot` no estaba importado). No fue un fallo de la regla de límite ni evidencia de que la mutación ocurriera.
 - Se añadió la importación explícita en `e7dc744b9ad71ed00c89a1f645508aad82ed3fec`. Los cinco workflows de ese SHA están en cola; no se declara PASS hasta que terminen.
+
+
+## M0 — temporales de persistencia acotados por store (2026-10-22)
+
+- Se sustituyeron los nombres temporales únicos por una ruta estable `<store>.tmp` en Chronicle y Continuity. Las escrituras ya ocurrían bajo el lock existente de cada store; se reutiliza esa frontera, sin añadir cola, semáforo ni lock nuevo.
+- Antes de escribir, cada store recorre el directorio padre y elimina archivos temporales regulares que correspondan a la ruta estable o al patrón heredado `<store>.tmp-*`. Esto reconcilia residuos heredados y evita que cada interrupción futura acumule un nombre nuevo por escritura cooperante.
+- Se añadieron pruebas en `tests/nexo/chronicle-store.test.mjs` y `tests/nexo/continuity-store.test.mjs` que precrean tanto un temporal estable como uno heredado y comprueban que desaparecen tras una escritura exitosa.
+- SHA de código/pruebas: `41adae009f4b1e4c275f4eeac0bc1fd53ade2c29`. En ese SHA terminaron SUCCESS STEP 4, STEP 5, aceptación integrada, admisión/continuidad y Chronicle nativo. En persistencia determinista, el job completo y su paso `Run tests` terminaron SUCCESS; la API del workflow aún reportaba `in_progress` al verificar su estado final, así que no se declara ese workflow como finalizado.
+- Alcance exacto: el cambio acota los temporales cooperantes por store y limpia residuos de nombres heredados cuando una escritura alcanza esta ruta. No constituye una cota total de disco: quedan fuera otros archivos/logs, residuos que no coincidan con el contrato de nombres, múltiples rutas de store, fallos del sistema de archivos y procesos que no respeten el lock.
+- Presupuesto agregado de heap sigue OPEN: los límites de serialización no limitan por sí solos el heap V8 ni las copias concurrentes. No se declara seguridad multiusuario.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
