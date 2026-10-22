@@ -40,7 +40,20 @@ export function createNexoChronicleEffectContracts(options) {
   }
 
   async function observe(operation) {
-    return observeChronicleOperation({ store, ...operation });
+    // Never spread an untrusted runtime operation: object spread executes
+    // getters before observeChronicleOperation can inspect descriptors.
+    const values = readOperation(operation, ["idempotencyKey", "missionId", "stepId", "action", "target"]);
+    if (!values) {
+      return { status: "unknown", code: "NEXO_CHRONICLE_OBSERVATION_INPUT_INVALID", source: "nexo-chronicle-store" };
+    }
+    return observeChronicleOperation({
+      store,
+      idempotencyKey: values.idempotencyKey,
+      missionId: values.missionId,
+      stepId: values.stepId,
+      action: values.action,
+      target: values.target
+    });
   }
 
   async function handler(operation) {
