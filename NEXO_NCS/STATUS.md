@@ -2978,3 +2978,8 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - Esto no es evidencia de exploit. Es una brecha contractual: la Opción A permite persistencia interna acotada, pero su presupuesto y comportamiento al agotarse aún no están definidos.
 - No se introduce un límite arbitrario en runtime. El contrato debe definir capacidad/rotación y respuesta al agotamiento; después se añaden pruebas de rechazo antes de escribir y preservación de datos existentes.
 - Estado de ese subcriterio E: `PENDING`. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Precisión del alcance — Continuity también requiere presupuesto
+
+La inspección posterior de `src/nexo/core/continuity-snapshot.mjs` encontró validación estructural de `missions`, `attempts`, `doNotRepeat`, `executions` y `effectJournal`, pero no máximos cuantitativos explícitos de cardinalidad/tamaño. La matriz de aceptación refleja ahora que la brecha de presupuesto afecta a Chronicle y a las colecciones de Continuity inspeccionadas. No se afirma explotación; el contrato de capacidad sigue pendiente y no se modifica runtime con cifras inventadas.
