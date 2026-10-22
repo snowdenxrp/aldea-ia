@@ -682,6 +682,25 @@ const recordedMission = await owner.recordMission({ expectedRevision: 0, mission
 assert.equal(recordedMission.status, "committed");
 assert.equal(recordedMission.storeRevision, 1);
 
+// The public owner boundary must reject accessor-backed mission fields before reading them.
+let ownerMissionGetterInvoked = false;
+const accessorOwnerMission = {
+  get missionId() {
+    ownerMissionGetterInvoked = true;
+    return "owner-accessor-mission";
+  },
+  objective: "repair_agent_state",
+  status: "planned",
+  steps: [{ id: "step-1", action: "repair_agent_state", target: "alex", status: "planned", dependsOn: [] }]
+};
+const accessorOwnerResult = await owner.recordMission({
+  expectedRevision: 1,
+  mission: accessorOwnerMission
+});
+assert.equal(ownerMissionGetterInvoked, false, "owner admission must not execute caller-owned mission getters");
+assert.notEqual(accessorOwnerResult.status, "committed");
+assert.equal((await owner.loadCurrent()).storeRevision, 1, "accessor-backed mission must not mutate canonical continuity");
+
 const invalidOwnerMission = {
   missionId: "owner-invalid-function-target",
   objective: "repair_agent_state",
