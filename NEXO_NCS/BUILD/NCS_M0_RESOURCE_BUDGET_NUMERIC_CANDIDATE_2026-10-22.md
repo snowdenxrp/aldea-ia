@@ -1,10 +1,12 @@
 # NCS M0 — candidato numérico inicial para presupuesto de recursos
 Fecha: 2026-10-22
-Estado: **RECOMENDACIÓN TÉCNICA / NO ACEPTADA POR EL PROPIETARIO / NO IMPLEMENTADA**
+Estado: **PERFIL NUMÉRICO ACEPTADO COMO BASE; IMPLEMENTACIÓN/VALIDACIÓN EN CURSO**
 
-## 1. Decisión que se prepara
+Decisión del propietario: `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`. Los números son límites operativos iniciales aceptados como base, no capacidades medidas ni garantías de rendimiento.
 
-Se propone un perfil conservador inicial para la instancia local de Nexo bajo Opción A. Los números son topes operativos candidatos, no capacidades medidas del dispositivo ni garantías de rendimiento. Deben revisarse con pruebas de fixtures representativos antes de aceptación e implementación.
+## 1. Decisión registrada
+
+El propietario acepta este perfil conservador como base de implementación para la instancia local de Nexo bajo Opción A. Los números son topes operativos iniciales, no capacidades medidas del dispositivo ni garantías de rendimiento. Deben verificarse con fixtures representativos antes de cerrar el subcriterio.
 
 Este documento no modifica la decisión de alcance inicial, no aprueba la Constitución, no establece autoridad raíz y no habilita efectos protegidos.
 
@@ -88,10 +90,10 @@ El máximo de documento completo debe proteger ambos sentidos del ciclo de persi
 
 Antes de aceptar el perfil, añadir pruebas para Chronicle y Continuity que carguen un archivo preexistente por encima del máximo y demuestren rechazo fail-closed, sin parseo completo, sin admisión ni escritura y con bytes/revisión preservados. La medición debe hacerse sobre bytes crudos antes de materializar el texto completo; no basta con `raw.length` después de `readFile(..., "utf8")`.
 
-Este requisito no cambia los topes propuestos y no representa implementación. Los valores siguen **NO ACEPTADOS / NO IMPLEMENTADOS**.
+Este requisito no cambia los topes aceptados como base. La implementación y validación de lectura acotada siguen sujetas a evidencia del SHA exacto.
 
 ## Aclaración de implementación para lectura acotada
 
 No basta con cargar el documento entero en un `Buffer` y medir su longitud: el consumo máximo ya ocurrió. El store debe leer de forma acotada, contar bytes crudos durante la lectura y detenerse al detectar más que el máximo, antes de decodificar y parsear. `stat` puede anticipar un rechazo pero no es el control definitivo, ya que no evita carreras entre la inspección y la lectura. Los tests deben probar límite de bytes consumidos, cancelación, ausencia de `JSON.parse` al exceder y preservación de bytes/revisión.
 
-Los valores numéricos siguen **NO ACEPTADOS / NO IMPLEMENTADOS**.
+Los valores numéricos están **ACEPTADOS COMO BASE**; la implementación y validación siguen pendientes de cierre.
