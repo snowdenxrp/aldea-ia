@@ -188,3 +188,33 @@ Esto no prueba un exploit ni invalida los controles de idempotencia, locking o r
 - Hasta que exista esa definición, clasificar este subcriterio de E como `PENDING`; no modificar el runtime con un límite inventado ni llamar completa a la Opción A.
 
 Estado global sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## M0-E — mapa finito de cobertura adversarial frente a E-01…E-10 (2026-10-22)
+
+Este mapa separa cobertura de contratos locales ya probados de la garantía aún ausente de procedencia constitucional en el punto de mutación. No transforma fixtures en evidencia de autoridad.
+
+| Caso | Evidencia existente reutilizable | Estado para aceptación M0-E | Hueco preciso |
+|---|---|---|---|
+| E-01 raíz/procedencia ausente | `chronicle-runtime.test.mjs` mantiene `authorization: NOT_EVALUATED` | PARCIAL | Falta que la ausencia de raíz gobierne el punto de dispatch/sink real y se mida sink=0 |
+| E-02 autoridad autodeclarada por el caller | Validación de forma de contratos y resultados fail-closed existentes | NO DEMOSTRADO | No hay evidencia de que el runtime derive autoridad solo de fuentes confiables antes de mutar |
+| E-03 firma/clave/formato inválido | `root-bootstrap-protocol.test.mjs` prueba primitiva P-256 con vector de prueba | PARCIAL | No es una raíz Nexo ni demuestra un verificador conectado al runtime; faltan casos negativos en esa conexión |
+| E-04 Constitución distinta de la aprobada | Contratos de referencias y contexto | NO DEMOSTRADO | No hay objeto exacto aprobado/canónico y vigente integrado al flujo |
+| E-05 revocación/rollback/conflicto de vigencia | Controles locales de revisión y UNKNOWN en stores/transiciones | PARCIAL | No se demuestra una fuente constitucional canónica que detecte rollback/revocación antes del sink |
+| E-06 Policy/contexto sin procedencia o contradictorio | Validación estructural de `PolicyContext` y dependencias | PARCIAL | La forma válida no autentica al emisor ni su vigencia; falta la fuente confiable conectada |
+| E-07 verificador ausente/configuración distinta | Fallback `effectBoundary.prepare: NOT_IMPLEMENTED`; pruebas de adapters | PARCIAL | No existe evidencia de un verificador real conectado a todos los caminos incluidos en alcance |
+| E-08 ruta alternativa al mismo sink | Allowlist fail-closed en `owner-backed-runtime.mjs`; inventario previo de rutas | PARCIAL | Falta cierre del inventario de callers y demostrar exclusión/no acceso de rutas legacy dentro del alcance |
+| E-09 sink incierto tras intención | Pruebas de journal/reconciliación M0-D ya existentes | PARCIAL / REUTILIZAR | No duplicar suite; vincular la puerta común al sink seleccionado y a las assertions existentes |
+| E-10 camino positivo legítimo | No existe prueba runtime de raíz Nexo legítima | BLOQUEADO POR DEPENDENCIAS | Requiere fuente de raíz, Constitución exacta aprobada, Policy/contexto verificados y enforcement real; no fabricar fixture positiva |
+
+### Criterio de ejecución
+
+- No se crean pruebas duplicadas para idempotencia, locking, reconstrucción, terminal outcomes o UNKNOWN ya cubiertos.
+- Los nuevos casos negativos deben comprobar dos cosas a la vez: decisión fail-closed y contador del punto de mutación igual a cero.
+- E-08 no pasa por mera separación de módulos: debe documentar los entrypoints/callers de cada efecto admitido y excluido bajo Opción A.
+- E-10 no es implementable honestamente hasta que las dependencias de legitimidad estén definidas por la revisión constitucional y provisionadas con una fuente real. No usar la clave del vector de prueba como sustituto.
+- La brecha de presupuesto de Chronicle/Continuity registrada arriba es un subcriterio operativo separado; resolverla no cierra la raíz constitucional ni viceversa.
+
+Conclusión: las pruebas actuales son útiles para control de flujo, persistencia y reconciliación, pero M0-E sigue bloqueado por la ausencia de un camino de autoridad legítima demostrado hasta el punto de mutación real. Estado global: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
