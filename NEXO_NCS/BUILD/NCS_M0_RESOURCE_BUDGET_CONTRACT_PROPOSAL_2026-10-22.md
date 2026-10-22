@@ -1,6 +1,8 @@
 # NCS M0 — propuesta de contrato de presupuesto de recursos
 Fecha: 2026-10-22
-Estado: **PROPUESTA TÉCNICA / NO ACEPTADA POR EL PROPIETARIO / NO IMPLEMENTADA**
+Estado: **PROPUESTA ORIGINAL; PERFIL NUMÉRICO ACEPTADO COMO BASE POR DECISIÓN POSTERIOR; IMPLEMENTACIÓN/VALIDACIÓN EN CURSO**
+
+> La decisión posterior que prevalece es `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`. Este documento conserva el razonamiento y los gates originales; las frases históricas de estado deben leerse a la fecha de su redacción.
 
 ## Propósito
 
@@ -10,7 +12,7 @@ Esta propuesta es un subcriterio operativo de Opción A. Resolverla no demuestra
 
 ## Decisiones de contrato que faltan
 
-Los máximos numéricos se mantienen como **PENDIENTES de decisión**. No se deben tratar como ilimitados ni rellenar por conveniencia del implementador.
+Los máximos numéricos se aceptaron como base de implementación en la decisión citada arriba. El presupuesto agregado de disco/heap sigue OPEN; no se infiere seguridad agregada.
 
 1. **Contenido de entrada:** máximo de bytes crudos leídos desde stdin, comprobado antes de acumular el contenido completo.
 2. **Entrada de Chronicle:** máximo de bytes por entrada y máximo de entradas admitidas.
@@ -136,7 +138,7 @@ No se modifica runtime hasta que los máximos y la política de agotamiento sean
 
 ## Perfil numérico candidato separado (2026-10-22)
 
-Se añadió [NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md](NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md). Propone topes iniciales explícitos para stdin, contenido individual, Chronicle y Continuity. El perfil está **NO ACEPTADO / NO IMPLEMENTADO** y no representa una capacidad medida. Requiere fixtures de frontera, preservación del estado previo, concurrencia y CI en el SHA de implementación. El perfil inicial rechaza nuevas escrituras al alcanzar capacidad y no incluye rotación, borrado o compactación.
+Se añadió [NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md](NCS_M0_RESOURCE_BUDGET_NUMERIC_CANDIDATE_2026-10-22.md). Propone topes iniciales explícitos para stdin, contenido individual, Chronicle y Continuity. El perfil fue posteriormente **ACEPTADO COMO BASE** y no representa una capacidad medida. Requiere fixtures de frontera, preservación del estado previo, concurrencia y CI en el SHA de implementación. El perfil inicial rechaza nuevas escrituras al alcanzar capacidad y no incluye rotación, borrado o compactación.
 
 ## Brecha adicional: límite de lectura antes de parsear el estado existente
 
@@ -155,7 +157,7 @@ Pruebas adicionales obligatorias:
 4. Un archivo válido en el máximo inclusivo sigue cargando.
 5. El caso de exceso conocido permanece separado de fallos de lectura o resultados ambiguos.
 
-Esto amplía el punto de enforcement del contrato; no cambia los valores candidatos ni implica que hayan sido aceptados. No se modificó runtime.
+Nota histórica del estado previo a la aceptación: amplió el punto de enforcement requerido. La decisión posterior acepta los valores como base; el runtime debe verificarse contra el SHA actual antes de declarar el subcriterio cerrado.
 
 ## Baseline de cobertura existente (inspección de código/tests, 2026-10-22)
 
