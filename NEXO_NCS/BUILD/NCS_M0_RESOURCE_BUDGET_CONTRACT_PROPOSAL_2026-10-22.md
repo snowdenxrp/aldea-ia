@@ -173,3 +173,13 @@ Puntos de código observados en el HEAD revisado:
 - Continuity: `readEnvelope` (147–157) materializa texto completo y parsea; `writeEnvelope` (159–168) serializa y escribe.
 
 Los números de línea son orientativos para el blob inspeccionado y pueden cambiar con nuevos commits; los nombres de función y archivos son el ancla estable. Este baseline no afirma que las pruebas existentes fallen ni que exista un exploit; define la cobertura adicional requerida. No se modificó runtime y los límites numéricos continúan sin aceptación.
+
+## Refinamiento necesario: medir Buffer completo no limita memoria
+
+Una revisión más estricta del requisito de lectura evita una falsa solución: leer el archivo completo en un `Buffer` y medir después `buffer.byteLength` permite contar bytes exactos, pero **no limita la memoria consumida durante la lectura**. No debe aceptarse como implementación del control de recursos.
+
+Requisito de implementación: lectura acotada en streaming (o API equivalente que garantice no materializar más del máximo más una unidad de detección), contando bytes crudos y deteniendo la lectura en cuanto se demuestra `observedBytes > maxBytes`. Solo después de alcanzar EOF dentro del límite se decodifica y parsea el documento completo. El exceso conocido se rechaza antes de `JSON.parse`, admisión y mutación. Debe evitarse que una lectura por chunks acumule el chunk que hace superar el máximo: se mide el chunk entrante antes de conservarlo y se cancela/cierra la lectura al exceder.
+
+Una comprobación previa con `stat` puede ser optimización, pero no reemplaza el límite durante la lectura porque el archivo puede cambiar entre inspección y lectura. La lectura acotada debe definir el comportamiento ante error/cancelación: fallo de lectura o estado incompleto no se reclasifica como exceso conocido y mantiene el bloqueo/UNKNOWN existente. Este requisito aplica a Chronicle y Continuity, tanto en `loadCurrent` como en relecturas posteriores a una escritura ambigua.
+
+Pruebas necesarias además de las ya enumeradas: un lector instrumentado debe demostrar que no consume más del máximo más la unidad mínima de detección, no ejecuta `JSON.parse` al exceder y cierra/detiene la fuente; el camino dentro del máximo debe reconstruir exactamente el mismo JSON válido. No se modifica el perfil numérico ni se afirma implementación.
