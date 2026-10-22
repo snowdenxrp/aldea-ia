@@ -169,7 +169,16 @@ try {
   assert.deepEqual(JSON.parse(oversizedInput.stdout), {
     status: "blocked",
     code: "NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED",
-    dispatchAttempted: false
+    missionId: null,
+    stepId: null,
+    dispatchAttempted: false,
+    terminalOutcomeRecorded: false,
+    redispatchAuthorized: false,
+    authorization: "NOT_EVALUATED",
+    phase: null,
+    writeStarted: null,
+    lockRelease: null,
+    lockAcquisitionCode: null
   });
   await assert.rejects(fs.access(oversizedContinuityPath), { code: "ENOENT" });
   await assert.rejects(fs.access(oversizedChroniclePath), { code: "ENOENT" });
