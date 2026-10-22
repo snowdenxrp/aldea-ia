@@ -204,3 +204,10 @@ Se añadió `previewNexoMissionRequest(continuityPath, requestEnvelope)` y `test
 - Existing oversized raw-file test checks bounded read/rejection of an on-disk document larger than the limit. The new test is different: it checks an oversized **valid candidate** at the write boundary and no mutation.
 - CI for commit `7ef9550df703be902baa7ce7f608a59ac72f2449` must be checked before claiming the new test passes. Documentation-only commits after it must not be confused with its code/test SHA.
 - Aggregate heap/disk budget remains OPEN. Do not declare total resource safety or multi-user/concurrent service readiness based only on per-store limits.
+
+
+### CI de la prueba de snapshot sobre límite — corrección de importación
+
+- El intento `7ef9550df703be902baa7ce7f608a59ac72f2449` falló porque el test usaba `assertNexoContinuitySnapshot` sin importarlo.
+- Corrección de importación: `e7dc744b9ad71ed00c89a1f645508aad82ed3fec`.
+- Runs disparados sobre el SHA corregido: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448677), [persistencia determinista](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448457), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448564), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448356), [admisión acotada/Continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39789448532). Al escribir este handoff están en cola; no asumir resultados.
