@@ -1,3 +1,15 @@
+# Current checkpoint — 2026-10-22 — verifier registry input guard
+
+- Runtime fix: `d65245bdbcc20cdee7ebf315d6a65f162bcb894d`; regression test: `796219c48fda52dd51e9eec4fa696cb48ec88096`.
+- Finding: owner construction used `Object.entries(effectVerifiers)`, which can invoke accessor getters while registering caller-supplied verifier configuration. The owner now validates own-key descriptors and rejects accessors/symbol keys without reading accessor values.
+- Regression proves the getter is not invoked and the registry is rejected with `NEXO_EFFECT_VERIFIER_REGISTRY_INVALID`.
+- CI: all 7 listed workflows on runtime SHA `d65245b...` succeeded; all 5 workflows triggered on regression SHA `796219c...` succeeded. Exact run evidence is in `NEXO_NCS/BUILD/NCS_M0_VERIFIER_REGISTRY_ACCESSOR_GUARD_2026-10-22.md`.
+- Scope: constructor/configuration boundary only; not authorization, legitimate-owner proof, hostile-Proxy isolation, or effect enablement.
+- Canonical gate unchanged: M0 incomplete; authorization `NOT_EVALUATED`; root proof `PENDING/UNKNOWN`; protected effects `STOP`.
+- Next: inspect only concrete public-boundary read-before-validation/resource issues, with regression and exact-SHA CI evidence. No arbitrary quotas or invented mechanisms.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — GUARD DE ENTRADA DEL REGISTRO DE VERIFICADORES
 
 - Hallazgo: `createNexoContinuityOwner()` construía el registro con `Object.entries(effectVerifiers)`, que lee valores de propiedades y puede ejecutar un getter configurado por quien llama al constructor.
