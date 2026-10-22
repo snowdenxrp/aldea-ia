@@ -49,21 +49,21 @@ Este documento no modifica la decisión de alcance inicial, no aprueba la Consti
 7. Nunca se truncan datos, nunca se declara completitud si hubo truncamiento y nunca se elimina información histórica automáticamente.
 8. Se reutilizan los estados de resultado existentes. El código público específico se elige después de inventariar los códigos actuales; no se crea una familia paralela de outcomes.
 
-## 5. Gates antes de aceptar/implementar
+## 5. Gates antes de cerrar la implementación
 
-- [ ] Ejecutar tests con contenido ASCII y multibyte en 256 KiB − 1 byte, exactamente 256 KiB y 256 KiB + 1 byte.
-- [ ] Crear fixtures Chronicle representativos para límites de cantidad y serialización; confirmar que el presupuesto de 32 MiB se mide sobre los bytes realmente escritos.
-- [ ] Crear fixtures Continuity para cada cardinalidad y snapshot de 16 MiB; comprobar que no se persiste un snapshot parcial.
-- [ ] Comprobar que el rechazo conserva byte por byte el documento anterior y su revisión.
-- [ ] Ejecutar casos concurrentes cerca del límite para demostrar que el cálculo se hace bajo la misma exclusión mutua que el commit.
-- [ ] Confirmar que las pruebas actuales de conflicto, escritura ambigua y UNKNOWN siguen pasando.
-- [ ] Ejecutar workflow completo en el SHA que contiene implementación y pruebas, y registrar run/job/SHA exactos.
-- [ ] Si los fixtures o pruebas de rendimiento muestran que los topes son inadecuados, ajustar este perfil antes de aceptar; no ocultar el cambio en una constante sin contrato.
+- [x] Ejecutar tests con contenido ASCII y multibyte en 256 KiB − 1 byte, exactamente 256 KiB y 256 KiB + 1 byte.
+- [x] Crear fixtures Chronicle representativos para límites de cantidad y serialización; confirmar que el presupuesto de 32 MiB se mide sobre los bytes realmente escritos.
+- [x] Crear fixtures de helper para cada cardinalidad y el límite serializado de Continuity; falta probar rechazo de snapshot válido sobre límite dentro del store.
+- [x] Comprobar preservación de bytes en rechazos Chronicle y preservación del tamaño del archivo Continuity sobredimensionado; falta una prueba de rechazo de commit de Continuity con snapshot válido.
+- [ ] Chronicle: probado con dos appends concurrentes cerca del límite. Continuity: falta la prueba concurrente equivalente cerca de su frontera.
+- [x] Confirmar que las pruebas actuales de conflicto, escritura ambigua y UNKNOWN siguen pasando.
+- [x] Ejecutar workflows en SHA exacto y registrar run/job/SHA en `NEXO_NCS/STATUS.md`.
+- [ ] Si los fixtures o pruebas de rendimiento muestran que los topes son inadecuados, ajustar el perfil aceptado mediante una decisión explícita; no ocultar cambios en una constante.
 
 ## 6. Estado
 
-- Perfil numérico: **PROPUESTO / NO ACEPTADO**.
-- Implementación: **NO INICIADA**.
+- Perfil numérico: **ACEPTADO COMO BASE**.
+- Implementación: **INICIAL IMPLEMENTADA; VALIDACIÓN PARCIAL**.
 - Subcriterio de presupuesto: **PENDING**.
 - M0: **INCOMPLETO**.
 - `authorization: NOT_EVALUATED`.
