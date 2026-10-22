@@ -1176,3 +1176,23 @@ assert.throws(
   "verifier registry accessors must be rejected before evaluation"
 );
 assert.equal(verifierRegistryGetterInvoked, false, "verifier registry validation must not execute caller getters");
+
+// The outer constructor options must not execute accessors either: validating
+// the nested registry is too late if reading options.effectVerifiers runs a getter.
+let constructorOptionsGetterInvoked = false;
+const accessorConstructorOptions = {
+  store: { loadCurrent: async () => ({}), commitIfCurrent: async () => ({ status: "committed" }) }
+};
+Object.defineProperty(accessorConstructorOptions, "effectVerifiers", {
+  enumerable: true,
+  get() {
+    constructorOptionsGetterInvoked = true;
+    return {};
+  }
+});
+assert.throws(
+  () => createNexoContinuityOwner(accessorConstructorOptions),
+  error => error?.code === "NEXO_EFFECT_VERIFIER_REGISTRY_INVALID"
+);
+assert.equal(constructorOptionsGetterInvoked, false, "constructor options validation must not execute accessors");
+
