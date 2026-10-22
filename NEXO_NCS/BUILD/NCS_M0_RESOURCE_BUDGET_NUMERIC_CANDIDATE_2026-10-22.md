@@ -1,6 +1,6 @@
 # NCS M0 — candidato numérico inicial para presupuesto de recursos
 Fecha: 2026-10-22
-Estado: **PERFIL NUMÉRICO ACEPTADO COMO BASE; IMPLEMENTACIÓN/VALIDACIÓN EN CURSO**
+Estado: **PERFIL ACEPTADO; LÍMITES LOCALES POR ENTRADA/DOCUMENTO/STORE VALIDADOS EN EL ALCANCE ACOTADO; PRESUPUESTO AGREGADO OPEN**
 
 Decisión del propietario: `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`. Los números son límites operativos iniciales aceptados como base, no capacidades medidas ni garantías de rendimiento.
 
@@ -96,7 +96,7 @@ Este requisito no cambia los topes aceptados como base. La implementación y val
 
 No basta con cargar el documento entero en un `Buffer` y medir su longitud: el consumo máximo ya ocurrió. El store debe leer de forma acotada, contar bytes crudos durante la lectura y detenerse al detectar más que el máximo, antes de decodificar y parsear. `stat` puede anticipar un rechazo pero no es el control definitivo, ya que no evita carreras entre la inspección y la lectura. Los tests deben probar límite de bytes consumidos, cancelación, ausencia de `JSON.parse` al exceder y preservación de bytes/revisión.
 
-Los valores numéricos están **ACEPTADOS COMO BASE**; la implementación y validación siguen pendientes de cierre.
+Nota de estado vigente (2026-10-22): la implementación y las pruebas de límites locales ya están presentes; el resultado acotado se registra en [NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md](NCS_M0_E_LOCAL_RESOURCE_BOUNDS_GATE_RESULT_2026-10-22.md). Los párrafos anteriores de esta sección describen requisitos/baseline previos y no deben leerse como tareas todavía pendientes. El presupuesto agregado de heap/disco y la concurrencia multiproceso siguen OPEN.
 
 
 ## Actualización de evidencia 2026-10-22
