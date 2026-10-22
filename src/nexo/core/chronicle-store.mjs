@@ -154,10 +154,28 @@ async function removeStaleTemporaryFiles(fsModule, filePath) {
   const baseName = path.basename(filePath);
   const legacyPrefix = `${baseName}.tmp-`;
   const stableTempName = `${baseName}.tmp`;
-  const entries = await fsModule.readdir(directory, { withFileTypes: true });
-  for (const entry of entries) {
-    if (!entry.isFile() || (entry.name !== stableTempName && !entry.name.startsWith(legacyPrefix))) continue;
-    await fsModule.rm(path.join(directory, entry.name), { force: true });
+  const temporaryPaths = [];
+  let entryCount = 0;
+  let directoryHandle;
+  try {
+    directoryHandle = await fsModule.opendir(directory);
+    for await (const entry of directoryHandle) {
+      entryCount += 1;
+      if (entryCount > NEXO_RESOURCE_LIMITS.temporaryDirectoryEntries) {
+        throw fail("NEXO_TEMPORARY_DIRECTORY_ENTRY_LIMIT_EXCEEDED");
+      }
+      if (!entry.isFile() || (entry.name !== stableTempName && !entry.name.startsWith(legacyPrefix))) continue;
+      temporaryPaths.push(path.join(directory, entry.name));
+      if (temporaryPaths.length > NEXO_RESOURCE_LIMITS.staleTemporaryFiles) {
+        throw fail("NEXO_STALE_TEMPORARY_FILE_LIMIT_EXCEEDED");
+      }
+    }
+  } finally {
+    if (directoryHandle) await directoryHandle.close().catch(() => {});
+  }
+  // Finish the bounded scan before deleting any candidate.
+  for (const temporaryPath of temporaryPaths) {
+    await fsModule.rm(temporaryPath, { force: true });
   }
 }
 
@@ -167,14 +185,14 @@ async function writeDocument(fsModule, filePath, document) {
     throw fail("NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED");
   }
   const temp = `${filePath}.tmp`;
+  let tempWriteStarted = false;
   try {
-    // This writer already holds the store lock: clean abandoned stable/legacy
-    // temporaries, then reuse one bounded temporary path.
     await removeStaleTemporaryFiles(fsModule, filePath);
+    tempWriteStarted = true;
     await fsModule.writeFile(temp, JSON.stringify(document, null, 2) + "\n", "utf8");
     await fsModule.rename(temp, filePath);
   } catch (error) {
-    await fsModule.rm(temp, { force: true }).catch(() => {});
+    if (tempWriteStarted) await fsModule.rm(temp, { force: true }).catch(() => {});
     throw error;
   }
 }
