@@ -81,3 +81,11 @@ That research concerns broader ScopeEnvelope/effect budgets and must not be re-r
 - For this slice, test that each store enforces its own bound and explicitly retain combined storage/peak-heap capacity as a separate **OPEN** question.
 
 No numeric aggregate quota is added because there is no measured capacity baseline or accepted allocation policy. This is an explicit uncertainty, not an implicit pass.
+
+## Validación de lectura del estado previo — requisito añadido
+
+El máximo de documento completo debe proteger ambos sentidos del ciclo de persistencia: **lectura/parseo del documento actual y escritura del candidato**. En el código revisado, Chronicle y Continuity cargan el archivo completo como texto y llaman a `JSON.parse` sin comprobar primero los bytes crudos. En consecuencia, un máximo aplicado solo antes de `writeDocument`/`writeEnvelope` no protege frente a un archivo existente que ya sea excesivo.
+
+Antes de aceptar el perfil, añadir pruebas para Chronicle y Continuity que carguen un archivo preexistente por encima del máximo y demuestren rechazo fail-closed, sin parseo completo, sin admisión ni escritura y con bytes/revisión preservados. La medición debe hacerse sobre bytes crudos antes de materializar el texto completo; no basta con `raw.length` después de `readFile(..., "utf8")`.
+
+Este requisito no cambia los topes propuestos y no representa implementación. Los valores siguen **NO ACEPTADOS / NO IMPLEMENTADOS**.
