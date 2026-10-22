@@ -162,6 +162,75 @@ try {
     assert.equal(await fs.readFile(continuityPath, "utf8"), before);
   }
 
+  // Shared structural admission contract: reject complexity before recursive
+  // contract validation/cloning, without dispatch or persistence.
+  const validAdmissionDraft = {
+    missionId: "admission-contract-base",
+    objective: "local_analysis",
+    status: "planned",
+    steps: [{ id: "admission-step", action: "local_analysis", status: "planned", dependsOn: [] }]
+  };
+  const oversizedIntent = await previewNexoMissionRequest(continuityPath, {
+    intent: "x".repeat(16 * 1024 + 1),
+    missionDraft: validAdmissionDraft
+  });
+  assert.equal(oversizedIntent.status, "blocked");
+  assert.equal(oversizedIntent.code, "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
+  assert.equal(oversizedIntent.authorization, "NOT_EVALUATED");
+  assert.equal(oversizedIntent.dispatchAttempted, false);
+  assert.equal(oversizedIntent.persisted, false);
+
+  const tooManySteps = await previewNexoMissionRequest(continuityPath, {
+    intent: "review a bounded proposal",
+    missionDraft: {
+      ...validAdmissionDraft,
+      missionId: "admission-too-many-steps",
+      steps: Array.from({ length: 257 }, (_, index) => ({
+        id: `step-${index}`, action: "local_analysis", status: "planned", dependsOn: []
+      }))
+    }
+  });
+  assert.equal(tooManySteps.status, "blocked");
+  assert.equal(tooManySteps.code, "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
+  assert.equal(tooManySteps.dispatchAttempted, false);
+  assert.equal(tooManySteps.persisted, false);
+
+  const tooManyDependencies = await previewNexoMissionRequest(continuityPath, {
+    intent: "review a bounded proposal",
+    missionDraft: {
+      ...validAdmissionDraft,
+      missionId: "admission-too-many-dependencies",
+      steps: [{
+        id: "step-with-too-many-dependencies",
+        action: "local_analysis",
+        status: "planned",
+        dependsOn: Array.from({ length: 65 }, (_, index) => `dependency-${index}`)
+      }]
+    }
+  });
+  assert.equal(tooManyDependencies.status, "blocked");
+  assert.equal(tooManyDependencies.code, "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
+  assert.equal(tooManyDependencies.dispatchAttempted, false);
+  assert.equal(tooManyDependencies.persisted, false);
+
+  const deeplyNestedDraft = { ...validAdmissionDraft, missionId: "admission-too-deep" };
+  let nested = {};
+  deeplyNestedDraft.steps = [{
+    id: "deep-step", action: "local_analysis", status: "planned", dependsOn: [], context: nested
+  }];
+  for (let index = 0; index < 33; index += 1) {
+    nested.child = {};
+    nested = nested.child;
+  }
+  const tooDeep = await previewNexoMissionRequest(continuityPath, {
+    intent: "review a bounded proposal", missionDraft: deeplyNestedDraft
+  });
+  assert.equal(tooDeep.status, "blocked");
+  assert.equal(tooDeep.code, "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
+  assert.equal(tooDeep.dispatchAttempted, false);
+  assert.equal(tooDeep.persisted, false);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), before);
+
   for (const requestEnvelope of [
     null,
     {},
