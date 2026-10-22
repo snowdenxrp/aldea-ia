@@ -81,3 +81,16 @@ La Opción A del documento `NCS_M0_E_INITIAL_SCOPE_OPTIONS_FOR_OWNER_2026-10-21.
 3. Para cada acción incluida, seguir el caller desde la entrada pública hasta el handler/sink final.
 4. Añadir pruebas negativas de dispatch cero en el último límite de cada ruta incluida, además de pruebas de autorización positiva basada en una fuente independiente real.
 5. Ejecutar CI y vincular el resultado al SHA exacto.
+
+
+## Seguimiento acotado — aislamiento de entry points y puente heredado (2026-10-22)
+
+Esta nota no repite la auditoría del grafo de imports de la CLI independiente ni reabre el gate de reparación.
+
+- La prueba existente `tests/nexo/entrypoint.test.mjs` recorre el grafo de imports desde `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`; el grafo independiente de Nexo no importa el runtime legacy de Lúmina.
+- La inspección actual de `scripts/assistants.mjs` muestra un puente heredado en sentido contrario: importa `openNexoContinuityOwner`, `runNexoRuntimeRepairSession` y `buildNexoMission`, además de operar sobre simulación/estado de Lúmina. Por tanto, “entry points independientes de Nexo” es una afirmación respaldada; “Nexo está completamente desacoplado de todos los scripts heredados de Lúmina” no lo está.
+- El argumento `--nexo-repair-once` sigue presente en ese script, pero el destino actual `scripts/nexo-runtime-session.mjs` devuelve inmediatamente `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted: false` y `dispatchAttempted: false`. La prueba `tests/nexo/repair-session.test.mjs` cubre el gate de integración y, por separado, el protocolo de bajo nivel. No hay evidencia actual de que esa ruta de producto ejecute la reparación.
+- No se modifica código en este seguimiento: retirar el puente completo alteraría el comportamiento de `npm run assistants` y requiere trasladar/retirar con cuidado las responsabilidades de continuidad y misión, no eliminar imports a ciegas. El gate de reparación no se duplica.
+- Decisión técnica pendiente para el diseño, no para la autoridad constitucional: definir si `scripts/assistants.mjs` se conserva como compatibilidad heredada fuera de Nexo o si se elimina gradualmente el puente, preservando la CLI independiente. Hasta entonces, no afirmar aislamiento global completo.
+
+Estados sin cambio: M0 `INCOMPLETO`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
