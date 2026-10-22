@@ -61,6 +61,17 @@ Estos nombres son ilustrativos hasta contrastarlos con los tipos reales del runt
 4. Mantener `authorization: NOT_EVALUATED` y la frontera de ejecución cerrada.
 5. Solo declarar implementación tras cambio de runtime y evidencia de pruebas/CI asociada al SHA exacto.
 
-## 8. Estado de seguridad
+## 8. Comprobación contra el runtime existente (2026-10-22)
+
+Inspección puntual de los archivos de runtime existentes, sin volver a ejecutar pruebas:
+
+- `src/nexo/application/mission-request-preview.mjs` (blob `596dde1c6ed20fac127ee4225ba111fff3d2554`) mantiene `intent` como texto no confiable, no lo pasa al validador de misión y devuelve `requestInterpretation: NOT_PERFORMED` e `intentDraftAlignment: NOT_EVALUATED`.
+- `src/nexo/application/continuity-queries.mjs` (blob `ba111f88421f31d0febb75b4c5c02497beddf997`) valida el borrador contra las operaciones canónicas de misión y devuelve una vista previa de planificación; no ofrece evaluación semántica de intención.
+- `src/nexo/core/contracts.mjs` (blob `ec811ffd24d178c294345d9e6f65a9e3bfd82ea1`) contiene contratos genéricos de claim, autoridad, validación y commit, pero no un contrato de runtime para interpretar intención.
+- El contrato de intención más amplio está documentado en `docs/nexo/PG-009_SEMANTIC_DATA_MIGRATION_INTEGRITY_2026-09-23.md`, incluyendo clases de intención, procedencia, vigencia, confirmación, revocación y los invariantes INV-557..576. Debe reutilizarse como fuente de diseño; su presencia documental no prueba que esté implementado en el runtime.
+
+**Consecuencia:** no asumir que el texto de intención se conserva como evidencia durable. El preview actual no lo persiste ni lo devuelve. La siguiente implementación debe decidir, según las reglas existentes de privacidad/procedencia, qué referencia de entrada se conserva y por cuánto tiempo; no debe guardar texto sensible por defecto ni afirmar correspondencia semántica a partir de una mera validación estructural.
+
+## 9. Estado de seguridad
 
 Este documento no afirma implementación, pruebas, verificación formal, aprobación constitucional, commissioning ni autorización. Hasta evidencia contraria en el estado canónico: M0 `INCOMPLETO`; autoridad legítima `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`.
