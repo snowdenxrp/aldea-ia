@@ -1,7 +1,7 @@
 # NCS M0 — owner constructor options validated before access
 
 Date: 2026-10-22
-Status: IMPLEMENTED; CI on the exact code/test SHA was still running at the last check (3/5 triggered workflows SUCCESS, 2 in progress)
+Status: IMPLEMENTED; 5/5 triggered CI workflows SUCCESS on the exact code/test SHA
 
 ## Finding
 
@@ -28,16 +28,14 @@ This does not neutralize arbitrary Proxy traps or hostile code already executing
 
 Exact SHA: `c192a9b21cef925ac303644a8f3e6a6d8489dcd7`
 
-SUCCESS:
+All five workflows triggered for this exact SHA completed SUCCESS:
 - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861291162)
 - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861291263)
 - [bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861291086)
-
-Still running:
 - [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861291219)
 - [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39861291274)
 
-Do not treat the SHA as fully CI-validated until the two pending workflows finish. These are the workflows triggered for this SHA, not all workflows in the repository.
+This is 5/5 workflows actually triggered for this SHA, not a claim that every repository workflow ran.
 
 ## Scope and canonical state
 
