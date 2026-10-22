@@ -3246,3 +3246,13 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - Commit de código/pruebas: `7ef9550df703be902baa7ce7f608a59ac72f2449`. **CI todavía no verificado para este SHA** al registrar esta nota.
 - Sigue OPEN el presupuesto agregado de heap/disco. Los límites por store no justifican servicio concurrente/multiusuario sin un presupuesto agregado y su estrategia de enforcement.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0 — análisis agregado de heap/disco (2026-10-22)
+
+- Documento: [NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md](BUILD/NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md), commit documental `0f3cc4e6010e914722da3a21e165ae1f569566ed`.
+- Derivación de disco: con los dos canónicos y un temporal por store, el subtotal transitorio sería 96 MiB (Chronicle 32+32 MiB; Continuity 16+16 MiB), pero no es una cota total porque los nombres temporales únicos pueden dejar residuos tras terminación abrupta y no hay límite de cardinalidad/reconciliación de esos residuos.
+- Derivación de heap: límites serializados no equivalen a heap; lectura, parseo, serialización, snapshots clonados y candidatos pueden coexistir. No existe cuota agregada ni limitador global de concurrencia entre stores/procesos en el código inspeccionado.
+- Próxima decisión de arquitectura: especificar una frontera acotada para temporales bajo los locks existentes y definir el modo de concurrencia soportado para M0 antes de declarar presupuesto agregado. No introducir borrado de temporales a ciegas, colas ni semáforos como parches ocultos.
+- El análisis es documental; no cambia runtime ni tiene CI atribuible. Las cinco suites del SHA `cd9082d8e81bf2fe2c38f849f39de7429d300ea0` permanecen SUCCESS, pero no prueban una cota agregada.
+- Estado canónico: presupuesto agregado de disco OPEN; presupuesto agregado de heap OPEN; M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
