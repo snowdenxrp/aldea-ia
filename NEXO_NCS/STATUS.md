@@ -3167,3 +3167,12 @@ La primera versión del test intentó prohibir `effect-adapter.js` en todo el gr
 - CI exacto: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39730999092) SUCCESS en SHA `aa5f450fce70f07d1a5da2e41265c94abb69acf7`; [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39730998930) SUCCESS en el mismo SHA.
 - Hubo un fallo intermedio en SHA `d0403c96aa243eecb679483322c16acbaf1d7156`: la prueba de API pública esperaba la lista de exportaciones anterior y detectó correctamente la nueva exportación no reflejada en su expectativa. Se actualizó la aserción; los workflows anteriores pasan en el SHA corregido `aa5f450fce70f07d1a5da2e41265c94abb69acf7`.
 - Estado canónico sin cambios: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## M0-E — JSON null no debe parecer éxito en el CLI (2026-10-22)
+
+- Defecto reproducible: `mission-request-preview` usaba `requestEnvelope === null` como marcador de fallo de lectura. Un archivo con JSON válido `null` saltaba la validación y podía terminar sin salida estructurada ni código de error. `mission-draft-preview` tenía el mismo patrón.
+- Corrección mínima en `scripts/nexo.mjs`: ahora se distingue explícitamente fallo de lectura/parseo del contenido JSON, y se envía cualquier JSON válido —incluido `null`— al validador correspondiente. El dato inválido se bloquea y el CLI sale con código 1.
+- Regresión en `tests/nexo/mission-request-preview.test.mjs`: comprueba JSON `null` tanto para petición como para borrador; ambos deben emitir respuesta JSON `blocked`, código específico y ningún dispatch/persistencia. Continuity permanece idéntica.
+- Código verificado en SHA `bb1fe0e33362df36e8145c0e947882717d25328c`. Cinco workflows SUCCESS sobre el mismo SHA: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798045), [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798037), [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798067), [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798051), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39731798113).
+- Este arreglo no agrega interpretación de lenguaje natural ni cambia el límite de autoridad. Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
