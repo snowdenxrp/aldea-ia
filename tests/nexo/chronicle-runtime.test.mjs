@@ -13,6 +13,7 @@ import { runNexoChronicleAppend } from "../../src/nexo/application/index.mjs";
 import { loadNexoContinuityStatus, loadNexoMissionStatus } from "../../src/nexo/application/continuity-queries.mjs";
 import { publicChronicleResult, recordNexoMissionSafely } from "../../src/nexo/application/chronicle-append.mjs";
 import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
+import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 
@@ -1517,6 +1518,30 @@ try {
   assert.equal(JSON.parse(successfulCli.stdout.trim()).status, "completed");
   const persistedCliChronicle = JSON.parse(await fs.readFile(path.join(cliRoot, "valid-chronicle.json"), "utf8"));
   assert.equal(persistedCliChronicle.entries[0].content, privateContent);
+
+  // Oversized stdin is rejected during accumulation; no store is created and no payload is echoed.
+  const oversizedStdinContinuity = path.join(cliRoot, "oversized-stdin-continuity.json");
+  const oversizedStdinChronicle = path.join(cliRoot, "oversized-stdin-chronicle.json");
+  const oversizedStdin = spawnSync(process.execPath, [
+    "scripts/nexo-chronicle-session.mjs",
+    "--continuity", oversizedStdinContinuity,
+    "--chronicle", oversizedStdinChronicle,
+    "--mission", "oversized-stdin-mission",
+    "--step", "oversized-stdin-step",
+    "--content-stdin",
+    "--initialize-continuity",
+    "--initialize-chronicle"
+  ], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+    input: "x".repeat(NEXO_RESOURCE_LIMITS.stdinBytes + 1)
+  });
+  assert.equal(oversizedStdin.status, 1);
+  assert.equal(JSON.parse(oversizedStdin.stdout.trim()).code, "NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED");
+  assert.equal(oversizedStdin.stdout.includes("x".repeat(128)), false);
+  assert.equal(oversizedStdin.stderr, "");
+  await assert.rejects(fs.access(oversizedStdinContinuity), { code: "ENOENT" });
+  await assert.rejects(fs.access(oversizedStdinChronicle), { code: "ENOENT" });
 } finally {
   await fs.rm(cliRoot, { recursive: true, force: true });
 }
