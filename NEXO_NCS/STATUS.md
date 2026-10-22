@@ -1,3 +1,13 @@
+# PUERTA DE ENTRADA PARA EL SIGUIENTE CHAT NCS — 2026-10-22
+
+El usuario iniciará el chat escribiendo exactamente `NCS`.
+
+**Instrucción prioritaria:** no empezar por investigaciones históricas. Leer este STATUS y luego el [handoff de arranque focalizado](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-22_RESOURCE_BUDGET.md). Continuar directamente con las dos pruebas pendientes de Continuity descritas ahí. Consultar antecedentes antiguos solo si aparece una contradicción concreta que no se resuelva con el estado actual, el handoff y los archivos de runtime/tests.
+
+HEAD documental previo a este cambio: `a2d6003d355b466b9b85466a1b08f4dbf4d685b0`. La evidencia de seis suites citada más abajo corresponde al SHA de código/pruebas `7ce3e5174e26917ecde9edeafa50b3d64d4fa10b`, no a este HEAD documental ni al commit de este añadido.
+
+---
+
 # M0-E — presupuesto de recursos: perfil aceptado, enforcement inicial verificado (2026-10-22)
 
 - **Decisión del propietario registrada:** acepta el perfil numérico inicial como base de implementación. Ver `NEXO_NCS/DECISIONS/NCS_M0_RESOURCE_BUDGET_PROFILE_ACCEPTED_2026-10-22.md`.
