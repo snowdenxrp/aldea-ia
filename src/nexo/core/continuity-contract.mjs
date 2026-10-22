@@ -54,7 +54,13 @@ export function assertNexoContinuityMemoryShape(memory) {
   for (const mission of memory.nexo.missions) {
     // Apply the same v1 admission ceilings to persisted snapshots and legacy-memory projections,
     // not only to new mission-record operations. This is the common persistence boundary.
-    assertNexoMissionAdmission(mission);
+    try {
+      assertNexoMissionAdmission(mission);
+    } catch (error) {
+      // Persisted structural errors retain the established memory-schema result
+      // below; only a resource-ceiling violation needs its specific public code.
+      if (error?.code === "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED") throw error;
+    }
     // Persisted mission records must satisfy the same identity/steps minimum
     // as newly admitted missions. Do not silently reinterpret malformed legacy
     // records as empty missions during snapshot projection or reconstruction.
