@@ -58,7 +58,7 @@ export function assertUtf8ByteLimit(value, maxBytes, code) {
   if (Buffer.byteLength(value, "utf8") > maxBytes) throw limitError(code);
 }
 
-export function assertContinuityResourceLimits(snapshot) {
+export function assertContinuityResourceLimits(snapshot, storeRevision = 0) {
   for (const [key, max] of Object.entries(NEXO_RESOURCE_LIMITS.continuityCollections)) {
     if (!Array.isArray(snapshot?.[key]) || snapshot[key].length > max) {
       throw limitError("NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED");
@@ -67,7 +67,7 @@ export function assertContinuityResourceLimits(snapshot) {
   if (serializedUtf8Bytes({
     schema: "NEXO_CONTINUITY_STORE",
     schemaVersion: 1,
-    storeRevision: 0,
+    storeRevision,
     snapshot
   }) > NEXO_RESOURCE_LIMITS.continuityDocumentBytes) {
     throw limitError("NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED");
