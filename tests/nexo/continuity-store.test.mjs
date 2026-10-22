@@ -284,6 +284,16 @@ await assert.doesNotReject(() => fs.access(malformedOwnerLock),
   "Continuity must preserve the lock when its owner schema is invalid");
 await assert.rejects(() => fs.access(malformedOwnerPath), error => error?.code === "ENOENT",
   "Continuity must not initialize under an invalid owner schema");
+await fs.writeFile(path.join(malformedOwnerLock, "owner.json"),
+  Buffer.alloc(NEXO_RESOURCE_LIMITS.lockOwnerBytes + 1, 0x20));
+assert.deepEqual(
+  await malformedOwnerStore.initialize(emptySnapshot),
+  { status: "failed", code: "NEXO_CONTINUITY_STORE_LOCK_STATE_UNKNOWN" },
+  "Continuity must reject an oversized lock owner without reading it unboundedly"
+);
+await assert.doesNotReject(() => fs.access(malformedOwnerLock),
+  "Continuity must preserve an oversized owner lock for explicit recovery");
+await assert.rejects(() => fs.access(malformedOwnerPath), error => error?.code === "ENOENT");
 await fs.rm(malformedOwnerLock, { recursive: true, force: true });
 
 // A stale lock must not be reclaimed through a racy check-then-remove sequence.
