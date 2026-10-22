@@ -2946,3 +2946,13 @@ El workflow `.github/workflows/nexo-deterministic-tests.yml` sí declara `workfl
 - No se repite la auditoría del gate ni se modifica runtime en este seguimiento. El desacoplamiento total del script heredado requiere una migración deliberada para no romper `npm run assistants`; hasta entonces, la afirmación exacta es “entry points independientes de Nexo aislados”, no “todo el repositorio está desacoplado”.
 - Estado sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
+
+
+---
+
+## M0 — consolidación de evidencia existente B/C/D (2026-10-22)
+
+- Se consolidaron en [NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md](BUILD/NCS_M0_ACCEPTANCE_MATRIX_2026-10-20.md) los enlaces ya existentes de CI focalizado para M0-B/C/D, conservando SHA, alcance y límites de cada resultado.
+- M0-B/C/D siguen PENDING para aceptación final hasta congelar las assertions/workflows obligatorios; no se repiten las investigaciones de continuidad, resultados terminales ni journal UNKNOWN.
+- M0-E permanece como bloqueo sustantivo: raíz/procedencia constitucional runtime conectada al sink real no demostrada.
+- Sin cambio de runtime ni de decisiones constitucionales. Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
