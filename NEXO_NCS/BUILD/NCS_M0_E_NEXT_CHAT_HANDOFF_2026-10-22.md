@@ -1,3 +1,22 @@
+# CHECKPOINT MÁS RECIENTE — 2026-10-22 — SEGUNDA FORMA DE MISIÓN ADMITIDA
+
+Este checkpoint amplía el anterior fixture de cadena con un grafo ramificado. No cierra la adecuación general del perfil de recursos.
+
+- Código/prueba: [`ed48932f2479f398b11a6f10af55c8821150cc00`](https://github.com/snowdenxrp/aldea-ia/commit/ed48932f2479f398b11a6f10af55c8821150cc00), `tests/nexo/continuity-contract.test.mjs`.
+- Cobertura añadida: cuatro pasos fork/join; destinos de texto; estados predeterminados al omitirlos; campos opcionales `reason`, `source`, `reversible`, `requiresEvidence`; aserciones de conservación de topología y campos.
+- CI para ese SHA:
+  - deterministic persistence tests SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837868669
+  - STEP 4 semantic validation SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837868908
+  - STEP 5 outcome classification IN_PROGRESS al último chequeo: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837868876
+  - integrated acceptance regression SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837869070
+  - bounded mission admission and restart continuity SUCCESS: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837868724
+- No decir “5/5 PASS” hasta verificar el STEP 5 pendiente. El estado al documentar es 4 SUCCESS / 1 IN_PROGRESS.
+- Evidencia disponible: dos formas representativas aceptadas en integración (cadena de 12 pasos con contexto anidado; grafo fork/join con defaults/campos opcionales). No es prueba de producción, capacidad de heap ni suficiencia universal de los límites.
+- Próximo paso: verificar el workflow pendiente; luego seleccionar una sola brecha real de recursos. No agregar límites globales/locks/colas por especulación.
+- Runtime intacto; no dispatch ni efectos protegidos. Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT MÁS RECIENTE — 2026-10-22 — PRUEBA REPRESENTATIVA DE ADMISIÓN
 
 Este bloque supersede el punto 2 de “Siguiente trabajo exacto” del checkpoint anterior en lo que respecta al primer fixture representativo. No borra ni cierra las brechas de capacidad general.
