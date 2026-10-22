@@ -213,6 +213,27 @@ try {
   assert.equal(tooManyDependencies.dispatchAttempted, false);
   assert.equal(tooManyDependencies.persisted, false);
 
+  const aggregateOverflow = await previewNexoMissionRequest(continuityPath, {
+    intent: "review aggregate payload",
+    missionDraft: {
+      missionId: "admission-aggregate-overflow",
+      objective: "local_analysis",
+      status: "planned",
+      steps: Array.from({ length: 17 }, (_, index) => ({
+        id: `aggregate-step-${index}`,
+        action: "local_analysis",
+        status: "planned",
+        dependsOn: [],
+        context: "x".repeat(256 * 1024)
+      }))
+    }
+  });
+  assert.equal(aggregateOverflow.status, "blocked");
+  assert.equal(aggregateOverflow.code, "NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
+  assert.equal(aggregateOverflow.authorization, "NOT_EVALUATED");
+  assert.equal(aggregateOverflow.dispatchAttempted, false);
+  assert.equal(aggregateOverflow.persisted, false);
+
   const deeplyNestedDraft = { ...validAdmissionDraft, missionId: "admission-too-deep" };
   let nested = {};
   deeplyNestedDraft.steps = [{
