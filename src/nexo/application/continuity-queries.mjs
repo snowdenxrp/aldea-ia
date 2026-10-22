@@ -1,5 +1,5 @@
 import { createNexoContinuityStore } from "../core/continuity-store.mjs";
-import { reconstructNexoMissionFromSnapshot } from "../core/continuity-operations.mjs";
+import { reconstructNexoMissionFromSnapshot, recordNexoMissionInSnapshot } from "../core/continuity-operations.mjs";
 
 export async function loadNexoContinuityStatus(continuityPath) {
   if (typeof continuityPath !== "string" || !continuityPath.trim()) {
@@ -185,6 +185,69 @@ export async function loadNexoMissionPlan(continuityPath, missionId) {
       status: "blocked", code: error?.code ?? "NEXO_MISSION_PLAN_UNAVAILABLE",
       authorization: "NOT_EVALUATED", dispatchAttempted: false
     };
+  }
+}
+
+/**
+ * Validate a proposed mission against the existing continuity mission contract,
+ * then return a deterministic dependency order without persisting the proposal.
+ * This is a planning preview only: no authority decision or execution is implied.
+ */
+export async function previewNexoMissionDraft(continuityPath, missionDraft) {
+  const fail = (code, extra = {}) => ({
+    status: "blocked", code, authorization: "NOT_EVALUATED",
+    dispatchAttempted: false, persisted: false, ...extra
+  });
+  if (typeof continuityPath !== "string" || !continuityPath.trim()) {
+    return fail("NEXO_STATUS_CONTINUITY_PATH_REQUIRED");
+  }
+  if (!missionDraft || typeof missionDraft !== "object" || Array.isArray(missionDraft)) {
+    return fail("NEXO_MISSION_CONTEXT_INVALID");
+  }
+  if (typeof missionDraft.missionId !== "string" || !missionDraft.missionId.trim()) {
+    return fail("NEXO_MISSION_CONTEXT_INVALID");
+  }
+  try {
+    const current = await createNexoContinuityStore({ filePath: continuityPath }).loadCurrent();
+    if (current.snapshot.missions.some(item => item?.missionId === missionDraft.missionId)) {
+      return fail("NEXO_MISSION_ID_ALREADY_BOUND", { storeRevision: current.storeRevision });
+    }
+    // Reuse the canonical mission validator and snapshot invariant checker.
+    // This creates only a detached candidate snapshot; the store is never written.
+    const candidateSnapshot = recordNexoMissionInSnapshot(current.snapshot, missionDraft);
+    const mission = reconstructNexoMissionFromSnapshot(candidateSnapshot, missionDraft.missionId);
+    if (!mission) return fail("NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE", { storeRevision: current.storeRevision });
+
+    const byId = new Map(mission.steps.map(step => [step.id, step]));
+    const remaining = new Set(mission.steps.map(step => step.id));
+    const ordered = [];
+    while (remaining.size > 0) {
+      const next = mission.steps.find(step =>
+        remaining.has(step.id) &&
+        (step.dependsOn ?? []).every(dependencyId => !remaining.has(dependencyId))
+      );
+      if (!next) return fail("NEXO_MISSION_CONTEXT_INVALID", { storeRevision: current.storeRevision });
+      remaining.delete(next.id);
+      ordered.push({
+        stepId: next.id,
+        action: next.action,
+        dependsOn: [...(next.dependsOn ?? [])]
+      });
+    }
+    return {
+      status: "validated",
+      code: null,
+      storeRevision: current.storeRevision,
+      missionId: mission.missionId,
+      objective: mission.objective,
+      stepCount: ordered.length,
+      steps: ordered,
+      authorization: "NOT_EVALUATED",
+      dispatchAttempted: false,
+      persisted: false
+    };
+  } catch (error) {
+    return fail(error?.code ?? "NEXO_MISSION_CONTEXT_INVALID");
   }
 }
 
