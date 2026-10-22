@@ -59,3 +59,12 @@ M0: **INCOMPLETO**.
 `authorization: NOT_EVALUATED`.
 Raíz legítima: `PENDING/UNKNOWN`.
 Efectos protegidos: `STOP`.
+
+
+## Investigación previa reutilizada (sin reabrirla)
+
+La regla semántica general ya está establecida en la investigación histórica AB104.397 y AB104.398: imponer límites explícitos de recursos, distinguir límite alcanzado de completitud y no convertir truncamiento en resultado completo. Véanse:
+- `docs/nexo/AB104.397_SEMANTIC_REQUIRED_SET_AUTHORITY_TCB_BOUNDARY_2026-09-26.md`
+- `docs/nexo/AB104.398_ADVERSARIAL_SEMANTIC_DERIVATION_2026-09-26.md`
+
+Esos documentos fundamentan el principio, pero no fijan por sí solos los máximos operativos de Chronicle/Continuity ni prueban que exista un outcome runtime integrado para este caso. Por tanto, no se repite esa investigación ni se afirma que `RESOURCE_LIMIT_REACHED` sea ya un contrato ejecutable de M0. La tarea actual es aterrizar el principio en los stores concretos, con límites aprobados y pruebas de no mutación.
