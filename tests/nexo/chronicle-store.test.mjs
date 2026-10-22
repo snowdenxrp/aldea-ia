@@ -517,6 +517,29 @@ if (result.status !== "committed") process.exitCode = 1;`;
   await assert.rejects(() => fs.access(lateReleaseFailurePath), error => error?.code === "ENOENT");
   await fs.rm(lateReleaseFailureLock, { recursive: true, force: true });
 
+  const atChronicleCountLimit = {
+    schema: "NEXO_CHRONICLE",
+    schemaVersion: 1,
+    storeRevision: NEXO_RESOURCE_LIMITS.chronicleEntries,
+    entries: Array.from({ length: NEXO_RESOURCE_LIMITS.chronicleEntries }, (_, index) => ({
+      operationKey: `count-limit-${index}`,
+      content: "x"
+    }))
+  };
+  assert.doesNotThrow(() => assertChronicleResourceLimits(atChronicleCountLimit),
+    "Chronicle accepts exactly the configured entry count");
+  const overChronicleCountLimit = {
+    ...atChronicleCountLimit,
+    storeRevision: NEXO_RESOURCE_LIMITS.chronicleEntries + 1,
+    entries: [...atChronicleCountLimit.entries, {
+      operationKey: "count-limit-over",
+      content: "x"
+    }]
+  };
+  assert.throws(() => assertChronicleResourceLimits(overChronicleCountLimit), {
+    code: "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"
+  }, "Chronicle rejects one entry above the configured count");
+
   // Serialized-document budget rejects a candidate that crosses the cap, independently of per-entry limits.
   const nearLimitChronicle = {
     schema: "NEXO_CHRONICLE",
@@ -617,7 +640,7 @@ if (result.status !== "committed") process.exitCode = 1;`;
   const boundaryBytesBefore = await fs.readFile(boundaryContentPath);
   const boundaryOversize = await boundaryContentStore.append({
     operationKey: "over-limit:step",
-    content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2) + 1)
+    content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2)) + "x"
   });
   assert.deepEqual(boundaryOversize, {
     status: "blocked",
