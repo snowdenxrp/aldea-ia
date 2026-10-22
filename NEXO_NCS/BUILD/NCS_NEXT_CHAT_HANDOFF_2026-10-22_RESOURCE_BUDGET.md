@@ -123,3 +123,10 @@ Decidir y documentar el modo operativo inicial de M0 y el ámbito del presupuest
 - El lector CLI conserva los chunks Buffer ya entregados por Node en vez de duplicarlos antes del chequeo de bytes. La prueba de integración agrega stdin 256 KiB + 1 y verifica rechazo sin crear los stores.
 - Esto reduce una copia transitoria, pero no limita la asignación del chunk original de Node ni el heap agregado. CI para este SHA no está confirmado; no afirmar tests pasados.
 - Presupuesto agregado OPEN; modo concurrente/multiusuario no aprobado. Estado M0 INCOMPLETO; autorización NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## Aclaración de alcance operativo agregada (2026-10-22)
+
+Antes de diseñar un presupuesto agregado, leer [NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md](NCS_M0_E_INITIAL_OPERATIONAL_SCOPE_2026-10-22.md). El primer alcance queda limitado a invocaciones locales explícitas del CLI y límites por entrada/documento/operación. Esto NO demuestra que se impidan varios procesos simultáneos. No declarar servicio persistente, multiusuario, heap agregado ni disco agregado; no añadir un guardián global improvisado.
+
+La tarea de código inmediata sigue siendo la prueba real de rechazo de un snapshot Continuity estructuralmente válido que supere 16 MiB, preservando bytes/revisión anteriores, seguida de dos commits concurrentes Continuity cerca de la frontera. Solo después ejecutar y verificar CI para el SHA final exacto. No reabrir investigaciones cerradas ni cambiar el estado canónico.
