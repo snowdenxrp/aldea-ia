@@ -246,7 +246,11 @@ try {
     padding: Array.from({ length: 16 }, () => "")
   };
   const fixedAggregateBytes = measureUtf8StringsAndKeys(aggregateBase);
-  const lastPaddingBytes = NEXO_MISSION_ADMISSION_LIMITS.aggregateUtf8StringBytes - fixedAggregateBytes;
+  for (let index = 0; index < 15; index += 1) {
+    aggregateBase.padding[index] = "x".repeat(NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes);
+  }
+  const lastPaddingBytes = NEXO_MISSION_ADMISSION_LIMITS.aggregateUtf8StringBytes -
+    fixedAggregateBytes - 15 * NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes;
   assert.ok(lastPaddingBytes > 0 && lastPaddingBytes <= NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes);
   aggregateBase.padding[15] = "x".repeat(lastPaddingBytes);
   assert.equal(measureUtf8StringsAndKeys(aggregateBase), NEXO_MISSION_ADMISSION_LIMITS.aggregateUtf8StringBytes);
