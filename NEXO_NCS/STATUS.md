@@ -3028,3 +3028,10 @@ El CI del HEAD anterior `7968bb4c5c8bfb0adf4c7008dd38a79e45216551` terminó `suc
 - La propuesta ahora mapea stdin a `scripts/nexo-chronicle-session.mjs`; admisión a `runNexoChronicleAppend`; presupuesto Chronicle a `validateDocument/writeDocument/append`; presupuesto Continuity a `assertNexoContinuitySnapshot/commitIfCurrent/writeEnvelope`.
 - Tests existentes para ampliar: `tests/nexo/chronicle-runtime.test.mjs` (incluye ejecución CLI con `spawnSync` y stdin válido, no exceso de tamaño) y `tests/nexo/continuity-contract.test.mjs` más los tests del store.
 - Esto identifica puntos concretos de implementación sin introducir límites, outcomes ni runtime changes antes de la decisión contractual.
+
+
+### Compatibilidad de outcomes para el presupuesto
+
+- Inspección del código: Chronicle ya expone `blocked`/otros estados terminales públicos con `code`; Continuity distingue `failed`, `conflict`, `unknown` y `committed`.
+- La propuesta registra que no se justifica crear un estado público general nuevo para límites. Se reutilizará el estado no exitoso de cada capa y solo se elegirá un código específico tras comprobar que no existe uno equivalente.
+- Sin cambios de runtime; no se ha añadido un código ni se ha alterado la semántica de UNKNOWN.
