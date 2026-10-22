@@ -2,10 +2,22 @@
 
 El usuario iniciará el chat escribiendo exactamente `NCS`.
 
-**Instrucción prioritaria:** no empezar por investigaciones históricas ni repetir las pruebas Continuity ya verificadas. Los límites por-store y stdin Chronicle tienen evidencia acotada, pero apareció una brecha nueva: `scripts/nexo.mjs` lee los archivos JSON de `mission-draft-preview` y `mission-request-preview` sin un máximo previo de bytes. Leer [hallazgo de entrada JSON](BUILD/NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md), la [propuesta de máximo de 256 KiB por archivo](BUILD/NCS_M0_E_MISSION_PREVIEW_INPUT_LIMIT_PROPOSAL_2026-10-22.md), el [inventario actualizado de rutas](BUILD/NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md) y el [handoff focalizado](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-22_RESOURCE_BUDGET.md). Obtener decisión explícita sobre el máximo propuesto antes de editar runtime; no inferir que el límite de stdin Chronicle ya lo cubre. El presupuesto agregado de heap/disco y la exclusión multiproceso siguen OPEN.
+**Instrucción prioritaria:** continuar el trabajo focal de M0-E sobre el contrato compartido de admisión de vistas previas de misión. No repetir auditorías históricas ni reiniciar Step 7/M1/AB/P cerrados. Leer primero el diseño de límites y la evidencia de frontera enlazados abajo.
 
-HEAD documental previo a este cambio: `a2d6003d355b466b9b85466a1b08f4dbf4d685b0`. La evidencia de seis suites citada más abajo corresponde al SHA de código/pruebas `7ce3e5174e26917ecde9edeafa50b3d64d4fa10b`, no a este HEAD documental ni al commit de este añadido.
+## Último checkpoint — misión preview y límites de recursos
 
+- El código actual de `src/nexo/core/resource-limits.mjs` establece `missionPreviewInputBytes = 4 * 1024 * 1024`. Ambos comandos CLI usan `readUtf8FileBounded` antes de UTF-8 decoding y `JSON.parse`.
+- Añadidas pruebas de frontera para ambos entrypoints: JSON válido de exactamente 4 MiB aceptado; 4 MiB + 1 byte rechazado con código específico; sin persistencia, dispatch ni filtración del contenido de entrada.
+- **CI confirmado en el SHA exacto de código/pruebas** `f55204b1a591a13cbc6e2263ec7280e793b5f0ce`: [deterministic persistence tests](https://github.com/snowdenxrp/aldea-ia/actions/runs/39825459604), [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/39825459612) y [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/39825459750) completaron SUCCESS. El workflow determinista tiene job `tests` y paso `Run tests` SUCCESS.
+- Evidencia detallada: [NCS_M0_E_MISSION_PREVIEW_BYTE_BOUNDARY_TEST_EVIDENCE_2026-10-22.md](BUILD/NCS_M0_E_MISSION_PREVIEW_BYTE_BOUNDARY_TEST_EVIDENCE_2026-10-22.md).
+- Diseño estructural aún abierto: [NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md](BUILD/NCS_M0_E_MISSION_PREVIEW_ADMISSION_LIMITS_DESIGN_2026-10-22.md). El máximo de 4 MiB es una frontera operativa probada, no la demostración de que toda entrada válida cabe ni una cota de heap.
+- El siguiente paso no es crear otro inventario: cerrar el contrato compartido de admisión Core con límites coherentes para pasos, dependencias, longitudes de cadenas, complejidad de `target/context` y `intent`; aplicar el mismo contrato a ambas rutas y probar máximo/máximo+1. No truncar.
+- P112 confirma que el límite histórico de ocho pasos pertenecía al diseño acotado, pero no define semántica de las reclamaciones omitidas ni autoriza trasladar ese límite a Core preview.
+- Presupuesto agregado de heap/disco y concurrencia multiproceso siguen OPEN. No añadir locks, colas o semáforos globales improvisados.
+
+**Estado canónico sin cambios:** M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
 
 ## M0-E — alcance operativo inicial de recursos (2026-10-22)
 
