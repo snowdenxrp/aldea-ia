@@ -25,12 +25,16 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
     throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
   }
 
-  const seen = new WeakSet();
-  const stack = [{ value: input, depth: 0 }];
+  const active = new WeakSet();
+  const stack = [{ value: input, depth: 0, exit: false }];
   let nodes = 0;
 
   while (stack.length > 0) {
-    const { value, depth } = stack.pop();
+    const { value, depth, exit } = stack.pop();
+    if (exit) {
+      active.delete(value);
+      continue;
+    }
     nodes += 1;
     if (nodes > NEXO_MISSION_ADMISSION_LIMITS.jsonNodes ||
         depth > NEXO_MISSION_ADMISSION_LIMITS.jsonDepth) {
@@ -43,14 +47,15 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
       }
       continue;
     }
-    if (value === null || typeof value === "boolean") continue;
+    if (value === undefined || value === null || typeof value === "boolean") continue;
     if (typeof value === "number") {
       if (!Number.isFinite(value)) throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
       continue;
     }
     if (typeof value !== "object") throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
-    if (seen.has(value)) throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
-    seen.add(value);
+    if (active.has(value)) throw admissionError("NEXO_MISSION_CONTEXT_INVALID");
+    active.add(value);
+    stack.push({ value, depth, exit: true });
 
     const isArray = Array.isArray(value);
     const prototype = Object.getPrototypeOf(value);
@@ -82,7 +87,7 @@ export function assertNexoMissionAdmission(input, { requestIntent = false } = {}
       if (Buffer.byteLength(key, "utf8") > NEXO_MISSION_ADMISSION_LIMITS.stringUtf8Bytes) {
         throw admissionError("NEXO_MISSION_ADMISSION_RESOURCE_LIMIT_EXCEEDED");
       }
-      stack.push({ value: descriptor.value, depth: depth + 1 });
+      stack.push({ value: descriptor.value, depth: depth + 1, exit: false });
     }
   }
 
