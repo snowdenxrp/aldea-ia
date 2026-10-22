@@ -9,7 +9,7 @@ import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import * as nexoApplication from "../../src/nexo/application/index.mjs";
 
 assert.deepEqual(Object.keys(nexoApplication).sort(), [
-  "loadNexoContinuityStatus", "loadNexoMissionStatus", "runNexoChronicleAppend"
+  "loadNexoContinuityStatus", "loadNexoMissionPlan", "loadNexoMissionStatus", "runNexoChronicleAppend"
 ].sort(), "public Nexo application API must remain narrow and must not expose a generic dispatcher");
 for (const exportedUseCase of Object.values(nexoApplication)) assert.equal(typeof exportedUseCase, "function");
 
@@ -82,6 +82,10 @@ assert.deepEqual(parseNexoEntrypointArguments(["mission-status", "--continuity",
 });
 assert.equal(parseNexoEntrypointArguments(["mission-status", "--continuity", "a", "--mission", "b", "--mission", "c"]).code, "NEXO_MISSION_STATUS_ARGUMENTS_INVALID");
 assert.equal(parseNexoEntrypointArguments(["mission-status", "--continuity", "a"]).code, "NEXO_MISSION_ID_REQUIRED");
+assert.deepEqual(parseNexoEntrypointArguments(["mission-plan", "--continuity", "continuity.json", "--mission", "mission-1"]), {
+  status: "mission-plan", continuityPath: "continuity.json", missionId: "mission-1"
+});
+assert.equal(parseNexoEntrypointArguments(["mission-plan", "--continuity", "a"]).code, "NEXO_MISSION_ID_REQUIRED");
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-main-entrypoint-"));
 try {
@@ -182,6 +186,22 @@ try {
   assert.equal(statusSummary.counts.observedUnsettled, 0);
   assert.equal(statusSummary.counts.settledObserved, 1);
   assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
+  // Mission planning projects dependency state without exposing targets or authorizing execution.
+  const missionPlan = spawnSync(process.execPath, [
+    entrypointPath, "mission-plan", "--continuity", continuityPath, "--mission", "entrypoint-mission"
+  ], { cwd: process.cwd(), encoding: "utf8" });
+  assert.equal(missionPlan.status, 0, missionPlan.stderr || missionPlan.stdout);
+  assert.equal(missionPlan.stderr, "");
+  assert.equal(missionPlan.stdout.includes(privateSentinel), false);
+  const missionPlanSummary = JSON.parse(missionPlan.stdout);
+  assert.equal(missionPlanSummary.status, "planned");
+  assert.equal(missionPlanSummary.missionStatus, "completed");
+  assert.equal(missionPlanSummary.steps[0].planningState, "completed");
+  assert.deepEqual(missionPlanSummary.steps[0].dependsOn, []);
+  assert.equal(missionPlanSummary.authorization, "NOT_EVALUATED");
+  assert.equal(missionPlanSummary.dispatchAttempted, false);
+  assert.equal(await fs.readFile(continuityPath, "utf8"), continuityBytesBeforeStatus);
+
 
   // Mission reconstruction reads canonical continuity after restart without
   // printing the stored target/content payload or mutating the store.
