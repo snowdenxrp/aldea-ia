@@ -53,9 +53,9 @@ Este documento no modifica la decisión de alcance inicial, no aprueba la Consti
 
 - [x] Ejecutar tests con contenido ASCII y multibyte en 256 KiB − 1 byte, exactamente 256 KiB y 256 KiB + 1 byte.
 - [x] Crear fixtures Chronicle representativos para límites de cantidad y serialización; confirmar que el presupuesto de 32 MiB se mide sobre los bytes realmente escritos.
-- [x] Crear fixtures de helper para cada cardinalidad y el límite serializado de Continuity; falta probar rechazo de snapshot válido sobre límite dentro del store.
-- [x] Comprobar preservación de bytes en rechazos Chronicle y preservación del tamaño del archivo Continuity sobredimensionado; falta una prueba de rechazo de commit de Continuity con snapshot válido.
-- [ ] Chronicle: probado con dos appends concurrentes cerca del límite. Continuity: falta la prueba concurrente equivalente cerca de su frontera.
+- [x] Crear fixtures de helper para cada cardinalidad y el límite serializado de Continuity; la prueba de store real rechaza un snapshot válido sobre límite antes del lock y preserva bytes/revisión previos.
+- [x] Comprobar preservación de bytes en rechazos Chronicle y Continuity, incluido commit rechazado de snapshot válido sobredimensionado.
+- [x] Chronicle: dos appends concurrentes cerca del límite; Continuity: dos candidatos cerca del límite contra la misma revisión, con un commit y un conflicto, revisión/snapshot recargados y bytes canónicos comprobados. CI de cinco workflows SUCCESS en SHA `20b3e1b51616c93862a2cad2e502c143c35b77ef`.
 - [x] Confirmar que las pruebas actuales de conflicto, escritura ambigua y UNKNOWN siguen pasando.
 - [x] Ejecutar workflows en SHA exacto y registrar run/job/SHA en `NEXO_NCS/STATUS.md`.
 - [ ] Si los fixtures o pruebas de rendimiento muestran que los topes son inadecuados, ajustar el perfil aceptado mediante una decisión explícita; no ocultar cambios en una constante.
@@ -64,7 +64,7 @@ Este documento no modifica la decisión de alcance inicial, no aprueba la Consti
 
 - Perfil numérico: **ACEPTADO COMO BASE**.
 - Implementación: **INICIAL IMPLEMENTADA; VALIDACIÓN PARCIAL**.
-- Subcriterio de presupuesto: **PENDING**.
+- Subcriterio por-store: **implementado y validado parcialmente; CI verificada para las pruebas de Continuity**. Cierre global del presupuesto: **PENDING** por la brecha agregada de heap/disco.
 - M0: **INCOMPLETO**.
 - `authorization: NOT_EVALUATED`.
 - Raíz legítima: `PENDING/UNKNOWN`.
@@ -97,3 +97,8 @@ Este requisito no cambia los topes aceptados como base. La implementación y val
 No basta con cargar el documento entero en un `Buffer` y medir su longitud: el consumo máximo ya ocurrió. El store debe leer de forma acotada, contar bytes crudos durante la lectura y detenerse al detectar más que el máximo, antes de decodificar y parsear. `stat` puede anticipar un rechazo pero no es el control definitivo, ya que no evita carreras entre la inspección y la lectura. Los tests deben probar límite de bytes consumidos, cancelación, ausencia de `JSON.parse` al exceder y preservación de bytes/revisión.
 
 Los valores numéricos están **ACEPTADOS COMO BASE**; la implementación y validación siguen pendientes de cierre.
+
+
+## Actualización de evidencia 2026-10-22
+
+Las tres casillas de Continuity antes pendientes se actualizaron tras verificar las pruebas de store real y los cinco workflows SUCCESS en SHA `20b3e1b51616c93862a2cad2e502c143c35b77ef`. La validación por-store queda avanzada, no se declara cerrado todo el presupuesto: el perfil no define una cota agregada de heap/disco ni exclusión multiproceso. Ver [STATUS](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/STATUS.md) y [inventario de cobertura por ruta](NCS_M0_E_RESOURCE_ENTRYPOINT_COVERAGE_2026-10-22.md).
