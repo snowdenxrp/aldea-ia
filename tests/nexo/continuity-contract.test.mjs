@@ -1216,3 +1216,28 @@ assert.throws(
   error => error?.code === "NEXO_CONTINUITY_STORE_REQUIRED"
 );
 assert.equal(storeMethodGetterInvoked, false, "store adapter method validation must not execute getters");
+
+
+// Public owner methods must reject accessor-backed option records before
+// destructuring expectedRevision/mission/outcome/operation/result.
+const accessorCallCases = [
+  ["recordMission", { mission: plan }],
+  ["recordOutcome", { outcome: { missionId: "m", stepId: "s", action: "local_analysis", status: "failed" } }],
+  ["recordPrepared", { operation: failedOperation }],
+  ["recordExecutionLineage", { operation: failedOperation, result: { status: "completed" } }],
+  ["reconcilePrepared", { operation: failedOperation }]
+];
+for (const [method, fields] of accessorCallCases) {
+  let expectedRevisionGetterInvoked = false;
+  const accessorCallOptions = { ...fields };
+  Object.defineProperty(accessorCallOptions, "expectedRevision", {
+    enumerable: true,
+    get() {
+      expectedRevisionGetterInvoked = true;
+      return 0;
+    }
+  });
+  const result = await readFailingOwner[method](accessorCallOptions);
+  assert.equal(expectedRevisionGetterInvoked, false, `${method} must not execute option getters`);
+  assert.equal(result.status, "failed", `${method} must reject accessor-backed options`);
+}
