@@ -1,4 +1,6 @@
-const MAX_CONTINUITY_DATA_DEPTH = 32;
+// Preserve the 32-level per-mission admission budget after container nesting:
+// snapshot root + collection array + mission record (or legacy root + nexo + array + mission).
+const MAX_CONTINUITY_DATA_DEPTH = 35;
 
 function dataGuardError(code) {
   const error = new Error(code);
