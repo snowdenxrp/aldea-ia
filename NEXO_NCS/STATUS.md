@@ -1,3 +1,17 @@
+# CHECKPOINT NUEVO — 2026-10-22 — CHRONICLE OBSERVATION INPUT GUARD
+
+- Hallazgo: `observeChronicleOperation()` recibía opciones por destructuring, que podía ejecutar getters de `store`, identidad de operación o `target` antes de la validación. También leía `store.loadCurrent` y `target.content` por acceso de propiedad.
+- Corrección: `src/nexo/adapters/chronicle-observation.mjs` ahora inspecciona descriptores propios de las opciones y del campo `content`, obtiene `loadCurrent` como método propio de datos y valida la forma básica del resultado leído antes de clasificar la observación. Los casos inválidos retornan `UNKNOWN` y no llaman al store.
+- Regresión: `tests/nexo/chronicle-observation-input-guard.test.mjs` comprueba que getters de opciones y de `target.content` no se ejecutan, y que una observación válida de ausencia conserva la semántica `not_applied` / causalidad no establecida. Integrada en `npm test`.
+- Commits: runtime `5d9c67e49e08286b5400a9cfe3de82ab812682d2`; test `15946a494167df90ce5785917e25dc8478dd4e3e`; integración `e137229aad19ca01a245d2a5067dabeef41d24d4`.
+- CI para el cambio actual: workflows sobre el commit de runtime y sobre la integración de test están en curso/pendientes; no declarar PASS hasta leer conclusiones finales. [Persistencia determinista en el SHA de integración](https://github.com/snowdenxrp/aldea-ia/actions/runs/39863421297).
+- CI previo del guard de opciones de admisión: los cuatro workflows para `285464c8c04d027a19268f442f3942bde9d99450` concluyeron `success`; queda documentado en el checkpoint anterior.
+- Límite: la validación de descriptores ordinarios no neutraliza todos los traps de `Proxy`, ni prueba que el store sea autoridad confiable. La observación sigue sin demostrar atribución causal ni autorizar reintentos o efectos.
+- Estado constitucional no cambia: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: comprobar CI para `e137229aad19ca01a245d2a5067dabeef41d24d4`; después continuar la auditoría de adaptadores por defectos reproducibles, sin ampliar la superficie de cambios por prevención especulativa.
+
+---
+
 ## CI FINAL — ADMISIÓN DE OPCIONES — 2026-10-22
 
 Los cuatro workflows asociados al SHA exacto `285464c8c04d027a19268f442f3942bde9d99450` terminaron en `success`:
