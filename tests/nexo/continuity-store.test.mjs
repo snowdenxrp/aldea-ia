@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
-import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
+import { NEXO_RESOURCE_LIMITS, assertContinuityResourceLimits } from "../../src/nexo/core/resource-limits.mjs";
 import { NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
 
 const directory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-owned-continuity-"));
@@ -19,6 +19,18 @@ const emptySnapshot = {
   executions: [],
   effectJournal: []
 };
+
+// Each accepted Continuity collection maximum is inclusive; one additional item fails closed.
+for (const [collection, maximum] of Object.entries(NEXO_RESOURCE_LIMITS.continuityCollections)) {
+  const atLimit = { ...emptySnapshot, [collection]: Array.from({ length: maximum }, () => null) };
+  assert.doesNotThrow(() => assertContinuityResourceLimits(atLimit, 0),
+    `${collection} at the accepted maximum is within the resource profile`);
+  const overLimit = { ...emptySnapshot, [collection]: Array.from({ length: maximum + 1 }, () => null) };
+  assert.throws(() => assertContinuityResourceLimits(overLimit, 0), {
+    code: "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED"
+  }, `${collection} above the accepted maximum is rejected`);
+}
+
 
 await assert.rejects(
   () => store.loadCurrent(),
