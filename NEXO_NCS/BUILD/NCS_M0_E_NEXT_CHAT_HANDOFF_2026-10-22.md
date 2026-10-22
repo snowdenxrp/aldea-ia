@@ -1,3 +1,21 @@
+# CHECKPOINT MÁS RECIENTE — 2026-10-22 — PRUEBA REPRESENTATIVA DE ADMISIÓN
+
+Este bloque supersede el punto 2 de “Siguiente trabajo exacto” del checkpoint anterior en lo que respecta al primer fixture representativo. No borra ni cierra las brechas de capacidad general.
+
+- Código/prueba: commit `390d3a39faf802c22c3687102ce675b9362e1381`, archivo `tests/nexo/continuity-contract.test.mjs`.
+- Prueba añadida: una misión válida de 12 pasos, dependencias en cadena, targets estructurados, contexto anidado y metadatos opcionales atraviesa `recordNexoMissionInSnapshot`; assertions comprueban que no se truncan pasos ni contexto.
+- CI exacto de ese SHA: los cinco workflows SUCCESS:
+  - deterministic persistence tests: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342109
+  - STEP 4 semantic validation: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342118
+  - STEP 5 outcome classification: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342204
+  - integrated acceptance regression: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342245
+  - bounded mission admission and restart continuity: https://github.com/snowdenxrp/aldea-ia/actions/runs/39837342249
+- La prueba es un fixture representativo de contrato creado para cubrir integración; no es evidencia de producción ni prueba que el perfil v1 admita toda misión legítima.
+- Siguiente trabajo exacto: inspeccionar únicamente las formas válidas de misión existentes en tests/contratos y determinar si hay variedad independiente suficiente. No repetir pruebas de máximo/máximo+1. Si faltan fixtures reales, documentar que la suficiencia funcional no puede concluirse con la evidencia actual. Luego elegir una sola brecha real de recursos.
+- Sin cambios runtime; sin dispatch/persistencia/efectos habilitados por este trabajo. Estado canónico permanece M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT ACTUAL — 2026-10-22 — M0-E MISSION PREVIEW ADMISSION
 
 > **Esta sección y el STATUS actualizan/superan las instrucciones de siguiente trabajo más antiguas que aparecen en el resto de este handoff.** El contexto histórico de autoridad/Step 7 se conserva como referencia, pero el siguiente trabajo activo es M0-E; no reiniciar la investigación de autoridad ni Step 7.
