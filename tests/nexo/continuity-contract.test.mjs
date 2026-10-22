@@ -61,6 +61,26 @@ assert.throws(
   "persisted snapshots must not bypass the shared per-mission step ceiling"
 );
 
+function nestedRecord(depth) {
+  let value = { leaf: true };
+  for (let index = 0; index < depth; index += 1) value = { nested: value };
+  return value;
+}
+const overDepthSnapshot = {
+  schema: NEXO_CONTINUITY_SCHEMA,
+  schemaVersion: 1,
+  missions: [],
+  attempts: [{ payload: nestedRecord(40) }],
+  doNotRepeat: [],
+  executions: [],
+  effectJournal: []
+};
+assert.throws(
+  () => assertNexoContinuitySnapshot(overDepthSnapshot),
+  error => error?.code === "NEXO_CONTINUITY_SNAPSHOT_RESOURCE_LIMIT_EXCEEDED",
+  "snapshot nesting must be bounded iteratively before recursive contract validation"
+);
+
 const duplicateStepMemory = structuredClone(validMemory);
 duplicateStepMemory.nexo.missions[0].steps.push({
   id: "step-a", action: "repair_agent_needs", target: { agentId: "bravo" }, status: "planned", dependsOn: []
