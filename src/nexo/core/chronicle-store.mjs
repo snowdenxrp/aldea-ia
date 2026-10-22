@@ -138,13 +138,28 @@ async function readDocument(fsModule, filePath) {
   return validateDocument(parsed);
 }
 
+async function removeStaleTemporaryFiles(fsModule, filePath) {
+  const directory = path.dirname(filePath);
+  const baseName = path.basename(filePath);
+  const legacyPrefix = `${baseName}.tmp-`;
+  const stableTempName = `${baseName}.tmp`;
+  const entries = await fsModule.readdir(directory, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isFile() || (entry.name !== stableTempName && !entry.name.startsWith(legacyPrefix))) continue;
+    await fsModule.rm(path.join(directory, entry.name), { force: true });
+  }
+}
+
 async function writeDocument(fsModule, filePath, document) {
   assertChronicleResourceLimits(document);
   if (serializedUtf8Bytes(document) > NEXO_RESOURCE_LIMITS.chronicleDocumentBytes) {
     throw fail("NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED");
   }
-  const temp = `${filePath}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
+  const temp = `${filePath}.tmp`;
   try {
+    // This writer already holds the store lock: clean abandoned stable/legacy
+    // temporaries, then reuse one bounded temporary path.
+    await removeStaleTemporaryFiles(fsModule, filePath);
     await fsModule.writeFile(temp, JSON.stringify(document, null, 2) + "\n", "utf8");
     await fsModule.rename(temp, filePath);
   } catch (error) {
