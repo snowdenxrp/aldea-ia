@@ -139,7 +139,7 @@ Esta conclusión está limitada a las rutas revisadas y a directorios locales de
 
 ### Próximo trabajo de Nexo
 
-Antes de avanzar la frontera de interpretación, resolver el hallazgo nuevo de recursos: `scripts/nexo.mjs` usa `fs.readFile` + `JSON.parse` sin tope previo para `mission-draft-preview --draft` y `mission-request-preview --request`. Leer [NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md). Definir el máximo de bytes de esos archivos sin inferir automáticamente los 256 KiB de stdin Chronicle; después reutilizar `readUtf8FileBounded`, añadir pruebas de frontera y verificar CI en el SHA exacto. No conectar un modelo ni persistir/despachar estas vistas previas.
+Antes de avanzar la frontera de interpretación, resolver el hallazgo nuevo de recursos: `scripts/nexo.mjs` usa `fs.readFile` + `JSON.parse` sin tope previo para `mission-draft-preview --draft` y `mission-request-preview --request`. Leer [NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md](NCS_M0_E_MISSION_PREVIEW_INPUT_BOUNDARY_FINDING_2026-10-22.md) y la [propuesta de máximo de 256 KiB por archivo](NCS_M0_E_MISSION_PREVIEW_INPUT_LIMIT_PROPOSAL_2026-10-22.md). Obtener decisión explícita del propietario sobre ese máximo (o su sustituto) antes de editar runtime; después reutilizar `readUtf8FileBounded`, añadir pruebas de frontera y verificar CI en el SHA exacto. No conectar un modelo ni persistir/despachar estas vistas previas.
 
 
 ## Corrección de alcance — entradas de misión sin límite previo (2026-10-22)
