@@ -551,3 +551,36 @@ La separación es recomendación pendiente, no decisión aceptada. No cambiar es
 ## Hallazgo de cobertura de tests para no perder
 
 El `package.json` actual tiene 44 archivos `tests/nexo/*.test.mjs`; `npm test` invoca 27 y omite 17. La lista exacta está en `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`. No asumir que todas las omisiones son bugs: determinar propósito/dependencias una por una. La futura prueba arquitectónica D1 debe quedar enlazada explícitamente a la verificación requerida; archivo presente pero no ejecutado no es evidencia.
+
+
+## RECUPERACIÓN TRAS INTERRUPCIONES — 2026-10-23 12:42 (punto exacto)
+
+El usuario pidió detener la exploración y guardar el último punto para un chat nuevo, sin perder hallazgos ni repetir auditorías. Continuar desde aquí con la palabra clave de chat nuevo **NCS**.
+
+### Punto exacto de trabajo
+Se estaba terminando el censo de referencias/callers de Nexo en todo el repositorio y trasladando los hallazgos a los documentos de contrato, STATUS y handoff. El trabajo más reciente logró actualizar el contrato principal con una **matriz de fronteras de producción y tratamiento propuesto**. El último cambio se escribió en:
+- `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md`
+- Sección añadida: **“Matriz de fronteras de producción y tratamiento propuesto”**.
+- Incluye `scripts/nexo.mjs`, sesión Chronicle ejecutable directamente, `assistants.mjs`, `simulate.mjs`, API pública de aplicación, reexport de Continuity, fábricas path-based y helpers repair; define además el límite de amenaza y las condiciones verificables de cierre D1.
+- El último fetch del contrato mostró además una sección posterior sobre el conflicto de secuencia entre cerrar D1 y prohibir cambios de tests. Propone separar **D1-DESIGN** de **D1-IMPLEMENTATION** para evitar un ciclo lógico. Esto es recomendación pendiente, no decisión aprobada.
+- No se modificó runtime/tests/workflows ni se ejecutaron pruebas.
+
+### Últimos hallazgos que deben preservarse
+1. `scripts/nexo-chronicle-session.mjs` se puede ejecutar directamente y acepta rutas legacy `--continuity`/`--chronicle`; el router padre no es frontera suficiente. Debe exigir raíz y adquirir lock en el hijo, antes de preflight/lecturas.
+2. `src/nexo/core/continuity-store.mjs` y `chronicle-store.mjs`: `loadCurrent()` lee sin adquirir lock de mutación. La admisión de raíz debe envolver la operación completa desde antes de la primera lectura; locks de store siguen como capa separada.
+3. `scripts/simulate.mjs` abre Continuity mediante `openNexoContinuityOwner`, con `.nexo-continuity.json`, `legacyMemory` y posible inicialización/migración, y también persiste world state. Su lock local protege world state y tiene semántica distinta; no copiarlo como root lock.
+4. `scripts/assistants.mjs` abre Continuity directamente y registra una misión, además de persistir memoria Lúmina y world state por separado. Propuesta: análisis Lúmina sin retener root lock; lectura de instancia admitida y escritura condicional por revisión; si hay conflicto, fallar explícitamente, sin retry silencioso. Lúmina/world state quedan fuera de la raíz Nexo.
+5. `tests/nexo/continuity-migration.test.mjs` confirma que `openNexoContinuityOwner({ legacyMemory })` puede migrar memoria legacy al store canónico. Migración/bootstrap debe ser explícita y admitida, no incidental al ejecutar comandos legacy.
+6. `scripts/nexo-repair-entrypoint.mjs` es helper importable, no CLI de package. El camino productivo `assistants` pasa por `scripts/nexo-runtime-session.mjs`, cuyo gate actual devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; no convertir root admission en autorización de reparación.
+7. Las consultas de aplicación (status, mission status/plan, previews y open-loops) usan lecturas path-based. Proteger solo escrituras deja bypasses de lectura.
+8. La matriz de errores de parseo se añadió al contrato: códigos actuales por comando y sesión hija Chronicle; diferenciar parse error, `not_found`, fallo de admisión y fallo de spawn. El padre Chronicle delega validación de opciones al hijo.
+9. Existe un conflicto de proceso: exigir test arquitectónico para cerrar D1 pero prohibir tocar tests hasta cerrar D1/D2/D3 bloquea el avance. Recomendación pendiente: separar cierre de diseño y cierre de implementación.
+
+### Estado real
+- D1/D2/D3 siguen **OPEN**.
+- M0 incompleto; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Todo lo reciente es documentación/código fuente leído, no implementación. No declarar CI ni tests ejecutados.
+- No repetir auditorías históricas ya cerradas ni reabrir Step 7 como tarea inmediata.
+- Próximo paso: recuperar y verificar el censo completo de referencias/callers Nexo y el estado de los tres documentos; resolver si se acepta la separación D1-DESIGN / D1-IMPLEMENTATION; luego cerrar inventario y allowlist con evidencia antes de cambiar runtime/tests.
+- En el chat nuevo, leer primero `NEXO_NCS/STATUS.md`, luego el contrato de raíz, luego este handoff. Continuar exactamente desde la matriz de fronteras de producción/censo de callers; no reiniciar desde investigaciones antiguas.
+
