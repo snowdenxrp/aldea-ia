@@ -118,3 +118,15 @@ Se contrastaron el paquete de decisión del propietario, el ledger D0, la matriz
 - D3 no puede cerrarse solo con más documentos si el runtime objetivo y los controles de relanzamiento siguen sin identificarse.
 
 Este cross-check es documental. No cambió código, tests ni workflows; no se ejecutaron tests/CI. Estado canónico intacto: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## Wording reconciliation — D2/D3 reserved-path policy (2026-10-23)
+
+A targeted cross-check found one over-prescriptive sentence in `NCS_M0_D2_D3_CONTRACT_GAP_RECONCILIATION_2026-10-23.md`: it said the contract must reject symlinks for reserved store/lock names, while the owner decision packet and reserved-path matrix correctly leave D0-C3 policy OPEN and do not approve universal rejection. This was a wording inconsistency, not evidence of a runtime defect.
+
+Corrected the D2/D3 reconciliation document so D0-C3 must first decide accepted object/symlink cases; tests must then enforce the approved policy. The correction does not choose that policy on the owner's behalf.
+
+Correction commit: `92821951db0c47bb0904560635cc3cd1cf7baf4f`.
+Corrected document blob: `79b554a0d4d056eebb569d1e8ab98405421cbe9b`.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
