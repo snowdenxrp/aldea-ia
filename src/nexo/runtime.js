@@ -2,9 +2,19 @@ import { beginNexoStep, advanceNexoMission, replanNexoMission } from "./orchestr
 import { recordNexoOutcome, recordNexoExecution, recordNexoPlan, reconstructNexoMission } from "../assistants/memory.js";
 import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLuminaEffectPostcondition } from "./simulation-adapter.js";
 import { assertNexoContinuityMemoryShape } from "./core/continuity-contract.mjs";
+import { assertContractInput } from "./core/contracts.mjs";
 export { executeNexoStepWithContinuityOwner } from "./core/owner-backed-runtime.mjs";
 
 const runtimeCommitLocks = new WeakMap();
+
+function isValidContractRecord(value, field) {
+  try {
+    assertContractInput(value, field);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // Replan only from the durable reconstructed mission; preserve the old attempt and
 // persist the successor candidate before a caller can decide whether to execute it.
@@ -105,6 +115,10 @@ export async function executeNexoStep(options = {}) {
   const context = input.context === undefined ? {} : input.context;
   const precondition = input.precondition;
   const postcondition = input.postcondition;
+  // Validate caller-owned nested inputs before ordinary reads of mission steps or adapter methods.
+  if (!isValidContractRecord(mission, "mission") || !isValidContractRecord(adapter, "adapter")) {
+    return { mission: null, memory, adapterResult: null, status: "invalid", code: "NEXO_RUNTIME_CONTRACT_INPUT_INVALID" };
+  }
   if(!mission?.missionId||!adapter?.execute)return{mission:null,memory,adapterResult:null,status:"invalid"};
   if(memory!==null&&memory!==undefined) {
     try {
@@ -154,6 +168,9 @@ export async function executeLuminaNexoStep(options = {}) {
   const precondition = input.precondition;
   const postcondition = input.postcondition;
   const persistPreparedIntent = input.persistPreparedIntent === undefined ? null : input.persistPreparedIntent;
+  if (!isValidContractRecord(mission, "mission")) {
+    return { mission: null, memory, adapterResult: null, status: "invalid", code: "NEXO_RUNTIME_CONTRACT_INPUT_INVALID" };
+  }
   if(!simulation)return{mission:null,memory,adapterResult:null,status:"invalid"};
   const runtimeMemory=memory ?? null;
   const executionJournal=Array.isArray(runtimeMemory?.nexo?.effectJournal)?runtimeMemory.nexo.effectJournal:[];
