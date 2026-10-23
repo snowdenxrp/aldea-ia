@@ -30,29 +30,27 @@ Purpose: resume from verified current state without repeating closed research or
 
 ## 3. Latest repository evidence inspected for this handoff
 
-Current branch: `ncs-clean-architecture`.
-Latest commit returned by repository commit listing at handoff time:
-- `f87c010ab4f282a50f2cd4fd8940420ca74ddc0e` — “Actualizar estado de Lúmina”
-- https://github.com/snowdenxrp/aldea-ia/commit/f87c010ab4f282a50f2cd4fd8940420ca74ddc0e
+Branch: `ncs-clean-architecture`.
 
-Current STATUS content/blob observed:
-- Blob SHA: `d3da6f4a022defacc642c881b9720ab1ce87b954`
+Latest verified implementation+test checkpoint:
+- SHA: `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a`
+- [Deterministic persistence / `npm test` — run 39979814293 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814293), job `120503839135` SUCCESS.
+- [STEP 4 — run 39979814347 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814347).
+- [STEP 5 — run 39979814116 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814116).
+
+Current STATUS content/blob observed immediately before this handoff edit:
+- Blob SHA: `0c38bc81e43a9d62dcc7b0c8a633aea8255144df`
 - https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/STATUS.md
+
+Current Open Loops contract:
+- `NEXO_NCS/BUILD/NCS_M0_OPEN_LOOPS_QUERY_CONTRACT_2026-10-23.md`
+- Blob SHA: `164dbee6fd1cb2a46db933a3f63e88201c651268`
+- https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_OPEN_LOOPS_QUERY_CONTRACT_2026-10-23.md
 
 Relevant recent caller matrix:
 - `NEXO_NCS/BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md`
 - Blob: `8cc15e9faeeb45daf034d343d5a6faa5c52e5374`
 - https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md
-
-### Caller matrix conclusions (do not re-investigate from scratch)
-
-- The narrow CLI route is `scripts/nexo.mjs → src/nexo/application/index.mjs`; its tested export surface is limited to Chronicle append, read-only continuity queries and previews.
-- `src/nexo/application/chronicle-append.mjs` is a concrete production caller of `executeNexoStepWithContinuityOwner`, assembling a Chronicle/continuity owner and adapter for `chronicle_append`.
-- `src/nexo/core/owner-backed-runtime.mjs` blocks canonical repair actions and actions other than `chronicle_append` before dispatch in that route.
-- `src/nexo/adapters/chronicle-effect.mjs` narrows the action but does not authenticate the supplied store capability.
-- Ordinary accessor/prototype guards do not neutralize Proxy traps. No universal claim that every internal module is unreachable is established.
-- Chronicle append is a bounded local mutation allowed under Option A; result still says `authorization: NOT_EVALUATED`. It is not owner-root proof or general protected execution.
-- Do not add another reflective guard just to address Proxy traps. The full generic-runtime caller graph and enforceable input trust model remain unresolved.
 
 ## 4. Open Loops: the current implementation checkpoint
 
