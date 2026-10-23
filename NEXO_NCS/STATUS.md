@@ -1099,3 +1099,12 @@ Se identificó una tensión explícita: conservar los locks actuales porque no s
 ### Caracterización comparativa de locks de stores registrada
 
 Se documentó una matriz basada en `continuity-store.test.mjs` y `chronicle-store.test.mjs`: esquema owner distinto, stale/corrupt fail-closed, timeout estructurado, release retry/quarantine diferente y lecturas sin lock. Antes de elegir primitiva compartida, caracterizar resultados exactos y bytes persistidos. D2 sigue OPEN.
+
+
+### Censo de referencias Nexo en aplicación ampliado — 2026-10-23
+
+Se revisaron los 34 módulos de `src/nexo/`, complementando los 13 scripts y 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/`. El inventario clasifica ocho grupos: CLI principal, hijo Chronicle directo, API de aplicación path-based, servicios/stores filesystem, owner/runtime en memoria, adaptadores/efectos, memoria legacy y comandos compuestos, y módulos de pueblo/aldea/mundo/vendor visual.
+
+Hallazgo clave: los módulos de pueblo/aldea y los entrypoints visuales no muestran apertura directa de stores Nexo; `src/assistants/memory.js` mantiene datos `memory.nexo` en memoria, pero los callers externos de persistencia siguen siendo `assistants.mjs`, `simulate.mjs`, el hijo Chronicle y la CLI principal. Dentro de Nexo, `application/**`, `continuity-service.mjs` y las fábricas de store aún aceptan rutas directas. El censo define puntos conocidos, pero no prueba no-bypass hasta añadir un allowlist de imports/callers de producción y tests arquitectónicos.
+
+El blob `src/three.core.js` existe (1.403.455 bytes); el fetch textual vacío no significa archivo ausente. Se excluyen vendor Three.js y coincidencias léxicas como `transmission` de las referencias Nexo. Censo ampliado solo documental; D1/D2/D3 siguen OPEN; sin cambios de runtime/tests/workflows ni ejecución de pruebas.
