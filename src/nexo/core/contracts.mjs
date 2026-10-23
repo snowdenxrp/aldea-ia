@@ -10,36 +10,137 @@ const TERMINAL_OUTCOMES = Object.freeze([
 const VALIDATION_STATES = Object.freeze(["PASS", "FAIL", "UNKNOWN"]);
 const COMMIT_STATES = Object.freeze(["COMMITTED", "CONDITIONAL_CONFLICT", "FAILED", "UNKNOWN"]);
 
-function assertDeepFreezable(value, seen = new WeakSet()) {
-  if (value === null || typeof value !== "object") return;
-  if (seen.has(value)) return;
-  seen.add(value);
+const CONTRACT_LIMITS = Object.freeze({
+  maxDepth: 32,
+  maxNodes: 20_000,
+  maxStringBytes: 256 * 1024,
+  maxTotalStringBytes: 4 * 1024 * 1024
+});
+const CONTRACT_TEXT_ENCODER = new TextEncoder();
 
-  const isArray = Array.isArray(value);
-  const prototype = Object.getPrototypeOf(value);
-  if (!isArray && prototype !== Object.prototype && prototype !== null) {
-    throw new TypeError("contract data must contain only arrays and plain objects");
+function contractStringBytes(value) {
+  return CONTRACT_TEXT_ENCODER.encode(value).byteLength;
+}
+
+function assertDeepFreezable(root) {
+  const active = new WeakSet();
+  const complete = new WeakSet();
+  const stack = [{ value: root, depth: 0, entered: false }];
+  let nodes = 0;
+  let totalStringBytes = 0;
+
+  function accountString(value) {
+    const bytes = contractStringBytes(value);
+    if (bytes > CONTRACT_LIMITS.maxStringBytes) {
+      throw new TypeError("contract data exceeds resource limits: string too large");
+    }
+    totalStringBytes += bytes;
+    if (totalStringBytes > CONTRACT_LIMITS.maxTotalStringBytes) {
+      throw new TypeError("contract data exceeds resource limits: total string bytes exceeded");
+    }
   }
 
-  for (const key of Reflect.ownKeys(value)) {
-    if (typeof key === "symbol") {
-      throw new TypeError("contract data must not contain symbol-keyed properties");
+  while (stack.length > 0) {
+    const frame = stack[stack.length - 1];
+    const value = frame.value;
+    if (!frame.entered) {
+      frame.entered = true;
+      if (frame.depth > CONTRACT_LIMITS.maxDepth) {
+        throw new TypeError("contract data exceeds resource limits: maximum depth exceeded");
+      }
+      if (typeof value === "string") accountString(value);
+      if (value === null || typeof value !== "object") {
+        stack.pop();
+        continue;
+      }
+      if (active.has(value)) throw new TypeError("contract data must not contain cycles");
+      if (complete.has(value)) {
+        stack.pop();
+        continue;
+      }
+      nodes += 1;
+      if (nodes > CONTRACT_LIMITS.maxNodes) {
+        throw new TypeError("contract data exceeds resource limits: maximum node count exceeded");
+      }
+      const isArray = Array.isArray(value);
+      const prototype = Object.getPrototypeOf(value);
+      if (isArray) {
+        if (prototype !== Array.prototype) {
+          throw new TypeError("contract arrays must use the canonical Array prototype");
+        }
+      } else if (prototype !== Object.prototype && prototype !== null) {
+        throw new TypeError("contract data must contain only arrays and plain objects");
+      }
+      const keys = Reflect.ownKeys(value);
+      if (isArray && (keys.length !== value.length + 1 || !keys.includes("length"))) {
+        throw new TypeError("contract arrays must be dense and must not have extra properties");
+      }
+      const children = [];
+      for (const key of keys) {
+        if (typeof key === "symbol") {
+          throw new TypeError("contract data must not contain symbol-keyed properties");
+        }
+        if (isArray && key === "length") continue;
+        accountString(key);
+        if (isArray) {
+          const index = Number(key);
+          if (!Number.isInteger(index) || index < 0 || index >= value.length || String(index) !== key) {
+            throw new TypeError("contract arrays must be dense and must not have extra properties");
+          }
+        }
+        const descriptor = Object.getOwnPropertyDescriptor(value, key);
+        if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+          throw new TypeError("contract data must contain only enumerable data properties");
+        }
+        children.push(descriptor.value);
+      }
+      if (isArray && children.length !== value.length) {
+        throw new TypeError("contract arrays must be dense and must not have extra properties");
+      }
+      active.add(value);
+      frame.children = children;
+      frame.index = 0;
+      continue;
     }
-    if (isArray && key === "length") continue;
-    const descriptor = Object.getOwnPropertyDescriptor(value, key);
-    if (!descriptor.enumerable || !("value" in descriptor)) {
-      throw new TypeError("contract data must contain only enumerable data properties");
+    if (frame.index < frame.children.length) {
+      const child = frame.children[frame.index++];
+      if (child !== null && typeof child === "object" && active.has(child)) {
+        throw new TypeError("contract data must not contain cycles");
+      }
+      if (child !== null && typeof child === "object" && complete.has(child)) continue;
+      stack.push({ value: child, depth: frame.depth + 1, entered: false });
+      continue;
     }
-    assertDeepFreezable(descriptor.value, seen);
+    active.delete(value);
+    complete.add(value);
+    stack.pop();
   }
 }
 
-function immutable(value, seen = new WeakSet()) {
+function immutable(value) {
   if (value === null || typeof value !== "object") return value;
-  if (seen.has(value)) return value;
-  seen.add(value);
-  for (const child of Object.values(value)) immutable(child, seen);
-  return Object.freeze(value);
+  const seen = new WeakSet();
+  const stack = [{ value, expanded: false }];
+  while (stack.length > 0) {
+    const frame = stack.pop();
+    const current = frame.value;
+    if (current === null || typeof current !== "object") continue;
+    if (frame.expanded) {
+      Object.freeze(current);
+      continue;
+    }
+    if (seen.has(current)) continue;
+    seen.add(current);
+    stack.push({ value: current, expanded: true });
+    const keys = Reflect.ownKeys(current);
+    for (let i = keys.length - 1; i >= 0; i -= 1) {
+      const key = keys[i];
+      if (Array.isArray(current) && key === "length") continue;
+      const descriptor = Object.getOwnPropertyDescriptor(current, key);
+      if (descriptor && "value" in descriptor) stack.push({ value: descriptor.value, expanded: false });
+    }
+  }
+  return value;
 }
 
 function detachedImmutable(value) {
@@ -54,7 +155,12 @@ function detachedImmutable(value) {
 
 function detachedMutable(value) {
   if (value === undefined) return value;
-  return structuredClone(value);
+  // Apply the same admission rules before cloning; structuredClone must not
+  // normalize a malformed caller-owned graph into an accepted candidate.
+  assertDeepFreezable(value);
+  const clone = structuredClone(value);
+  assertDeepFreezable(clone);
+  return clone;
 }
 
 export function assertContractInput(value, field) {
@@ -123,13 +229,13 @@ export function createClaimEnvelope(input = {}) {
     action,
     target: detachedImmutable(input.target ?? null),
     targetIncarnation: detachedImmutable(input.targetIncarnation ?? null),
-    authoritativeReads: detachedImmutable([...requiredArray(input.authoritativeReads ?? [], "authoritativeReads")]),
-    dependencies: detachedImmutable([...requiredArray(input.dependencies ?? [], "dependencies")]),
-    predicateDependencies: detachedImmutable([...requiredArray(input.predicateDependencies ?? [], "predicateDependencies")]),
-    derivedProvenance: detachedImmutable([...requiredArray(input.derivedProvenance ?? [], "derivedProvenance")]),
+    authoritativeReads: detachedImmutable(requiredArray(input.authoritativeReads ?? [], "authoritativeReads")),
+    dependencies: detachedImmutable(requiredArray(input.dependencies ?? [], "dependencies")),
+    predicateDependencies: detachedImmutable(requiredArray(input.predicateDependencies ?? [], "predicateDependencies")),
+    derivedProvenance: detachedImmutable(requiredArray(input.derivedProvenance ?? [], "derivedProvenance")),
     policyContext: input.policyContext == null ? null : createPolicyContext(input.policyContext),
-    causalInputs: detachedImmutable([...requiredArray(input.causalInputs ?? [], "causalInputs")]),
-    sourceProvenance: detachedImmutable([...requiredArray(input.sourceProvenance ?? [], "sourceProvenance")])
+    causalInputs: detachedImmutable(requiredArray(input.causalInputs ?? [], "causalInputs")),
+    sourceProvenance: detachedImmutable(requiredArray(input.sourceProvenance ?? [], "sourceProvenance"))
   });
 }
 

@@ -338,3 +338,17 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 - Confirmación de CI para runtime SHA `72ebe229677b98c66401f2d74cfe398508cb99d6`: Chronicle native vertical [SUCCESS, run 39865376589](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865376589); persistencia determinista [SUCCESS, run 39865376604](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865376604); admisión/continuidad [SUCCESS, run 39865376544](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865376544).
 - Confirmación de CI para test SHA `8a7b8562a9f6689c86162b82f4cadab5a1302984`: validación semántica [SUCCESS, run 39865398271](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865398271); clasificación de resultado [SUCCESS, run 39865398267](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865398267); persistencia determinista [SUCCESS, run 39865398289](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865398289).
 - Alcance exacto: estas pruebas validan la regresión del verificador y workflows señalados; no equivalen a una corrida completa de `npm test`, ni a prueba de autoridad raíz o de activación segura de efectos protegidos.
+
+
+---
+
+# CHECKPOINT NUEVO — 2026-10-22 — ENDURECIMIENTO DE CONTRATOS CORE (CI PENDIENTE)
+
+- `src/nexo/core/contracts.mjs`: validación iterativa del grafo con conjuntos activo/completado; ciclos reales rechazados, referencias compartidas acíclicas admitidas, arrays densos con prototipo canónico y sin propiedades extra, congelación iterativa en postorden.
+- Límites de admisión v1 propuestos para este contrato: profundidad 32, 20 000 objetos, 256 KiB por cadena y 4 MiB agregados de cadenas/keys. Son límites estructurales, no mediciones de heap ni garantías de producción; se revisarán si la batería o usos reales evidencian incompatibilidad.
+- `detachedMutable()` valida antes y después de clonar. Las listas de claims se validan antes de copiarlas, sin spread previo que normalice la forma de entrada.
+- `tests/nexo/core-contracts.test.mjs`: regresiones para ciclos, referencias compartidas, arrays dispersos/extendidos/prototipo no canónico, límites de profundidad/nodos/cadenas y estado mutable cíclico.
+- El script `npm test` ahora incluye la prueba directa de contratos como primera etapa para que el workflow de persistencia la ejecute.
+- Estado de verificación: prueba directa y CI para el SHA nuevo PENDING hasta observar resultados vinculados al commit; no declarar PASS por la existencia de tests.
+- Límite explícito: traps de Proxy no neutralizados. No se cambia autoridad ni se habilita despacho de efectos protegidos.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.

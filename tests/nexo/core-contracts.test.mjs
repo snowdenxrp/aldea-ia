@@ -238,3 +238,55 @@ assert.equal("authorize" in policyClaim.policyContext, false);
 assert.equal("safeCommit" in policyClaim.policyContext, false);
 
 console.log("NEXO CORE isolation contract tests: PASS");
+
+
+// Resource-bounded graph validation: cycles reject, shared acyclic references remain valid.
+const cyclicClaimTarget = {};
+cyclicClaimTarget.self = cyclicClaimTarget;
+assert.throws(() => createClaimEnvelope({ claimId: "claim-cycle", action: "example", target: cyclicClaimTarget }), /must not contain cycles/);
+
+const sharedLeaf = { revision: 4 };
+const sharedTarget = { left: sharedLeaf, right: sharedLeaf };
+const sharedClaim = createClaimEnvelope({ claimId: "claim-shared", action: "example", target: sharedTarget });
+assert.equal(sharedClaim.target.left.revision, 4);
+assert.equal(sharedClaim.target.left, sharedClaim.target.right);
+assert.equal(Object.isFrozen(sharedClaim.target.left), true);
+
+const sparse = [];
+sparse.length = 2;
+sparse[1] = "present";
+assert.throws(() => createClaimEnvelope({ claimId: "claim-sparse", action: "example", dependencies: sparse }), /arrays must be dense/);
+
+const extraArrayProperty = ["one"];
+extraArrayProperty.note = "extra";
+assert.throws(() => createClaimEnvelope({ claimId: "claim-array-extra", action: "example", dependencies: extraArrayProperty }), /arrays must be dense/);
+
+const customArrayPrototype = ["one"];
+Object.setPrototypeOf(customArrayPrototype, Object.create(Array.prototype));
+assert.throws(() => createClaimEnvelope({ claimId: "claim-array-prototype", action: "example", dependencies: customArrayPrototype }), /canonical Array prototype/);
+
+const tooDeep = {};
+let tooDeepCursor = tooDeep;
+for (let i = 0; i < 40; i += 1) {
+  tooDeepCursor.next = {};
+  tooDeepCursor = tooDeepCursor.next;
+}
+assert.throws(() => createClaimEnvelope({ claimId: "claim-too-deep", action: "example", target: tooDeep }), /contract data exceeds resource limits/);
+
+const tooManyNodes = [];
+for (let i = 0; i < 20_001; i += 1) tooManyNodes.push({ value: i });
+assert.throws(() => createClaimEnvelope({ claimId: "claim-too-many-nodes", action: "example", dependencies: tooManyNodes }), /contract data exceeds resource limits/);
+
+const tooLongString = "x".repeat(256 * 1024 + 1);
+assert.throws(() => createClaimEnvelope({ claimId: "claim-too-long-string", action: "example", target: { value: tooLongString } }), /contract data exceeds resource limits/);
+
+const tooManyStringBytes = Array.from({ length: 40 }, () => "x".repeat(120 * 1024));
+assert.throws(() => createClaimEnvelope({ claimId: "claim-too-many-string-bytes", action: "example", dependencies: tooManyStringBytes }), /contract data exceeds resource limits/);
+
+const cyclicState = {};
+cyclicState.self = cyclicState;
+assert.throws(() => createCandidate({ claim, state: cyclicState, expectedRevision: 7 }), /must not contain cycles/);
+
+const listWithExtraProperty = ["valid"];
+listWithExtraProperty.extra = "not part of the contract";
+assert.throws(() => createClaimEnvelope({ claimId: "claim-list-extra", action: "example", sourceProvenance: listWithExtraProperty }), /arrays must be dense/);
