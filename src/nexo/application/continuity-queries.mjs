@@ -324,6 +324,15 @@ export async function loadNexoOpenLoops(continuityPath) {
           storeRevision: current.storeRevision
         });
       }
+      // Required fields alone are not a link: resolve the journal row against
+      // the canonical mission/step identity and action in this same snapshot.
+      const linkedMission = snapshot.missions.find(mission => mission.missionId === entry.missionId);
+      const linkedStep = linkedMission?.steps?.find(step => step.id === entry.stepId);
+      if (!linkedStep || linkedStep.action !== entry.action) {
+        return fail("NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN", {
+          storeRevision: current.storeRevision
+        });
+      }
       outputItems += 1;
       if (outputItems > maxOutputItems) {
         return fail("NEXO_OPEN_LOOPS_OUTPUT_LIMIT_EXCEEDED", {
