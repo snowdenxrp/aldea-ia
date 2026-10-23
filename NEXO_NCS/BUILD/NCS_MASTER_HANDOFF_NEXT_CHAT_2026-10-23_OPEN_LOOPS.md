@@ -427,3 +427,10 @@ El documento de contrato ahora registra errores de argumentos y opciones requeri
 ## Bypass crítico adicional: el hijo Chronicle puede ejecutarse directamente
 
 `scripts/nexo-chronicle-session.mjs` tiene una guarda de ejecución directa, así que `node scripts/nexo-chronicle-session.mjs ...` evita el router padre. Su parser acepta rutas legacy y flags de inicialización. La no-bypass boundary debe exigir `--root` en el hijo, derivar rutas internamente y tomar el root lock antes de preflight/lecturas; el padre no lo toma. Añadir prueba negativa que invoque el hijo directamente con rutas legacy y compruebe que no lee ni crea archivos. Esto mantiene D1/D3 OPEN.
+
+
+## Matriz de no-bypass de producción y cierre de D1
+
+El contrato de raíz ahora contiene la matriz de tratamiento propuesto para ocho superficies: CLI principal; hijo Chronicle ejecutable directamente; `assistants`; `simulate`; API de aplicación path-based; reexport `nexo-continuity.mjs`; fábricas de store; helpers de repair. Define también el límite de amenaza: guardas de arquitectura para código de producción cooperativo, no aislamiento contra un proceso local hostil que pueda ejecutar/importar cualquier módulo.
+
+**D1 sigue OPEN.** Cierre solo después de aprobar el tratamiento de cada superficie, enumerar callers productivos, retirar paths de la API pública y tener pruebas arquitectónicas contra acceso directo a stores; las pruebas deben invocar directamente el hijo Chronicle y cubrir `simulate`/`assistants`.
