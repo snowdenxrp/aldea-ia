@@ -749,7 +749,7 @@ Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítim
 ## CI confirmado — regresión de consulta de plan — 2026-10-23
 
 - Consulta posterior del endpoint Actions por `head_sha` exacto encontró workflow [39899193232](https://github.com/snowdenxrp/aldea-ia/actions/runs/39899193232), SHA `53bd1a84ba2f9db8f82e0eedf69e590c2e852389`, `completed/success`.
-- Job `tests`: [120236612794](https://github.com/snowdenxrp/aldea-ia/actions/runs/39899193232/job/120236612794) — confirmar ID consultado en la respuesta del workflow antes de usar este enlace; la respuesta inicial lista el run y el job se recupera por su endpoint.
+- Job `mission-admission-continuity`: [120236555089](https://github.com/snowdenxrp/aldea-ia/actions/runs/39899193232/job/120236555089), `completed/success`; el paso `Run node tests/nexo/chronicle-runtime.test.mjs` terminó en `success`.
 - Log del job inspeccionado: la suite terminó sin fallo; incluye `Nexo Chronicle owner-backed runtime tests passed`, los guardas de entrada y `Nexo bounded temporary cleanup regression passed`.
 - Corrección de evidencia: la nota anterior decía que CI para el push no estaba confirmado porque el wrapper de runs por commit solo expone runs disparados por PR. La consulta directa de Actions por `head_sha` sí encontró el run de push. El PASS corresponde al SHA de pruebas `53bd1a84...`; no demuestra autoridad raíz ni efectos protegidos.
 - El commit posterior de STATUS `bef7bf1018fdff5eaf33f43177ea739279dcfd93` tiene su propio run [39899486462](https://github.com/snowdenxrp/aldea-ia/actions/runs/39899486462), `completed/success`; su job fue revisado y la suite terminó sin fallo.
