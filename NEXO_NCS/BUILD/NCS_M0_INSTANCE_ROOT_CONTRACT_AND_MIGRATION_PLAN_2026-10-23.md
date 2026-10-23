@@ -965,3 +965,14 @@ Protocolo candidato:
 6. Nunca mantener este lock mientras el padre espera a un hijo que también debe adquirirlo. El hijo Chronicle crea su propio deadline monotónico desde un presupuesto relativo.
 
 No está aprobado como protocolo final. D2 sigue OPEN hasta fijar códigos públicos, timeout/stale policy, release retry/quarantine y pruebas concurrentes/negative.
+
+
+### Afinamiento del candidato D2: stale, timeout y liberación
+
+Para reducir las subdecisiones abiertas, el candidato puede reutilizar los valores ya existentes como punto de partida, sin cambiar los locks de store:
+- Espera de admisión: presupuesto relativo predeterminado de 2000 ms; intervalo de comprobación de 10 ms.
+- Stale: edad del directorio superior a 60 s **y** PID propietario no vivo. Owner inválido o ilegible no se clasifica como stale: es estado desconocido. No eliminar el lock.
+- Liberación: comprobar token antes de retirar el directorio; permitir como máximo un intento adicional de limpieza tras un fallo transitorio (precedente: Continuity store). Si no se confirma liberación, registrar la raíz en un conjunto local de liberación incierta y bloquear nuevas operaciones de esa raíz mientras el lock siga presente; solo limpiar esa marca cuando la ruta ya no exista. No reintentar la operación de negocio.
+- Owner record: leer con límite de bytes existente `NEXO_RESOURCE_LIMITS.lockOwnerBytes`; el archivo owner también debe ser regular, no symlink. La ausencia breve de `owner.json` solo se tolera durante creación concurrente; después del presupuesto de creación, UNKNOWN.
+
+Son valores/propuestas derivados de los locks actuales, no una aprobación ni pruebas. Deben confirmarse en tests de tiempo límite, owner ausente/corrupto, PID muerto/vivo, release fallido, lock reemplazado y recuperación externa. D2 sigue OPEN.
