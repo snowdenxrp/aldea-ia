@@ -180,3 +180,12 @@ This is a check/use interval, not an atomic ownership-and-removal operation. If 
 Required closure: define recovery as an exclusive/offline operation with a demonstrable quiescence precondition, or select and test a filesystem protocol that safely distinguishes the lock instance being removed from a replacement. Do not assert that re-reading the token alone closes the interval; it only moves the interval. Tests should deterministically inject replacement between ownership validation and removal, verify the replacement survives, and require UNKNOWN/BLOCKED when safe ownership cannot be proven. Apply the same review to Chronicle and the proposed instance lock before claiming a shared release contract. Do not patch runtime until design/implementation authorization is explicit.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
+
+
+### Cross-store confirmation and test-gap refinement
+
+Follow-up inspection confirms the same verify-token-then-recursive-remove sequence in `src/nexo/core/chronicle-store.mjs` at blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`. Chronicle returns release failure after one failed removal; Continuity retries once and records a local failed-release path. Their contracts therefore differ even though both have the same replacement interleaving. Chronicle already comments that stale-lock check-then-remove is racy and requires explicit recovery; the release path itself still has the validation/removal interval.
+
+Existing test files `tests/nexo/continuity-store.test.mjs` (blob `c3af56077b94c8d641979e0853de7f70fa45d82f`) and `tests/nexo/chronicle-store.test.mjs` (blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`) cover release failures and not-owned results, but the targeted search did not find a deterministic fixture that replaces the lock directory after token validation and before recursive removal. This is a test-coverage observation from source inspection, not a test run. Both store implementations also attempt recursive removal of the lock path after owner-record creation fails; that cleanup path should be included in the same replacement/ownership review rather than assumed safe.
+
+Contract action remains: specify whether recovery can run concurrently with release; test replacement interleavings in release and failed-owner initialization; preserve Chronicle/Continuity behavior differences unless an authorized, tested refactor changes them. Runtime/tests/workflows unchanged; no tests/CI run.
