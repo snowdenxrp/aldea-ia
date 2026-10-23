@@ -1,3 +1,17 @@
+# CHECKPOINT NUEVO — 2026-10-22 — MISSION ADMISSION OWNER RESULT GUARD
+
+- Hallazgo reproducible: `recordNexoMissionSafely(options)` leía `owner.recordMission` y la respuesta del propietario mediante acceso ordinario. Un getter en la capacidad o en `persistenceStatus/status/code/storeRevision` podía ejecutarse antes de clasificar el resultado; además, una respuesta externa podía devolverse sin proyección.
+- Corrección runtime: la capacidad `recordMission` se extrae como descriptor propio de datos desde un objeto plano/prototipo nulo y se invoca conservando `this`. La respuesta se valida y proyecta desde descriptores propios de datos; respuestas inválidas pasan a `unknown / NEXO_CHRONICLE_MISSION_ADMISSION_RESULT_INVALID`, sin redispatch. Se exponen solo estado, código y revisión permitidos; los errores solo aportan un código propio de datos, nunca texto de excepción.
+- Regresiones en `tests/nexo/mission-admission-wrapper-input-guard.test.mjs`: getter del método del propietario no ejecutado; getter de `persistenceStatus` en respuesta aparentemente comprometida no ejecutado y clasificación final `UNKNOWN`; la ruta válida preexistente se conserva.
+- Commits: runtime [`9b24b337157c90ad3e7ba293fe267b0861398d6d`](https://github.com/snowdenxrp/aldea-ia/commit/9b24b337157c90ad3e7ba293fe267b0861398d6d); regresiones [`3abe03d7c885dc11c1f9a4ec6c952422d5bd723e`](https://github.com/snowdenxrp/aldea-ia/commit/3abe03d7c885dc11c1f9a4ec6c952422d5bd723e).
+- CI runtime SHA `9b24b337157c90ad3e7ba293fe267b0861398d6d`: aceptación integrada [SUCCESS, run 39881485790](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881485790) y persistencia determinista [SUCCESS, run 39881485780](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881485780).
+- CI test SHA exacto `3abe03d7c885dc11c1f9a4ec6c952422d5bd723e`: 3/3 workflows SUCCESS — [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881501662), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881501663), [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881501668).
+- Alcance: se evita la ejecución de getters ordinarios en los campos de respuesta consumidos y se cierra la devolución cruda de resultados del propietario. No neutraliza todos los `Proxy traps`, no demuestra confiabilidad del propietario ni autoridad legítima y no habilita dispatch.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: continuar con otra frontera pública solo si el defecto es reproducible; no repetir los guards de opciones, sanitización Chronicle ni admisión del propietario ya cubiertos.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — PUBLIC CHRONICLE RESULT SANITIZER
 
 - Hallazgo reproducible: la función exportada `publicChronicleResult(result, missionId, stepId)` leía `status`, `code`, `dispatchAttempted`, campos triestado y subresultados de timeout mediante acceso ordinario. Un getter en un resultado suministrado por una frontera de aplicación podía ejecutarse durante la sanitización pública.
@@ -6,6 +20,7 @@
 - Commits: runtime [`1faccdfe2d6c7e68ec7b71db30be68797bd918cf`](https://github.com/snowdenxrp/aldea-ia/commit/1faccdfe2d6c7e68ec7b71db30be68797bd918cf); regresiones e integración [`59b8a1c8a36becf9b39c6e7db2deff7c1cc103c9`](https://github.com/snowdenxrp/aldea-ia/commit/59b8a1c8a36becf9b39c6e7db2deff7c1cc103c9).
 - CI verificado sobre el SHA exacto `59b8a1c8a36becf9b39c6e7db2deff7c1cc103c9`: 6/6 workflows `success`: [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306953), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306915), [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881307004), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881307037), [admisión y continuidad](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306979), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306970). El job de admisión/continuidad ejecutó `tests/nexo/chronicle-runtime.test.mjs`; el workflow de persistencia ejecutó `npm test`.
 - Interpretación: la sanitización ya no ejecuta getters ordinarios en los campos que consume. Esto no neutraliza todos los traps de `Proxy`, no establece confiabilidad de los objetos de origen, no demuestra autoridad legítima y no autoriza dispatch ni efectos protegidos.
+- Read-back documental: el commit de STATUS [`1a5233ea3fd4ddbd16132a4071a7d65310362cdc`](https://github.com/snowdenxrp/aldea-ia/commit/1a5233ea3fd4ddbd16132a4071a7d65310362cdc) también completó persistencia determinista en [run 39881370927 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881370927).
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Siguiente: continuar solo con otra frontera pública reproducible y concreta; no volver a auditar la misma sanitización ni extender el cambio a campos que el contrato no consume.
 
