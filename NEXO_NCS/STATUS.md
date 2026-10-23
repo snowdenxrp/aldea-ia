@@ -965,3 +965,12 @@ Lectura directa de `tests/nexo/entrypoint.test.mjs` (blob `ff1bd2e9d292e21e00049
 `tests/nexo/assistants-runtime-cli.test.mjs` (blob `2c4ffb83e3bb849ac35ec381b268ef4f74a13225`) confirma la exclusión conductual de repair (`NEXO_M0_OPTION_A_EFFECT_EXCLUDED`), pero también configura explícitamente los tres paths independientes; no demuestra admisión por root. `scripts/nexo.mjs` delega Chronicle al proceso hijo mediante `spawnSync`, por lo que ese hijo debe ser el único dueño de la futura admisión.
 
 Corrección precisa del estado previo: sí hay guard de arquitectura parcial; falta el guard distinto de root/no-bypass, con lista completa de entradas productivas y contrato separado para `scripts/assistants.mjs` (integración compuesta Nexo+Lúmina). No se cambiaron runtime/tests/workflows. D1/D2 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+# CHECKPOINT — D3: CONTRATO PÚBLICO DE INSTANCIA Y FRONTERA ASSISTANTS (2026-10-23)
+
+Se propuso el contexto único de instancia: raíz explícita y validada; paths Chronicle/Continuity derivados internamente; contexto de admisión no falsificable por un booleano; operaciones completas dentro de una frontera común; helpers sin reentrada. CLI inicial recomendada: \`--root\`, sin env override, raíz existente obligatoria y sin bootstrap implícito. Chronicle pasa solo la raíz al child, que es dueño del lock.
+
+Se fijó propuesta explícita para \`scripts/assistants.mjs\`: integración compuesta; world-state y memoria Lúmina quedan fuera de la raíz Nexo en esta fase; solo la suboperación Continuity puede entrar a través de la API de instancia. No se promete atomicidad entre ficheros y \`NEXO_CONTINUITY_PATH\` no será override productivo del modo root. La exclusión \`NEXO_M0_OPTION_A_EFFECT_EXCLUDED\` permanece intacta.
+
+Se añadieron gates de inventario, API, lock, no-bypass, concurrencia, migración, seguridad y CI al contrato. Esto avanza el diseño pero no cierra D1/D2/D3: faltan cierre reproducible de callers, semántica probada de lock/canonicalización y decisión de compatibilidad de assistants. Runtime, tests y workflows sin cambios. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
