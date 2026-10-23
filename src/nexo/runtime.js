@@ -32,9 +32,9 @@ export function replanPersistedNexoMission(options = {}) {
   if (!input) return { mission: null, memory: null, status: "invalid", code: "NEXO_RUNTIME_OPTIONS_INVALID" };
   const memory = input.memory;
   const previousMissionId = input.previousMissionId;
-  const simulation = input.simulation ?? null;
-  const reports = input.reports ?? [];
-  const reason = input.reason ?? null;
+  const simulation = input.simulation === undefined ? null : input.simulation;
+  const reports = input.reports === undefined ? [] : input.reports;
+  const reason = input.reason === undefined ? null : input.reason;
   if(!memory || typeof previousMissionId!=="string" || !previousMissionId.trim())
     return {mission:null,memory,status:"invalid"};
   try {
@@ -95,7 +95,16 @@ async function commitRuntimeOutcome(memory, mission, stepId, adapterResult, outc
   try{return await current;}finally{if(runtimeCommitLocks.get(memory)===current)runtimeCommitLocks.delete(memory);}
 }
 
-export async function executeNexoStep({mission,stepId,adapter,memory=null,context={},precondition,postcondition}={}) {
+export async function executeNexoStep(options = {}) {
+  const input = readRuntimeOptions(options, ["mission", "stepId", "adapter", "memory", "context", "precondition", "postcondition"]);
+  if (!input) return { mission: null, memory: null, adapterResult: null, status: "invalid", code: "NEXO_RUNTIME_OPTIONS_INVALID" };
+  const mission = input.mission;
+  const stepId = input.stepId;
+  const adapter = input.adapter;
+  const memory = input.memory === undefined ? null : input.memory;
+  const context = input.context === undefined ? {} : input.context;
+  const precondition = input.precondition;
+  const postcondition = input.postcondition;
   if(!mission?.missionId||!adapter?.execute)return{mission:null,memory,adapterResult:null,status:"invalid"};
   if(memory!==null&&memory!==undefined) {
     try {
@@ -134,7 +143,17 @@ export async function executeNexoStep({mission,stepId,adapter,memory=null,contex
  *
  * Repair actions remain on their dedicated revision-bound settlement path.
  */
-export async function executeLuminaNexoStep({simulation,mission,stepId,memory=null,context={},precondition,postcondition,persistPreparedIntent=null}={}) {
+export async function executeLuminaNexoStep(options = {}) {
+  const input = readRuntimeOptions(options, ["simulation", "mission", "stepId", "memory", "context", "precondition", "postcondition", "persistPreparedIntent"]);
+  if (!input) return { mission: null, memory: null, adapterResult: null, status: "invalid", code: "NEXO_RUNTIME_OPTIONS_INVALID" };
+  const simulation = input.simulation;
+  const mission = input.mission;
+  const stepId = input.stepId;
+  const memory = input.memory === undefined ? null : input.memory;
+  const context = input.context === undefined ? {} : input.context;
+  const precondition = input.precondition;
+  const postcondition = input.postcondition;
+  const persistPreparedIntent = input.persistPreparedIntent === undefined ? null : input.persistPreparedIntent;
   if(!simulation)return{mission:null,memory,adapterResult:null,status:"invalid"};
   const runtimeMemory=memory ?? null;
   const executionJournal=Array.isArray(runtimeMemory?.nexo?.effectJournal)?runtimeMemory.nexo.effectJournal:[];
