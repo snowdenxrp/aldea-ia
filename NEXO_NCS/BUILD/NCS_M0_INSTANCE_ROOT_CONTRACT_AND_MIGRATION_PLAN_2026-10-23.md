@@ -293,3 +293,23 @@ El propietario indicó que no tiene por qué escoger entre opciones técnicas y 
 Recomiendo usar esta combinación como base para cerrar el diseño documental. Antes de implementación aún deben resolverse con evidencia: matriz completa de callers, contrato exacto del lock reusable (incluyendo stale ownership y release failure), códigos de error, compatibilidad de rutas existentes y procedimiento de migración por instalación. La aceptación de esta recomendación por sí sola no cambia el estado canónico ni abre el gate de runtime.
 
 Estado: D0 **recomendación consolidada**, D1 **abierto**, runtime **SIN CAMBIOS**.
+
+
+## 13. D1 — segunda pasada sobre módulos productivos (2026-10-23)
+
+Se recuperó el árbol Git recursivo de la rama ncs-clean-architecture (tree SHA db9668f117170fc2e5af743a87e6d6973b765115, truncated=false). El árbol contiene 3019 entradas; se identificaron 44 archivos de código en src/nexo/**/*.mjs|js y scripts/nexo*.mjs|js. Se abrieron los 44 archivos y se buscaron referencias de factories, owners, paths de Continuity/Chronicle, argumentos CLI y operaciones loadCurrent/initialize/commitIfCurrent/append.
+
+Hallazgos confirmados:
+- scripts/nexo.mjs: status, mission status/plan y previews aceptan --continuity por separado y llaman directamente a funciones de aplicación.
+- scripts/nexo-chronicle-session.mjs: acepta --continuity y --chronicle independientes y llama a runNexoChronicleAppend.
+- src/nexo/application/chronicle-append.mjs: construye ambos stores con rutas independientes; carga stores, abre owner, inicializa Chronicle y consulta Continuity.
+- src/nexo/application/continuity-queries.mjs: status, mission status/plan, draft preview y Open Loops construyen directamente un store por ruta.
+- mission-request-preview.mjs delega al preview; continuity-service.mjs construye el store y hace load/initialize/load.
+- Consumidores indirectos observados: scripts/nexo-repair-entrypoint.mjs, nexo-repair-session.mjs, nexo-repair-dispatch.mjs, nexo-repair-settlement.mjs, nexo-repair-mission-verification.mjs, src/nexo/adapters/chronicle-effect.mjs y src/nexo/core/owner-backed-runtime.mjs. Deben heredar la sección crítica si su acceso a persistencia se incluye en el contrato; esto no levanta el gate de repair/dispatch.
+- En el resto de módulos productivos escaneados no se encontraron coincidencias literales con esos patrones. Esto no excluye acceso indirecto mediante función inyectada, alias, import dinámico o módulos fuera de esos árboles.
+
+Blobs de referencia: scripts/nexo.mjs e471eb478a09aa8a9a8323795583e198cdf0a127; scripts/nexo-chronicle-session.mjs 30a53de2f108aa255a1dfd61ce78c19788de160b; src/nexo/application/chronicle-append.mjs 5a20044bcddbaee79d0117934eefaea5f3b2c3bc; src/nexo/application/continuity-queries.mjs e1915e94e53e71d37a37952fead37ba62bdae79a; src/nexo/core/continuity-service.mjs 8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c; src/nexo/core/continuity-store.mjs 9ffd28930abdbe29f5b041711cc29b74dc99fbae; src/nexo/core/chronicle-store.mjs 59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a.
+
+Pruebas relacionadas revisadas como muestra (10 archivos, no el conjunto completo): chronicle-store.test.mjs, continuity-store.test.mjs, entrypoint.test.mjs, chronicle-runtime.test.mjs, continuity-migration.test.mjs, continuity-service-options-input-guard.test.mjs, chronicle-session-input-guard.test.mjs, persistence-lock-worker.mjs, open-loops-query.test.mjs y chronicle-effect-input-guard.test.mjs. Los tests ejercitan factories directas y locks per-store; una futura API de instancia deberá mantener pruebas de primitivas separadas de las pruebas de no-bypass productivo.
+
+Límite D1: esta pasada remota no equivale a ejecutar rg sobre un checkout local completo. No inspecciona cada archivo fuera de src/nexo/ y scripts/nexo*.mjs, no clasifica todos los imports/reexports/dynamic imports de todo el repo y no crea todavía un test de arquitectura. D1 sigue ABIERTO; no declarar matriz exhaustiva ni garantía no-bypass. No se modificó runtime, tests ni workflows.
