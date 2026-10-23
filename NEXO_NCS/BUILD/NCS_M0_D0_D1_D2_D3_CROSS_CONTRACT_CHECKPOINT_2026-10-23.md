@@ -274,3 +274,12 @@ Estas descripciones pueden ser compatibles si la matriz usa ROOT_READY para la *
 Recomendación documental no aceptada: antes de implementar, definir explícitamente si ROOT_READY nombra solo la validación de la ruta o la instancia completa; distinguir por texto los niveles de estado sin añadir estados/campos persistentes nuevos innecesarios. La admisión del lock y la autorización constitucional deben seguir siendo independientes; una raíz/instancia técnicamente lista no legitima autoridad ni habilita efectos protegidos.
 
 No se repitió el censo de callers. Solo documentación; runtime/tests/workflows sin cambios, tests/CI no ejecutados. Estado canónico sin cambios.
+
+---
+# RECONCILIACIÓN PROPUESTA — SEMÁNTICA ROOT_READY — 2026-10-23
+
+Documento nuevo: NCS_M0_D2_ROOT_READY_SEMANTICS_RECONCILIATION_2026-10-23.md, commit de creación f36644a68065b749c621540db5bcf81b50839653, blob verificado 36bc58655a12e9681fa52a4660dc3971e8467336.
+
+La matriz D2 usa ROOT_READY para la ruta validada antes de lock/stores; el gate D0-C2 parece usarlo para la instancia global lista. Recomendación documental: mantener el término con alcance local en D2 y describir en D0-C2 la conjunción de precondiciones para admitir operación normal, sin crear estados/markers persistentes ni conceder autoridad. Los documentos originales no se modificaron unilateralmente; la recomendación no está aceptada por el propietario.
+
+No runtime/tests/workflows changes; tests/CI no ejecutados. Estado canónico sin cambios.
