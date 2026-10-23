@@ -860,3 +860,17 @@ La ruta de estado del mundo tiene un lock separado implementado localmente en `s
 Implicación: D1 debe clasificar `simulate` igual de explícitamente que `assistants`: (a) excluirlo formalmente de operaciones Nexo y evitar que abra/inicialice Continuity, o (b) integrarlo mediante API de instancia con límites claros entre world state y Nexo. No asumir que el nombre de comando o su ausencia de dispatch lo deja fuera de la superficie de persistencia.
 
 D1 permanece OPEN; este es otro caller confirmado, no un inventario completo.
+
+
+## Candidato de diseño para D1 — separar los flujos legacy sin ampliar el lock a todo Lúmina
+
+Esto es una recomendación de diseño pendiente de cerrar, no una decisión ya implementada:
+
+- **`simulate`:** candidato a quedar fuera de las operaciones Nexo. No debería inicializar ni abrir Continuity como efecto lateral de simular el mundo. El bootstrap/migración de Continuity debe ser una operación Nexo explícita; el estado del mundo permanece separado.
+- **`assistants`:** puede seguir produciendo una misión candidata desde informes de Lúmina, pero no debe abrir el store ni invocar `continuity.owner.recordMission` directamente. La integración Nexo debe usar la API de instancia para una lectura admitida y una escritura admitida/condicional por revisión. El trabajo de Lúmina puede ocurrir entre ambas operaciones sin retener el root lock; la escritura debe fallar en conflicto si la revisión base cambió, sin reintentar silenciosamente ni asumir autorización.
+- No mantener root lock durante todo el pipeline de análisis Lúmina ni durante persistencia de world state/memory. La frontera de instancia cubre la operación Nexo concreta, no todas las escrituras de otros subsistemas.
+- La API de instancia debe distinguir: lectura admitida, resultado de construcción externa, escritura condicional admitida y resultado de negocio. La admisión no es autorización y el éxito de registro de una misión no ejecuta sus efectos.
+
+Ventaja: evita que Lúmina y world state se conviertan accidentalmente en parte de la raíz Nexo y evita un lock de larga duración. Coste: las rutas legacy que hoy inicializan Continuity de forma implícita requieren una migración/bootstrap explícito antes de seguir usándose con Nexo.
+
+No cerrar D1 hasta verificar todos los callers y decidir el tratamiento de los comandos legacy; no realizar todavía esos cambios.
