@@ -314,3 +314,12 @@ The contract adds migration gates for inventory, API, lock behavior, no-bypass, 
 ## 24. Source-level lock constraints confirmed
 
 Both store loadCurrent() methods read and clone persisted state without per-store lock acquisition; opening the Continuity owner may read, initialize if explicitly allowed, and reread. Root admission must wrap the whole operation before the first read, including read-only queries. Preserve existing per-store lock implementations and their release behavior in the first root layer. performance.now() deadlines are process-local; the Chronicle child must create its own deadline from a duration. Normal reads must not silently initialize missing stores or project legacy memory. Repair remains blocked by NEXO_M0_OPTION_A_EFFECT_EXCLUDED. Required tests are recorded in Section 22 of the root contract. D1/D2/D3 remain OPEN; no runtime, tests or workflows changed.
+
+
+## 25. Caller matrix and root canonicalization proposal
+
+The root contract now includes a source-SHA caller matrix for the main CLI, Chronicle child, application append, path-based query API, Continuity compatibility re-export, assistants composite integration, and low-level store factories. These are verified direct boundaries, not proof of a fully closed indirect call graph. GitHub code search returned zero matches for known existing symbols, so those negative results are explicitly excluded as evidence.
+
+Canonicalization proposal: require an existing directory, canonicalize with realpath before deriving fixed store filenames, converge symlink aliases to the same canonical path, reject mixed root/legacy-path arguments, do not create stores during ordinary reads, and fail closed on corrupt or unknown root-lock state without automatic deletion. realpath does not solve hostile-process TOCTOU, mount aliases, hard-link aliases or network filesystem semantics; no such protection is claimed.
+
+D1 remains open until indirect callers, package scripts and child process construction are accounted for and result compatibility is reviewed. D2/D3 remain open; runtime/tests/workflows unchanged.
