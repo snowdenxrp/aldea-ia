@@ -186,9 +186,22 @@ const baseContext = {
 }
 
 {
+  // Deliberately bypass the constructor to keep this validator-specific
+  // regression: malformed externally supplied candidates must not prove equality.
   const cyclicTarget = { id: "target-1" };
   cyclicTarget.self = cyclicTarget;
-  const cyclicCandidate = candidate({ claim: { target: cyclicTarget } });
+  const cyclicCandidate = {
+    claim: {
+      claimId: "step4-1",
+      target: cyclicTarget,
+      targetIncarnation: { epoch: 4 },
+      policyContext: null,
+      authoritativeReads: [],
+      dependencies: [],
+      predicateDependencies: [],
+      causalInputs: []
+    }
+  };
   const contextTarget = { id: "target-1" };
   contextTarget.self = contextTarget;
   const result = validator.validate(cyclicCandidate, {

@@ -352,3 +352,12 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 - Estado de verificación: prueba directa y CI para el SHA nuevo PENDING hasta observar resultados vinculados al commit; no declarar PASS por la existencia de tests.
 - Límite explícito: traps de Proxy no neutralizados. No se cambia autoridad ni se habilita despacho de efectos protegidos.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+# CHECKPOINT DE CORRECCIÓN — 2026-10-22 — ALINEACIÓN DE REGRESIONES DE CONTRATOS
+
+- El primer CI del endurecimiento, en commit `76194883df726b413ae604fb3b7ba224456671f9`, falló de forma visible en regresiones existentes: tres pruebas esperaban el mensaje de error específico de un campo cuando la nueva validación del grafo detectaba antes la forma no canónica del array. Se amplió la expectativa para aceptar ambos rechazos válidos, sin relajar la validación.
+- La misma ejecución reveló que `final-semantic-validator.test.mjs` construía un candidato cíclico mediante el constructor público. Ese escenario ahora se separa: la prueba del contrato verifica rechazo en admisión; la prueba del validador usa un candidato externo deliberadamente malformado para conservar la comprobación de resultado `UNKNOWN` al comparar targets cíclicos.
+- El commit inicial no se considera validado. Se esperan nuevas ejecuciones sobre el SHA correctivo; no atribuir los resultados del SHA anterior al nuevo.

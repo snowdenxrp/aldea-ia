@@ -223,15 +223,15 @@ assert.throws(() => createClaimEnvelope({
   policyContext: { ...completePolicyContext, policyRef: Object.assign([], {
     id: "policy-1", semanticVersion: "1.0.0", hash: "sha256:test"
   }) }
-}), /policyRef must be a record/);
+}), /policyRef must be a record|contract arrays must be dense/);
 assert.throws(() => createClaimEnvelope({
   claimId: "claim-policy-array-validity", action: "example",
   policyContext: { ...completePolicyContext, validity: Object.assign([], { status: "VALID" }) }
-}), /validity must be a record/);
+}), /validity must be a record|contract arrays must be dense/);
 assert.throws(() => createClaimEnvelope({
   claimId: "claim-policy-array-resolved", action: "example",
   policyContext: { ...completePolicyContext, resolved: Object.assign([], { dependencies: [] }) }
-}), /resolved must be a record/);
+}), /resolved must be a record|contract arrays must be dense/);
 assert.throws(() => createClaimEnvelope({ claimId: "claim-policy-missing-provenance", action: "example", policyContext: { ...completePolicyContext, resolutionProvenance: undefined } }), /resolutionProvenance/);
 assert.throws(() => { policyClaim.policyContext.policyRef.id = "attacker"; }, TypeError);
 assert.equal("authorize" in policyClaim.policyContext, false);
