@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — PUBLIC CHRONICLE RESULT SANITIZER
+
+- Hallazgo reproducible: la función exportada `publicChronicleResult(result, missionId, stepId)` leía `status`, `code`, `dispatchAttempted`, campos triestado y subresultados de timeout mediante acceso ordinario. Un getter en un resultado suministrado por una frontera de aplicación podía ejecutarse durante la sanitización pública.
+- Corrección runtime: `src/nexo/application/chronicle-append.mjs` ahora lee solo descriptores propios de datos enumerables de objetos planos/prototipo nulo. Los valores de timeout se vuelven a proyectar campo por campo; `lockRelease` se reduce a `{status, code}` solo si ambos son datos de cadena. Los campos accessor se omiten sin ejecutarlos.
+- Regresiones agregadas a `tests/nexo/chronicle-runtime.test.mjs`: getter de `status`, getter de subresultado `prepared`, getters de `phase/writeStarted/lockRelease` y getter anidado de `lockRelease.code`. La prueba también confirma que la clasificación segura y los códigos de timeout ordinarios se conservan.
+- Commits: runtime [`1faccdfe2d6c7e68ec7b71db30be68797bd918cf`](https://github.com/snowdenxrp/aldea-ia/commit/1faccdfe2d6c7e68ec7b71db30be68797bd918cf); regresiones e integración [`59b8a1c8a36becf9b39c6e7db2deff7c1cc103c9`](https://github.com/snowdenxrp/aldea-ia/commit/59b8a1c8a36becf9b39c6e7db2deff7c1cc103c9).
+- CI verificado sobre el SHA exacto `59b8a1c8a36becf9b39c6e7db2deff7c1cc103c9`: 6/6 workflows `success`: [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306953), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306915), [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881307004), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881307037), [admisión y continuidad](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306979), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881306970). El job de admisión/continuidad ejecutó `tests/nexo/chronicle-runtime.test.mjs`; el workflow de persistencia ejecutó `npm test`.
+- Interpretación: la sanitización ya no ejecuta getters ordinarios en los campos que consume. Esto no neutraliza todos los traps de `Proxy`, no establece confiabilidad de los objetos de origen, no demuestra autoridad legítima y no autoriza dispatch ni efectos protegidos.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: continuar solo con otra frontera pública reproducible y concreta; no volver a auditar la misma sanitización ni extender el cambio a campos que el contrato no consume.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — MISSION DRAFT PREVIEW INPUT GUARD
 
 - Hallazgo concreto: `previewNexoMissionDraft(continuityPath, missionDraft)` leía `missionDraft.missionId` antes de validar el draft completo. Un getter podía ejecutarse incluso antes de cargar el store; la operación canónica validaba más tarde, demasiado tarde para esta lectura.
