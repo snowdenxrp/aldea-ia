@@ -604,3 +604,10 @@ La matriz siguiente corresponde al SHA exacto que contiene el código y las regr
 - La CLI independiente sí expone `chronicle-append`, y su prueba de entrypoint espera una escritura local real en un Chronicle temporal. Por tanto, `protected effects: STOP` no debe interpretarse como “toda mutación local está desactivada”. La salida mantiene `authorization: NOT_EVALUATED`; el append es estrecho y local, no prueba autoridad legítima ni autoriza efectos externos protegidos.
 - Decisión arquitectónica pendiente: ¿Chronicle append es una capacidad local de persistencia permitida antes de commissioning, o la Constitución exige bloquear cualquier mutación hasta verificar la raíz legítima? No se cambió runtime ni se eligió silenciosamente una política.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+# CORRECCIÓN DE CALLER — 2026-10-23
+
+La matriz de callers fue corregida después de verificar `src/nexo/application/chronicle-append.mjs`: sí existe un caller productivo de `executeNexoStepWithContinuityOwner` para el caso de uso local `chronicle-append`. Esta conclusión reemplaza las notas anteriores de este STATUS que dejaban ese caller sin confirmar. La matriz actual contiene la evidencia exacta: [NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md](BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md), commit `fcb2298ebc582b5f1461051c0fee301faeba4249`.
+
+La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que todas las mutaciones están deshabilitadas. El resultado sigue diciendo `authorization: NOT_EVALUATED`, y esto no demuestra raíz legítima ni autoriza efectos protegidos externos. Ver también [NCS_CHRONICLE_APPEND_MUTATING_SURFACE_AUTHORITY_REVIEW_2026-10-23.md](BUILD/NCS_CHRONICLE_APPEND_MUTATING_SURFACE_AUTHORITY_REVIEW_2026-10-23.md). La decisión de política local pre-commissioning permanece pendiente; no se cambió runtime.
