@@ -105,3 +105,16 @@ Este orden es una recomendación de ingeniería, no una decisión aceptada autom
 ## 7. Continuidad
 
 STATUS y handoff deben registrar el nuevo perfil de entorno requerido. Siguiente: identificar el despliegue objetivo y comparar sus controles reales con el protocolo; mientras no se conozca, continuar solo la revisión documental y mantener D3 OPEN. No repetir el censo de código ni implementar.
+
+
+## 8. Cross-check de decisiones frente a gates de evidencia — 2026-10-23
+
+Se contrastaron el paquete de decisión del propietario, el ledger D0, la matriz D0/D2/D3, el análisis D1-S0, el mapa de dependencias y la matriz nueva de rutas reservadas. No apareció una contradicción textual que justifique reabrir el censo de callers. Sí queda una distinción de proceso importante:
+
+- **Decisión reservada al propietario:** D1-S0; interfaz exacta D0-C1; bootstrap D0-C2; política de alias/symlinks D0-C3; migración D0-C4; y detalles finales del contrato D2. Las recomendaciones no son aceptación.
+- **Gate de evidencia:** D1 requiere prueba arquitectónica ejecutada sobre un SHA; D2 requiere pruebas de concurrencia, ownership y release incierto; D0-C3 requiere fixtures negativos de rutas; recursos agregados requieren contrato/medición aparte; D3 requiere entorno objetivo y evidencia real de quiescencia/cutover/rollback.
+- La matriz de symlinks no contradice D0-C3: descompone la política de raíz y los destinos reservados en casos de prueba. El comportamiento de rechazar todos los symlinks sigue sin aprobar.
+- El paquete D1-S0 ofrece dividir diseño e implementación como recomendación, pero esa división sigue pendiente del propietario. No se escribieron tests para evitar saltarse el gate.
+- D3 no puede cerrarse solo con más documentos si el runtime objetivo y los controles de relanzamiento siguen sin identificarse.
+
+Este cross-check es documental. No cambió código, tests ni workflows; no se ejecutaron tests/CI. Estado canónico intacto: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
