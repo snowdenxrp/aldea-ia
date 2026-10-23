@@ -596,3 +596,11 @@ La matriz siguiente corresponde al SHA exacto que contiene el código y las regr
 - Matriz actualizada: [NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md](BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md), revisión registrada en commit `0787c6310557b6334e06f8cfc4886463b3068c75`.
 - Próximo trace acotado: `src/nexo/application/chronicle-append.mjs`, fábricas owner/adapter y tests de la CLI; además, localizar imports directos de `executeNexoStepWithContinuityOwner` desde fuente actual. No añadir guards locales ni elegir aún A/B/C.
 - No se modificó runtime. Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+# CHECKPOINT — CHRONICLE MUTATION / AUTHORITY — 2026-10-23
+
+- Revisión de superficie mutante confirmada: [NCS_CHRONICLE_APPEND_MUTATING_SURFACE_AUTHORITY_REVIEW_2026-10-23.md](BUILD/NCS_CHRONICLE_APPEND_MUTATING_SURFACE_AUTHORITY_REVIEW_2026-10-23.md), commit `4f672b2966ee87aefd1c5550f03d2d790bf8c27b`.
+- La CLI independiente sí expone `chronicle-append`, y su prueba de entrypoint espera una escritura local real en un Chronicle temporal. Por tanto, `protected effects: STOP` no debe interpretarse como “toda mutación local está desactivada”. La salida mantiene `authorization: NOT_EVALUATED`; el append es estrecho y local, no prueba autoridad legítima ni autoriza efectos externos protegidos.
+- Decisión arquitectónica pendiente: ¿Chronicle append es una capacidad local de persistencia permitida antes de commissioning, o la Constitución exige bloquear cualquier mutación hasta verificar la raíz legítima? No se cambió runtime ni se eligió silenciosamente una política.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
