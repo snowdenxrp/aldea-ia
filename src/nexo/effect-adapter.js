@@ -46,6 +46,38 @@ function readEffectAdapterOptions(options) {
   };
 }
 
+function readEffectRecord(value, fields) {
+  if (value === undefined) value = {};
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const result = Object.create(null);
+    for (const field of fields) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, field);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      result[field] = descriptor.value;
+    }
+    return result;
+  } catch {
+    return null;
+  }
+}
+
+function readEffectRequest(request, extraFields = []) {
+  const values = readEffectRecord(request, [
+    "missionId", "stepId", "action", "target", "idempotencyKey",
+    "context", "precondition", "postcondition", ...extraFields
+  ]);
+  if (!values) return null;
+  if (values.target === undefined) values.target = null;
+  if (values.context === undefined) values.context = {};
+  if (values.precondition !== undefined && typeof values.precondition !== "function") return null;
+  if (values.postcondition !== undefined && typeof values.postcondition !== "function") return null;
+  return values;
+}
+
 function readFunctionRegistry(registry, label) {
   if (!registry || typeof registry !== "object" || Array.isArray(registry)) {
     throw new TypeError(`${label} must be a plain function registry`);
@@ -144,7 +176,10 @@ export function createEffectAdapter(options = {}) {
   // Read-only reconciliation probe. The verifier must be installed by trusted
   // bootstrap configuration; operation callers cannot supply or replace it.
   // This method never settles the journal and never authorizes redispatch.
-  async function verifyPrepared({idempotencyKey, missionId, stepId, action, target=null}={}) {
+  async function verifyPrepared(request = {}) {
+    const input = readEffectRecord(request, ["idempotencyKey", "missionId", "stepId", "action", "target"]);
+    if (!input) return { status: "unknown", code: "EFFECT_RECONCILIATION_CONTEXT_INVALID" };
+    const { idempotencyKey, missionId, stepId, action, target = null } = input;
     if(!idempotencyKey || !missionId || !stepId || !action) {
       return {status:"unknown",code:"EFFECT_RECONCILIATION_CONTEXT_INVALID"};
     }
@@ -303,45 +338,59 @@ export function createEffectAdapter(options = {}) {
     saveResult(idempotencyKey,result); return result;
   }
 
-  async function executePrepared(request={}, { preparedCommit } = {}) {
-    const key=request?.idempotencyKey;
-    if (!preparedCommit || preparedCommit.status !== "committed" ||
+  async function executePrepared(request = {}, options = {}) {
+    const input = readEffectRequest(request, ["preparedOperation"]);
+    const optionValues = readEffectRecord(options, ["preparedCommit"]);
+    const preparedCommit = optionValues
+      ? readEffectRecord(optionValues.preparedCommit, ["status", "preparedCommitted", "storeRevision"])
+      : null;
+    const preparedOperation = input
+      ? readEffectRecord(input.preparedOperation, ["missionId", "stepId", "action", "target", "idempotencyKey"])
+      : null;
+    const key = input?.idempotencyKey;
+    if (!input || !preparedCommit || !preparedOperation ||
+        preparedCommit.status !== "committed" ||
         preparedCommit.preparedCommitted !== true ||
         !Number.isSafeInteger(preparedCommit.storeRevision) || preparedCommit.storeRevision < 0 ||
-        !key || request.missionId !== request?.preparedOperation?.missionId ||
-        request.stepId !== request?.preparedOperation?.stepId ||
-        request.action !== request?.preparedOperation?.action ||
-        !isDeepStrictEqual(request.target ?? null, request?.preparedOperation?.target ?? null) ||
-        key !== request?.preparedOperation?.idempotencyKey) {
+        !key || input.missionId !== preparedOperation.missionId ||
+        input.stepId !== preparedOperation.stepId ||
+        input.action !== preparedOperation.action ||
+        !isDeepStrictEqual(input.target ?? null, preparedOperation.target ?? null) ||
+        key !== preparedOperation.idempotencyKey) {
       return { status:"blocked", code:"EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED", verified:false, idempotencyKey:key };
     }
-    return executeFresh(request, { preparedExternally: true });
+    return executeFresh(input, { preparedExternally: true });
   }
 
-  async function execute(request={}) {
-    const key=request?.idempotencyKey;
-    if(!Array.isArray(executionJournal)||!key) return executeFresh(request);
-    const existingEntry=journalEntry(key);
+  async function execute(request = {}) {
+    const input = readEffectRequest(request);
+    if (!input) return { status: "failed", code: "INVALID_EFFECT_REQUEST", verified: false };
+    const key = input.idempotencyKey;
+    if (!Array.isArray(executionJournal) || !key) return executeFresh(input);
+    const existingEntry = journalEntry(key);
     // This wrapper's fast paths must enforce the same operation identity as executeFresh.
-    if(existingEntry && (request.missionId!==existingEntry.missionId || request.stepId!==existingEntry.stepId ||
-      request.action!==existingEntry.action || !isDeepStrictEqual(request.target??null,existingEntry.target??null))) {
-      return {status:"blocked",code:"EFFECT_IDENTITY_MISMATCH",verified:false,
-        idempotencyKey:key,expected:{missionId:existingEntry.missionId,stepId:existingEntry.stepId,
-          action:existingEntry.action,target:structuredClone(existingEntry.target??null)}};
+    if (existingEntry && (input.missionId !== existingEntry.missionId || input.stepId !== existingEntry.stepId ||
+      input.action !== existingEntry.action || !isDeepStrictEqual(input.target ?? null, existingEntry.target ?? null))) {
+      return { status:"blocked", code:"EFFECT_IDENTITY_MISMATCH", verified:false,
+        idempotencyKey:key, expected:{missionId:existingEntry.missionId,stepId:existingEntry.stepId,
+          action:existingEntry.action,target:structuredClone(existingEntry.target??null)} };
     }
-    const persisted=executionJournal.find(x=>x?.idempotencyKey===key&&x?.result);
-    if(persisted) { executed.set(key,persisted.result); return structuredClone(persisted.result); }
-    let inFlight=sharedInFlight.get(executionJournal);
-    if(!inFlight){ inFlight=new Map(); sharedInFlight.set(executionJournal,inFlight); }
-    if(inFlight.has(key)) return structuredClone(await inFlight.get(key));
-    let queue=sharedQueue.get(executionJournal);
-    if(!queue){ queue=Promise.resolve(); sharedQueue.set(executionJournal,queue); }
-    const previous=queue;
-    const current=previous.then(()=>executeFresh(request),()=>executeFresh(request));
-    sharedQueue.set(executionJournal,current.catch(()=>{}));
-    inFlight.set(key,current);
+    const persisted = executionJournal.find(x => x?.idempotencyKey === key && x?.result);
+    if (persisted) { executed.set(key, persisted.result); return structuredClone(persisted.result); }
+    let inFlight = sharedInFlight.get(executionJournal);
+    if (!inFlight) { inFlight = new Map(); sharedInFlight.set(executionJournal, inFlight); }
+    if (inFlight.has(key)) return structuredClone(await inFlight.get(key));
+    let queue = sharedQueue.get(executionJournal);
+    if (!queue) { queue = Promise.resolve(); sharedQueue.set(executionJournal, queue); }
+    const previous = queue;
+    const current = previous.then(() => executeFresh(input), () => executeFresh(input));
+    sharedQueue.set(executionJournal, current.catch(() => {}));
+    inFlight.set(key, current);
     try { return structuredClone(await current); }
-    finally { if(inFlight.get(key)===current) inFlight.delete(key); if(sharedQueue.get(executionJournal)===current) sharedQueue.delete(executionJournal); }
+    finally {
+      if (inFlight.get(key) === current) inFlight.delete(key);
+      if (sharedQueue.get(executionJournal) === current) sharedQueue.delete(executionJournal);
+    }
   }
 
   // Capability discovery lets a canonical runtime reject an unregistered action before PREPARED/dispatch.
