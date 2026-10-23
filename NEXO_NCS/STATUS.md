@@ -1117,3 +1117,12 @@ Para que el inventario no dependa solo de este resumen ni de un chat, se creó `
 Enlace: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/NCS_M0_NEXO_SOURCE_REFERENCE_CENSUS_2026-10-23.md
 
 **Siguiente trabajo:** convertir el censo en allowlist verificable del grafo de callers/imports productivos. No repetir la revisión de los 93 archivos salvo que cambie el snapshot o aparezca evidencia concreta de omisión. D1/D2/D3 siguen OPEN; sin cambios de runtime/tests/workflows ni pruebas ejecutadas.
+
+
+### Allowlist de callers productivos — borrador D1 preservado (2026-10-23)
+
+Se creó `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`, que convierte el censo en una propuesta de frontera: entrypoints de producción, API de instancia deseada, primitivas path-based internas, tests permitidos, grafo conocido y reglas para un test arquitectónico. También se revisaron los imports directos de los 45 tests Nexo y 50 tests fuera de `tests/nexo/`; estos últimos no mostraron imports directos de stores/API de Continuity/Chronicle. `package.json` declara como comandos de producción `nexo`, `assistants` y `simulate`; la sesión hija Chronicle sigue siendo invocable directamente aunque no sea script npm.
+
+**Esto no cierra D1:** falta una prueba arquitectónica ejecutable que recorra imports/reexports transitivos, identifique ejecución directa y cubra `spawn`/imports dinámicos, y que falle con fixtures de bypass. No se modificó runtime/tests/workflows ni se ejecutaron pruebas.
+
+Enlace: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md
