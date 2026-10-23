@@ -1049,3 +1049,8 @@ El comando `simulate` también abre `openNexoContinuityOwner` con `.nexo-continu
 ### Candidato de diseño D1 (pendiente, no implementado)
 
 Recomendación: desacoplar `simulate` de Continuity para que no inicialice Nexo incidentalmente; mantener `assistants` como generador de misión candidata, pero canalizar lectura/escritura de Continuity mediante API de instancia, con revisión condicional y sin mantener root lock durante análisis Lúmina. No mezclar world state ni memoria Lúmina con la raíz. Esto sigue siendo propuesta; D1/D2/D3 continúan OPEN.
+
+
+### Migración implícita confirmada (2026-10-23)
+
+La prueba `tests/nexo/continuity-migration.test.mjs` confirma que `openNexoContinuityOwner({ legacyMemory })` puede migrar memoria legacy al store canónico. Por eso `simulate` y `assistants` pueden causar bootstrap/migración incidental al abrir Continuity. La migración debe ser explícita y pasar por admisión. `nexo-repair-entrypoint.mjs` es helper importable, no CLI; el gate productivo de reparación sigue bloqueado por `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`.
