@@ -434,3 +434,8 @@ El documento de contrato ahora registra errores de argumentos y opciones requeri
 El contrato de raíz ahora contiene la matriz de tratamiento propuesto para ocho superficies: CLI principal; hijo Chronicle ejecutable directamente; `assistants`; `simulate`; API de aplicación path-based; reexport `nexo-continuity.mjs`; fábricas de store; helpers de repair. Define también el límite de amenaza: guardas de arquitectura para código de producción cooperativo, no aislamiento contra un proceso local hostil que pueda ejecutar/importar cualquier módulo.
 
 **D1 sigue OPEN.** Cierre solo después de aprobar el tratamiento de cada superficie, enumerar callers productivos, retirar paths de la API pública y tener pruebas arquitectónicas contra acceso directo a stores; las pruebas deben invocar directamente el hijo Chronicle y cubrir `simulate`/`assistants`.
+
+
+## Hueco D3: archivos store internos pueden ser symlinks fuera de root
+
+`realpath(root)` no impide que `root/continuity.json` o `root/chronicle.json` sean symlinks hacia archivos externos; los stores actuales siguen symlinks al abrir. Antes de cerrar D3, decidir/testear rechazo de symlinks en nombres reservados, exigir archivos regulares cuando existan y rechazar un root-lock symlink/objeto inesperado. Añadir casos para symlink externo/roto, conflictos file-directory y root aliasado. Esto sigue sin proteger contra TOCTOU de proceso local hostil.
