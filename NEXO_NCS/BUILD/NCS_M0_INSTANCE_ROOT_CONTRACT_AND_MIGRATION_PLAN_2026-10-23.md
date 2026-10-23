@@ -902,3 +902,16 @@ La futura admisión de instancia debe agregar su resultado sin borrar los códig
 La entrada principal de Chronicle no valida las opciones hijas antes de invocar `spawnSync`; por eso el error de argumentos Chronicle es emitido por el hijo en el JSON de resultado. El padre solo emite `NEXO_ENTRYPOINT_DISPATCH_FAILED` cuando no se pudo iniciar el hijo. No cambiar este límite sin actualizar las pruebas de salida, códigos de proceso y privacidad.
 
 El router asigna códigos de salida según resultado: `loaded`, `reconstructed`, `planned`, `validated` o `completed` son los estados de éxito por familia; cualquier otro estado produce código de salida 1. El child Chronicle también sale con 1 si el estado no es `completed`. Un resultado semántico `not_found` no es error de parseo y no debe confundirse con fallo de admisión.
+
+
+## Hallazgo D1 — la sesión hija Chronicle también es ejecutable directamente
+
+`scripts/nexo-chronicle-session.mjs` no solo es una implementación hija: contiene una guarda de ejecución directa basada en `process.argv[1]` y `import.meta.url`, así que se puede invocar con `node scripts/nexo-chronicle-session.mjs ...` sin pasar por `scripts/nexo.mjs`. Su parser acepta rutas independientes `--continuity` y `--chronicle`, además de flags de inicialización. Por ello, el parent router no es una frontera suficiente: hoy hay una vía directa que puede acceder/initializar stores sin una raíz de instancia.
+
+Requisito no-bypass para D1/D3:
+- La sesión hija debe exigir `--root` y derivar internamente rutas canónicas; no aceptar rutas independientes de store en el contrato de producción.
+- El proceso hijo adquiere el root lock antes de preflight/lecturas; el padre no adquiere el mismo lock.
+- Si la intención fuera hacer que la sesión sea solo un módulo interno, eliminar la vía CLI directa no basta como única garantía en JavaScript; también debe haber guardas de arquitectura/tests que impidan callers de producción fuera de la API de instancia.
+- La prueba negativa debe invocar el script hijo directamente con rutas legacy y verificar bloqueo sin lectura, creación ni escritura.
+
+Este hallazgo amplía la lista de entrypoints. D1/D3 permanecen OPEN.
