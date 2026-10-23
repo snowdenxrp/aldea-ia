@@ -1,3 +1,17 @@
+## 0. Latest continuation checkpoint — D0↔D1 documentary cross-check (2026-10-23)
+
+Created [NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md](NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md), commit `203e35d88f419893c4392ee50af01729683e3a3e`. STATUS checkpoint update: `72982fc33e1291cb54bb40f32e4386a72a3ef241`.
+
+Cross-check compared the current D0 decision ledger/root contract with D1 caller reconciliation, caller ledger and static-graph gap specification. No material contradiction among written proposals was found. This is documentary consistency only; it closes no gate and proves no implementation.
+
+Evidence caveats preserved: the D1 caller reconciliation cites an older root-contract blob; the current root-contract blob is `22622ad2dff1c231cad31d5c4b7d875758b08958`. The external-caller status for `scripts/nexo-continuity.mjs` remains UNKNOWN. The D1 graph/no-bypass test remains specified, not implemented/run. `assistants`/`simulate` dispositions remain proposals, not runtime blocks proven by this review.
+
+Next: resolve the outstanding D0 owner decisions coherently and the D1-S0 sequence (D1-DESIGN vs D1-IMPLEMENTATION), then freeze D2 and D3. Do not repeat the source census absent a changed source snapshot; do not implement without a separate explicit authorization.
+
+No runtime/tests/workflows/CLI/stores changed; no tests/CI executed. Canonical state remains M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+---
+
 ## 0. Latest continuation checkpoint — D0 instance-root decision ledger (2026-10-23)
 
 Created [NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md](NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md), commit `013dfe3f6c72c0012a190b86590688bb3dd05614`. STATUS checkpoint update: `9327f47b7bd9135a2303c07026b75ea34fdf0811`.
