@@ -81,3 +81,26 @@ The follow-up trace resolved one previously open callsite:
 - This confirms a concrete owner/adapter assembly path for Chronicle append, but **does not** prove that the owner/adapter source is authenticated against hostile in-process callers or that the generic exported runtime is safe for arbitrary live objects. Proxy traps remain unresolved.
 
 The earlier wording that no production caller was confirmed is superseded by this exact current-branch source trace. The broader call graph is still not exhaustive.
+
+
+## Follow-up source trace — Chronicle production assembly and public CLI
+
+Current-branch files re-read on 2026-10-23:
+- `src/nexo/core/owner-backed-runtime.mjs` blob `a7a014489209273ce78d0103afa785728d4c467c`.
+- `src/nexo/application/chronicle-append.mjs` blob `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`.
+- `src/nexo/adapters/chronicle-effect.mjs` blob `6daf742eb0048724557151a728bf807613a854e9`.
+- `src/nexo/effect-adapter.js` blob `e91648cab31878c01fa1bd253d7732e9036a2370`.
+- `tests/nexo/entrypoint.test.mjs` blob `47d6d6fe0736938ef562eb23fc8397c78fa10c4c`.
+
+Confirmed path:
+1. `scripts/nexo.mjs` routes the CLI through the narrow `src/nexo/application/index.mjs` export surface. The entrypoint tests assert that the public application exports remain exactly the six use cases (Chronicle append plus read-only queries and previews), and walk local imports/re-exports to ensure the independent CLI graph does not transitively import the compatibility runtime or Lúmina/simulation modules.
+2. `src/nexo/application/chronicle-append.mjs` is the concrete production caller of `executeNexoStepWithContinuityOwner`. It creates the Chronicle/continuity stores, Chronicle effect contracts, continuity owner, and effect adapter for the `chronicle_append` action. The application path is intentionally narrower than the generic runtime module.
+3. `src/nexo/core/owner-backed-runtime.mjs` accepts injected `owner` and `adapter` capabilities. Its own-descriptor/prototype inspection can still trigger Proxy traps; it does not authenticate the code that supplied those objects. The implementation allowlists `chronicle_append`, blocks canonical repair actions before PREPARED, blocks other action names before dispatch, and performs observation/reconciliation before any redispatch decision.
+4. `src/nexo/adapters/chronicle-effect.mjs` constrains the supplied action to Chronicle append and reads operation fields through descriptors. It writes only via the supplied Chronicle store capability. Its guards do not independently authenticate the store object or neutralize Proxy traps.
+5. `tests/nexo/entrypoint.test.mjs` verifies the narrow public import graph and generic CLI command rejection. This proves the tested CLI route is narrow; it does not prove every possible direct import of internal modules is unreachable.
+
+### Updated conclusion
+
+The Chronicle append route is a concrete, bounded internal local-mutation capability under Option A, with explicit owner/store/verifier composition and regression coverage. Its result still reports `authorization: NOT_EVALUATED`; the route is not owner-root proof and must not be described as general protected execution.
+
+The remaining gap is now more precise than “unknown callers everywhere”: the stable CLI path and its Chronicle assembly are directly traced, while the complete set of consumers of the generic runtime re-export and other direct internal imports is not proven exhaustive. Do not solve this by adding another reflective guard. A runtime migration still requires a selected, enforceable input trust model and explicit error-contract mapping.
