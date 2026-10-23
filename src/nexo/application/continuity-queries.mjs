@@ -316,7 +316,12 @@ export async function loadNexoOpenLoops(continuityPath) {
     }
 
     for (const entry of snapshot.effectJournal) {
-      if (entry.status !== "prepared" && entry.status !== "reconciled_observed") continue;
+      if (entry.status === "settled_observed") continue;
+      if (entry.status !== "prepared" && entry.status !== "reconciled_observed") {
+        return fail("NEXO_OPEN_LOOPS_JOURNAL_STATUS_UNKNOWN", {
+          storeRevision: current.storeRevision
+        });
+      }
       if (typeof entry.missionId !== "string" || !entry.missionId.trim() ||
           typeof entry.stepId !== "string" || !entry.stepId.trim() ||
           typeof entry.action !== "string" || !entry.action.trim()) {
