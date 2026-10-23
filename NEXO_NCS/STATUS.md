@@ -1069,3 +1069,8 @@ El contrato ahora registra los códigos exactos de parseo por comando y los erro
 ### Matriz de no-bypass de producción documentada
 
 El contrato identifica ocho superficies: CLI principal, hijo Chronicle ejecutable directamente, `assistants`, `simulate`, API pública de aplicación path-based, reexport de continuidad, fábricas de store y helpers de reparación. Se definió condición verificable para D1: grafo de callers completo, rutas path-based fuera de la API de producción y pruebas arquitectónicas que incluyan el hijo directo y los flujos legacy. D1 permanece OPEN hasta cumplirlo.
+
+
+### Hueco D3: symlink de store puede escapar de la raíz
+
+Canonicalizar la raíz no evita que un nombre reservado como `continuity.json` sea un symlink hacia fuera. D3 debe decidir y probar que los stores existentes sean archivos regulares y no symlinks, y que el lock de raíz no sea un symlink/objeto inesperado. Esto no afirma resistencia a TOCTOU hostil. D3 sigue OPEN.
