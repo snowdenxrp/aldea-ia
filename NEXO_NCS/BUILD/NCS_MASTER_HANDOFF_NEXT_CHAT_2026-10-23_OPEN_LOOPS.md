@@ -532,3 +532,8 @@ Esta pasada **no** demuestra cierre frente a imports dinámicos/computados, `spa
 Se buscó `import(...)`, `require`/createRequire, `eval`/Function, procesos hijos y guards directos en los 13 scripts, 34 módulos `src/nexo/**` y 45 módulos externos de `src/**`. Hallazgos: `scripts/nexo.mjs` es el único proceso hijo productivo observado y usa `spawnSync` para ejecutar la sesión Chronicle; los guards directos relevantes son `nexo.mjs`, `nexo-chronicle-session.mjs` y `simulate.mjs`. No hubo import dinámico/require/eval en scripts o `src/nexo/**`; `src/three-remote.js` tiene un `import(url)` para Three.js, no conectado a Nexo.
 
 El detalle está en `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`. Esto no cierra D1: falta el test arquitectónico que proteja esos hallazgos contra cambios futuros y cubra el grafo transitivo.
+
+
+## Mecanismos dinámicos y workers de tests clasificados
+
+El escaneo de los 95 tests encontró procesos `spawn`/`spawnSync` en los tests de CLI, stores y concurrencia, y un import dinámico con URL de entorno en `tests/nexo/continuity-store.test.mjs`; todo es TEST_ONLY. Otros imports dinámicos en tests cargan memoria, `society.js` o `node:fs/promises`. No se encontró import dinámico de stores en código productivo; `src/three-remote.js` carga Three.js con `import(url)`. Se añadió la clasificación al allowlist borrador. No cerrar D1 hasta implementar y probar el test arquitectónico.
