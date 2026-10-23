@@ -1,3 +1,17 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — AGGREGATE RESOURCE BUDGET
+
+- Frontier actual: presupuesto agregado de recursos de M0; no volver a comenzar por Open Loops, cuya CI exacta ya está cerrada.
+- Análisis corregido: [`NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md`](BUILD/NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md), actualización documental commit [`31bff07ea76ddd86713c642b3f5ae25570e3ae57`](https://github.com/snowdenxrp/aldea-ia/commit/31bff07ea76ddd86713c642b3f5ae25570e3ae57).
+- Corrección importante: Chronicle y Continuity ya usan temporal estable `.tmp` y escaneo/limpieza acotados bajo el lock propio de cada almacén. La descripción histórica de nombres temporales únicos quedó obsoleta; no reimplementar ese protocolo.
+- Fuentes actuales inspeccionadas: `chronicle-store.mjs` blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`; `continuity-store.mjs` blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`; `resource-limits.mjs` blob `98355d5dc8298695233495d4bab2264b3eeba7b3`; `nexo-chronicle-session.mjs` blob `30a53de2f108aa255a1dfd61ce78c19788de160b`; `package.json` blob `e45dc6d215db53ea2758009cd501f565634e3610`.
+- Lo que sí se acota: el writer cooperante crea un temporal estable por almacén, limitado por el tamaño máximo de su documento. Los tests ya verifican que temporal estable + temporal legacy desaparecen tras una escritura exitosa.
+- Lo que sigue OPEN: presupuesto total de disco (residuos legacy/otros archivos y límite de escaneo) y heap agregado (locks por almacén, no operación global; pueden solaparse procesos/entrypoints). No inventar un multiplicador de heap ni declarar soporte concurrente seguro.
+- Siguiente acción única: trazar los entrypoints reales de Chronicle/Continuity y decidir si M0 requiere serialización global impuesta o si limita explícitamente el modo de uso. No implementar un lock global hasta identificar una raíz de instancia común y todos los callsites; documentación por sí sola no impone exclusión mutua.
+- Handoff actualizado: [commit `05ca80f3628c4f70128450316644c5a28a5a07b6`](https://github.com/snowdenxrp/aldea-ia/commit/05ca80f3628c4f70128450316644c5a28a5a07b6).
+- Estado canónico sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE VERIFICACIÓN — 2026-10-23 — OPEN LOOPS ACCEPTANCE + EXACT-SHA CI
 
 - Código y pruebas combinados: `962d1a327683b412c401f323514d401e7e8ec8f1`.
