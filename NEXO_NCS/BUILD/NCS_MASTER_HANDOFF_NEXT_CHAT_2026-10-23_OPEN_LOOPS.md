@@ -1,3 +1,15 @@
+## 0. Latest continuation checkpoint — D0 instance-root decision ledger (2026-10-23)
+
+Created [NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md](NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md), commit `013dfe3f6c72c0012a190b86590688bb3dd05614`. STATUS checkpoint update: `9327f47b7bd9135a2303c07026b75ea34fdf0811`.
+
+The ledger structures D0 into 11 decision boundaries and maps each to current source evidence, proposal (not owner-approved), failure mode, required acceptance evidence, dependencies, and status. It does not repeat the previous caller census or assert transitive no-bypass proof.
+
+Next: cross-check the D0 ledger against the already existing D1 caller reconciliation, caller ledger, static-graph gap specification, and root contract. Record only contradictions or unclassified dependencies supported by source. If consistent, mark the cross-check as documented rather than re-running the census. Do not implement runtime/tests/workflows before the design gates and separate implementation authorization.
+
+No runtime, tests, workflows, CLI or stores changed; no tests/CI executed during this documentation pass. Canonical status remains M0 `INCOMPLETO`, D0/D1/D2/D3 `OPEN`, authorization `NOT_EVALUATED`, legitimate root `PENDING/UNKNOWN`, protected effects `STOP`.
+
+---
+
 ## 0. Latest continuation checkpoint — D0/D1/D2/D3 decision boundary reconciliation (2026-10-23)
 
 New note: [NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md), commit `1c67919dddae59d7772f9beeca9b6d88e89770b6`.
