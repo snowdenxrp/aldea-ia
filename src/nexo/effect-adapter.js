@@ -410,6 +410,7 @@ export function createEffectAdapter(options = {}) {
   }
 
   async function execute(request = {}) {
+    try { readSafeJournalSnapshot(executionJournal); } catch { return { status: "blocked", code: "EFFECT_JOURNAL_INVALID", verified: false }; }
     const input = readEffectRequest(request);
     if (!input) return { status: "failed", code: "INVALID_EFFECT_REQUEST", verified: false };
     const key = input.idempotencyKey;
