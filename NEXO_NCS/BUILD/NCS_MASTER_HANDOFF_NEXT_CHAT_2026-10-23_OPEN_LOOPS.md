@@ -936,3 +936,11 @@ No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 
 A targeted check of root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` found a second ambiguity: §1.2 says alias convergence must not be claimed until canonicalization/symlink policy is decided and tested; a later recommendation table says symlinks resolving to the same directory “must converge.” Keep this as a candidate recommendation only. D0-C3 remains OPEN; no symlink/alias policy is accepted or implemented. The ambiguity is recorded in the cross-contract checkpoint, commit `41aeffb6067af066a3e8298be926650b62fc2820`, blob `6488b8250d3329fe54ebcaf7e51685ac209f8a2c`.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+## Follow-up: bootstrap first-admission protocol is unspecified — 2026-10-23
+
+A targeted contract review found an unresolved D0-C2/D2 ordering edge in root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31`: normal operation rejects a nonexistent root; explicit bootstrap is the only allowed creator; the proposed admission lock is inside `<root>/.nexo-instance.lock/`; but acceptance criteria say bootstrap uses the same admission. This does not establish how the first bootstrap safely coordinates before the root and in-root lock exist.
+
+Next step: define the first-creation race/coordination protocol, allowed bootstrap mutations, and failure behavior for simultaneous bootstrap attempts/uncertain ownership. Do not silently create root before validation, invent a sibling/global lock, or bypass admission. If no defensible protocol is specified, bootstrap remains blocked/UNKNOWN. Full note in cross-contract checkpoint commit `e0702087ba4191bdcb3f078e63c45aacb87fdbc5`, blob `f060b9983006dbc0170102eaa422737364fc732b`.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
