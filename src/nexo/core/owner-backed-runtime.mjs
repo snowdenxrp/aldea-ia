@@ -479,11 +479,125 @@ async function executeNexoStepWithContinuityOwnerInternal({
  * explicit false; PREPARED commit uncertainty remains the distinct string
  * "UNKNOWN". This normalization reports state only and never authorizes retry.
  */
+const OWNER_RUNTIME_METHODS = Object.freeze([
+  "loadCurrent", "recordPrepared", "recordExecutionLineage",
+  "reconcilePrepared", "supportsReconciliation"
+]);
+const ADAPTER_RUNTIME_METHODS = Object.freeze([
+  "executePrepared", "supports", "supportsReconciliation"
+]);
+
+function readOwnerRuntimeOptions(args) {
+  if (args === undefined) args = {};
+  if (!args || typeof args !== "object" || Array.isArray(args)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(args);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const values = Object.create(null);
+    for (const key of [
+      "missionId", "stepId", "owner", "adapter", "context",
+      "precondition", "postcondition"
+    ]) {
+      const descriptor = Object.getOwnPropertyDescriptor(args, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      values[key] = descriptor.value;
+    }
+    if (values.precondition !== undefined && typeof values.precondition !== "function") return null;
+    if (values.postcondition !== undefined && typeof values.postcondition !== "function") return null;
+    if (values.context === undefined) values.context = {};
+    return values;
+  } catch {
+    return null;
+  }
+}
+
+function findRuntimeDataMethod(source, key) {
+  if (!source || typeof source !== "object" || Array.isArray(source)) return { ok: false };
+  let current = source;
+  try {
+    while (current && current !== Object.prototype) {
+      const descriptor = Object.getOwnPropertyDescriptor(current, key);
+      if (descriptor) {
+        if (!("value" in descriptor) || typeof descriptor.value !== "function") {
+          return { ok: false };
+        }
+        return { ok: true, method: descriptor.value };
+      }
+      current = Object.getPrototypeOf(current);
+    }
+  } catch {
+    return { ok: false };
+  }
+  return { ok: true, method: null };
+}
+
+function createRuntimeCapabilityView(source, methodNames, optionalMethods = []) {
+  if (!source || typeof source !== "object" || Array.isArray(source)) return null;
+  const view = Object.create(null);
+  for (const key of [...methodNames, ...optionalMethods]) {
+    const found = findRuntimeDataMethod(source, key);
+    if (!found.ok) return null;
+    if (!found.method) {
+      if (optionalMethods.includes(key)) continue;
+      return null;
+    }
+    Object.defineProperty(view, key, {
+      enumerable: true,
+      value: (...args) => Reflect.apply(found.method, source, args)
+    });
+  }
+  return view;
+}
+
+/**
+ * Stable public result contract for application callers. Inputs and capability
+ * methods are read through data descriptors before runtime code can invoke them.
+ * Missing flags are explicit false; UNKNOWN never authorizes retry.
+ */
 export async function executeNexoStepWithContinuityOwner(args = {}) {
+  const input = readOwnerRuntimeOptions(args);
+  if (!input) {
+    return {
+      status: "invalid",
+      code: "NEXO_CANONICAL_RUNTIME_CONTEXT_INVALID",
+      dispatchAttempted: false,
+      preparedCommitted: false,
+      lineageCommitted: false,
+      journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false
+    };
+  }
+
+  const owner = createRuntimeCapabilityView(input.owner, OWNER_RUNTIME_METHODS, ["recordOutcome"]);
+  const adapter = createRuntimeCapabilityView(input.adapter, ADAPTER_RUNTIME_METHODS);
+  if (!owner || !adapter) {
+    return {
+      status: "invalid",
+      code: "NEXO_CANONICAL_RUNTIME_CONTEXT_INVALID",
+      dispatchAttempted: false,
+      preparedCommitted: false,
+      lineageCommitted: false,
+      journalSettled: false,
+      terminalOutcomeRecorded: false,
+      redispatchAuthorized: false
+    };
+  }
+
   const executionState = { dispatchAttempted: false };
   let result;
   try {
-    result = await executeNexoStepWithContinuityOwnerInternal({ ...args, _executionState: executionState });
+    result = await executeNexoStepWithContinuityOwnerInternal({
+      missionId: input.missionId,
+      stepId: input.stepId,
+      owner,
+      adapter,
+      context: input.context,
+      precondition: input.precondition,
+      postcondition: input.postcondition,
+      _executionState: executionState
+    });
   } catch {
     // A surprise before the dispatch boundary is a closed failure. After the
     // boundary, the effect may exist: preserve UNKNOWN and forbid redispatch.
