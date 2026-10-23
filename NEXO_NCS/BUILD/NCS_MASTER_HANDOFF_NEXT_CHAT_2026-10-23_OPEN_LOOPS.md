@@ -922,3 +922,11 @@ A focused review (not a repeated caller census) found one wording mismatch: the 
 - Cross-contract checkpoint appended with the correction: commit `94698077ba830ad71e6dc8dd2852ffe4087dda61`, blob `9b7f58b03b3ce64d736e862c54b3129e315a81d3`.
 
 This was a documentary consistency fix, not an implementation or policy decision. No runtime/tests/workflows changed; no tests/CI run. State remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+## Follow-up: D0-C1 root interface wording remains open — 2026-10-23
+
+Reviewed current root contract blob `bac9493af98c3f86001e323dab153bdee78b5f31`. §1.1 describes CLI/env as an open subdecision and says an environment variable may be considered as a transport, while later sections recommend `--root` plus a validated API instance object and no root env variable in the first migration. The owner decision packet marks that as a recommendation, not an accepted owner decision.
+
+Treat D0-C1 as OPEN. Current recommendation only: explicit CLI `--root`, validated API instance object, no env override in first migration; no implementation until the owner decision gate is resolved. An attempted narrow edit of the 146 KB root contract was blocked by tool security controls, so that source file was not changed. The ambiguity is recorded in the cross-contract checkpoint, commit `4b6533e178dcdcd9783ea7de89c44f0d21bccea3`, blob `aa5c62ffe942d9bc5f83f4a65c25e105483c4db7`.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
