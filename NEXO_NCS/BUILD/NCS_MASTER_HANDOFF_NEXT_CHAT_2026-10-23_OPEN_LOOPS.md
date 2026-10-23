@@ -87,21 +87,16 @@ During the implementation audit, a concrete gap was found: journal rows with syn
 
 This verifies the read-only Open Loops implementation+test SHA; it does not verify owner authority, a protected execution path, or a broader Open Loops engine. Do not repeat the now-closed exact-SHA CI check unless the implementation/tests change.
 
-### Exact next actions
+### Exact next actions — updated after exact-SHA verification
 
-1. Resolve the exact commit SHA that contains the combined `loadNexoOpenLoops` implementation, public export, test file, and package test command. Inspect commit history/diff or compare current branch state; do not guess the SHA from blob IDs.
-2. Fetch workflow runs/jobs for that exact SHA. Wait/check until the relevant workflow is `completed/success`; if failed, inspect raw job logs and correct only the concrete failing behavior. Do not mark PASS based on a different SHA.
-3. Audit the implementation for contract/test mismatches before adding features:
-   - Are all canonical terminal and nonterminal mission statuses handled only according to existing reconstruction semantics?
-   - Does the snapshot loader validate all records before projection?
-   - Is unresolved journal linkage validation adequate for the existing canonical schema?
-   - Does sorting guarantee determinism for duplicate records without inventing identity?
-   - Does the output cap count all projected items as documented?
-   - Does any status discrepancy or malformed record block rather than silently omit a loop?
-   - Are missing/corrupt/resource-limit failures preserved as blocked?
-   - Does the query stay read-only and avoid dispatch/reconciliation/adapter calls?
-4. If the implementation passes, document the exact code+test SHA, workflow/run/job IDs, raw result, and interpretation in BUILD and STATUS. The STATUS-only commit is documentation, not a substitute for testing the implementation SHA.
-5. Then proceed to the next internal capability only after reviewing existing master/build plans. Prefer read-only, canonical-state-derived functionality. Do not expose CLI or add a second store without a demonstrated acceptance case.
+1. Do not repeat the exact-SHA CI check unless implementation/tests change. The combined implementation+test SHA `443014e2309a5ff8d487f1b3b56f842e286fb792` passed:
+   - deterministic persistence / `npm test`: run `39979056812`, job `120501276361`, SUCCESS;
+   - STEP 4: run `39979056795`, SUCCESS;
+   - STEP 5: run `39979057695`, SUCCESS.
+2. The implementation audit found and fixed orphan/mismatched unresolved-journal links; regression coverage now requires the journal's mission, step, and action to resolve against the same canonical snapshot.
+3. Keep Open Loops scoped as an application-level read-only projection. Do not add CLI exposure, a new store, queue, scheduler, or task identity without a concrete acceptance case.
+4. Next work unit: consult the current MASTER/CORE and existing BUILD/DECISIONS plan to choose one already-supported internal capability and define its smallest concrete acceptance case before implementation. Do not infer the next feature from the broad master vision alone.
+5. Preserve exact evidence rules: implementation+test SHA, run/job IDs, and conclusions must match. A documentation commit does not substitute for runtime/test proof.
 
 ## 5. Existing audits/constraints that must not be repeated
 
@@ -127,6 +122,6 @@ This verifies the read-only Open Loops implementation+test SHA; it does not veri
 
 ## 7. Current handoff status
 
-- The handoff itself is intended to prevent context loss; it does not alter runtime or constitutional state.
-- The source and test files for Open Loops are present on the current branch, but exact combined implementation SHA and its CI result still need to be verified.
-- Next chat should begin by reading this handoff and STATUS, then verify the Open Loops implementation CI. Do not restart trust-boundary research.
+- The handoff and STATUS are continuity records; neither alters runtime or constitutional state.
+- Open Loops implementation+test SHA `443014e2309a5ff8d487f1b3b56f842e286fb792` is verified by deterministic persistence/`npm test`, STEP 4, and STEP 5 workflows; see Section 4 and the Open Loops contract.
+- Next chat should begin at `STATUS → MASTER/CORE → BUILD`, then select one next internal capability with a concrete acceptance case. Do not restart trust-boundary research or repeat the closed Open Loops CI check.
