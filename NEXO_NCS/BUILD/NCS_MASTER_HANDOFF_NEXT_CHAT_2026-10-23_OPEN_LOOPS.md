@@ -584,3 +584,16 @@ Se estaba terminando el censo de referencias/callers de Nexo en todo el reposito
 - Próximo paso: recuperar y verificar el censo completo de referencias/callers Nexo y el estado de los tres documentos; resolver si se acepta la separación D1-DESIGN / D1-IMPLEMENTATION; luego cerrar inventario y allowlist con evidencia antes de cambiar runtime/tests.
 - En el chat nuevo, leer primero `NEXO_NCS/STATUS.md`, luego el contrato de raíz, luego este handoff. Continuar exactamente desde la matriz de fronteras de producción/censo de callers; no reiniciar desde investigaciones antiguas.
 
+
+
+## NUEVO CHECKPOINT — reconciliación D1 y alcance de admisión (2026-10-23)
+
+Informe creado: `NEXO_NCS/BUILD/NCS_M0_D1_CALLER_RECONCILIATION_AND_LOCK_SCOPE_2026-10-23.md`, commit documental `254cd885637576ef997a5a389d65a6b645ab3f62`.
+
+Este informe contrasta el contrato de raíz, censo y allowlist con fuentes concretas. Confirma que `assistants.mjs` lee world state, abre Continuity con `legacyMemory`, registra misión, persiste memoria Lúmina y luego world state; no hay atomicidad conjunta. `simulate.mjs` tiene lock propio con stale cleanup distinto y puede abrir/inicializar Continuity. No reutilizar ese lock como admisión de instancia; excluir simulación del modo persistente ordinario hasta definir un modo explícito. El hijo Chronicle sigue siendo invocable directamente y debe validar/adquirir admisión por sí mismo.
+
+Contrato recomendado: admisión antes de la primera lectura persistida y durante la vida útil del snapshot protegido; orden único de locks: instancia → store(s), con liberación en orden inverso; helpers heredan contexto y no reentran. Mantener locks per-store hasta demostrar compatibilidad. La garantía se limita a exclusión entre procesos cooperantes con todas las entradas migradas; no es autoridad, sandbox ni límite exacto de heap/disco.
+
+El informe especifica los casos mínimos para un test arquitectónico estático/negativo, pero no afirma que el grafo esté cerrado. El test no se implementó ni ejecutó; runtime, tests y workflows siguen sin cambios. D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+Siguiente acción única: terminar reconciliación de callers en checkout exacto y cerrar D1-DESIGN/D2/D3 como contratos documentales antes de autorizar cualquier cambio de runtime/tests. La separación D1-DESIGN vs D1-IMPLEMENTATION continúa siendo recomendación, no decisión del propietario.
