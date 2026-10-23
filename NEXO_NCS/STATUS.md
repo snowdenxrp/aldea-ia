@@ -1,3 +1,15 @@
+# CHECKPOINT DE DISEÑO — 2026-10-23 — CORE INPUT TRUST BOUNDARY REVIEW
+
+- Revisado desde el estado actual: `MASTER/README.md`, `CORE/README.md`, `contracts.mjs`, `protected-transition.mjs`, `mission-admission-contract.mjs`, `reconciliation.mjs`, `ownership.mjs`, `runtime.js` y pruebas de contratos/admisión/reconciliación.
+- Documento nuevo: [NCS_CORE_INPUT_TRUST_BOUNDARY_DECISION_REVIEW_2026-10-23.md](BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_DECISION_REVIEW_2026-10-23.md).
+- Hallazgo estructural: el riesgo de Proxy traps atraviesa más de una API; no corresponde resolverlo con otro guard local. El Core central y las fronteras de misión/reconciliación hacen reflexión sobre objetos vivos.
+- Decisión NO tomada: no seleccionar serialización ni confianza in-process todavía. Falta un inventario completo de callers concretos y la procedencia/formato real de sus entradas. La review compara las opciones y define el caller matrix necesario.
+- Acción inmediata: trazar callsites de cada frontera pública y clasificar si reciben datos externos o estructuras internas ya admitidas. Luego elegir una frontera verificable por clase de entrada y diseñar migración/error mapping antes de editar runtime.
+- No se modificó código de ejecución en este paso. No se declara resuelto el hallazgo Proxy.
+- Estado constitucional permanece: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+---
+
 # CHECKPOINT DE VERIFICACIÓN — 2026-10-23 — NESTED RUNTIME CONTRACT INPUT GUARD CI
 
 - Código: `16c700563d5f4fc423aeeb4952c7b486f4f01bc0`.
