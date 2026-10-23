@@ -718,3 +718,19 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - Este checkpoint es documental. No se cambió runtime ni tests en este commit. CI de este nuevo commit no se atribuye al run anterior.
 
 Estado canónico sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+# RECONCILIACIÓN DE ADMISIÓN — MISSION PREVIEW — 2026-10-23
+
+- Nueva reconciliación: [NCS_M0_E_MISSION_PREVIEW_ADMISSION_RECONCILIATION_2026-10-23.md](BUILD/NCS_M0_E_MISSION_PREVIEW_ADMISSION_RECONCILIATION_2026-10-23.md).
+- Commit de creación: `7f4239c30e38fd01d6b9ce56b15466ae4b28eb11`.
+- La lectura actual confirma que el hallazgo histórico de lectura JSON sin límite previo ya no describe el código actual: ambos previews CLI usan `readUtf8FileBounded` antes de `JSON.parse`; el contrato compartido `mission-admission-contract.mjs` aplica topes estructurales antes de validación/clonado recursivos.
+- Las pruebas existentes cubren 4 MiB exactos y +1 byte en ambos comandos, además de límites estructurales de pasos, dependencias, profundidad, nodos y bytes UTF-8. Se conservan los invariantes `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `persisted: false`, salida sanitizada y Continuity sin cambios.
+- CI determinista que incluye el código/pruebas inspeccionados: [run 39898264772](https://github.com/snowdenxrp/aldea-ia/actions/runs/39898264772), SHA `cdbdef0d8046a95567851eeebb2e41e054112c79`, job `tests` / `120233625839`, `completed/success`; paso `Run tests` exitoso.
+- No afirmar que los límites por entrada/estructura sean presupuesto agregado de heap/disco ni protección contra concurrencia multiproceso. La cifra 4 MiB es un límite operativo probado, no demostración de capacidad para toda misión futura.
+- Próximo paso: no repetir el trabajo de admisión sin regresión nueva; continuar con el inventario existente de M0-E (autoridad por claim, rutas y sink real), sin reabrir auditorías ya cerradas.
+- Esta reconciliación es documental; no cambia runtime ni pruebas y no modifica el estado constitucional.
+
+Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
