@@ -68,3 +68,21 @@ The order above is a recommendation, not an owner decision.
 Next work: reconcile this ledger against the latest root contract and D1 caller artifacts, then identify any D0 contradiction or missing consumer evidence. Do not re-run the already documented census absent a changed source snapshot. Do not mark any proposal accepted on the owner's behalf. Keep STATUS and the master handoff aligned with the actual repository commits and evidence.
 
 Canonical status remains: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; implementation authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+
+## 6. Decision-ID crosswalk to the existing D0/D1/D2/D3 matrix
+
+The broader decision matrix uses stable IDs `D0-C1` through `D0-C4`, while this detailed ledger uses `D0-01` through `D0-11`. Keep both identifiers during the transition so existing references remain resolvable; do not treat one ID family as additional decisions.
+
+| Matrix ID | Matrix topic | Ledger rows that supply detail | Remaining closure requirement |
+|---|---|---|---|
+| `D0-C1` | Interface/configuration precedence | D0-02, D0-03, D0-04, D0-08 | One coherent public CLI/API/env/legacy contract and conflict/error behavior. |
+| `D0-C2` | Existing root versus bootstrap | D0-05, D0-09, D0-10 | Separate normal operation from explicit bootstrap; demonstrate zero side effects on invalid/read-only paths. |
+| `D0-C3` | Symlinks and aliases | D0-06, D0-07, D0-09 | Root/store/lock alias policy, reserved-name collision behavior, stated filesystem threat boundary, negative fixtures. |
+| `D0-C4` | Legacy migration | D0-07, D0-08, D0-11 | Per-installation source inventory, dry-run, verified copy, explicit cutover and rollback; no automatic merge/dual-write. |
+
+The matrix also contains `D1-C1..C3`, `D2-C1..C4`, and `D3-C1..C2`. These are dependent contracts, not extra D0 rows. D0 closure must not claim their scope/lock/migration questions have been solved merely because related risks are mentioned here.
+
+### Sequencing implication
+
+Resolve the matrix-level decision `D1-S0` (see [D1-S0 sequence gate analysis](NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md)) before changing any gate criteria. The recommended split of design versus implementation remains **not owner-approved**. This crosswalk changes no status and grants no implementation authorization.
