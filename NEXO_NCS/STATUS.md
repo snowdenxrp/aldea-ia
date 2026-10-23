@@ -930,3 +930,11 @@ Se añadió la sección 16 al contrato de raíz de instancia: precedencia entre 
 D2 sigue ABIERTO: falta cotejar consumidores de resultados, convertir la matriz en pruebas y completar el inventario reproducible de callers indirectos/no-bypass. D1 también ABIERTO: el barrido remoto previo no equivale a búsqueda exhaustiva en checkout local. No se cambiaron runtime, tests ni workflows. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
 
 Fuente: [Contrato de raíz de instancia y plan de migración](BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
+
+
+
+# CHECKPOINT — COMPATIBILIDAD DE RESULTADOS Y CALLERS INDIRECTOS (2026-10-23)
+
+Se añadió la sección 17 del contrato tras leer los resultados existentes de continuity queries, Chronicle append, continuity-service, API de aplicación, chronicle-effect, owner-backed-runtime y los módulos repair/runtime. Se documenta que las consultas tienen estados de negocio propios (`loaded/not_found/blocked`), Chronicle preserva `completed/blocked/conflict/unknown/observed/invalid` y el gate de repair runtime devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`. El wrapper futuro no debe borrar incertidumbre ni convertir admisión en autorización.
+
+La pasada redujo riesgo de incompatibilidad, pero no completa la matriz: falta rastreo reproducible de todos los callers de factories/owners/adapters y test de no-bypass. D1 y D2 continúan ABIERTOS. No se cambiaron runtime, tests ni workflows. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
