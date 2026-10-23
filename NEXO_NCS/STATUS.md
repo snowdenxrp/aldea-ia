@@ -1,3 +1,14 @@
+# CHECKPOINT NUEVO — 2026-10-23 — NESTED RUNTIME CONTRACT INPUT GUARD
+
+- Hallazgo reproducible: el guard anterior validaba el registro superior de opciones, pero después el runtime leía mission.missionId, mission.steps y adapter.execute de objetos anidados ordinarios; getters en la misión, en un paso o en el adaptador podían ejecutarse antes de rechazo.
+- Corrección: executeNexoStep() valida las gráficas completas de misión y adaptador con el contrato común assertContractInput() antes de sus lecturas; executeLuminaNexoStep() valida la misión antes de derivar el postcondition desde los pasos. Se rechazan descriptores accessor, propiedades no enumerables, arrays no canónicos/dispersos, ciclos y demás formas fuera del contrato de datos.
+- Regresiones: getter en missionId, getter anidado en steps[0].id y getter en adapter.execute; las tres rutas se rechazan sin invocar getter.
+- Límite: el validador no neutraliza Proxy traps, ni convierte el adaptador en autoridad, ni acredita durabilidad. El gate M0 Option A permanece cerrado.
+- Estado constitucional sin cambio: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+- Siguiente: ejecutar CI sobre los SHA exactos de código y pruebas; si pasa, actualizar continuidad sin cambiar el estado de autorización.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-23 — RUNTIME PUBLIC OPTIONS GUARD
 
 - Hallazgo reproducible: `replanPersistedNexoMission(options)`, `executeNexoStep(options)` y `executeLuminaNexoStep(options)` recibían opciones por destructuring. Un getter propio en `memory`, `adapter` u otro campo consumido podía ejecutarse antes de cualquier validación de memoria/mission.
