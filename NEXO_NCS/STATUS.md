@@ -904,3 +904,12 @@ Se inspeccionaron los 44 módulos actuales src/nexo/**/*.mjs|js y scripts/nexo*.
 Evidencia, tree SHA, blobs y limitaciones en BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md, sección 13.
 
 D1 continúa ABIERTO: no equivale a rg en checkout completo, no incluye todos los archivos fuera de esos árboles, no clasifica exhaustivamente alias/imports dinámicos y aún no hay test automatizado de no-bypass. Solo se muestrearon 10 archivos de tests. Runtime, tests y workflows SIN CAMBIOS. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+# CHECKPOINT — CONTRATO PROPUESTO DE ADMISIÓN POR INSTANCIA (2026-10-23)
+
+Revisados los stores actuales: Chronicle y Continuity duplican locks per-store pero difieren en release failure (Continuity reintenta y mantiene cuarentena local por ruta; Chronicle no implementa la misma política). loadCurrent() no toma lock per-store; lock-deadline usa performance.now() con default 2000 ms, y un deadline absoluto no puede transportarse entre procesos.
+
+Recomendación registrada en sección 14 del contrato de raíz: añadir una capa exclusiva de admisión por raíz canónica, mantener locks per-store inicialmente, orden fijo raíz→store, adquisición en una única frontera, sin reentrada, sin recuperación automática de stale locks y sin atribuir autoridad al lock. Códigos propuestos incluyen NEXO_INSTANCE_LOCK_STATE_UNKNOWN, NEXO_INSTANCE_LOCK_STALE_RECOVERY_REQUIRED y NEXO_INSTANCE_LOCK_ACQUISITION_TIMEOUT. No son todavía API pública definitiva.
+
+D2 sigue ABIERTO hasta documentar grafo de llamadas repair/runtime, decidir el único dueño del lock en el flujo Chronicle padre/hijo y definir pruebas de release incierto/no-bypass. Runtime, tests y workflows SIN CAMBIOS. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
