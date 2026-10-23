@@ -685,3 +685,12 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - Este cambio es documental: runtime sin cambios; gate deny-first no implementado; CI de esta actualización documental no comprobado.
 - Próximo trabajo: verificar enforcement de las operaciones excluidas y consultas read-only en HEAD actual, luego retomar la brecha M0-E de raíz legítima → Constitución exacta → Policy/contexto → sink protegido, sin inventar autoridad.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## CI VERIFICADO — RECONCILIACIÓN OPTION A — 2026-10-23
+
+- Workflow determinista: [run 39897980663](https://github.com/snowdenxrp/aldea-ia/actions/runs/39897980663), SHA evaluado `7a355915d026525d0d94efe03fcde1a5673f12f3), estado `completed/success`.
+- Job: [tests — 120232750270](https://github.com/snowdenxrp/aldea-ia/actions/runs/39897980663/job/120232750270), `completed/success`.
+- Log del job descargado y revisado: cadena de tests ejecutada sin fallo; `Nexo independent entrypoint: unsupported commands fail closed; Chronicle delegates without Lúmina or content leakage`; `Nexo Chronicle owner-backed runtime tests passed`; `Nexo bounded temporary cleanup regression passed`.
+- Alcance del resultado: confirma la suite en el SHA citado; no demuestra raíz legítima, autorización constitucional, aislamiento frente a procesos locales hostiles ni autorización de efectos protegidos. El run prueba el commit documental de reconciliación, no un cambio de runtime.
+- El update de STATUS que registra este resultado es posterior a ese SHA; no se atribuye a este run la validación de ese update posterior.
