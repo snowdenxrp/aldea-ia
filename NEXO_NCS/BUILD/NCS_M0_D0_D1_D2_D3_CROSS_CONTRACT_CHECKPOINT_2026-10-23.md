@@ -260,3 +260,17 @@ Se revisó el contexto de conversaciones anteriores y el handoff maestro disponi
 Interpretación precisa: RUNTIME_TARGET = NOT_DETERMINED (no hay selección documentada). Esto **no** demuestra que físicamente no exista un entorno; evita convertir falta de evidencia en la afirmación de que no existe. No pedir al propietario que reconstruya la investigación anterior ni volver a censar callers. La siguiente entrada mínima, cuando sea necesaria, es confirmar si ya se seleccionó un despliegue real. Mientras tanto, continuar revisión portable de contratos, sin escoger bootstrap A/B/C/D ni cerrar D3.
 
 No se modificó runtime/tests/workflows; no se ejecutaron tests/CI. Estado canónico sin cambios.
+
+---
+# REVISIÓN DIRIGIDA — SEMÁNTICA DE ROOT_READY ENTRE D2 Y D0-C2 — 2026-10-23
+
+Se encontró una ambigüedad documental nueva al comparar la matriz D2 con el gate D0-C2:
+
+- En la matriz D2, ROOT_READY describe una raíz existente, directorio y validada según la política de configuración; después todavía se intenta adquirir el lock y validar owner/stores.
+- En el gate D0-C2, ROOT_READY se usa de manera más amplia, incluyendo configuración, política de rutas, estado de bootstrap, stores inicializados/validados, admisión/ownership y, cuando aplique, quiescencia operacional.
+
+Estas descripciones pueden ser compatibles si la matriz usa ROOT_READY para la **ruta raíz** y el gate para la **instancia operativa lista**, pero hoy el mismo token sugiere dos alcances. No se declara defecto de runtime ni se cambia el nombre/estado por inferencia.
+
+Recomendación documental no aceptada: antes de implementar, definir explícitamente si ROOT_READY nombra solo la validación de la ruta o la instancia completa; distinguir por texto los niveles de estado sin añadir estados/campos persistentes nuevos innecesarios. La admisión del lock y la autorización constitucional deben seguir siendo independientes; una raíz/instancia técnicamente lista no legitima autoridad ni habilita efectos protegidos.
+
+No se repitió el censo de callers. Solo documentación; runtime/tests/workflows sin cambios, tests/CI no ejecutados. Estado canónico sin cambios.
