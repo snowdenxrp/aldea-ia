@@ -53,3 +53,19 @@ If that trace cannot establish enforceable provenance, leave the boundary unreso
 - Protected effects: `STOP`
 
 No runtime code changed in this inventory. This is not a security certification, not proof of a deployed exploit, and not evidence of owner authority or durable protected execution.
+
+
+## Follow-up source trace — owner-backed runtime and application CLI
+
+Current-branch follow-up inspection:
+- `src/nexo/core/owner-backed-runtime.mjs` blob `a7a014489209273ce78d0103afa785728d4c467c` exports `executeNexoStepWithContinuityOwner(args)`. It receives `owner` and `adapter` capability objects supplied through caller arguments. It reads the outer options through own descriptors, then constructs capability views by walking the supplied object's prototype chain and reading method descriptors.
+- This improves protection against ordinary accessor properties but is **not a Proxy-trap boundary**: `Object.getOwnPropertyDescriptor` and `Object.getPrototypeOf` remain reflective operations that can invoke Proxy traps. Capability view construction does not authenticate the supplied owner or adapter.
+- The owner-backed path does enforce a meaningful operational sequence in source: load canonical continuity state; validate mission/step and dependencies; check handler and reconciliation support; require a committed PREPARED result with expected revision advancement before calling `adapter.executePrepared`; then record execution lineage and reconcile. This is a source-level protocol description, not proof that every caller is authorized or that external effect handlers are trustworthy.
+- `src/nexo/runtime.js` re-exports `executeNexoStepWithContinuityOwner`; this establishes a public export path, not a production callsite. No caller of that export was established by the directly fetched files in this pass.
+- `scripts/nexo-continuity.mjs` is only a compatibility re-export of `openNexoContinuityOwner` from `src/nexo/core/continuity-service.mjs`.
+- `scripts/nexo.mjs` routes the independent CLI through `src/nexo/application/index.mjs`. The application index exposes `runNexoChronicleAppend`, read-only continuity queries, and mission draft/request previews. Its header states Chronicle append is the only mutating application use case. This is a distinct narrow application surface from the generic owner-backed runtime export.
+- `src/nexo/core/continuity-service.mjs` accepts injected `effectVerifiers` when opening the continuity owner. That is an explicit dependency seam; caller provenance and verifier correctness still require their own trace and contracts.
+
+### Refined next action
+
+Trace the direct implementation of `src/nexo/application/chronicle-append.mjs`, the owner and adapter factories it calls, and the tests that exercise the public CLI path. Separately search/fetch every module that imports `executeNexoStepWithContinuityOwner` on the current branch. Do not conflate the narrow Chronicle CLI with the generic owner-backed runtime. Keep the Proxy-trap finding unresolved and do not add another local guard.
