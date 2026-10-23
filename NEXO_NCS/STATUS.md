@@ -1108,3 +1108,12 @@ Se revisaron los 34 módulos de `src/nexo/`, complementando los 13 scripts y 45 
 Hallazgo clave: los módulos de pueblo/aldea y los entrypoints visuales no muestran apertura directa de stores Nexo; `src/assistants/memory.js` mantiene datos `memory.nexo` en memoria, pero los callers externos de persistencia siguen siendo `assistants.mjs`, `simulate.mjs`, el hijo Chronicle y la CLI principal. Dentro de Nexo, `application/**`, `continuity-service.mjs` y las fábricas de store aún aceptan rutas directas. El censo define puntos conocidos, pero no prueba no-bypass hasta añadir un allowlist de imports/callers de producción y tests arquitectónicos.
 
 El blob `src/three.core.js` existe (1.403.455 bytes); el fetch textual vacío no significa archivo ausente. Se excluyen vendor Three.js y coincidencias léxicas como `transmission` de las referencias Nexo. Censo ampliado solo documental; D1/D2/D3 siguen OPEN; sin cambios de runtime/tests/workflows ni ejecución de pruebas.
+
+
+### Artefacto de censo completo preservado como archivo independiente — 2026-10-23
+
+Para que el inventario no dependa solo de este resumen ni de un chat, se creó `RESEARCH/NCS_M0_NEXO_SOURCE_REFERENCE_CENSUS_2026-10-23.md`. Incluye rutas, blob SHA, tamaños y clasificación de las **13 entradas de `scripts/`, 34 módulos de `src/nexo/` y 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/`** (93 rutas). Snapshot del árbol: commit `f105a3a6b88c372d22aed49d29ea56d2d17ade78`; árbol completo, no truncado. El archivo distingue explícitamente el censo de aplicación de los 188 archivos JS totales: no afirma que tests/tooling/fixtures hayan sido auditados como grafo completo.
+
+Enlace: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/NCS_M0_NEXO_SOURCE_REFERENCE_CENSUS_2026-10-23.md
+
+**Siguiente trabajo:** convertir el censo en allowlist verificable del grafo de callers/imports productivos. No repetir la revisión de los 93 archivos salvo que cambie el snapshot o aparezca evidencia concreta de omisión. D1/D2/D3 siguen OPEN; sin cambios de runtime/tests/workflows ni pruebas ejecutadas.
