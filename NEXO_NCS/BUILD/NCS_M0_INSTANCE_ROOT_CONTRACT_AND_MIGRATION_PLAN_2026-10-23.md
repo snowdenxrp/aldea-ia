@@ -40,7 +40,7 @@ Layout inicial sugerido, pendiente de prueba contra compatibilidad y necesidades
 
 - `<root>/continuity.json` — almacén canónico Continuity existente.
 - `<root>/chronicle.json` — almacén canónico Chronicle existente.
-- `<root>/.nexo-instance.lock` — archivo de admisión común, si el protocolo elegido lo necesita.
+- `<root>/.nexo-instance.lock/` — directorio reservado de admisión con `owner.json` (candidato D2, no runtime implementado).
 - Temporales y locks específicos de cada store siguen derivados del nombre canónico existente; no se cambia su protocolo en esta fase.
 
 No introducir subdirectorio de datos, manifiesto de instancia, marcador de bootstrap ni archivo de configuración persistente adicional sin demostrar que el contrato no puede resolverse con los archivos y mecanismos existentes. El nombre del lock es ilustrativo hasta la implementación y no autoriza duplicar un segundo sistema de locks.
