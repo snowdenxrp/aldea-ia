@@ -313,3 +313,52 @@ Blobs de referencia: scripts/nexo.mjs e471eb478a09aa8a9a8323795583e198cdf0a127; 
 Pruebas relacionadas revisadas como muestra (10 archivos, no el conjunto completo): chronicle-store.test.mjs, continuity-store.test.mjs, entrypoint.test.mjs, chronicle-runtime.test.mjs, continuity-migration.test.mjs, continuity-service-options-input-guard.test.mjs, chronicle-session-input-guard.test.mjs, persistence-lock-worker.mjs, open-loops-query.test.mjs y chronicle-effect-input-guard.test.mjs. Los tests ejercitan factories directas y locks per-store; una futura API de instancia deberá mantener pruebas de primitivas separadas de las pruebas de no-bypass productivo.
 
 Límite D1: esta pasada remota no equivale a ejecutar rg sobre un checkout local completo. No inspecciona cada archivo fuera de src/nexo/ y scripts/nexo*.mjs, no clasifica todos los imports/reexports/dynamic imports de todo el repo y no crea todavía un test de arquitectura. D1 sigue ABIERTO; no declarar matriz exhaustiva ni garantía no-bypass. No se modificó runtime, tests ni workflows.
+
+
+## 14. D2 — contrato recomendado para admisión compartida (2026-10-23)
+
+### Hechos que cambian el diseño
+
+- `src/nexo/core/chronicle-store.mjs` y `continuity-store.mjs` implementan por separado locks de directorio `<filePath>.lock`, owner token, espera en intervalos de 10 ms, umbral de stale de 60 s y recuperación explícita sin borrado automático.
+- Las implementaciones no son equivalentes: Continuity mantiene un `lockReleaseFailures` local por ruta y reintenta una vez el release; Chronicle no tiene esa misma política. Sus errores públicos y metadata de owner también difieren.
+- `loadCurrent()` lee el documento sin adquirir el lock del store. Por tanto, un lock compartido en la frontera superior es lo que puede dar coherencia a operaciones compuestas que leen varios almacenes; no debe suponerse que los locks existentes ya protegen consultas o snapshots.
+- `lock-deadline.mjs` usa `performance.now()`, con presupuesto predeterminado de 2000 ms. El deadline absoluto pertenece al dominio monotónico del proceso; no debe pasarse entre procesos.
+- Ambos stores usan temporal estable `<filePath>.tmp`; los escritores por almacén ya dependen de su lock individual para evitar pisarse.
+
+### Decisión técnica recomendada para el diseño (no runtime)
+
+**Introducir una admisión de operación por raíz canónica como capa adicional y mantener intactos los locks per-store en la primera implementación.** No unificar todavía los dos locks existentes: esa refactorización mezcla el objetivo de coordinación de instancia con cambios de semántica de persistencia y añade riesgo sin ser necesaria para el primer corte.
+
+Contrato propuesto para la capa de instancia:
+
+1. La API de instancia recibe una raíz ya validada/canonicalizada y una operación explícita. Las funciones internas reciben un contexto opaco de admisión; no adquieren recursivamente el lock raíz.
+2. La clave del lock raíz se deriva de la ruta real de la raíz (nombre reservado interno documentado, distinto de las rutas de almacén). Debe comprobarse que la raíz exista, sea directorio y sea accesible antes de intentar admisión. No crearla implícitamente.
+3. La admisión es exclusiva para todas las operaciones que leen o escriben Continuity/Chronicle o materializan snapshots derivados. Las funciones puras que no tocan persistencia quedan fuera.
+4. Orden de locks fijo: **raíz de instancia → lock per-store**. Ningún entrypoint debe adquirir primero un lock per-store y luego intentar la raíz. Los callbacks bajo admisión no pueden reentrar a la API pública de instancia.
+5. La admisión tiene presupuesto acotado derivado de un timeout relativo en cada proceso; el proceso hijo inicia su propio deadline local. No transportar el valor absoluto de `performance.now()` por IPC.
+6. Owner record validado y token de propiedad obligatorio para liberar. Lock inexistente/owner incompleto durante creación puede reintentarse solo en el caso explícito ENOENT; JSON inválido, permisos, inspección incierta o token diferente se bloquean como UNKNOWN/ownership uncertain.
+7. No recuperar locks stale automáticamente. Un lock viejo con PID no vivo produce `NEXO_INSTANCE_LOCK_STALE_RECOVERY_REQUIRED`; el estado de lock/owner desconocido produce `NEXO_INSTANCE_LOCK_STATE_UNKNOWN`; expiración produce `NEXO_INSTANCE_LOCK_ACQUISITION_TIMEOUT`. Fallos de adquisición y liberación se normalizan a códigos estables, preservando phase y si empezó alguna escritura.
+8. Si la liberación falla o la propiedad es incierta, el resultado de la operación no se presenta como éxito limpio. Informar por separado el resultado de persistencia ya observado y el estado de liberación; impedir otra operación en el mismo proceso si no puede probarse que el lock anterior se eliminó, o exigir recuperación explícita. El mecanismo exacto de cuarentena local debe quedar testeado antes de runtime.
+9. La primitiva no reclama exclusión contra procesos hostiles, seguridad frente a TOCTOU/symlink race, garantías en sistemas de archivos de red, fsync/power-loss durability, ni autoridad constitucional. Es una coordinación entre procesos cooperantes en almacenamiento local confiable.
+10. El lock de instancia no se adquiere en la CLI padre para luego ser adquirido de nuevo por el hijo. La operación con persistencia debe adquirirlo en una sola frontera: o el padre delega sin poseerlo y el hijo lo adquiere, o el padre mantiene una API en proceso y el hijo no es usado. La primera migración de Chronicle debe escoger un único dueño y probarlo con concurrencia real.
+
+### Errores y resultado de operación
+
+El wrapper de instancia debe devolver resultados de forma estructurada y no mezclar el estado de negocio con el estado del lock. Contrato mínimo interno recomendado:
+- `operation.status`: resultado existente de la operación de negocio, sin reinterpretarlo.
+- `admission.status`: `acquired | blocked | release_uncertain`.
+- `admission.code`: código estable, presente cuando no se puede afirmar admisión/liberación correcta.
+- `admission.phase`: `root_validation | lock_acquisition | operation | lock_release`.
+- `admission.writeStarted`: booleano conservador si la operación alcanzó el inicio de una escritura.
+
+Este shape es una propuesta interna de diseño, no un contrato público definitivo; antes de implementarlo se debe comparar con los result objects existentes para no romper consumidores.
+
+### Riesgos bloqueantes para cerrar D2
+
+- **Release y resultado ambiguo:** Chronicle y Continuity ya manejan de modo distinto fallos de liberación; la capa raíz no puede borrar esa diferencia ni ocultar persistencia ambigua.
+- **Operaciones compuestas y reentrada:** append abre stores, lee, inicializa y consulta owner; los entrypoints de reparación hacen múltiples lecturas. Debe definirse el límite superior exacto y evitar locks anidados.
+- **Proceso padre/hijo:** adquirir en ambos produciría timeout/deadlock; adquirir solo en padre pero saltar el gate en otros entrypoints dejaría bypass.
+- **Bootstrap/migración:** la inicialización de continuidad hoy existe en `openNexoContinuityOwner` y requiere una condición explícita. La API de raíz no debe inferir que un store ausente significa instancia nueva.
+- **Tests low-level:** las pruebas de store deben continuar ejercitando los locks per-store; una suite de API de instancia debe verificar la exclusión compuesta y que cada entrypoint de producción no pueda acceder directamente sin contexto.
+
+**Recomendación de cierre:** aceptar el diseño de capa de admisión adicional, pero mantener D2 abierto hasta que se documente el grafo de llamadas de los entrypoints críticos (especialmente repair/runtime), se decida el dueño del lock para el proceso Chronicle padre/hijo y se redacte la matriz de pruebas de release incierto y no-bypass. No cambiar runtime, tests ni workflows antes de ese cierre.
