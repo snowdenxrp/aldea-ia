@@ -439,3 +439,8 @@ El contrato de raíz ahora contiene la matriz de tratamiento propuesto para ocho
 ## Hueco D3: archivos store internos pueden ser symlinks fuera de root
 
 `realpath(root)` no impide que `root/continuity.json` o `root/chronicle.json` sean symlinks hacia archivos externos; los stores actuales siguen symlinks al abrir. Antes de cerrar D3, decidir/testear rechazo de symlinks en nombres reservados, exigir archivos regulares cuando existan y rechazar un root-lock symlink/objeto inesperado. Añadir casos para symlink externo/roto, conflictos file-directory y root aliasado. Esto sigue sin proteger contra TOCTOU de proceso local hostil.
+
+
+## Candidato concreto D2 para el root lock
+
+Se recomienda `<root>/.nexo-instance.lock/` como directorio reservado creado atómicamente por `mkdir`, con `owner.json` mínimo (`pid`, token, `createdAt`). No agregar instance IDs/colas/leases. Owner corrupto o estado desconocido: fail-closed. Stale lock: recuperación explícita, nunca borrado automático. Liberación: comprobar token antes de retirar el directorio; incertidumbre bloquea éxito limpio y reuso local. Deadline monotónico se crea en cada proceso a partir de una duración, nunca se pasa absoluto por IPC. Es candidato, no protocolo aprobado; D2 sigue OPEN.
