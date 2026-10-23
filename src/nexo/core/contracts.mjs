@@ -11,10 +11,10 @@ const VALIDATION_STATES = Object.freeze(["PASS", "FAIL", "UNKNOWN"]);
 const COMMIT_STATES = Object.freeze(["COMMITTED", "CONDITIONAL_CONFLICT", "FAILED", "UNKNOWN"]);
 
 const CONTRACT_LIMITS = Object.freeze({
-  maxDepth: 32,
-  maxNodes: 20_000,
-  maxStringBytes: 256 * 1024,
-  maxTotalStringBytes: 4 * 1024 * 1024
+  maxDepth: 40,
+  maxNodes: 100_000,
+  maxStringBytes: 16 * 1024 * 1024,
+  maxTotalStringBytes: 17 * 1024 * 1024
 });
 const CONTRACT_TEXT_ENCODER = new TextEncoder();
 

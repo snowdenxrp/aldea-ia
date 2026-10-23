@@ -345,7 +345,7 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 # CHECKPOINT NUEVO — 2026-10-22 — ENDURECIMIENTO DE CONTRATOS CORE (CI PENDIENTE)
 
 - `src/nexo/core/contracts.mjs`: validación iterativa del grafo con conjuntos activo/completado; ciclos reales rechazados, referencias compartidas acíclicas admitidas, arrays densos con prototipo canónico y sin propiedades extra, congelación iterativa en postorden.
-- Límites de admisión v1 propuestos para este contrato: profundidad 32, 20 000 objetos, 256 KiB por cadena y 4 MiB agregados de cadenas/keys. Son límites estructurales, no mediciones de heap ni garantías de producción; se revisarán si la batería o usos reales evidencian incompatibilidad.
+- Límites de admisión v1 revisados tras CI de compatibilidad: profundidad 40, 100 000 objetos, 16 MiB por cadena y 17 MiB agregados de cadenas/keys. Son límites estructurales, no mediciones de heap ni garantías de producción.
 - `detachedMutable()` valida antes y después de clonar. Las listas de claims se validan antes de copiarlas, sin spread previo que normalice la forma de entrada.
 - `tests/nexo/core-contracts.test.mjs`: regresiones para ciclos, referencias compartidas, arrays dispersos/extendidos/prototipo no canónico, límites de profundidad/nodos/cadenas y estado mutable cíclico.
 - El script `npm test` ahora incluye la prueba directa de contratos como primera etapa para que el workflow de persistencia la ejecute.
@@ -361,3 +361,12 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 - El primer CI del endurecimiento, en commit `76194883df726b413ae604fb3b7ba224456671f9`, falló de forma visible en regresiones existentes: tres pruebas esperaban el mensaje de error específico de un campo cuando la nueva validación del grafo detectaba antes la forma no canónica del array. Se amplió la expectativa para aceptar ambos rechazos válidos, sin relajar la validación.
 - La misma ejecución reveló que `final-semantic-validator.test.mjs` construía un candidato cíclico mediante el constructor público. Ese escenario ahora se separa: la prueba del contrato verifica rechazo en admisión; la prueba del validador usa un candidato externo deliberadamente malformado para conservar la comprobación de resultado `UNKNOWN` al comparar targets cíclicos.
 - El commit inicial no se considera validado. Se esperan nuevas ejecuciones sobre el SHA correctivo; no atribuir los resultados del SHA anterior al nuevo.
+
+
+---
+
+# AJUSTE DE COMPATIBILIDAD — LÍMITES DE GRAFO CORE
+
+- El CI del SHA `739405e42a3ef49e09238980bdf5c8b91734030d` detectó una incompatibilidad real: el límite provisional de 256 KiB por cadena rechazaba el fixture de snapshot válido de 16 MiB antes de que `continuity-store` pudiera devolver su resultado contractual `NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED`.
+- Ajuste para respetar contratos existentes: profundidad 40 (por encima del preflight global de continuidad de 35), 100 000 objetos, 16 MiB por cadena y 17 MiB agregados de cadenas/keys. Así el preflight de contratos no debe apropiarse de la clasificación de capacidad que pertenece al store.
+- Se elevan las regresiones de nodo/cadena para probar los nuevos límites reales. La ejecución previa de CI del SHA anterior permanece registrada como FAIL y no se atribuye al SHA correctivo.

@@ -267,20 +267,20 @@ assert.throws(() => createClaimEnvelope({ claimId: "claim-array-prototype", acti
 
 const tooDeep = {};
 let tooDeepCursor = tooDeep;
-for (let i = 0; i < 40; i += 1) {
+for (let i = 0; i < 50; i += 1) {
   tooDeepCursor.next = {};
   tooDeepCursor = tooDeepCursor.next;
 }
 assert.throws(() => createClaimEnvelope({ claimId: "claim-too-deep", action: "example", target: tooDeep }), /contract data exceeds resource limits/);
 
 const tooManyNodes = [];
-for (let i = 0; i < 20_001; i += 1) tooManyNodes.push({ value: i });
+for (let i = 0; i < 100_001; i += 1) tooManyNodes.push({ value: i });
 assert.throws(() => createClaimEnvelope({ claimId: "claim-too-many-nodes", action: "example", dependencies: tooManyNodes }), /contract data exceeds resource limits/);
 
-const tooLongString = "x".repeat(256 * 1024 + 1);
+const tooLongString = "x".repeat(16 * 1024 * 1024 + 1);
 assert.throws(() => createClaimEnvelope({ claimId: "claim-too-long-string", action: "example", target: { value: tooLongString } }), /contract data exceeds resource limits/);
 
-const tooManyStringBytes = Array.from({ length: 40 }, () => "x".repeat(120 * 1024));
+const tooManyStringBytes = Array.from({ length: 2 }, () => "x".repeat(8.5 * 1024 * 1024 + 1));
 assert.throws(() => createClaimEnvelope({ claimId: "claim-too-many-string-bytes", action: "example", dependencies: tooManyStringBytes }), /contract data exceeds resource limits/);
 
 const cyclicState = {};
