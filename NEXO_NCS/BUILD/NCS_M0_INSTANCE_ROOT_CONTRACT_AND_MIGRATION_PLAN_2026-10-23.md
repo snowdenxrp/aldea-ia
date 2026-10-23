@@ -742,3 +742,14 @@ Important compatibility invariants evidenced by the test: append result reports 
 `tests/nexo/root-bootstrap-protocol.test.mjs` (SHA 996c031224ba4544d8982ca4fd1762e9d4f44dc0) verifies a P-256 signature/protocol vector and altered-message/signature rejection. Despite its filename, it does not test a filesystem instance root or root admission. It cannot count as root-lock evidence.
 
 `parseNexoEntrypointArguments` currently has explicit legacy path options and the Chronicle child accepts `--continuity`, `--chronicle`, `--mission`, `--step`; neither parser has a `--root` path yet. Parent currently passes the parsed args to the child. The migration must define a root-only mode and reject mixed/duplicate options before any store is opened, while keeping any low-level legacy path route clearly internal or temporarily compatibility-gated. No claim that the current tests were executed in this documentation pass.
+
+
+## 26. CLI process boundary and composite integration (2026-10-23)
+
+Source inspection confirms that `scripts/nexo.mjs` runs query/preview operations in-process but delegates Chronicle append with `spawnSync` to `scripts/nexo-chronicle-session.mjs`, forwarding parsed arguments. The child must be the sole root-lock owner for append; query/preview operations also need admission before persisted reads. The child parser currently accepts independent `--continuity` and `--chronicle` paths and has no `--root` mode.
+
+Existing entrypoint tests exercise status, plan, mission and preview using `--continuity`, and append/replay using separate Continuity and Chronicle paths. Migration tests must cover all command families under root mode, reject mixed/duplicate root and legacy options before store access, and preserve result envelopes and no-mutation guarantees.
+
+The separate package command `assistants` reads `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH`, and `NEXO_CONTINUITY_PATH`; it opens Continuity through `nexo-continuity.mjs` and includes a `--nexo-repair-once` path. Do not classify it as root-managed until its Continuity operation is routed through an explicit instance operation. Simulation state and Lúmina memory remain outside Nexo root. Repair stays excluded by `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; root admission grants no repair permission.
+
+This is source inspection and documentation only. No tests were executed and no runtime, test, or workflow files were changed.
