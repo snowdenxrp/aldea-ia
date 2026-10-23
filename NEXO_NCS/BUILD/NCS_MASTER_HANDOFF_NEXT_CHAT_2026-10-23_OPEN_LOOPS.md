@@ -1,3 +1,15 @@
+## 0. Latest continuation checkpoint — reserved path/symlink matrix (2026-10-23)
+
+New document: NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md, commit 7a2f2dd0fbaec192de3a134da5b27e188b207fc7.
+
+Concrete design gap preserved: canonicalizing the instance root does not prove that reserved children continuity.json, chronicle.json, .nexo-instance.lock, and owner.json are regular objects within the root. The matrix enumerates symlink, broken symlink, wrong file type, absent store/bootstrap, lock owner, TOCTOU, and negative-test requirements. Rejecting symlinks at reserved paths is a candidate policy, not an accepted owner decision or implementation.
+
+Cross-contract checkpoint updated at 292d19c7b87d13748a00e31b45c1110ef57e283f; STATUS updated at 00c559d0e95234401e7c6f84563b9da0b355bf63. No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+Next: continue document-level cross-check, keep owner-reserved decisions explicitly open, and do not rerun the caller census absent a changed source snapshot.
+
+---
+
 ## 0. Latest continuation checkpoint — D0/D1/D2/D3 dependency map (2026-10-23)
 
 New document: NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md, commit ac205fda2d1ed490f54efa0ace1a3c974a1ce8c6.
