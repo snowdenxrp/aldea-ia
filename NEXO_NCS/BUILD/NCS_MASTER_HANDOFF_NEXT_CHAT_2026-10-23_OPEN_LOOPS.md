@@ -968,3 +968,12 @@ Confirmed same verify-token-then-recursive-remove sequence in Chronicle source b
 Targeted source search in `tests/nexo/continuity-store.test.mjs` blob `c3af56077b94c8d641979e0853de7f70fa45d82f` and `tests/nexo/chronicle-store.test.mjs` blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26` found tests for release errors and not-owned outcomes, but no deterministic test that replaces the lock directory between token validation and recursive removal. This is static test inspection only, not a test run. Also inspect the failure path after owner-record creation: both stores attempt recursive removal of the lock path there, so it needs the same ownership/replacement review.
 
 Next: resolve concurrent external recovery policy; define and test replacement interleavings for release and failed owner creation; preserve store-specific contracts unless an explicitly authorized refactor is proven. Checkpoint update commit `6feb3c9fb32835cdb0e4fad919eba657bd80963d`, blob `9218e0e5b84e9363f6bd7137d771d7d5db68572e`. No runtime/tests/workflows changed; no tests/CI run.
+
+
+## Latest continuation — targeted D2 bootstrap/lock protocol review (2026-10-23)
+
+Checkpoint: `NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md` updated with the D2 targeted review. The contract root file was read only; its SHA remains `bac9493af98c3f86001e323dab153bdee78b5f31`. The file `tests/nexo/root-bootstrap-protocol.test.mjs` (SHA `996c031224ba4544d8982ca4fd1762e9d4f44dc0`) only verifies a software ECDSA challenge/signature vector; it does not test instance bootstrap or locking.
+
+Concrete open gaps: first-root creation and partial bootstrap are not coordinated by the proposed in-root lock; owner.json creation failure cleanup must not remove a replacement lock; token-check-then-recursive-remove has a check/use race if external replacement is allowed; and a confirmed/ambiguous persistence result must remain separate from uncertain lock release, with no automatic business retry. Required D2 tests and state-transition matrix are recorded in the checkpoint.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP. Next: construct the proposed D2 state-transition matrix and check it against D0-C2/bootstrap, owner creation/cleanup, release, external recovery, and ambiguous persistence. Do not implement or mark a recommendation accepted without the owner's explicit decision and implementation gate.
