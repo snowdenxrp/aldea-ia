@@ -550,3 +550,47 @@ The new direct caller means the initial proposal “migrate CLI paths and applic
 - Add an architecture test proving production entrypoints use the instance boundary, with allowlisted test primitives and the `scripts/assistants.mjs` route accounted for.
 - D1 remains OPEN. D2 remains OPEN until call graph, public result compatibility, migration protocol and required concurrency/release tests are closed.
 - No runtime, tests or workflows changed in this checkpoint.
+
+
+## 19. D1/D2 — disposition of the assistants integration and search limitations (2026-10-23)
+
+### Confirmed path configuration in `scripts/assistants.mjs`
+
+The file does not use a single Nexo instance root. It independently derives three paths, two of which can be overridden with environment variables:
+
+- `NEXO_STATE_PATH` → `world-state.json` by default.
+- `NEXO_LUMINA_MEMORY_PATH` → `.lumina-assistant-memory.json` by default.
+- `NEXO_CONTINUITY_PATH` → `.nexo-continuity.json` by default.
+
+Source blob: `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`, lines 19–25 and 47–54. This confirms the risk of accidentally combining independent paths. The environment and Lúmina learning memory are not to be silently moved into the Nexo root: Nexo ≠ Lúmina, and the instance root is a persistence locator, not a constitutional authority.
+
+### Recommended design disposition (not implemented)
+
+1. Treat `scripts/assistants.mjs` as a composite Lúmina + Nexo integration, not as a low-level Nexo store factory.
+2. Before any runtime change, define which exact sub-operation is the Nexo instance operation and ensure all of its Continuity snapshots/commits use the one admitted instance context.
+3. Keep `world-state.json` and `.lumina-assistant-memory.json` paths independent until a separate explicit integration contract says otherwise. Do not auto-relocate, merge or dual-write them during root migration.
+4. Do not claim cross-file transactionality. A root lock can coordinate cooperating Nexo instance operations only; it cannot make environment state, Lúmina memory and Continuity one atomic commit, and cannot coordinate with unmodified processes that ignore it.
+5. Replace `NEXO_CONTINUITY_PATH` as an implicit production override with explicit migration-only handling once the new instance API is ready. In normal production mode, reject ambiguous mixtures of `--root` and legacy independent paths. Do not add an environment variable for the new root in the first iteration.
+6. The `--nexo-repair-once` path remains blocked by `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; instance migration must not alter this gate.
+
+This is a recommendation for the next implementation design, not permission to change runtime now. It preserves Lúmina separation and avoids broadening root lock into a false cross-file transaction.
+
+### Search/call-graph evidence limitation
+
+Repository code-search requests for `openNexoContinuityOwner`, `nexo-continuity.mjs`, `runNexoChronicleAppend`, `loadNexoContinuityStatus`, `createNexoChronicleEffectContracts` and `executeNexoStepWithContinuityOwner` returned zero results in the connector. That conflicts with direct source evidence proving several of these symbols exist and are called. Therefore these zero-result responses are a search limitation, **not evidence of zero callers**.
+
+The next caller closure method must use the complete tree and targeted file reads, or a checkout-local text scan if available. No negative call-graph claim is permitted from the current code-search results. Until every production import/entrypoint is accounted for and an architecture test can enforce the boundary, D1 stays OPEN.
+
+### Proposed architecture/no-bypass test contract (design only)
+
+- Enumerate supported production entrypoints and their imports from the explicit allowlist; each must construct/receive a validated instance context.
+- Fail if production entrypoints import low-level store factories, `openNexoContinuityOwner`, path-based query APIs or direct adapters, except through the instance composition module.
+- Permit low-level store/owner primitives in their own modules and in test files; the allowlist must be narrow and explicit, not broad `src/**` wildcard.
+- Assert the public application export surface is instance-oriented and rejects simultaneous root and legacy paths.
+- Assert all read/query/preview entrypoints require root admission before reading a persisted snapshot.
+- Assert Chronicle append has one root-lock owner process and preserves per-store locks.
+- Assert `scripts/assistants.mjs` is either migrated to the explicit integration contract or marked as an explicit legacy/non-instance path that cannot be mistaken for the supported production Nexo API.
+- Assert `scripts/nexo-runtime-session.mjs` continues returning `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; no architecture change can enable dispatch.
+- Keep concurrency/release-uncertain behavioral tests separate from static no-bypass checks; static import checks do not prove lock correctness.
+
+D1 and D2 remain OPEN. Runtime, tests and workflows remain unchanged.
