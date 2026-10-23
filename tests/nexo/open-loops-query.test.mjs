@@ -30,6 +30,11 @@ try {
     effectJournal: []
   };
   assert.equal((await store.initialize(empty)).status, "committed");
+  assert.deepEqual(await loadNexoOpenLoops(filePath), {
+    status: "loaded", code: null, storeRevision: 0,
+    missionLoops: [], effectObligations: [],
+    authorization: "NOT_EVALUATED", dispatchAttempted: false
+  }, "a valid empty snapshot is distinct from a missing store");
 
   let candidate = recordNexoMissionInSnapshot(empty, {
     missionId: "mission-open",
@@ -110,6 +115,32 @@ try {
   assert.equal(unknownLinkage.code, "NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN");
   assert.equal(unknownLinkage.authorization, "NOT_EVALUATED");
   assert.equal(unknownLinkage.dispatchAttempted, false);
+
+  // The projection must fail explicitly rather than silently truncate its
+  // inventory when the documented output ceiling is exceeded.
+  const capPath = path.join(root, "cap-continuity.json");
+  const capStore = createNexoContinuityStore({ filePath: capPath });
+  assert.equal((await capStore.initialize(empty)).status, "committed");
+  let capSnapshot = empty;
+  for (let missionIndex = 0; missionIndex < 4; missionIndex += 1) {
+    capSnapshot = recordNexoMissionInSnapshot(capSnapshot, {
+      missionId: `cap-mission-${missionIndex}`,
+      objective: "local_analysis",
+      status: "planned",
+      steps: Array.from({ length: 256 }, (_, stepIndex) => ({
+        id: `step-${stepIndex}`,
+        action: "local_analysis",
+        status: "planned",
+        dependsOn: []
+      }))
+    });
+  }
+  assert.equal((await capStore.commitIfCurrent(0, capSnapshot)).status, "committed");
+  const capped = await loadNexoOpenLoops(capPath);
+  assert.equal(capped.status, "blocked");
+  assert.equal(capped.code, "NEXO_OPEN_LOOPS_OUTPUT_LIMIT_EXCEEDED");
+  assert.equal(capped.outputLimit, 1000);
+  assert.equal(capped.dispatchAttempted, false);
 } finally {
   await fs.rm(root, { recursive: true, force: true });
 }
