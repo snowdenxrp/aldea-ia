@@ -1303,3 +1303,13 @@ URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS
 El análisis separa cinco temas D2: alcance de snapshots, exclusiones constitucionales, ownership de admisión del hijo Chronicle, lock raíz independiente vs primitiva compartida, y stale/timeout/release incierto. Para D3 concreta inventario por instalación, dry-run, copia/verificación, cutover explícito, rollback cuando el destino ya recibió escrituras y política de symlinks en stores internos.
 
 Se mantiene la distinción: admisión no es autoridad; lock no es cuota de heap/disco; PID no es identidad criptográfica; rollback no puede copiar hacia atrás ni fusionar automáticamente datos posteriores al cutover. D2/D3 OPEN; D0/D1 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. Documento solo analítico: runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+
+### Cross-check contractual D0/D1/D2/D3 — 2026-10-23
+
+Nuevo documento: `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md`.
+Commit de creación: `8eb093131b8e4395cae95303e519691463fef31f`.
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md
+
+El cross-check no encontró contradicciones inevitables entre las propuestas escritas, pero sí añadió un hueco concreto en D3: los writers legacy actuales no adquieren el nuevo lock de instancia. La copia puede quedar obsoleta si siguen escribiendo durante migración. Propuesta (pendiente): quiescencia explícita de writers legacy, huellas de origen antes/después de copiar y abortar cutover si la fuente cambia. Si no se puede garantizar o detectar esa concurrencia, migración UNKNOWN/BLOCKED.
+
+No es aprobación de la propuesta ni implementación. D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
