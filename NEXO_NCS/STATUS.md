@@ -9,16 +9,16 @@
   - [STEP 5 — run 39979057695 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979057695).
 - Interpretación: los tres workflows verifican el commit de implementación+pruebas citado. La consulta permanece de solo lectura, sin despacho ni reconciliación; esto no prueba autoridad legítima ni habilita efectos protegidos.
 - Revisión de contrato: el enlace debe ser referencial, no solo sintáctico. La consulta conserva la revisión canónica y bloquea si no puede probar la relación misión→paso→acción.
-- Siguiente: cerrar el registro documental exacto de esta evidencia y revisar el próximo trabajo interno contra MASTER/CORE, sin ampliar CLI ni crear otro almacén sin caso de aceptación.
+- Documentación de evidencia actualizada en el contrato Open Loops y en el handoff maestro. Próxima unidad: revisar MASTER/CORE y BUILD/DECISIONS para elegir una capacidad interna concreta con aceptación mínima; no ampliar CLI ni crear otro almacén sin caso de aceptación.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 ---
 
 # HANDOFF NEXT CHAT — 2026-10-23
 
-- Continuidad maestra guardada en [NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md](BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md).
-- Commit del handoff: [4dcb33e6bef36452f255cf7fb5b3480059c62e61](https://github.com/snowdenxrp/aldea-ia/commit/4dcb33e6bef36452f255cf7fb5b3480059c62e61).
-- Próxima acción única: verificar CI en el SHA exacto combinado de `loadNexoOpenLoops` + export público + test + `package.json`; el resultado todavía está pendiente y no se declara PASS.
+- Continuidad maestra: [NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md](BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md).
+- Handoff actualizado tras verificar Open Loops: [commit `1d909d7c1dd62f1bc2a987b72d24f9de77450f8a`](https://github.com/snowdenxrp/aldea-ia/commit/1d909d7c1dd62f1bc2a987b72d24f9de77450f8a).
+- Próxima acción única: consultar MASTER/CORE y BUILD/DECISIONS y escoger una capacidad interna con un caso de aceptación concreto. La CI exacta de Open Loops ya está verificada; no repetirla sin cambios de implementación/tests.
 - No repetir auditorías cerradas, no reabrir el trust-boundary review sin defecto nuevo, y mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
 
 ---
