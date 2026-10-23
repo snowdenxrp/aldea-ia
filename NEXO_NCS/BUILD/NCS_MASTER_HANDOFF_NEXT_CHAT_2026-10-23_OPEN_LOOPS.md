@@ -765,3 +765,20 @@ Este paquete reúne las recomendaciones D0-C1…C4 y D1-S0 con alternativas, rie
 3. Mantener todos los estados D0/D1/D2/D3 OPEN y no tocar runtime/tests/workflows sin autorización de implementación explícita.
 
 El paquete no cambia estado constitucional: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. No hubo cambios de runtime/tests/workflows ni ejecución de tests/CI.
+
+## 16. Reconciliación contractual D2/D3 (2026-10-23)
+
+Nuevo documento: `NEXO_NCS/BUILD/NCS_M0_D2_D3_CONTRACT_GAP_RECONCILIATION_2026-10-23.md`
+Commit de creación: `9b483a083c2c2b0bfd645caf9e5e77d3572826ef`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_D3_CONTRACT_GAP_RECONCILIATION_2026-10-23.md
+
+Hallazgos contractuales destacados:
+- D2 debe declarar si las consultas retienen admisión hasta completar la proyección en memoria; no devolver handles lazy que continúen leyendo stores fuera del contexto.
+- Si Chronicle child permanece directamente ejecutable, el hijo adquiere su admisión; el padre no retiene el mismo lock durante spawnSync. No mezclar con el modelo alternativo de worker privado.
+- No escoger lock raíz separado vs primitiva compartida antes de caracterizar diferencias reales de Continuity/Chronicle: release retry, cuarentena local, owner schema y resultados observables.
+- Timeout/stale/release: los números candidatos 2.000 ms/10 ms/60 s siguen siendo propuestas. PID es señal operativa, no identidad; no eliminar stale automáticamente; release incierto = UNKNOWN/BLOCKED, sin retry de negocio.
+- D3 no puede asumir que los datos existentes están ya bajo la raíz canónica. Requiere inventario por instalación, dry-run sin mutaciones, copia/verificación, cutover explícito y rollback definido para el caso de que el nuevo destino ya haya recibido escrituras. No auto-merge ni copia hacia atrás.
+- Symlinks de continuity.json/chronicle.json pueden escapar físicamente del root aunque este se canonicalice; política de nombres reservados y límite TOCTOU deben ser explícitos.
+- Exclusión por instancia no implica cota de heap ni cuota de disco, y no levanta el gate constitucional de repair/dispatch/efectos.
+
+Estos puntos no contradicen los contratos existentes; precisan condiciones de cierre todavía no resueltas. D0/D1/D2/D3 siguen OPEN. No se tocó runtime/tests/workflows y no se ejecutó CI. Próximo paso: reconsultar los dos nuevos documentos, STATUS y handoff, y luego revisar la coherencia documental de D0–D3 sobre el mismo snapshot sin repetir el censo de código.
