@@ -874,3 +874,12 @@ Esto es una recomendación de diseño pendiente de cerrar, no una decisión ya i
 Ventaja: evita que Lúmina y world state se conviertan accidentalmente en parte de la raíz Nexo y evita un lock de larga duración. Coste: las rutas legacy que hoy inicializan Continuity de forma implícita requieren una migración/bootstrap explícito antes de seguir usándose con Nexo.
 
 No cerrar D1 hasta verificar todos los callers y decidir el tratamiento de los comandos legacy; no realizar todavía esos cambios.
+
+
+## 2026-10-23 — Compatibilidad de migración y clasificación de reparación
+
+`tests/nexo/continuity-migration.test.mjs` (blob `0bef1b93c6268042f14830c97e084d0a543e05f4`) confirma que `openNexoContinuityOwner({ filePath, legacyMemory })` puede convertir memoria Nexo legacy a la store canónica y que, al reabrir, el store canónico tiene precedencia sin mezclar datos legacy obsoletos. Por tanto, las llamadas de `simulate` y `assistants` que pasan `legacyMemory` no son solo observación: pueden realizar bootstrap/migración implícita. La migración debe quedar detrás de una operación explícita y admitida; no se debe preservar una migración lateral accidental como compatibilidad automática.
+
+`scripts/nexo-repair-entrypoint.mjs` exporta una función de reparación, no es un CLI de package ni contiene un dispatcher de `process.argv`. El flujo productivo de `assistants` llama `scripts/nexo-runtime-session.mjs`, cuyo gate devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` sin persistir ni despachar. Los helpers de reparación permanecen fuera de la superficie productiva soportada por el momento; no deben conectarse a la API de instancia ni tratarse como autorizados por el root lock. Mantenerlos fuera de D1 de callers productivos, pero conservar pruebas específicas de sus protocolos como código interno.
+
+Esta distinción evita dos errores opuestos: llamar a los helpers de reparación un CLI activo cuando no lo es, o ignorar que los entrypoints `simulate`/`assistants` sí abren y pueden inicializar Continuity.
