@@ -683,3 +683,40 @@ Direct source inspection confirms that the current loadCurrent() methods in both
 Chronicle and Continuity have separate per-store lock implementations with different release-failure handling. The first root layer should preserve those implementations rather than unify them during this migration. createNexoLockDeadline() uses process-local performance.now(); across the Chronicle parent/child boundary, pass a duration and let the child construct its own deadline. Normal instance reads must not silently enable legacy-memory projection or empty initialization. Repair remains blocked by NEXO_M0_OPTION_A_EFFECT_EXCLUDED.
 
 Required tests: admission precedes every loadCurrent(), including read-only queries and owner opening; helpers do not reacquire the root lock; per-store release and root release uncertainty are tested separately; the Chronicle child is the sole root-lock owner; ordinary reads of a missing store do not initialize it; repair exclusion remains invariant. These are source-grounded constraints, not implementation or test results. D1/D2/D3 remain OPEN; runtime, tests and workflows unchanged.
+
+
+## 23. D1 caller boundary matrix and canonical-root decision (design proposal, 2026-10-23)
+
+### Verified production surfaces
+
+| Surface | Direct source evidence | Current path behavior | Target boundary |
+|---|---|---|---|
+| Main CLI | scripts/nexo.mjs, SHA e471eb478a09aa8a9a8323795583e198cdf0a127 | Imports the path-oriented application index; delegates Chronicle to a child | Parse one explicit root; queries/previews run inside instance admission; Chronicle child receives root and owns admission |
+| Chronicle child | scripts/nexo-chronicle-session.mjs, SHA 30a53de2f108aa255a1dfd61ce78c19788de160b | Calls runNexoChronicleAppend with parsed independent paths | Accept root-only production mode; no parent-held lock |
+| Application Chronicle append | src/nexo/application/chronicle-append.mjs, SHA 5a20044bcddbaee79d0117934eefaea5f3b2c3bc | Constructs both stores and opens Continuity owner directly | Become a private operation invoked with admitted instance context; no direct production bypass |
+| Application queries | src/nexo/application/continuity-queries.mjs, SHA e1915e94e53e71d37a37952fead37ba62bdae79a | Multiple functions construct Continuity store from continuityPath and load snapshots | Each supported query enters root admission before the first snapshot read |
+| Continuity compatibility export | scripts/nexo-continuity.mjs, SHA f08969f2d77a2e90f74d01c96242e29de89e3f22 | Re-exports openNexoContinuityOwner | Mark as internal/legacy or replace with an explicit instance operation; do not leave as a supported production bypass |
+| Composite assistants | scripts/assistants.mjs, SHA d31c6dba86159ee0403f0cc1c236b89863e4d5cb | Opens owner through compatibility export; separate world-state and Lúmina-memory paths | Separate composite integration; migrate only its Continuity sub-operation or visibly remain legacy/outside root contract |
+| Store factories | continuity-store.mjs SHA 9ffd28930abdbe29f5b041711cc29b74dc99fbae; chronicle-store.mjs SHA 59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a | Caller-supplied file paths; per-store locks only | Retain for private composition/tests; production entrypoints cannot import them directly |
+
+This is a verified list of important direct surfaces, not yet proof of every indirect caller. GitHub code search returns zero results for known existing symbols on this branch, so its negative results are unusable as evidence of absence. Continue using source-tree enumeration and direct import tracing.
+
+### Canonical root semantics — proposed
+
+1. Require the caller-supplied root to be a non-empty path to an already-existing directory.
+2. Resolve it to a canonical absolute path using realpath before deriving any store path; reject a regular file or failed resolution before touching stores.
+3. Resolve symlink aliases to the same canonical directory. This is path identity, not protection against a hostile process changing symlinks/mounts after validation.
+4. Derive fixed internal filenames only after canonicalization. Reject caller-supplied independent store paths in root-managed mode, including any mixture of root and legacy path flags.
+5. Place the root admission lock at a fixed reserved path inside the canonical root (exact filename to be finalized with the lock protocol); reject if that reserved path is a non-lock file or an unrecognized/corrupt lock state. Never delete an unknown/stale lock automatically.
+6. This does not establish safety for network filesystems, hostile local processes, hard-link aliases, mount aliases, or TOCTOU attacks. Those are explicit limitations, not claims silently solved by realpath.
+7. Existing-root validation must not create the root, either store, an empty Continuity snapshot, or a legacy-memory projection. Bootstrap and migration remain explicit operations.
+
+### D1 close criteria
+
+- Trace all direct imports/re-exports of the above production surfaces plus runtime/session/repair entrypoints from the complete tree; preserve the actual source SHA and report any tool limitation.
+- Enumerate supported production entrypoints in one narrow allowlist; classify repair scripts as blocked/legacy rather than silently admitted.
+- Inspect dynamic imports, package scripts and child-process command construction; the static import graph alone cannot capture process boundaries.
+- Verify every public query/preview consumer and its expected result envelope before changing the path API.
+- Keep assistants' simulation state, Lúmina learning memory and Nexo Continuity ownership separate.
+
+D1 remains OPEN pending complete caller trace and compatibility review. D2/D3 remain OPEN. No runtime or tests changed.
