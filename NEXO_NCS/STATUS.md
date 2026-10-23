@@ -1,12 +1,12 @@
 # CHECKPOINT DE VERIFICACIÓN — 2026-10-23 — OPEN LOOPS LINKAGE + EXACT-SHA CI
 
-- Código y pruebas combinados: `34e8500989fd53555304e4c625dcd681b371dbc7`.
+- Código y pruebas combinados: `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a`.
 - Corrección estructural: los registros `prepared` y `reconciled_observed` del diario solo se proyectan si sus campos identifican una misión y paso canónicos de la misma instantánea y la acción coincide con la acción canónica del paso. Campos presentes pero huérfanos o discordantes devuelven `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN`.
-- Regresiones añadidas: enlace sin campos; IDs con formato pero sin misión/paso canónico; acción discordante; estado de diario desconocido en un snapshot sin misiones.
+- Regresiones añadidas: enlace sin campos; IDs con formato pero sin misión/paso canónico; acción discordante; estado de diario desconocido en un snapshot sin misiones; misión planned; paso failed; discrepancia de estado completed; continuidad corrupta.
 - CI sobre el SHA exacto:
-  - [Persistencia determinista / `npm test` — run 39979508417 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979508417), job `120502863761` — `tests` — SUCCESS.
-  - [STEP 4 — run 39979508452 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979508452).
-  - [STEP 5 — run 39979508444 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979508444).
+  - [Persistencia determinista / `npm test` — run 39979814293 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814293), job `120503839135` — `tests` — SUCCESS.
+  - [STEP 4 — run 39979814347 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814347).
+  - [STEP 5 — run 39979814116 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814116).
 - Interpretación: los tres workflows verifican el commit de implementación+pruebas citado. La consulta permanece de solo lectura, sin despacho ni reconciliación; esto no prueba autoridad legítima ni habilita efectos protegidos.
 - Revisión de contrato: el enlace debe ser referencial, no solo sintáctico. La consulta conserva la revisión canónica y bloquea si no puede probar la relación misión→paso→acción. Además, un estado de diario no reconocido bloquea incluso si no hay misiones que reconstruir; no puede convertirse en inventario vacío exitoso.
 - Documentación de evidencia actualizada en el contrato Open Loops y en el handoff maestro. Próxima unidad: revisar MASTER/CORE y BUILD/DECISIONS para elegir una capacidad interna concreta con aceptación mínima; no ampliar CLI ni crear otro almacén sin caso de aceptación.
@@ -17,7 +17,7 @@
 # HANDOFF NEXT CHAT — 2026-10-23
 
 - Continuidad maestra: [NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md](BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md).
-- Handoff actualizado tras verificar Open Loops: [commit `d75a150baba7ed3a79d7668f2c87ec62e0e9d3e5`](https://github.com/snowdenxrp/aldea-ia/commit/d75a150baba7ed3a79d7668f2c87ec62e0e9d3e5).
+- Handoff actualizado tras verificar Open Loops: se actualiza junto con este checkpoint para apuntar al SHA de código+pruebas `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a` y su CI exacta.
 - Próxima acción única: consultar MASTER/CORE y BUILD/DECISIONS y escoger una capacidad interna con un caso de aceptación concreto. La CI exacta de Open Loops ya está verificada; no repetirla sin cambios de implementación/tests.
 - No repetir auditorías cerradas, no reabrir el trust-boundary review sin defecto nuevo, y mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
 
