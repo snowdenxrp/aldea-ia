@@ -1,5 +1,10 @@
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — AGGREGATE RESOURCE BUDGET
 
+- Revisión de recursos agregada, análisis de código: [commit e2208578bde2efd1d39aacaf70ba314411885113](https://github.com/snowdenxrp/aldea-ia/commit/e2208578bde2efd1d39aacaf70ba314411885113). El análisis previo sobre temporales únicos fue corregido: los almacenes ya usan `.tmp` estable y limpieza acotada bajo lock propio.
+- Entry points trazados: `runNexoChronicleAppend` recibe rutas independientes para Chronicle y Continuity; el CLI crea un proceso hijo; las consultas y API de owner/store entran por rutas distintas. Los locks son por almacén, no por operación completa.
+- Próxima decisión: definir si M0 adoptará una raíz de instancia común para ambos almacenes y una exclusión mutua de operación, o si conservará APIs de rutas independientes sin prometer cota agregada. No añadir un lock parcial ni cambiar CLI sin contrato aprobado. Heap agregado y disco total siguen OPEN.
+- Handoff actualizado: [commit 963c7734cf79969a22e905ea19698e03f5866ccb](https://github.com/snowdenxrp/aldea-ia/commit/963c7734cf79969a22e905ea19698e03f5866ccb).
+
 - Frontier actual: presupuesto agregado de recursos de M0; no volver a comenzar por Open Loops, cuya CI exacta ya está cerrada.
 - Análisis corregido: [`NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md`](BUILD/NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md), actualización documental commit [`31bff07ea76ddd86713c642b3f5ae25570e3ae57`](https://github.com/snowdenxrp/aldea-ia/commit/31bff07ea76ddd86713c642b3f5ae25570e3ae57).
 - Corrección importante: Chronicle y Continuity ya usan temporal estable `.tmp` y escaneo/limpieza acotados bajo el lock propio de cada almacén. La descripción histórica de nombres temporales únicos quedó obsoleta; no reimplementar ese protocolo.
