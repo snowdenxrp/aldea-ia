@@ -930,3 +930,9 @@ Reviewed current root contract blob `bac9493af98c3f86001e323dab153bdee78b5f31`. 
 Treat D0-C1 as OPEN. Current recommendation only: explicit CLI `--root`, validated API instance object, no env override in first migration; no implementation until the owner decision gate is resolved. An attempted narrow edit of the 146 KB root contract was blocked by tool security controls, so that source file was not changed. The ambiguity is recorded in the cross-contract checkpoint, commit `4b6533e178dcdcd9783ea7de89c44f0d21bccea3`, blob `aa5c62ffe942d9bc5f83f4a65c25e105483c4db7`.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+## Follow-up: D0-C3 canonicalization wording — 2026-10-23
+
+A targeted check of root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` found a second ambiguity: §1.2 says alias convergence must not be claimed until canonicalization/symlink policy is decided and tested; a later recommendation table says symlinks resolving to the same directory “must converge.” Keep this as a candidate recommendation only. D0-C3 remains OPEN; no symlink/alias policy is accepted or implemented. The ambiguity is recorded in the cross-contract checkpoint, commit `41aeffb6067af066a3e8298be926650b62fc2820`, blob `6488b8250d3329fe54ebcaf7e51685ac209f8a2c`.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
