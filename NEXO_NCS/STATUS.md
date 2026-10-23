@@ -611,3 +611,13 @@ La matriz siguiente corresponde al SHA exacto que contiene el código y las regr
 La matriz de callers fue corregida después de verificar `src/nexo/application/chronicle-append.mjs`: sí existe un caller productivo de `executeNexoStepWithContinuityOwner` para el caso de uso local `chronicle-append`. Esta conclusión reemplaza las notas anteriores de este STATUS que dejaban ese caller sin confirmar. La matriz actual contiene la evidencia exacta: [NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md](BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md), commit `fcb2298ebc582b5f1461051c0fee301faeba4249`.
 
 La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que todas las mutaciones están deshabilitadas. El resultado sigue diciendo `authorization: NOT_EVALUATED`, y esto no demuestra raíz legítima ni autoriza efectos protegidos externos. Ver también [NCS_CHRONICLE_APPEND_MUTATING_SURFACE_AUTHORITY_REVIEW_2026-10-23.md](BUILD/NCS_CHRONICLE_APPEND_MUTATING_SURFACE_AUTHORITY_REVIEW_2026-10-23.md). La decisión de política local pre-commissioning permanece pendiente; no se cambió runtime.
+
+
+# DECISIÓN PROPUESTA — ESCRITURA CHRONICLE PRE-COMMISSIONING — 2026-10-23
+
+- Contraste con MASTER: `docs/nexo/NEXO_MASTER_ARCHITECTURE_2026-09-23.md` exige separación cognición/autoridad/ejecución/verificación, cadena trust→identity→authority→capability→policy→execution, y fail-closed ante gates críticos UNKNOWN; el addendum define WRITE como capability con propósito, misión, scope y expiry.
+- Documento de decisión: [NCS_CHRONICLE_PRECOMMISSIONING_WRITE_POLICY_DECISION_2026-10-23.md](BUILD/NCS_CHRONICLE_PRECOMMISSIONING_WRITE_POLICY_DECISION_2026-10-23.md), commit `1c1316b749a590955a93bdf544b0ee65044238d8`.
+- Recomendación arquitectónica: mientras la raíz legítima siga `PENDING/UNKNOWN` y `authorization` sea `NOT_EVALUATED`, no considerar autorizado el append local solo porque sea estrecho o local. Default fail-closed para la mutación de Chronicle, salvo que se defina y verifique explícitamente una capability de bootstrap limitada y constitucionalmente permitida. No se inventa esa capability.
+- Importante: esto es una propuesta documentada, NO un bloqueo implementado. El CLI actual todavía puede ejecutar `chronicle-append`; no afirmar lo contrario. No se cambió runtime.
+- Antes de implementar: cerrar contrato y error mapping, bloquear en la frontera de aplicación antes de inicializar stores/locks/escritura, probar ausencia de archivos y dispatch en rechazo, conservar consultas de solo lectura y ejecutar CI sobre el SHA exacto.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
