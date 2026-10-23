@@ -1126,3 +1126,10 @@ Se creó `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`, que 
 **Esto no cierra D1:** falta una prueba arquitectónica ejecutable que recorra imports/reexports transitivos, identifique ejecución directa y cubra `spawn`/imports dinámicos, y que falle con fixtures de bypass. No se modificó runtime/tests/workflows ni se ejecutaron pruebas.
 
 Enlace: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md
+
+
+### Extensión de importaciones estáticas: 188 archivos JS/MJS/CJS (2026-10-23)
+
+Se amplió el censo para cubrir también los 45 tests `tests/nexo/**`, los 50 tests restantes y `functions/api/capture.js`, además de los 93 archivos de aplicación ya inventariados. Los tests Nexo importan internals deliberadamente y deben estar segregados del allowlist productivo; los 50 tests fuera de `tests/nexo/` no mostraron imports directos a stores/API path-based. `package.json` confirma tres comandos productivos (`nexo`, `assistants`, `simulate`); la sesión Chronicle hija es una superficie adicional por ejecución directa.
+
+Esto completa la revisión de imports estáticos conocidos del conjunto de 188 archivos, pero **no** prueba ausencia de imports dinámicos/computados ni cierra el grafo de seguridad. El siguiente paso sigue siendo el test arquitectónico negativo descrito en el borrador de allowlist. No se ejecutaron pruebas.
