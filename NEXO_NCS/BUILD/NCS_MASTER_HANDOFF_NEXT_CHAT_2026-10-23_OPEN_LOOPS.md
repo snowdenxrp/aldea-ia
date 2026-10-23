@@ -498,3 +498,13 @@ El censo mejora el inventario, pero **no cierra D1**: falta convertirlo en allow
 3. Resolver tratamiento de `simulate` y `assistants` sin mezclar world state/Lúmina con la raíz Nexo.
 4. Cerrar D1; después cerrar D2 (root lock vs locks de stores) y D3 (API `--root`, symlinks, migración/bootstrap).
 5. Solo después de D1/D2/D3, proponer cambios acotados de runtime y pruebas. Mantener autorización `NOT_EVALUATED`, root legítimo `PENDING/UNKNOWN`, efectos protegidos `STOP`.
+
+
+## Artefacto de censo con inventario por ruta y blob SHA
+
+Se creó el archivo independiente `NEXO_NCS/RESEARCH/NCS_M0_NEXO_SOURCE_REFERENCE_CENSUS_2026-10-23.md` para conservar el censo más allá de esta conversación. Incluye las 13 entradas JS/MJS/CJS de `scripts/`, los 34 módulos de `src/nexo/` y los 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/`, con ruta, blob SHA, bytes y clasificación. Snapshot de commit `f105a3a6b88c372d22aed49d29ea56d2d17ade78`; árbol no truncado. No presenta los 188 archivos JS/MJS/CJS del repo como si todos hubieran sido auditados.
+
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/NCS_M0_NEXO_SOURCE_REFERENCE_CENSUS_2026-10-23.md
+
+### Próxima acción exacta
+No repetir el censo de aplicación. Usar el manifiesto para construir un allowlist arquitectónico verificable de imports/callers de producción, separado de tests, fixtures y helpers internos. Debe cubrir CLI principal, hijo Chronicle invocable directamente, `assistants`, `simulate`, reexport legacy, API path-based y fábricas filesystem. Diseñar las pruebas que fallen ante un bypass nuevo; luego cerrar D1. D2 y D3 siguen abiertos y no se toca runtime/tests hasta cerrar las tres puertas.
