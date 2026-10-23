@@ -1324,3 +1324,13 @@ URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS
 Propuesta pendiente: quiescencia de writers legacy, huellas/hash antes de copiar, nueva comparación antes de cutover, cancelación si el origen cambia, preservación del origen y rollback sin copiar hacia atrás/merge automático. Si la concurrencia no puede garantizarse o detectarse, migración UNKNOWN/BLOCKED. No se implementó nada.
 
 D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+
+### Revisión cruzada D3 actualizada — 2026-10-23
+
+Se actualizó `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md` para reflejar el estado real: la sección 9 del contrato de raíz ya documenta quiescencia de writers legacy, hashes/tamaños/revisiones antes y después de la copia, cancelación si cambia el origen, cutover explícito y rollback sin copia inversa ni merge automático.
+
+Checkpoint actualizado en commit `7a704c1832506c2164f6332a63f00382d8a07597`, blob `46baf1e58b4d87554a739eb69f26bd670f8a4028`.
+
+Esto corrige la instrucción anterior que decía que todavía faltaba incorporar esa condición al contrato. El riesgo ya está tratado documentalmente, pero no cerrado como gate: la propuesta sigue sin aprobación, no existe evidencia de procedimiento operacional ejecutado y la quiescencia solo controla procesos cooperantes. Siguiente tarea: precisar qué evidencia operacional permitiría declarar que no quedan writers legacy activos y cómo se cancela de forma fail-closed si no puede demostrarse.
+
+Estado sin cambios: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
