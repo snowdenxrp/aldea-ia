@@ -254,3 +254,107 @@ export async function previewNexoMissionDraft(continuityPath, missionDraft) {
   }
 }
 
+
+
+/**
+ * Project canonical outstanding work from one continuity revision.
+ * This is an inventory only: it never dispatches, reconciles, or authorizes work.
+ */
+export async function loadNexoOpenLoops(continuityPath) {
+  const fail = (code, extra = {}) => ({
+    status: "blocked", code, authorization: "NOT_EVALUATED",
+    dispatchAttempted: false, ...extra
+  });
+  if (typeof continuityPath !== "string" || !continuityPath.trim()) {
+    return fail("NEXO_STATUS_CONTINUITY_PATH_REQUIRED");
+  }
+  try {
+    const current = await createNexoContinuityStore({ filePath: continuityPath }).loadCurrent();
+    const snapshot = current.snapshot;
+    const missionLoops = [];
+    const effectObligations = [];
+    const maxOutputItems = 1000;
+    let outputItems = 0;
+
+    for (const persistedMission of snapshot.missions) {
+      const mission = reconstructNexoMissionFromSnapshot(snapshot, persistedMission.missionId);
+      if (!mission) {
+        return fail("NEXO_MISSION_RECONSTRUCTION_UNAVAILABLE", { storeRevision: current.storeRevision });
+      }
+      const persistedMissionStatus = persistedMission.status ?? "planned";
+      if (persistedMissionStatus === "completed" && mission.status !== "completed") {
+        return fail("NEXO_MISSION_STATUS_DISCREPANCY", {
+          storeRevision: current.storeRevision,
+          missionId: mission.missionId,
+          persistedMissionStatus,
+          missionStatus: mission.status
+        });
+      }
+      const openSteps = mission.steps
+        .filter(step => step.status !== "completed")
+        .map(step => ({
+          stepId: step.id,
+          action: step.action,
+          status: step.status,
+          ...(typeof step.blockReason?.code === "string" ? { blockCode: step.blockReason.code } : {})
+        }));
+      if (mission.status !== "completed" || openSteps.length > 0) {
+        outputItems += 1 + openSteps.length;
+        if (outputItems > maxOutputItems) {
+          return fail("NEXO_OPEN_LOOPS_OUTPUT_LIMIT_EXCEEDED", {
+            storeRevision: current.storeRevision,
+            outputLimit: maxOutputItems
+          });
+        }
+        missionLoops.push({
+          missionId: mission.missionId,
+          status: mission.status,
+          objective: mission.objective,
+          openSteps
+        });
+      }
+    }
+
+    for (const entry of snapshot.effectJournal) {
+      if (entry.status !== "prepared" && entry.status !== "reconciled_observed") continue;
+      if (typeof entry.missionId !== "string" || !entry.missionId.trim() ||
+          typeof entry.stepId !== "string" || !entry.stepId.trim() ||
+          typeof entry.action !== "string" || !entry.action.trim()) {
+        return fail("NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN", {
+          storeRevision: current.storeRevision
+        });
+      }
+      outputItems += 1;
+      if (outputItems > maxOutputItems) {
+        return fail("NEXO_OPEN_LOOPS_OUTPUT_LIMIT_EXCEEDED", {
+          storeRevision: current.storeRevision,
+          outputLimit: maxOutputItems
+        });
+      }
+      effectObligations.push({
+        missionId: entry.missionId,
+        stepId: entry.stepId,
+        action: entry.action,
+        status: entry.status
+      });
+    }
+
+    missionLoops.sort((a, b) => a.missionId.localeCompare(b.missionId));
+    effectObligations.sort((a, b) =>
+      a.missionId.localeCompare(b.missionId) ||
+      a.stepId.localeCompare(b.stepId) ||
+      a.status.localeCompare(b.status)
+    );
+    return {
+      status: "loaded",
+      code: null,
+      storeRevision: current.storeRevision,
+      missionLoops,
+      effectObligations,
+      authorization: "NOT_EVALUATED",
+      dispatchAttempted: false
+    };
+  } catch (error) {
+    return fail(error?.code ?? "NEXO_OPEN_LOOPS_UNAVAILABLE");
+  }
+}
