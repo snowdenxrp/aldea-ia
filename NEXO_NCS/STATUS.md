@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — BRECHA REAL DEL TEST ARQUITECTÓNICO D1
+
+- Nuevo análisis de diseño: [NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md](BUILD/NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md), commit `57ae9855c4eba9060a70f7a44dcdb0e2c373f2fe`.
+- Hallazgo concreto al releer `tests/nexo/entrypoint.test.mjs` (blob `ff1bd2e9d292e21e00049b354249aee684837bbc`): ya existe un guard útil de imports/reexports estáticos y límites de CLI, pero su extracción por regex no demuestra cobertura de `import()`, `require()`, cargas calculadas, callsites de factories/owners, aristas de proceso ni clasificación completa de entrypoints. No debe presentarse como test D1 de no-bypass.
+- La nueva nota define el algoritmo futuro, el manifiesto de entrypoints, el tratamiento UNKNOWN/BLOCKED, 10 fixtures negativos y los requisitos de `npm test`/workflows cuando exista autorización.
+- No se implementó ni ejecutó el test D1; no hubo cambios de runtime/tests/workflows ni ejecución de CI en esta revisión.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente paso: resolver explícitamente la secuencia D1-DESIGN vs D1-IMPLEMENTATION y cerrar las subdecisiones del contrato de instancia antes de tocar código. No repetir el censo estático ya documentado ni declarar cerrada la barrera por la existencia de esta especificación.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D1 CALLER LEDGER
 
 - Nuevo ledger D1 y especificación de test arquitectónico: [NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md](BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md), commit `a399cb77abfe397454ebd479d8068f1afdbc38df`.
