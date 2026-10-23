@@ -27,14 +27,62 @@ function emptySnapshot() {
  * only when the caller has independently established that no prior world-state
  * file exists.
  */
-export async function openNexoContinuityOwner({
-  filePath,
-  legacyMemory = null,
-  allowEmptyInitialization = false,
-  effectVerifiers = {},
-  lockDeadline = null,
-  lockWaitMs = NEXO_DEFAULT_LOCK_WAIT_MS
-} = {}) {
+function continuityServiceError(code) {
+  const error = new Error(code);
+  error.code = code;
+  return error;
+}
+
+function readContinuityServiceOptions(options) {
+  if (options === undefined) options = {};
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw continuityServiceError("NEXO_CONTINUITY_STORE_PATH_REQUIRED");
+  }
+  let prototype;
+  try {
+    prototype = Object.getPrototypeOf(options);
+  } catch {
+    throw continuityServiceError("NEXO_STORE_OPTIONS_INVALID");
+  }
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw continuityServiceError("NEXO_STORE_OPTIONS_INVALID");
+  }
+
+  const values = Object.create(null);
+  for (const key of [
+    "filePath", "legacyMemory", "allowEmptyInitialization",
+    "effectVerifiers", "lockDeadline", "lockWaitMs"
+  ]) {
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(options, key);
+    } catch {
+      throw continuityServiceError("NEXO_STORE_OPTIONS_INVALID");
+    }
+    if (!descriptor) continue;
+    if (!descriptor.enumerable || !("value" in descriptor)) {
+      throw continuityServiceError(key === "filePath"
+        ? "NEXO_CONTINUITY_STORE_PATH_REQUIRED"
+        : "NEXO_STORE_OPTIONS_INVALID");
+    }
+    values[key] = descriptor.value;
+  }
+  return {
+    filePath: values.filePath,
+    legacyMemory: values.legacyMemory === undefined ? null : values.legacyMemory,
+    allowEmptyInitialization: values.allowEmptyInitialization === undefined
+      ? false : values.allowEmptyInitialization,
+    effectVerifiers: values.effectVerifiers === undefined ? {} : values.effectVerifiers,
+    lockDeadline: values.lockDeadline === undefined ? null : values.lockDeadline,
+    lockWaitMs: values.lockWaitMs === undefined ? NEXO_DEFAULT_LOCK_WAIT_MS : values.lockWaitMs
+  };
+}
+
+export async function openNexoContinuityOwner(options = {}) {
+  const {
+    filePath, legacyMemory, allowEmptyInitialization,
+    effectVerifiers, lockDeadline, lockWaitMs
+  } = readContinuityServiceOptions(options);
   const store = createNexoContinuityStore({ filePath, lockDeadline, lockWaitMs });
   let current;
 
