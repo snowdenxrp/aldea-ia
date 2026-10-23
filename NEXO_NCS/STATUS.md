@@ -1162,3 +1162,12 @@ Comparación estática de `package.json` contra el árbol: existen 44 archivos `
 El trabajo se detuvo durante el censo de referencias/callers de Nexo y la sincronización de documentación. Último punto: matriz de fronteras de producción añadida al contrato de raíz de instancia; incluye CLI principal, hijo Chronicle ejecutable directamente, `assistants`, `simulate`, API de aplicación, fábricas path-based y helpers repair. La sesión hija Chronicle es un bypass real de la frontera del padre; `loadCurrent()` no adquiere locks; `simulate`/`assistants` pueden abrir o migrar Continuity incidentalmente. No se modificó runtime/tests/workflows ni se ejecutaron pruebas.
 
 El handoff `NEXO_NCS/BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md` contiene el punto de recuperación detallado y las instrucciones de continuidad. D1/D2/D3 siguen OPEN; M0 incompleto; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Próximo paso: recuperar/verificar el censo completo, resolver la recomendación pendiente de separar D1-DESIGN de D1-IMPLEMENTATION, y no reiniciar investigaciones antiguas.
+
+
+### Reconciliación D1 de callers y alcance de admisión (2026-10-23)
+
+Se creó el informe documental [NCS_M0_D1_CALLER_RECONCILIATION_AND_LOCK_SCOPE_2026-10-23.md](BUILD/NCS_M0_D1_CALLER_RECONCILIATION_AND_LOCK_SCOPE_2026-10-23.md), commit `254cd885637576ef997a5a389d65a6b645ab3f62`. Consolida la matriz de CLI padre/hijo, APIs de aplicación, factories/owner, `assistants`, `simulate`, repair y tests; registra blobs de fuentes inspeccionadas, alcance de la sección crítica, especificación mínima de test arquitectónico y orden de trabajo D1/D2/D3.
+
+Hallazgo adicional confirmado en fuente: `assistants.mjs` carga estado del mundo, abre Continuity con `legacyMemory`, registra misión, escribe memoria Lúmina y después persiste estado del mundo; no hay atomicidad conjunta. `simulate.mjs` mantiene un lock separado para world state con recuperación stale distinta y puede abrir/inicializar Continuity. Se recomienda excluir simulación de la persistencia ordinaria de Nexo hasta definir una operación explícita; no reutilizar su lock como admisión de instancia.
+
+Estado sin cambio: D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Esta revisión fue documental: sin cambios de runtime/tests/workflows y sin ejecución de tests/CI. El censo de callers sigue siendo parcial hasta cerrar el grafo con una prueba arquitectónica.
