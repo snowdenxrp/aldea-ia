@@ -118,6 +118,8 @@ What is proved vs open:
 
 **Entrypoint tracing is now complete.** The application accepts independent `continuityPath` and `chroniclePath`; CLI dispatch creates a child process; read-only queries, continuity-owner APIs, and store factories can enter outside one mutation workflow. Per-store locks do not provide an instance-wide lock, and deriving one from only one path would be bypassable.
 
+Decision proposal now recorded: `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_AND_CONCURRENCY_DECISION_PROPOSAL_2026-10-23.md`, commit `3987e0656edf71369552e751f20a7bb2cec7e9ed`. It compares (A) a canonical instance root plus enforced shared admission across all entrypoints, (B) preserving independent-path APIs while keeping aggregate concurrency explicitly unbounded, and rejects a CLI-only lock as an incomplete guarantee. This proposal is not an owner decision and must not be treated as accepted.
+
 **Next single task:** decide the instance-root contract before runtime changes: (A) introduce one canonical Nexo instance root that owns both store paths and a common operation lock, migrating all entrypoints coherently; or (B) preserve independent-path APIs and explicitly leave aggregate concurrency/heap without a strict guarantee. Do not implement a partial global lock or silently change CLI arguments. Total disk also remains OPEN because legacy and unrelated files are outside a strict global quota.
 
 Canonical state unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
