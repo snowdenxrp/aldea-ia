@@ -86,16 +86,16 @@ A missing store or invalid snapshot is `blocked`, not an empty inventory. A vali
 
 The first query slice is implemented and wired into the public application API (not yet into the CLI). It loads one validated snapshot, returns non-completed mission/step summaries separately from `prepared` and `reconciled_observed` effect-journal obligations, excludes `settled_observed`, and never returns target/context payloads. The output is capped at 1,000 projected items; exceeding the cap returns a blocked result rather than a silently truncated inventory. Invalid journal linkage returns `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN`.
 
-Regression coverage includes missing-store non-creation, empty/invalid path semantics, mission-loop projection, separate journal statuses, target privacy, no mutation (bytes and mtime), deterministic output, malformed unresolved-journal linkage, orphan mission/step references, action mismatch against the canonical step, and unknown journal status when the snapshot contains no missions, direct planned/failed mission projection, completed-status discrepancy, and corrupt continuity.
+Regression coverage includes missing-store non-creation, empty/invalid path semantics, mission-loop projection, separate journal statuses, target privacy, no mutation (bytes and mtime), deterministic output, malformed unresolved-journal linkage, orphan mission/step references, action mismatch against the canonical step, and unknown journal status when the snapshot contains no missions, direct planned/failed mission projection, completed-status discrepancy, corrupt continuity, and resource-limit failure.
 
 A concrete linkage gap was found and corrected: non-empty `missionId`, `stepId`, and `action` fields did not prove that the unresolved journal row referred to a real canonical mission/step or that its action matched. `loadNexoOpenLoops` now resolves each unresolved row against the same validated snapshot and returns `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN` if that relation is absent or discordant. This is referential validation for the projection, not authentication or authority.
 
 A second fail-closed gap was found: an unrecognized journal status could be silently omitted if the snapshot had no missions, because there would be no mission reconstruction to surface the unknown state. The query now returns `NEXO_OPEN_LOOPS_JOURNAL_STATUS_UNKNOWN` for any status other than `prepared`, `reconciled_observed`, or the explicitly excluded terminal `settled_observed`. A regression verifies this with an empty mission collection.
 
-Exact combined implementation+test SHA: `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a`.
-- [Deterministic persistence / `npm test` — run 39979814293 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814293), job `120503839135` SUCCESS.
-- [STEP 4 — run 39979814347 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814347).
-- [STEP 5 — run 39979814116 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814116).
+Exact combined implementation+test SHA: `962d1a327683b412c401f323514d401e7e8ec8f1`.
+- [Deterministic persistence / `npm test` — run 39980113239 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39980113239), job `120504886619` SUCCESS.
+- [STEP 4 — run 39980113168 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39980113168).
+- [STEP 5 — run 39980113209 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39980113209).
 
 The exact implementation+test SHA is verified by these three workflows. CLI exposure remains intentionally deferred until an actual caller/acceptance need is established. No new store, queue, scheduler, or task identity was introduced.
 
