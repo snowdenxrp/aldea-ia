@@ -1034,3 +1034,8 @@ Hallazgos que deben condicionar la implementación:
 La auditoría directa confirma que `scripts/assistants.mjs` abre Continuity por `openNexoContinuityOwner`, registra una misión, escribe memoria Lúmina y persiste el estado del mundo mediante rutas configurables por variables de entorno. Es una vía de persistencia separada de la CLI estrecha `nexo`; no debe declararse root-managed sin una decisión e integración explícitas. El gate de reparación sigue devolviendo `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, pero eso no elimina los otros efectos del comando.
 
 **Consecuencia:** D1 sigue OPEN hasta inventariar todos los callers/bypasses. No envolver todo `assistants` en un lock por intuición; decidir primero alcance y límites multi-store. Estado de raíz legítima y autorización no cambia.
+
+
+### Hallazgo de store: lecturas no bloqueadas (2026-10-23)
+
+Los métodos `loadCurrent()` de Continuity y Chronicle leen el documento sin adquirir los locks de mutación. Las consultas de aplicación usan directamente esas lecturas. Por tanto, la admisión de instancia debe rodear cada operación completa en la frontera superior, antes de la primera lectura persistida; no basta con añadir un lock a las escrituras. Evitar adquisición recursiva dentro de helpers y mantener los locks de stores como capa distinta hasta probar compatibilidad. D2 sigue OPEN.
