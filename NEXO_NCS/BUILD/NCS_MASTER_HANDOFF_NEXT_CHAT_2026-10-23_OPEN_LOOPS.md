@@ -399,3 +399,14 @@ Consecuencia: la admisión debe envolver la operación completa desde una fronte
 El comando `simulate` de `package.json` también abre Continuity mediante `openNexoContinuityOwner`, con `.nexo-continuity.json`, `legacyMemory` y posible inicialización. Después persiste el estado del mundo en una ruta separada. Aunque no despacha misión, puede inicializar/reconciliar Continuity y no se debe tratar como bypass inocuo.
 
 Su lock local es para world state, con política de recuperación distinta que puede borrar locks obsoletos. No usarlo como modelo para root admission. D1 debe decidir explícitamente si `simulate` se excluye de operaciones Nexo y deja de abrir Continuity, o se integra por API de instancia sin mezclar world state con Nexo. El inventario de callers sigue abierto.
+
+
+## Recomendación de diseño pendiente para D1
+
+No retener el root lock durante todo el pipeline de Lúmina. Candidato:
+- `simulate` queda fuera de operaciones Nexo y deja de abrir/inicializar Continuity incidentalmente; bootstrap de Nexo será explícito.
+- `assistants` puede construir una misión candidata desde informes externos, pero lectura y escritura de Continuity deben pasar por API de instancia. Admitir lectura, hacer análisis sin lock, y realizar escritura condicional contra la revisión observada; si cambió, conflicto explícito sin retry silencioso.
+- World state y memoria Lúmina permanecen fuera de la raíz Nexo.
+- No tratar el registro de una misión como autorización ni ejecución.
+
+Es recomendación documentada, no decisión cerrada ni implementación. Antes de cerrar D1, terminar inventario de callers y vías de import/reexport; luego revisar si hay más callers productivos fuera de `simulate`, `assistants` y la API de aplicación.
