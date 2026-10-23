@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — POLÍTICA DE RUTAS RESERVADAS
+
+- Documento nuevo: [NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md](BUILD/NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md), commit 7a2f2dd0fbaec192de3a134da5b27e188b207fc7.
+- Hallazgo: canonicalizar la raíz no basta para asegurar que los nombres reservados de Continuity/Chronicle/lock no sean symlinks o tipos de filesystem inesperados. La matriz define casos y pruebas negativas futuras; rechazo de symlinks sigue como propuesta, no decisión aceptada.
+- Cross-contract checkpoint actualizado en commit 292d19c7b87d13748a00e31b45c1110ef57e283f.
+- Sin cambios de runtime/tests/workflows; tests/CI no ejecutados.
+- Estado canónico: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — MAPA DE DEPENDENCIAS D0/D1/D2/D3
 
 - Nuevo mapa: [NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md](BUILD/NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md), commit ac205fda2d1ed490f54efa0ace1a3c974a1ce8c6.
