@@ -1054,3 +1054,8 @@ Recomendación: desacoplar `simulate` de Continuity para que no inicialice Nexo 
 ### Migración implícita confirmada (2026-10-23)
 
 La prueba `tests/nexo/continuity-migration.test.mjs` confirma que `openNexoContinuityOwner({ legacyMemory })` puede migrar memoria legacy al store canónico. Por eso `simulate` y `assistants` pueden causar bootstrap/migración incidental al abrir Continuity. La migración debe ser explícita y pasar por admisión. `nexo-repair-entrypoint.mjs` es helper importable, no CLI; el gate productivo de reparación sigue bloqueado por `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`.
+
+
+### Matriz de errores CLI completada como documentación (2026-10-23)
+
+El contrato ahora registra los códigos exactos de parseo por comando y los errores de la sesión hija Chronicle, además de la diferencia entre error de parseo, resultado semántico `not_found`, fallo de admisión y fallo de inicio del proceso hijo. Sigue siendo documentación de compatibilidad; no se ha implementado `--root` ni se han ejecutado pruebas.
