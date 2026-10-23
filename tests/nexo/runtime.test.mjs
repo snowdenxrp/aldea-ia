@@ -571,3 +571,61 @@ Object.defineProperty(accessorAdapterOptions, "adapter", {
 const rejectedAccessorAdapter = await executeNexoStep(accessorAdapterOptions);
 assert.equal(runtimeOptionGetterCalls, 0);
 assert.equal(rejectedAccessorAdapter.code, "NEXO_RUNTIME_OPTIONS_INVALID");
+
+
+// Nested runtime contract guards: accessors must be rejected before the runtime
+// reads mission metadata/steps or adapter methods.
+let nestedContractGetterCalls = 0;
+const accessorMission = { ...mission };
+Object.defineProperty(accessorMission, "missionId", {
+  enumerable: true,
+  get() {
+    nestedContractGetterCalls += 1;
+    throw new Error("missionId getter must not execute");
+  }
+});
+const rejectedAccessorMission = await executeNexoStep({
+  mission: accessorMission,
+  stepId: "step-1",
+  adapter: createEffectAdapter(),
+  memory: createLearningMemory()
+});
+assert.equal(nestedContractGetterCalls, 0);
+assert.equal(rejectedAccessorMission.status, "invalid");
+assert.equal(rejectedAccessorMission.code, "NEXO_RUNTIME_CONTRACT_INPUT_INVALID");
+
+const nestedAccessorMission = structuredClone(mission);
+Object.defineProperty(nestedAccessorMission.steps[0], "id", {
+  enumerable: true,
+  get() {
+    nestedContractGetterCalls += 1;
+    throw new Error("nested step id getter must not execute");
+  }
+});
+const rejectedNestedStep = await executeLuminaNexoStep({
+  simulation: { agents: [], world: { resources: {} } },
+  mission: nestedAccessorMission,
+  stepId: "step-1",
+  memory: createLearningMemory()
+});
+assert.equal(nestedContractGetterCalls, 0);
+assert.equal(rejectedNestedStep.status, "invalid");
+assert.equal(rejectedNestedStep.code, "NEXO_RUNTIME_CONTRACT_INPUT_INVALID");
+
+const accessorAdapter = {};
+Object.defineProperty(accessorAdapter, "execute", {
+  enumerable: true,
+  get() {
+    nestedContractGetterCalls += 1;
+    throw new Error("adapter execute getter must not execute");
+  }
+});
+const rejectedNestedAdapter = await executeNexoStep({
+  mission,
+  stepId: "step-1",
+  adapter: accessorAdapter,
+  memory: createLearningMemory()
+});
+assert.equal(nestedContractGetterCalls, 0);
+assert.equal(rejectedNestedAdapter.status, "invalid");
+assert.equal(rejectedNestedAdapter.code, "NEXO_RUNTIME_CONTRACT_INPUT_INVALID");
