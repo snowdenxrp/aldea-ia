@@ -5,13 +5,13 @@
 **Rama:** `ncs-clean-architecture`  
 **Commit de snapshot:** `f105a3a6b88c372d22aed49d29ea56d2d17ade78`  
 **Árbol completo:** sí (`truncated=false`); 3.019 entradas.  
-**Universo censado:** 13 scripts JS/MJS/CJS + 34 módulos de `src/nexo/` + 45 módulos JS/MJS/CJS de `src/` fuera de `src/nexo/` = **93 rutas**. El repositorio tiene 188 archivos JS/MJS/CJS totales; los restantes pertenecen principalmente a tests, tooling y fixtures y no se declaran auditados como grafo completo por este documento.
+**Universo censado:** 13 scripts JS/MJS/CJS + 34 módulos de `src/nexo/` + 45 módulos JS/MJS/CJS de `src/` fuera de `src/nexo/` = **92 rutas**. El repositorio tiene 188 archivos JS/MJS/CJS totales; los restantes pertenecen principalmente a tests, tooling y fixtures y no se declaran auditados como grafo completo por este documento.
 
 ## Propósito y límite
 
 Este artefacto fija el inventario físico del censo para que la continuidad no dependa del resumen de una conversación. Los SHA de blob y tamaños proceden del árbol Git consultado; permiten distinguir una revisión futura de esta fotografía.
 
-Es un **censo estático de código de aplicación/runtime**, no una prueba de ausencia absoluta de bypass ni una prueba de seguridad. La clasificación resume el papel observado durante la revisión. No se inspeccionaron todos los 188 archivos como grafo de imports completo; los tests/tooling/fixtures requieren una pasada separada para construir el allowlist arquitectónico de D1. JavaScript permite importar módulos internos, así que la lista tampoco constituye aislamiento contra código local hostil.
+Es un **censo estático de código de aplicación/runtime**, no una prueba de ausencia absoluta de bypass ni una prueba de seguridad. La clasificación resume el papel observado durante la revisión. La extensión posterior de este documento registra la inspección de imports estáticos conocidos en los 188 archivos JS/MJS/CJS; no se ha ejecutado una prueba arquitectónica que cierre el grafo transitivo frente a todos los mecanismos dinámicos. JavaScript permite importar módulos internos, así que la lista tampoco constituye aislamiento contra código local hostil.
 
 ## Resultado ejecutivo
 
@@ -163,7 +163,7 @@ Definir `--root`, canonicalización, symlinks en raíz/stores/lock, rechazo de r
 
 ## Extensión del censo: imports de tests y superficie npm — 2026-10-23
 
-Después de fijar el inventario de 93 archivos de aplicación, se inspeccionaron también las declaraciones de import/export de los **45 archivos `tests/nexo/**`**, los **50 archivos `tests/**` fuera de ese directorio y `functions/api/capture.js`. Esto completa una pasada de importaciones estáticas sobre los 188 archivos JS/MJS/CJS que aparecen en el snapshot, sin convertirla en una prueba de grafo de seguridad completo.
+Después de fijar el inventario de 92 archivos de aplicación, se inspeccionaron también las declaraciones de import/export de los **45 archivos `tests/nexo/**`**, los **50 archivos `tests/**` fuera de ese directorio y `functions/api/capture.js`. Esto completa una pasada de importaciones estáticas sobre los 188 archivos JS/MJS/CJS que aparecen en el snapshot, sin convertirla en una prueba de grafo de seguridad completo.
 
 Resultados observados:
 - Los 45 tests Nexo importan intencionalmente primitivas internas, stores, owners, APIs path-based y entrypoints legacy para probar contratos existentes. Deben clasificarse como TEST_ONLY en el allowlist; sus imports no autorizan los mismos edges desde producción.
