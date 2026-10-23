@@ -1,3 +1,18 @@
+## 0. Latest continuation checkpoint — D0/D1/D2/D3 dependency map (2026-10-23)
+
+New document: NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md, commit ac205fda2d1ed490f54efa0ace1a3c974a1ce8c6.
+
+The map records unresolved dependencies without treating proposals as owner decisions:
+- D1-S0: owner decision pending; splitting design and implementation is not accepted yet.
+- D1-DESIGN is a specification gate, not evidence that an architecture test ran.
+- D2: define snapshot admission scope/critical-section end and characterize store-lock contracts before selecting root-lock strategy.
+- D3: identify the actual first runtime using Continuity/Chronicle and verify relaunch controls; do not infer it is the M1 phone, development host, or CI.
+- Aggregate heap/disk guarantees remain separate and NOT DEMONSTRATED.
+
+Cross-contract checkpoint updated at commit ad9fac359522c94a1c7a605c8e76c9e61c52975f; STATUS updated at commit dca3410e3b23fdc3bdbddee73d13ec5388cf5d5b. No caller census rerun, no runtime/tests/workflows changed, no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+---
+
 ## 0. Latest continuation checkpoint — separate D3 environments (2026-10-23)
 
 New document: `NEXO_NCS/BUILD/NCS_M0_D3_ENVIRONMENT_SCOPE_SEPARATION_2026-10-23.md`, commit `726a579ef0014f940fcc21a5f01a0a71e06047b1`.
