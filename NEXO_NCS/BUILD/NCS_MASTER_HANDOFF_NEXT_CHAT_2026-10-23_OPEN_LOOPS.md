@@ -454,3 +454,12 @@ El documento de contrato propone, sin aprobar ni implementar: espera relativa 20
 ## Censo estático externo parcial
 
 Se inspeccionaron los 13 scripts y los 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/` en el árbol no truncado `6c5ad80d49bb592f0d6d1f5e6ab161d489731241` (3.019 entradas, 188 archivos JS/MJS/CJS). Los callers directos externos encontrados se concentran en el CLI principal, el hijo Chronicle, `simulate`, `assistants` y el reexport `nexo-continuity.mjs`. `src/assistants/memory.js` tiene registros Nexo legacy en memoria, no acceso directo a stores. Este censo no cierra D1: falta un allowlist arquitectónico probado y revisar los módulos internos path-based como frontera de producción.
+
+
+## D2 design conflict: root lock primitive reuse
+
+No silently resolve the tension between (1) keeping the current Continuity/Chronicle locks intact until compatibility is proven and (2) avoiding a third duplicated lock implementation. Source shows Continuity retries release once and keeps a per-path local failure set; Chronicle does not. Compare:
+- A: independent root-lock primitive, lower initial change radius but a third maintained protocol.
+- B: shared directory-lock primitive with policy adapters, less duplication but requires characterization tests proving unchanged codes, timeout, stale handling, release retry/quarantine and persistence result semantics.
+
+Recommendation: write the behavior matrix and characterization tests first; choose B only if the policies can be represented cleanly without broadening the abstraction or changing observable behavior. Otherwise document A as deliberate separation with independent tests. D2 remains OPEN; no runtime/test changes yet.
