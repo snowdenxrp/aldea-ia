@@ -1089,3 +1089,8 @@ Se documentó como candidato (no aprobado) un presupuesto relativo de 2000 ms, p
 ### Censo estático externo parcial (2026-10-23)
 
 Snapshot de árbol no truncado: `6c5ad80d49bb592f0d6d1f5e6ab161d489731241` (3.019 entradas, 188 JS/MJS/CJS). Se revisaron los 13 scripts y los 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/`. Los callers directos externos encontrados se concentran en `nexo.mjs`, el hijo Chronicle, `simulate.mjs`, `assistants.mjs` y el reexport `nexo-continuity.mjs`; `src/assistants/memory.js` contiene datos legacy en memoria, no apertura directa de stores. Esto no cierra D1: falta un allowlist arquitectónico probado y revisar todos los módulos internos path-based.
+
+
+### D2: decisión de lock primitivo todavía abierta
+
+Se identificó una tensión explícita: conservar los locks actuales porque no son equivalentes versus evitar una tercera implementación duplicada. La recomendación es preparar caracterización/regresión de ambos y comparar una primitiva compartida con adaptadores; no refactorizar ni duplicar sin decisión explícita. D2 sigue OPEN.
