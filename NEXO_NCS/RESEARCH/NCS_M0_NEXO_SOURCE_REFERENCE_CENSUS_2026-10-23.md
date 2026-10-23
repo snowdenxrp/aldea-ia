@@ -159,3 +159,17 @@ Definir `--root`, canonicalización, symlinks en raíz/stores/lock, rechazo de r
 - No repetir el censo ya realizado salvo cambio de commit o evidencia de que quedó incompleto.
 - Próximo paso: completar el grafo de imports/callers de producción y convertirlo en allowlist verificable; luego cerrar D1, D2 y D3 en ese orden lógico antes de tocar runtime/tests.
 - Mantener: autorización `NOT_EVALUATED`; raíz/legitimidad de dueño `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Extensión del censo: imports de tests y superficie npm — 2026-10-23
+
+Después de fijar el inventario de 93 archivos de aplicación, se inspeccionaron también las declaraciones de import/export de los **45 archivos `tests/nexo/**`**, los **50 archivos `tests/**` fuera de ese directorio y `functions/api/capture.js`. Esto completa una pasada de importaciones estáticas sobre los 188 archivos JS/MJS/CJS que aparecen en el snapshot, sin convertirla en una prueba de grafo de seguridad completo.
+
+Resultados observados:
+- Los 45 tests Nexo importan intencionalmente primitivas internas, stores, owners, APIs path-based y entrypoints legacy para probar contratos existentes. Deben clasificarse como TEST_ONLY en el allowlist; sus imports no autorizan los mismos edges desde producción.
+- Los 50 tests fuera de `tests/nexo/` no mostraron imports directos de stores Nexo, `openNexoContinuityOwner` ni la API de aplicación path-based. Incluyen pruebas de `src/assistants/memory.js`, que es memoria legacy en memoria, no persistencia directa de Continuity/Chronicle.
+- `functions/api/capture.js` no importa módulos Nexo y responde HTTP 410 explícitamente.
+- `package.json` define `nexo`, `assistants`, `simulate` y `test`. Los tres primeros son comandos de producción actuales; repair helpers no son scripts npm separados. La sesión hija Chronicle sigue expuesta por ejecución directa de Node, aunque no tenga alias npm.
+- Los imports relativos estáticos/reexports fueron revisados para identificar rutas conocidas; los imports dinámicos/computados, llamadas de procesos construidas indirectamente y la ausencia absoluta de bypass requieren una prueba arquitectónica explícita. Este censo por sí solo no cierra D1.
+
+Por precisión, la afirmación correcta es: **se revisó el conjunto de 188 archivos JS/MJS/CJS a nivel de inventario e imports estáticos conocidos; no se ejecutó un test arquitectónico ni se probó cierre transitivo contra todos los mecanismos dinámicos.**
