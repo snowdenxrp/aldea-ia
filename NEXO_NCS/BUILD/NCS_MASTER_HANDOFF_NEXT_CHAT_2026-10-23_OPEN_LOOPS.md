@@ -643,3 +643,19 @@ Source limits confirmed: Continuity document 16 MiB; Chronicle document 32 MiB; 
 No runtime/tests/workflows changed and no tests/CI executed in this pass. Canonical state unchanged: M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
 
 Next: reconcile the transitive caller graph against one exact source-tree snapshot, mark unresolved/dynamic edges UNKNOWN/BLOCKED, then close D0 subdecisions, D1-DESIGN sequencing, D2 admission scope and D3 migration before runtime changes.
+
+
+## 13. D1 caller ledger and architecture-test specification (2026-10-23)
+
+New document:
+- `NEXO_NCS/BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md`
+- Commit: `a399cb77abfe397454ebd479d8068f1afdbc38df`
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md
+
+Exact recursive tree snapshot checked before adding the document: tree SHA `74e044d2307f69350f7d5a46b01f43ee1c69061b`, not truncated, 2,982 tree entries; 121 code/config files identified in the scoped groups. This is not proof every semantic caller edge is classified. Re-read source hashes and current workflow/test invocation facts are recorded in the ledger.
+
+Design findings: read-only queries materialize canonical snapshots, so they need admission if D2 intends a bounded live snapshot/heap profile per instance. Recommendation is to admit all snapshot-loading operations. `assistants` and `simulate` span other persistence domains and are not atomic merely because a root lock exists; exclude from ordinary instance entry until explicit design. Chronicle child is independently invocable and must validate/acquire admission itself; parent must not hold a non-reentrant lock while waiting for that child.
+
+D1 architecture test remains unimplemented/unexecuted; no runtime/tests/workflows changed in this pass and no CI was run. Canonical status unchanged: M0 INCOMPLETO; D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+Next: finish caller-edge classification and close D0/D1-DESIGN/D2/D3 design decisions before any implementation. Preserve unresolved edges as UNKNOWN/BLOCKED.
