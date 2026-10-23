@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — SEPARACIÓN DE ENTORNOS D3
+
+- Documento nuevo: [NCS_M0_D3_ENVIRONMENT_SCOPE_SEPARATION_2026-10-23.md](BUILD/NCS_M0_D3_ENVIRONMENT_SCOPE_SEPARATION_2026-10-23.md), commit `726a579ef0014f940fcc21a5f01a0a71e06047b1`.
+- Aclaración: entorno de desarrollo (A), CI (B), primera instancia runtime que usa Continuity/Chronicle (C) y host/operador de migración (D) son ámbitos distintos. A/B no prueban control operacional de C/D; C y D pueden coincidir solo si se declara y verifica.
+- El POCO X7 Pro del prototipo M1 no queda designado como runtime C por inferencia. La siguiente incógnita factual es si ya existe una primera instancia objetivo que use Continuity/Chronicle; si no existe, registrar esa ausencia y mantener D3 OPEN.
+- No se repitió el censo de callers. No se modificó runtime/tests/workflows; no se ejecutaron tests ni CI.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D0 ID CROSSWALK
 
 - Se amplió el ledger D0 con un crosswalk entre IDs `D0-01..11` y la matriz canónica `D0-C1..C4`, evitando que referencias paralelas se interpreten como decisiones distintas. Commit de actualización del ledger: `bfec45d8fd2524a8f3739846729d241e70013b39`.
