@@ -1,3 +1,15 @@
+## 0. Latest continuation checkpoint — D0/D1/D2/D3 decision boundary reconciliation (2026-10-23)
+
+New note: [NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md), commit `1c67919dddae59d7772f9beeca9b6d88e89770b6`.
+
+Key distinction: the instance-root document accepts Option A as an architectural direction, not as authorization to edit runtime. D0/D1/D2/D3 details remain OPEN. Four levels are explicit: L0 direction accepted; L1 detailed contract OPEN; L2 verifiable design OPEN; L3 implementation/testing not authorized or performed in this review.
+
+Recommended dependency order: D0 configuration/bootstrap/aliases → D1-DESIGN complete caller classification and fail-closed test criteria → D2 admission scope/lock/child/release contract → D3 migration/rollback → cross-contract review → explicit implementation authorization → tests/CI on exact code+test SHA.
+
+No runtime, tests or workflows changed; no tests/CI were run. Canonical status remains M0 `INCOMPLETO`, D0/D1/D2/D3 `OPEN`, authorization `NOT_EVALUATED`, legitimate root `PENDING/UNKNOWN`, protected effects `STOP`.
+
+---
+
 ## 0. Latest continuation checkpoint — D1 static graph test gap (2026-10-23)
 
 New design-only note: [NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md), commit `57ae9855c4eba9060a70f7a44dcdb0e2c373f2fe`.
