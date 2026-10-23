@@ -240,3 +240,14 @@ Nuevo análisis documental: [NCS_M0_D0_C2_BOOTSTRAP_PROTOCOL_OPTIONS_2026-10-23.
 Compara cuatro alternativas sin elegir por el propietario: A) bootstrap offline con quiescencia operacional demostrable; B) staging y publicación atómica con arbitraje de publicadores; C) marcador persistente de inicialización, que no sustituye la exclusión; D) coordinación externa a la raíz, que añade su propio problema de identidad/recuperación. Recomendación provisional no vinculante: no habilitar bootstrap concurrente/autónomo sin protocolo probado; considerar A solo si la quiescencia puede imponerse y evidenciarse, de lo contrario evaluar B según garantías del filesystem. C/D requieren necesidad demostrada. Ninguna opción está aceptada ni implementada.
 
 D0-C2 sigue OPEN hasta resolver qué convierte una raíz parcial en lista, cómo se impiden relanzamientos y qué recuperación explícita se permite. Runtime/tests/workflows sin cambios; tests/CI no ejecutados. Estado canónico permanece M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP.
+
+
+---
+
+# CHECKPOINT — GATE DE PREPARACIÓN D0-C2 / ENTORNO — 2026-10-23
+
+Nuevo documento: [NCS_M0_D0_C2_DECISION_READINESS_AND_ENVIRONMENT_GATE_2026-10-23.md](NCS_M0_D0_C2_DECISION_READINESS_AND_ENVIRONMENT_GATE_2026-10-23.md), commit de creación `bc387fbda827f7e8bf637fc103f99b8cc6247ef8`, blob verificado `4147a778f2aa625fe4e11905ef9bc96d91226a3d`.
+
+Revisión cruzada con el perfil D3: el runtime C y el host/operador D siguen sin determinarse. Por ello, la opción A solo es evaluable si existe un entorno elegido donde pueda imponerse y evidenciarse la quiescencia; B depende de garantías reales del filesystem; C no coordina por sí solo; D añade una nueva identidad y recuperación de lock. No hay base factual para elegir ninguna como política aceptada. La entrada mínima para el próximo avance es confirmar si ya existe una primera instancia que usará Continuity/Chronicle; si no, documentar RUNTIME_TARGET = NOT_SELECTED y mantener D3 OPEN.
+
+El documento define criterios candidatos para ROOT_READY y recuperación parcial, sin añadir marcadores, locks, IDs ni decisiones. Solo documentación; runtime/tests/workflows sin cambios; tests/CI no ejecutados. Estado canónico intacto.
