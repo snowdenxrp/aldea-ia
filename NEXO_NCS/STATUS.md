@@ -1074,3 +1074,8 @@ El contrato identifica ocho superficies: CLI principal, hijo Chronicle ejecutabl
 ### Hueco D3: symlink de store puede escapar de la raíz
 
 Canonicalizar la raíz no evita que un nombre reservado como `continuity.json` sea un symlink hacia fuera. D3 debe decidir y probar que los stores existentes sean archivos regulares y no symlinks, y que el lock de raíz no sea un symlink/objeto inesperado. Esto no afirma resistencia a TOCTOU hostil. D3 sigue OPEN.
+
+
+### Candidato D2: root lock como directorio reservado
+
+La recomendación concreta es `<root>/.nexo-instance.lock/` creado por `mkdir` atómico, con `owner.json` que contenga solo PID, token y marca temporal. Owner corrupto/desconocido y lock stale fallan cerrados; nunca se borra stale automáticamente; la liberación exige comprobar el token. Sigue pendiente de aprobación/pruebas, D2 OPEN.
