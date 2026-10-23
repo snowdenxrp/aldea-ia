@@ -9,11 +9,87 @@ const sharedInFlight = new WeakMap();
 const sharedQueue = new WeakMap();
 function validStatus(status){ return TERMINAL.has(status); }
 
-export function createEffectAdapter({handlers={}, verifiers={}, getStateVersion=()=>null, executionJournal=null, persistPreparedIntent=null}={}) {
-  const registry = new Map(Object.entries(handlers));
+function readEffectAdapterOptions(options) {
+  if (options === undefined) options = {};
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw new TypeError("effect adapter options must be a record");
+  }
+  let prototype;
+  try {
+    prototype = Object.getPrototypeOf(options);
+  } catch {
+    throw new TypeError("effect adapter options must be a plain record");
+  }
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("effect adapter options must be a plain record");
+  }
+  const values = Object.create(null);
+  for (const key of ["handlers", "verifiers", "getStateVersion", "executionJournal", "persistPreparedIntent"]) {
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(options, key);
+    } catch {
+      throw new TypeError("effect adapter options must contain readable data fields");
+    }
+    if (!descriptor) continue;
+    if (!descriptor.enumerable || !("value" in descriptor)) {
+      throw new TypeError("effect adapter options must contain enumerable data fields");
+    }
+    values[key] = descriptor.value;
+  }
+  return {
+    handlers: values.handlers === undefined ? {} : values.handlers,
+    verifiers: values.verifiers === undefined ? {} : values.verifiers,
+    getStateVersion: values.getStateVersion === undefined ? () => null : values.getStateVersion,
+    executionJournal: values.executionJournal === undefined ? null : values.executionJournal,
+    persistPreparedIntent: values.persistPreparedIntent === undefined ? null : values.persistPreparedIntent
+  };
+}
+
+function readFunctionRegistry(registry, label) {
+  if (!registry || typeof registry !== "object" || Array.isArray(registry)) {
+    throw new TypeError(`${label} must be a plain function registry`);
+  }
+  let prototype;
+  try {
+    prototype = Object.getPrototypeOf(registry);
+  } catch {
+    throw new TypeError(`${label} must be a plain function registry`);
+  }
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError(`${label} must be a plain function registry`);
+  }
+  const entries = [];
+  for (const key of Reflect.ownKeys(registry)) {
+    if (typeof key !== "string") throw new TypeError(`${label} must not contain symbol keys`);
+    let descriptor;
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(registry, key);
+    } catch {
+      throw new TypeError(`${label} must contain enumerable data properties`);
+    }
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      throw new TypeError(`${label} must contain enumerable data properties`);
+    }
+    if (typeof descriptor.value !== "function") {
+      throw new TypeError(`${label} entries must be functions`);
+    }
+    entries.push([key, descriptor.value]);
+  }
+  return entries;
+}
+
+export function createEffectAdapter(options = {}) {
+  const {
+    handlers, verifiers, getStateVersion, executionJournal, persistPreparedIntent
+  } = readEffectAdapterOptions(options);
+  if (typeof getStateVersion !== "function") {
+    throw new TypeError("getStateVersion must be a function");
+  }
+  const registry = new Map(readFunctionRegistry(handlers, "handlers"));
   // Verifiers are trusted bootstrap configuration, deliberately separate from
   // handlers and from caller-supplied request callbacks.
-  const verifierRegistry = new Map(Object.entries(verifiers));
+  const verifierRegistry = new Map(readFunctionRegistry(verifiers, "verifiers"));
   const executed = new Map(Array.isArray(executionJournal)
     ? executionJournal.filter(x=>x?.idempotencyKey&&x?.result).map(x=>[x.idempotencyKey,x.result]) : []);
 
