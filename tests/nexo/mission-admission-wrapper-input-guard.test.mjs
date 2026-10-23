@@ -50,4 +50,51 @@ const result = await recordNexoMissionSafely({
 assert.equal(result.status, "committed");
 assert.equal(ownerCalls, 1);
 
+// The injected owner capability and its result are public-boundary inputs too.
+let ownerMethodGetterCalls = 0;
+const accessorOwner = {};
+Object.defineProperty(accessorOwner, "recordMission", {
+  enumerable: true,
+  get() {
+    ownerMethodGetterCalls += 1;
+    throw new Error("owner method getter must not execute");
+  }
+});
+const accessorOwnerResult = await recordNexoMissionSafely({
+  owner: accessorOwner,
+  expectedRevision: 0,
+  mission: { missionId: "accessor-owner", steps: [] }
+});
+assert.equal(ownerMethodGetterCalls, 0);
+assert.equal(accessorOwnerResult.status, "blocked");
+assert.equal(accessorOwnerResult.code, "NEXO_CHRONICLE_MISSION_ADMISSION_INPUT_INVALID");
+assert.equal(accessorOwnerResult.dispatchAttempted, false);
+
+let ownerResultGetterCalls = 0;
+const resultOwner = {
+  async recordMission() {
+    const raw = { status: "committed", storeRevision: 3 };
+    Object.defineProperty(raw, "persistenceStatus", {
+      enumerable: true,
+      get() {
+        ownerResultGetterCalls += 1;
+        throw new Error("owner result getter must not execute");
+      }
+    });
+    return raw;
+  }
+};
+const unsafeOwnerResult = await recordNexoMissionSafely({
+  owner: resultOwner,
+  expectedRevision: 0,
+  mission: { missionId: "accessor-owner-result", steps: [] }
+});
+assert.equal(ownerResultGetterCalls, 0);
+assert.equal(unsafeOwnerResult.status, "unknown");
+assert.equal(unsafeOwnerResult.code, "NEXO_CHRONICLE_MISSION_ADMISSION_RESULT_INVALID");
+assert.equal(unsafeOwnerResult.missionAdmissionCommitted, "UNKNOWN");
+assert.equal(unsafeOwnerResult.dispatchAttempted, false);
+assert.equal(unsafeOwnerResult.redispatchAuthorized, false);
+assert.equal(Object.hasOwn(unsafeOwnerResult, "storeRevision"), false);
+
 console.log("Nexo mission admission options input guard tests passed.");
