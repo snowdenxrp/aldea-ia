@@ -1313,3 +1313,14 @@ URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS
 El cross-check no encontró contradicciones inevitables entre las propuestas escritas, pero sí añadió un hueco concreto en D3: los writers legacy actuales no adquieren el nuevo lock de instancia. La copia puede quedar obsoleta si siguen escribiendo durante migración. Propuesta (pendiente): quiescencia explícita de writers legacy, huellas de origen antes/después de copiar y abortar cutover si la fuente cambia. Si no se puede garantizar o detectar esa concurrencia, migración UNKNOWN/BLOCKED.
 
 No es aprobación de la propuesta ni implementación. D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+
+### D3 plan ampliado: quiescencia de writers legacy — 2026-10-23
+
+Se añadió la sección 9 a `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md` para hacer explícito el riesgo de writers legacy concurrentes durante copia/migración.
+Commit: `036c877e97475aa1489cc83d70f05c48e7fa8b9f`.
+Blob: `bac9493af98c3f86001e323dab153bdee78b5f31`.
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md
+
+Propuesta pendiente: quiescencia de writers legacy, huellas/hash antes de copiar, nueva comparación antes de cutover, cancelación si el origen cambia, preservación del origen y rollback sin copiar hacia atrás/merge automático. Si la concurrencia no puede garantizarse o detectarse, migración UNKNOWN/BLOCKED. No se implementó nada.
+
+D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
