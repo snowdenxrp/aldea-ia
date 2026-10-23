@@ -468,3 +468,33 @@ Recommendation: write the behavior matrix and characterization tests first; choo
 ### Store-lock characterization matrix added
 
 Contract now compares existing Continuity vs Chronicle lock semantics: owner metadata shape, stale/corrupt handling, timeout, token mismatch, transient/persistent release failure, local quarantine, and unlocked reads. Tests reviewed: `tests/nexo/continuity-store.test.mjs` SHA `c3af56077b94c8d641979e0853de7f70fa45d82f`; `tests/nexo/chronicle-store.test.mjs` SHA `8e182932ae98ad40c3655f6be3bf5e0585bfac26`. Characterization tests must precede any shared-lock refactor. No tests were run.
+
+
+## Censo ampliado de referencias Nexo en código de aplicación — 2026-10-23
+
+Se terminó la pasada de los 34 módulos bajo `src/nexo/`, además de los 13 scripts y los 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/`. El árbol contiene 3.019 entradas y no está truncado. El censo está limitado al código de aplicación/runtime; no declarar que los 188 archivos JS/MJS/CJS de todo el repositorio, incluidos tests/tooling/fixtures, hayan sido auditados como grafo completo.
+
+### Ocho categorías cubiertas
+1. CLI principal `scripts/nexo.mjs`: rutas legacy, todavía sin `--root`.
+2. Sesión hija Chronicle: ejecutable directamente; acepta rutas legacy.
+3. API de aplicación path-based: `chronicle-append.mjs`, `continuity-queries.mjs`, `mission-request-preview.mjs`, reexports de `application/index.mjs`.
+4. Servicios/stores filesystem: `continuity-service.mjs`, `continuity-store.mjs`, `chronicle-store.mjs`, lector acotado `resource-limits.mjs`.
+5. Owner/runtime/modelo de memoria: owner-backed runtime y contratos operan con owner/snapshot; no se identificó otra apertura directa de stores fuera de los puntos de categoría 3/4.
+6. Adaptadores y efectos: Chronicle, observación, commit, repair observation, effect/simulation adapter y protected transition; no confieren autoridad por sí mismos.
+7. Memoria legacy y comandos compuestos: `src/assistants/memory.js` conserva `memory.nexo` en memoria; `assistants.mjs` y `simulate.mjs` abren Continuity y pueden inicializar/migrar con `legacyMemory`.
+8. Pueblo/aldea, mundo y vendor visual: `src/village*.js`, `src/world.js`, `src/simulation.js`, `src/main.js`, `src/main-stable.js` no muestran acceso directo a stores Nexo. `lumina-world-v*` es almacenamiento del mundo visual. `src/three.core.js` sí existe en Git (1.403.455 bytes); que el fetch de texto no devolviera contenido no significa que falte. Excluir vendor Three.js y falsos positivos léxicos como `transmission`.
+
+### Puntos de acceso conocidos
+- CLI principal y sesión hija Chronicle directa.
+- `assistants.mjs`, `simulate.mjs` y reexport legacy `nexo-continuity.mjs`.
+- API path-based bajo `src/nexo/application/**`.
+- `continuity-service.mjs`, `continuity-store.mjs`, `chronicle-store.mjs`.
+
+El censo mejora el inventario, pero **no cierra D1**: falta convertirlo en allowlist arquitectónico de callers/imports de producción y probar que ningún entrypoint alcanza stores por ruta sin una instancia admitida. Los módulos son importables; esto no es aislamiento contra código local hostil. No se modificaron runtime/tests/workflows ni se ejecutaron pruebas.
+
+### Continuidad obligatoria
+1. Leer `NEXO_NCS/STATUS.md` y este handoff antes de continuar.
+2. Completar el grafo de callers/imports de producción y un allowlist que distinga producción, tests, fixtures y helpers internos.
+3. Resolver tratamiento de `simulate` y `assistants` sin mezclar world state/Lúmina con la raíz Nexo.
+4. Cerrar D1; después cerrar D2 (root lock vs locks de stores) y D3 (API `--root`, symlinks, migración/bootstrap).
+5. Solo después de D1/D2/D3, proponer cambios acotados de runtime y pruebas. Mantener autorización `NOT_EVALUATED`, root legítimo `PENDING/UNKNOWN`, efectos protegidos `STOP`.
