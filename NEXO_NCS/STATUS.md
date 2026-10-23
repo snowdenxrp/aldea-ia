@@ -2,8 +2,9 @@
 
 - Revisión de recursos agregada, análisis de código: [commit e2208578bde2efd1d39aacaf70ba314411885113](https://github.com/snowdenxrp/aldea-ia/commit/e2208578bde2efd1d39aacaf70ba314411885113). El análisis previo sobre temporales únicos fue corregido: los almacenes ya usan `.tmp` estable y limpieza acotada bajo lock propio.
 - Entry points trazados: `runNexoChronicleAppend` recibe rutas independientes para Chronicle y Continuity; el CLI crea un proceso hijo; las consultas y API de owner/store entran por rutas distintas. Los locks son por almacén, no por operación completa.
-- Próxima decisión: definir si M0 adoptará una raíz de instancia común para ambos almacenes y una exclusión mutua de operación, o si conservará APIs de rutas independientes sin prometer cota agregada. No añadir un lock parcial ni cambiar CLI sin contrato aprobado. Heap agregado y disco total siguen OPEN.
-- Handoff actualizado: [commit 963c7734cf79969a22e905ea19698e03f5866ccb](https://github.com/snowdenxrp/aldea-ia/commit/963c7734cf79969a22e905ea19698e03f5866ccb).
+- Propuesta de decisión (NO aceptada todavía): [NCS_M0_INSTANCE_ROOT_AND_CONCURRENCY_DECISION_PROPOSAL_2026-10-23.md](BUILD/NCS_M0_INSTANCE_ROOT_AND_CONCURRENCY_DECISION_PROPOSAL_2026-10-23.md), commit [3987e0656edf71369552e751f20a7bb2cec7e9ed](https://github.com/snowdenxrp/aldea-ia/commit/3987e0656edf71369552e751f20a7bb2cec7e9ed). Compara raíz de instancia canónica con admisión global frente a mantener las rutas independientes y declarar la limitación; rechaza un lock solo en CLI como garantía incompleta.
+- Próxima decisión: no tocar runtime hasta resolver explícitamente el contrato de raíz de instancia. Heap agregado y disco total siguen OPEN.
+- Handoff actualizado: [commit 4d1bf5b5dcf90726b6820f007114516e9d0b6228](https://github.com/snowdenxrp/aldea-ia/commit/4d1bf5b5dcf90726b6820f007114516e9d0b6228).
 
 - Frontier actual: presupuesto agregado de recursos de M0; no volver a comenzar por Open Loops, cuya CI exacta ya está cerrada.
 - Análisis corregido: [`NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md`](BUILD/NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md), actualización documental commit [`31bff07ea76ddd86713c642b3f5ae25570e3ae57`](https://github.com/snowdenxrp/aldea-ia/commit/31bff07ea76ddd86713c642b3f5ae25570e3ae57).
