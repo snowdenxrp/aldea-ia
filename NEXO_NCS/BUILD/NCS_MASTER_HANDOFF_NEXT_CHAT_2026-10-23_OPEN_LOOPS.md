@@ -392,3 +392,10 @@ Este es un caller confirmado, no evidencia de que el inventario completo de call
 Verificado en `src/nexo/core/continuity-store.mjs` (blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`) y `src/nexo/core/chronicle-store.mjs` (blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`): `loadCurrent()` lee y devuelve el documento sin adquirir el lock de mutación. `src/nexo/application/continuity-queries.mjs` usa directamente ese método para status/mission status/plan/previews y expone también `loadNexoOpenLoops`.
 
 Consecuencia: la admisión debe envolver la operación completa desde una frontera superior, antes de la primera lectura persistida. Añadir lock solo a mutaciones deja bypasses de lectura. No poner adquisición recursiva dentro de `loadCurrent()`; pasar contexto de instancia admitida a helpers. Mantener los locks existentes como capa separada hasta validar la interacción. Esto informa D2, pero no la cierra.
+
+
+## Segundo caller adicional: `scripts/simulate.mjs`
+
+El comando `simulate` de `package.json` también abre Continuity mediante `openNexoContinuityOwner`, con `.nexo-continuity.json`, `legacyMemory` y posible inicialización. Después persiste el estado del mundo en una ruta separada. Aunque no despacha misión, puede inicializar/reconciliar Continuity y no se debe tratar como bypass inocuo.
+
+Su lock local es para world state, con política de recuperación distinta que puede borrar locks obsoletos. No usarlo como modelo para root admission. D1 debe decidir explícitamente si `simulate` se excluye de operaciones Nexo y deja de abrir Continuity, o se integra por API de instancia sin mezclar world state con Nexo. El inventario de callers sigue abierto.
