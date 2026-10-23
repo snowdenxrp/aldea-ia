@@ -1283,3 +1283,13 @@ Se actualizó el ledger D1 tras consultar de nuevo el árbol exacto de ncs-clean
 Documento actualizado: `NEXO_NCS/BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md`, commit `6512851d57f785c3e056e6c7774d4c4e22eb244d`, blob `93020e104345a9794ab5d70ade09323622b85371`. Handoff actualizado: `NEXO_NCS/BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md`, commit `edc0021ca754453bb67db9502238ba7053821308`, blob `d788d7d88fbe556313d0f5bd5fe2050e112f3411`.
 
 Este scan cierra únicamente la pregunta estrecha de imports actuales del wrapper dentro de los archivos de producción inspeccionados. No prueba ausencia de consumidores externos, carga dinámica/computada ni otros bypasses path-based. D1-DESIGN sigue OPEN; no se modificó runtime/tests/workflows y no se ejecutaron tests/CI. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+### Paquete de decisión del propietario D0/D1 — 2026-10-23
+
+Nuevo documento: `NEXO_NCS/BUILD/NCS_M0_OWNER_DECISION_PACKET_D0_D1_SEQUENCE_2026-10-23.md`.
+Commit de creación: `5f9aa9e75864145b13bafdc271131662fadfa7b6`.
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_OWNER_DECISION_PACKET_D0_D1_SEQUENCE_2026-10-23.md
+
+Consolida, sin convertirlas en decisiones aprobadas, las cuatro subdecisiones D0 (interfaz/root, bootstrap, alias/symlinks, legacy/migración), la recomendación D1-S0 de separar diseño e implementación, y disposiciones propuestas para CLI, hijo Chronicle, queries, factories, assistants, simulate y repair. Distingue hechos de fuente, recomendación, riesgo y evidencia de cierre.
+
+El paquete es documental. Runtime/tests/workflows sin cambios; tests/CI no ejecutados. M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. La instrucción general de continuar no se interpreta como aprobación de las decisiones de diseño.
