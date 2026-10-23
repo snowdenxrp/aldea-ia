@@ -952,3 +952,11 @@ Root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` proposes an in-roo
 Treat this as a concrete D0-C2/D2 contract gap, not a verified runtime failure. Specify the atomic first-creation/initialization boundary, simultaneous attempts, crash/partial initialization, and recovery while reconciling the no-extra-marker constraint. Never infer “root exists” = “bootstrap complete”; no global/sibling lock or implicit initialization by assumption. If unresolved, BLOCKED/UNKNOWN. Recorded in cross-contract checkpoint commit `3c00d3cf563ce1498e18070bf3f1dabb7f79e6c0`, blob `68d442babe9c624edc182a055af55adc9194178f`.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+## Follow-up: lock release can delete a replacement directory — 2026-10-23
+
+Targeted read of `src/nexo/core/continuity-store.mjs` blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae` confirms release currently reads `owner.json`, checks its token, then recursively removes `lockPath`; a failed removal is retried once with the same path. The proposed root-lock D2 protocol uses the same verify-token-then-remove pattern. Because validation and recursive removal are separate filesystem operations, an external actor that removes/replaces the directory in that interval can make the release remove the replacement. This is a concrete TOCTOU interleaving under concurrent external recovery/replacement, not evidence of an incident or a claim about hostile-process protection.
+
+D2 must decide whether external lock recovery is allowed concurrently with release. If yes, token re-read alone does not close the race; choose and test a protocol that distinguishes the lock instance being removed, or keep recovery exclusive/offline under a demonstrated quiescence precondition. Add deterministic test injection between token validation and removal; require the replacement survives and ambiguous ownership yields UNKNOWN/BLOCKED. Inspect Chronicle and the instance-lock implementation plan before asserting a shared release contract. No runtime patch without explicit authorization.
+
+Recorded in checkpoint commit `075950f1a91320ba476595a7467a18773bfd43e7`, blob `1e853f818e25da6e5e7d875f35badef3964e4631`. No runtime/tests/workflows changed; no tests/CI run.
