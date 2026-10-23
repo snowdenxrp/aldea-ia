@@ -948,3 +948,11 @@ La sección 18 del contrato registra una matriz reproducible a partir del árbol
 La matriz cubre CLI/status/preview, Chronicle append, application API, mission request preview, assistants, continuidad facade/service, stores, Chronicle adapter, owner-backed runtime, runtime/simulation adapter, repair helpers y el gate de repair. El inventario es más amplio pero todavía no prueba cierre semántico exhaustivo de los 188 ficheros ni todos los imports dinámicos/reexports.
 
 D1 y D2 continúan ABIERTOS. Próximo: rastrear imports de `nexo-continuity.mjs`, owner constructor, APIs con rutas y adaptadores/runtime; resolver explícitamente el destino de `scripts/assistants.mjs`; diseñar test de arquitectura/no-bypass y terminar el protocolo de migración. Runtime, tests y workflows sin cambios. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+
+# CHECKPOINT — FRONTERA ASSISTANTS / LÚMINA Y NO-BYPASS (2026-10-23)
+
+La sección 19 registra que `scripts/assistants.mjs` configura de forma independiente `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH` y `NEXO_CONTINUITY_PATH` (blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`, líneas 19–25 y 47–54). La recomendación es tratarlo como integración compuesta Lúmina+Nexo: no mover automáticamente world-state ni memoria Lúmina al root Nexo, no declarar transacción entre archivos y definir qué suboperación Nexo queda bajo admisión. No se implementó.
+
+Las búsquedas de código del conector devolvieron cero resultados para símbolos que sí existen en fuentes revisadas; esto es limitación de búsqueda, no ausencia de callers. D1 sigue OPEN hasta cierre reproducible del call graph y prueba de arquitectura/no-bypass. D2 sigue OPEN hasta contrato, compatibilidad y pruebas de lock. Runtime/tests/workflows sin cambios. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
