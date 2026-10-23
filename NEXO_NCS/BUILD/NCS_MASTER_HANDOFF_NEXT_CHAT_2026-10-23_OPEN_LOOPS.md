@@ -597,3 +597,24 @@ Contrato recomendado: admisión antes de la primera lectura persistida y durante
 El informe especifica los casos mínimos para un test arquitectónico estático/negativo, pero no afirma que el grafo esté cerrado. El test no se implementó ni ejecutó; runtime, tests y workflows siguen sin cambios. D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
 
 Siguiente acción única: terminar reconciliación de callers en checkout exacto y cerrar D1-DESIGN/D2/D3 como contratos documentales antes de autorizar cualquier cambio de runtime/tests. La separación D1-DESIGN vs D1-IMPLEMENTATION continúa siendo recomendación, no decisión del propietario.
+
+
+## CHECKPOINT NUEVO — matriz de decisiones D0/D2/D3 (2026-10-23)
+
+Documento creado: [NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md](NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md), commit documental `f352f7019b045d663bc8748d5173107827923f05`.
+
+### Qué añade
+
+- Matriz de 14 decisiones/contratos con recomendación, riesgo de alternativas y criterio verificable de cierre.
+- D0: raíz explícita, bootstrap separado, alias/symlinks, migración legacy explícita.
+- D1: secuencia D1-DESIGN/D1-IMPLEMENTATION aún requiere decisión; tratamiento propuesto de `simulate`, `assistants`, API path-based y factories.
+- D2: sección crítica desde antes de la primera lectura, caracterización de locks antes de unificarlos, fail-closed en estados inciertos y admisión independiente del hijo Chronicle.
+- D3: dry-run, manifiesto/hash, copia verificable, cutover explícito y rollback; garantías limitadas a procesos cooperantes.
+
+### Qué no significa
+
+No es aprobación del propietario, cierre de gate ni autorización de implementación. No se tocó runtime/tests/workflows y no se ejecutaron tests/CI. D0/D1/D2/D3 permanecen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+### Siguiente acción
+
+Continuar desde la matriz nueva, no repetir el censo. Convertir cada fila pendiente en contrato revisable; primero resolver la secuencia D1-DESIGN vs D1-IMPLEMENTATION y congelar interfaz de raíz/bootstrap. Mantener los números de timeout/stale y el primitivo de lock como candidatos hasta caracterizar tests existentes. No modificar runtime/tests hasta que las puertas de diseño estén cerradas explícitamente.
