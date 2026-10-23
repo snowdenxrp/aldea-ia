@@ -995,3 +995,10 @@ El buscador de código devuelve cero incluso para símbolos conocidos existentes
 El package manifest expone `nexo` (`node scripts/nexo.mjs`) y `assistants` (`node scripts/assistants.mjs`) como comandos de producción. Su script de test ejecuta una suite serial amplia con pruebas de bootstrap, stores, runtime, entrypoints, Continuity, crash cuts de repair y Open Loops. Estos comandos quedan incluidos en el inventario de entrypoints.
 
 `nexo-runtime-session.mjs` mantiene el gate `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`. Los módulos dedicados de repair conservan rutas capaces de persistir estado del entorno; se clasifican como herramientas internas/bloqueadas, no como operaciones de instancia autorizadas automáticamente. Root admission no autoriza repair. D1/D2/D3 siguen abiertos; sin cambios en runtime ni tests.
+
+
+# CHECKPOINT — EXISTING TEST CONTRACTS AND FALSE FRIEND (2026-10-23)
+
+`src/nexo/application/index.mjs` expone un API estrecho, pero las consultas persistentes aún son orientadas a rutas. `tests/nexo/entrypoint.test.mjs` recorre imports/reexports y protege aislamiento arquitectónico; también verifica append, replay, status y plan. Acepta explícitamente `--continuity`/`--chronicle`, por lo que no prueba admisión por raíz ni ausencia de bypass. La migración debe ampliar este guard y preservar sus invariantes: replay no redispatcha; status/plan no mutan bytes; previews tienen `persisted:false` y `dispatchAttempted:false`; autorización sigue `NOT_EVALUATED`; append conserva su operación Chronicle permitida.
+
+`tests/nexo/root-bootstrap-protocol.test.mjs` verifica un vector de firma P-256 y rechazos de mensaje/firma alterados; no prueba raíces de filesystem ni locks. No contarlo como evidencia de root admission. Los parsers actuales aún no aceptan `--root`; el padre reenvía argumentos al child, que acepta rutas independientes. Debe diseñarse el modo root-only y el rechazo de opciones mezcladas/duplicadas antes de abrir stores. No se ejecutaron tests en este pase; solo lectura de fuentes y documentación.
