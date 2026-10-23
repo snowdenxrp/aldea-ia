@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-23 — SIMULATION ADAPTER BOOTSTRAP INPUT GUARD
+
+- Hallazgo reproducible: `createLuminaEffectAdapter(simulation, options)` desestructuraba las opciones antes de validar descriptores y accedía a `simulation.agents/world` directamente. Getters ordinarios en las opciones o en la raíz de simulación podían ejecutarse durante la construcción del adaptador.
+- Corrección: las opciones ahora se extraen mediante descriptores propios de datos de un registro plano/prototipo nulo; `persistPreparedIntent` debe ser función o null. La raíz de simulación exige campos de datos propios para `agents`, `world` y `nexoEffectRevision` si existe, además de la forma esperada de `agents/world`. Los getters ordinarios consumidos por el constructor se rechazan antes de invocarlos.
+- Regresiones en `tests/nexo/simulation-adapter.test.mjs`: getter de `executionJournal` en opciones, getter de `simulation.agents`, y hook de persistencia con tipo inválido; todos rechazados sin invocar getters.
+- Commits: implementación [`e4f779673942a12f86cf6e833c5aee6caf9c2432`](https://github.com/snowdenxrp/aldea-ia/commit/e4f779673942a12f86cf6e833c5aee6caf9c2432); regresiones [`3ee115e8cd91dd69f1a61a2f21ab7605866fb11c`](https://github.com/snowdenxrp/aldea-ia/commit/3ee115e8cd91dd69f1a61a2f21ab7605866fb11c).
+- CI sobre SHA exacto `3ee115e8cd91dd69f1a61a2f21ab7605866fb11c`: 3/3 workflows SUCCESS — [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883507954), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883508015), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883508054).
+- Límite: los guards de construcción no neutralizan `Proxy traps` ni protegen frente a mutaciones posteriores de la raíz de simulación. No cambian el gate M0 Option A; la ruta de reparación de producto sigue devolviendo `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: continuar con una frontera pública no cubierta y un defecto reproducible. La revisión de persistencia autoritativa queda en los audits AB104.147–150 / P112 ya citados arriba; no reabrirla sin un cambio de código que invalide sus conclusiones.
+
+---
+
 # CONTINUITY DECISION — 2026-10-23 — DO NOT REPEAT CLOSED EFFECT-DURABILITY AUDIT
 
 - Cross-check of current sources confirms `scripts/nexo-runtime-session.mjs` is an explicit M0 Option A gate: it returns `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`. The assistant entrypoint only invokes that repair session behind explicit `--nexo-repair-once`; the gate itself still prevents dispatch.
