@@ -1,3 +1,15 @@
+# CHECKPOINT — MAPA DE DEPENDENCIAS D0/D1/D2/D3 — 2026-10-23
+
+Nuevo mapa documental: [NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md](NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md), commit ac205fda2d1ed490f54efa0ace1a3c974a1ce8c6.
+
+El mapa separa contratos y dependencias, haciendo explícitos: D1-S0 aún necesita decisión; D1-DESIGN no equivale a prueba ejecutada; D2 necesita resolver alcance/duración de admisión del snapshot y contrato de locks; D3 depende de runtime objetivo/control real de relanzamientos; presupuesto agregado de heap/disco sigue independiente y no demostrado. Ninguna recomendación se registra como aceptación del propietario.
+
+No se repitió el censo de callers. No se modificó runtime/tests/workflows; no se ejecutaron tests ni CI.
+
+Estado canónico: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+---
+
 # NCS M0 — cross-check contractual D0/D1/D2/D3
 
 Fecha: 2026-10-23  
