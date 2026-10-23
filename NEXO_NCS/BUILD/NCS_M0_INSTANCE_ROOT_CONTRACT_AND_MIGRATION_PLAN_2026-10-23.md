@@ -1062,3 +1062,15 @@ Los puntos de apertura directa de stores/owner localizados en código de aplicac
 Esto delimita los puntos conocidos para cerrar la arquitectura, pero no demuestra todavía no-bypass: los imports JavaScript son transitivos y las primitivas siguen siendo importables. La prueba de cierre D1 deberá comparar el grafo de imports/callers de producción contra un allowlist explícito y fallar ante nuevos accesos path-based. Mantener separado el inventario de código productivo, los tests que importan primitivas y los helpers internos de reparación.
 
 **Estado:** censo de código de aplicación ampliado; D1 OPEN, D2 OPEN, D3 OPEN. No se modificó runtime/tests/workflows y no se ejecutaron pruebas.
+
+
+## Conflicto de secuencia entre cerrar D1 y prohibir cambios de tests — requiere resolver antes de implementar
+
+Los documentos previos mezclaban dos criterios incompatibles: (1) D1 solo cerraría cuando el test arquitectónico exista y pase; (2) no se deben modificar tests/runtime hasta cerrar D1/D2/D3. Seguir ambos literalmente crea un ciclo que impide avanzar.
+
+**Recomendación de diseño para revisión, no decisión ya aprobada:** distinguir el cierre de diseño de la validación de implementación:
+- **D1-DESIGN puede cerrarse** cuando el inventario de callers esté completo para el snapshot, cada superficie tenga tratamiento explícito, el allowlist de producción/tests/helpers esté definido, la especificación del test arquitectónico sea concreta y sus fixtures negativos estén enumerados.
+- **D1-IMPLEMENTATION no se declara cerrado** hasta que, después de cerrar D1/D2/D3 de diseño, el test arquitectónico se implemente, se ejecute y demuestre que detecta bypasses y acepta solo el grafo permitido.
+- La puerta de diseño habilita preparar un cambio de implementación acotado; no es evidencia de seguridad operativa ni de root admission implementado.
+
+Con esta distinción, la secuencia coherente sería: completar inventario → acordar allowlist y test spec → cerrar D1/D2/D3 de diseño → implementar en un cambio acotado tests arquitectónicos + API/CLI/locks necesarios → ejecutar CI y pruebas negativas → evaluar el cierre de implementación con evidencia. Hasta acordar esta separación, D1 sigue OPEN y no se toca runtime/tests.
