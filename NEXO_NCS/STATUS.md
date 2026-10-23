@@ -17,7 +17,7 @@
 # HANDOFF NEXT CHAT — 2026-10-23
 
 - Continuidad maestra: [NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md](BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md).
-- Handoff actualizado tras verificar Open Loops: [commit `1360a4ddbb142034b9b4520013d032dcb5780bde`](https://github.com/snowdenxrp/aldea-ia/commit/1360a4ddbb142034b9b4520013d032dcb5780bde), con el SHA de código+pruebas `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a` y su CI exacta.
+- Handoff actualizado tras verificar Open Loops: [commit `1722cbf3b8850f9239c61fb641aaa569e31c4e80`](https://github.com/snowdenxrp/aldea-ia/commit/1722cbf3b8850f9239c61fb641aaa569e31c4e80), con el SHA de código+pruebas `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a` y su CI exacta.
 - Próxima acción única: consultar MASTER/CORE y BUILD/DECISIONS y escoger una capacidad interna con un caso de aceptación concreto. La CI exacta de Open Loops ya está verificada; no repetirla sin cambios de implementación/tests.
 - No repetir auditorías cerradas, no reabrir el trust-boundary review sin defecto nuevo, y mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
 
