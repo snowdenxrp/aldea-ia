@@ -733,3 +733,20 @@ Design findings: read-only queries materialize canonical snapshots, so they need
 D1 architecture test remains unimplemented/unexecuted; no runtime/tests/workflows changed in this pass and no CI was run. Canonical status unchanged: M0 INCOMPLETO; D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
 
 Next: finish caller-edge classification and close D0/D1-DESIGN/D2/D3 design decisions before any implementation. Preserve unresolved edges as UNKNOWN/BLOCKED.
+
+
+## 14. Exact-branch continuity wrapper callsite recheck (2026-10-23)
+
+Updated D1 ledger:
+- NEXO_NCS/BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md
+- Commit: 6512851d57f785c3e056e6c7774d4c4e22eb244d
+- Blob: 93020e104345a9794ab5d70ade09323622b85371
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md
+
+Exact branch tree rechecked: fc546b0e998abcecafb44ead2b2ae9dd1222d539; recursive tree not truncated, 2,982 entries. Narrow reference scan confirms two current in-repository production imports of scripts/nexo-continuity.mjs: scripts/assistants.mjs and scripts/simulate.mjs. Test-only imports also exist in assistants-runtime-cli, continuity-migration, entrypoint, chronicle-runtime and continuity-contract tests.
+
+Separate production path confirmed: scripts/nexo.mjs launches scripts/nexo-chronicle-session.mjs with spawnSync; the child is independently executable and calls the public application append route. chronicle-append constructs both path-based store factories and opens the Continuity owner; continuity-queries directly constructs the path-based Continuity store. These are distinct D1 graph edges, not covered merely by classifying the compatibility wrapper.
+
+Scope boundary: the narrow in-repository wrapper question is resolved for inspected scripts/ and src/nexo/ files. External/downstream consumers, dynamic/computed imports, complete transitive production graph, and all direct path-based bypasses remain UNKNOWN/OPEN. No runtime/tests/workflows changed and no tests/CI were executed. Do not treat this source-reference scan as D1 closure.
+
+Next: continue D1-DESIGN against exact branch snapshot; reconcile every direct factory/owner/query/child-process edge and negative fixture. Keep D0/D1/D2/D3 OPEN; M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP. D1-S0 sequencing split remains a recommendation, not owner-approved; no implementation authorization.
