@@ -283,3 +283,12 @@ Documento nuevo: NCS_M0_D2_ROOT_READY_SEMANTICS_RECONCILIATION_2026-10-23.md, co
 La matriz D2 usa ROOT_READY para la ruta validada antes de lock/stores; el gate D0-C2 parece usarlo para la instancia global lista. Recomendación documental: mantener el término con alcance local en D2 y describir en D0-C2 la conjunción de precondiciones para admitir operación normal, sin crear estados/markers persistentes ni conceder autoridad. Los documentos originales no se modificaron unilateralmente; la recomendación no está aceptada por el propietario.
 
 No runtime/tests/workflows changes; tests/CI no ejecutados. Estado canónico sin cambios.
+
+---
+# REVISIÓN DIRIGIDA — SEMÁNTICA DE DATOS VS DISPARADOR LEGACY — 2026-10-23
+
+Documento nuevo: NCS_M0_D2_INITIALIZATION_SEMANTICS_VS_TRIGGER_RECONCILIATION_2026-10-23.md, commit de creación 78e3838e642f8af783414c07e912e669efa82aac, blob verificado 05599a912492b4ead93c50c0e753a62e6fe9027e.
+
+El contrato de raíz pide preservar la semántica de inicialización, pero también señala que algunos callers legacy pueden disparar bootstrap/migración implícitos y recomienda eliminarlos como side effect incidental. Reconciliación propuesta: preservar las reglas de datos y precedencia una vez que una migración explícita es autorizada; no asumir que deba preservarse el disparador implícito. Lectura/preview no deben crear ni migrar stores por accidente. Es precisión de diseño, no cambio de runtime ni autorización.
+
+El documento ROOT_READY anterior permanece propuesta editorial no aprobada. Runtime/tests/workflows sin cambios; tests/CI no ejecutados. Estado canónico sin cambios.
