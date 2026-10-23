@@ -7,6 +7,7 @@
 - CI runtime SHA `9b24b337157c90ad3e7ba293fe267b0861398d6d`: aceptación integrada [SUCCESS, run 39881485790](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881485790) y persistencia determinista [SUCCESS, run 39881485780](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881485780).
 - CI test SHA exacto `3abe03d7c885dc11c1f9a4ec6c952422d5bd723e`: 3/3 workflows SUCCESS — [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881501662), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881501663), [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881501668).
 - Alcance: se evita la ejecución de getters ordinarios en los campos de respuesta consumidos y se cierra la devolución cruda de resultados del propietario. No neutraliza todos los `Proxy traps`, no demuestra confiabilidad del propietario ni autoridad legítima y no habilita dispatch.
+- Read-back documental: el commit de STATUS [`76cff468afca977a2aa8b1a8264fbbc2182192f5`](https://github.com/snowdenxrp/aldea-ia/commit/76cff468afca977a2aa8b1a8264fbbc2182192f5) completó persistencia determinista en [run 39881593289 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881593289).
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Siguiente: continuar con otra frontera pública solo si el defecto es reproducible; no repetir los guards de opciones, sanitización Chronicle ni admisión del propietario ya cubiertos.
 
