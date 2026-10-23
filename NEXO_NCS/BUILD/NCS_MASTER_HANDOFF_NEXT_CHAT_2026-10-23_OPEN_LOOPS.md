@@ -281,3 +281,13 @@ Critical new finding: `scripts/assistants.mjs` directly opens `openNexoContinuit
 The matrix covers CLI queries/previews, Chronicle append, application API, request preview, assistants, continuity facade/service, store primitives, Chronicle effect adapter, owner-backed runtime, simulation runtime, repair protocol and the runtime repair exclusion gate. The latter must remain `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; root admission is not authority and must not enable protected transition.
 
 Next: trace all imports of `scripts/nexo-continuity.mjs`, `openNexoContinuityOwner`, path-based application APIs, adapter registration and runtime exports; explicitly disposition the assistants workflow; then define architecture/no-bypass tests and close the migration protocol. D1/D2 remain OPEN; no runtime, tests or workflows changed. Canonical state unchanged.
+
+
+
+## 20. Assistants/Lúmina integration boundary and no-bypass design
+
+Contract Section 19 records that `scripts/assistants.mjs` has independent `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH` and `NEXO_CONTINUITY_PATH` overrides (source blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`, lines 19–25 and 47–54). Treat this as a composite Lúmina+Nexo integration. Do not silently move world-state or Lúmina learning memory under Nexo root, and do not claim cross-file transactionality. The exact Nexo sub-operation must be identified before implementation. Legacy independent path handling should become explicit migration-only once the instance API exists. The repair gate must remain `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`.
+
+Code search returned zero hits for several symbols directly confirmed in source. These results are a connector search limitation, not proof of no callers. The remaining call-graph closure needs a reliable tree/file scan or checkout-local search; D1 stays OPEN. Section 19 also specifies the static no-bypass architecture test contract: explicit production entrypoint allowlist, low-level factory/import restriction, root-only public API, admitted reads, one Chronicle lock owner, explicit disposition of assistants, and an invariant test for repair exclusion. Static checks are not substitutes for behavioral concurrency/release tests.
+
+No runtime, tests or workflows changed. D1/D2 remain OPEN; canonical state unchanged.
