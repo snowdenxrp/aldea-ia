@@ -793,3 +793,15 @@ Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítim
 - Before implementation, verify journal record schema/linkage and locate existing valid-snapshot test fixtures. The query must preserve store revision, privacy projection, discrepancy/UNKNOWN semantics, no-mutation guarantees and explicit output bounds. Missing/corrupt state must not appear as an empty successful inventory.
 - This contract is an 🔵 EXTENSION candidate, not an implementation claim. No runtime code/tests changed; no CI PASS is claimed for this documentation commit.
 - Canonical status unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+
+## M0 — initial Open Loops query implementation — 2026-10-23
+
+- Implemented `loadNexoOpenLoops(continuityPath)` in `src/nexo/application/continuity-queries.mjs` and exported it from the narrow application API. This is a read-only projection from one validated continuity revision, not a new task ledger.
+- Output keeps non-completed mission/step summaries separate from `prepared` and `reconciled_observed` journal obligations; `settled_observed` is excluded. Target/context payloads are not returned. The query always reports `authorization: NOT_EVALUATED` and `dispatchAttempted: false`.
+- Projection is capped at 1,000 total mission/step/obligation items. Exceeding the cap blocks rather than silently truncating. An unresolved journal row without mission/step/action linkage returns `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN`; missing store remains blocked and is not initialized.
+- Added `tests/nexo/open-loops-query.test.mjs` and included it in `npm test`; updated `tests/nexo/entrypoint.test.mjs` to preserve the exact narrow export contract.
+- Regression scope includes: missing-store non-creation, required path, same-revision output, distinct journal status classes, private target omission, unchanged file bytes/mtime, deterministic repeated result and UNKNOWN on malformed unresolved-journal linkage.
+- Source changes were made through GitHub connector. No local test execution was available in this workflow. **CI on the final code+test SHA is required before this capability is called verified.** Do not claim PASS until workflow completion is observed for that exact SHA.
+- CLI exposure is deferred; no actual caller currently requires it. No scheduler, queue, task registry, new identity or authority mechanism was added.
+- Canonical status unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
