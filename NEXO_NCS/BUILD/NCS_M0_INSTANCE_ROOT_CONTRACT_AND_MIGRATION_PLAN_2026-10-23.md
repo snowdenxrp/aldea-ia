@@ -883,3 +883,22 @@ No cerrar D1 hasta verificar todos los callers y decidir el tratamiento de los c
 `scripts/nexo-repair-entrypoint.mjs` exporta una función de reparación, no es un CLI de package ni contiene un dispatcher de `process.argv`. El flujo productivo de `assistants` llama `scripts/nexo-runtime-session.mjs`, cuyo gate devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` sin persistir ni despachar. Los helpers de reparación permanecen fuera de la superficie productiva soportada por el momento; no deben conectarse a la API de instancia ni tratarse como autorizados por el root lock. Mantenerlos fuera de D1 de callers productivos, pero conservar pruebas específicas de sus protocolos como código interno.
 
 Esta distinción evita dos errores opuestos: llamar a los helpers de reparación un CLI activo cuando no lo es, o ignorar que los entrypoints `simulate`/`assistants` sí abren y pueden inicializar Continuity.
+
+
+## Matriz precisa de errores de parseo observados (base de compatibilidad)
+
+La futura admisión de instancia debe agregar su resultado sin borrar los códigos de parseo existentes cuando la forma del comando siga siendo inequívoca. Si se cambia el contrato de opciones a `--root`, documentar el nuevo código de error y cubrir la transición explícitamente.
+
+| Comando | Error de argumentos | Error de opción obligatoria ausente |
+|---|---|---|
+| Entrada principal | `NEXO_COMMAND_ARGUMENTS_INVALID`; comando vacío: `NEXO_COMMAND_REQUIRED`; desconocido: `NEXO_COMMAND_UNSUPPORTED` | — |
+| `status` | `NEXO_STATUS_ARGUMENTS_INVALID` | `NEXO_STATUS_CONTINUITY_PATH_REQUIRED` |
+| `mission-status` | `NEXO_MISSION_STATUS_ARGUMENTS_INVALID` | Continuity: `NEXO_STATUS_CONTINUITY_PATH_REQUIRED`; misión: `NEXO_MISSION_ID_REQUIRED` |
+| `mission-plan` | `NEXO_MISSION_PLAN_ARGUMENTS_INVALID` | Continuity: `NEXO_STATUS_CONTINUITY_PATH_REQUIRED`; misión: `NEXO_MISSION_ID_REQUIRED` |
+| `mission-draft-preview` | `NEXO_MISSION_DRAFT_ARGUMENTS_INVALID` | Continuity: `NEXO_STATUS_CONTINUITY_PATH_REQUIRED`; borrador: `NEXO_MISSION_DRAFT_PATH_REQUIRED` |
+| `mission-request-preview` | `NEXO_MISSION_REQUEST_ARGUMENTS_INVALID` | Continuity: `NEXO_STATUS_CONTINUITY_PATH_REQUIRED`; solicitud: `NEXO_MISSION_REQUEST_PATH_REQUIRED` |
+| Sesión hija Chronicle | `NEXO_CHRONICLE_CLI_ARGUMENTS_INVALID` | Fuente: `NEXO_CHRONICLE_CLI_CONTENT_SOURCE_REQUIRED`; stdin debe ser pipe: `NEXO_CHRONICLE_CLI_STDIN_PIPE_REQUIRED`; exceso de stdin: `NEXO_CHRONICLE_STDIN_RESOURCE_LIMIT_EXCEEDED` |
+
+La entrada principal de Chronicle no valida las opciones hijas antes de invocar `spawnSync`; por eso el error de argumentos Chronicle es emitido por el hijo en el JSON de resultado. El padre solo emite `NEXO_ENTRYPOINT_DISPATCH_FAILED` cuando no se pudo iniciar el hijo. No cambiar este límite sin actualizar las pruebas de salida, códigos de proceso y privacidad.
+
+El router asigna códigos de salida según resultado: `loaded`, `reconstructed`, `planned`, `validated` o `completed` son los estados de éxito por familia; cualquier otro estado produce código de salida 1. El child Chronicle también sale con 1 si el estado no es `completed`. Un resultado semántico `not_found` no es error de parseo y no debe confundirse con fallo de admisión.
