@@ -546,3 +546,8 @@ Se documentó un ciclo previo: D1 requería el test arquitectónico ya ejecutado
 - `D1-IMPLEMENTATION`: implementar y ejecutar el test arquitectónico después de cerrar D1/D2/D3 de diseño.
 
 La separación es recomendación pendiente, no decisión aceptada. No cambiar estado de gates ni tocar runtime/tests hasta resolverla. La especificación propuesta cubre imports transitivos, imports dinámicos/computados, procesos hijos, hijo Chronicle directo y callers legacy.
+
+
+## Hallazgo de cobertura de tests para no perder
+
+El `package.json` actual tiene 44 archivos `tests/nexo/*.test.mjs`; `npm test` invoca 27 y omite 17. La lista exacta está en `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`. No asumir que todas las omisiones son bugs: determinar propósito/dependencias una por una. La futura prueba arquitectónica D1 debe quedar enlazada explícitamente a la verificación requerida; archivo presente pero no ejecutado no es evidencia.
