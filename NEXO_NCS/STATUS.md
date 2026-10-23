@@ -694,3 +694,27 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - Log del job descargado y revisado: cadena de tests ejecutada sin fallo; `Nexo independent entrypoint: unsupported commands fail closed; Chronicle delegates without Lúmina or content leakage`; `Nexo Chronicle owner-backed runtime tests passed`; `Nexo bounded temporary cleanup regression passed`.
 - Alcance del resultado: confirma la suite en el SHA citado; no demuestra raíz legítima, autorización constitucional, aislamiento frente a procesos locales hostiles ni autorización de efectos protegidos. El run prueba el commit documental de reconciliación, no un cambio de runtime.
 - El update de STATUS que registra este resultado es posterior a ese SHA; no se atribuye a este run la validación de ese update posterior.
+
+
+---
+
+# CHECKPOINT DE CONTINUIDAD — POST-RECONCILIACIÓN OPTION A — 2026-10-23
+
+## CI del HEAD documental previo
+
+- SHA verificado: `1a56ec4373ebd6fddc7d0deeaab987a922a958b6`.
+- Workflow: [39898072765](https://github.com/snowdenxrp/aldea-ia/actions/runs/39898072765) — `completed/success`.
+- Job `tests`: [120233038863](https://github.com/snowdenxrp/aldea-ia/actions/runs/39898072765/job/120233038863) — `completed/success`; log descargado y revisado.
+- El log incluye: runtime owner-backed Chronicle tests passed; entrypoint independiente rechaza comandos no soportados y delega Chronicle sin Lúmina ni exposición del contenido; regresión de limpieza de temporales acotados pasó.
+- El test de frontera actual mantiene rechazo de `execute`, `run`, `simulate`, `shell`, `http`, `effect` y `repair`; la ruta Chronicle local y las consultas de solo lectura permanecen separadas en la API pública.
+- Alcance: suite verde para el SHA citado; no demuestra raíz legítima, autoridad constitucional, aislamiento frente a procesos locales hostiles ni cierre universal de todos los imports internos.
+
+## Siguiente trabajo — sin repetir investigaciones cerradas
+
+- Política de persistencia interna ya reconciliada con la decisión aceptada de opción A: conservar Chronicle/Continuity local acotado; no implementar el gate general deny-first ni duplicar/migrar las pruebas existentes sin una regresión nueva.
+- Reutilizar como fuente los documentos existentes: `NCS_M0_E_CLAIM_RELATIVE_AUTHORITY_BOUNDARY_INVENTORY_2026-10-22.md`, `NCS_M0_E_CONDITIONAL_COMMIT_SINK_ROLE_AND_ROUTE_MAP_2026-10-22.md`, `NCS_M0_E_EXISTING_TESTS_TO_REAL_MUTATION_BOUNDARY_MATRIX_2026-10-22.md`, `NCS_M0_E_MINIMUM_INTEGRATION_CONTRACT_ANALYSIS_2026-10-21.md` y `NCS_M0_E_OPTION_A_FILESYSTEM_TRUST_BOUNDARY_AUDIT_2026-10-21.md`. No rehacer esas auditorías.
+- Brecha M0-E que sigue abierta: no existe procedencia de raíz independiente y verificable enlazada a una Constitución exacta vigente, Policy/contexto y enforcement en un sink protegido real. No inventar raíz, no usar fixtures `AUTHORIZED` como autoridad y no conectar `effectBoundary.prepare` a `conditionalCommit` como arreglo cosmético.
+- Continuación técnica de menor riesgo: trabajar sobre una brecha concreta de opción A (integridad/rutas/recursos de persistencia interna) solo si se identifica un contraejemplo reproducible o contrato pendiente; de lo contrario, avanzar únicamente sobre la procedencia/objeto constitucional ya documentados, sin repetir su investigación histórica.
+- Este checkpoint es documental. No se cambió runtime ni tests en este commit. CI de este nuevo commit no se atribuye al run anterior.
+
+Estado canónico sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
