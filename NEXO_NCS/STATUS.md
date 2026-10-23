@@ -1002,3 +1002,12 @@ El package manifest expone `nexo` (`node scripts/nexo.mjs`) y `assistants` (`nod
 `src/nexo/application/index.mjs` expone un API estrecho, pero las consultas persistentes aún son orientadas a rutas. `tests/nexo/entrypoint.test.mjs` recorre imports/reexports y protege aislamiento arquitectónico; también verifica append, replay, status y plan. Acepta explícitamente `--continuity`/`--chronicle`, por lo que no prueba admisión por raíz ni ausencia de bypass. La migración debe ampliar este guard y preservar sus invariantes: replay no redispatcha; status/plan no mutan bytes; previews tienen `persisted:false` y `dispatchAttempted:false`; autorización sigue `NOT_EVALUATED`; append conserva su operación Chronicle permitida.
 
 `tests/nexo/root-bootstrap-protocol.test.mjs` verifica un vector de firma P-256 y rechazos de mensaje/firma alterados; no prueba raíces de filesystem ni locks. No contarlo como evidencia de root admission. Los parsers actuales aún no aceptan `--root`; el padre reenvía argumentos al child, que acepta rutas independientes. Debe diseñarse el modo root-only y el rechazo de opciones mezcladas/duplicadas antes de abrir stores. No se ejecutaron tests en este pase; solo lectura de fuentes y documentación.
+
+
+# CHECKPOINT — TRAZA CLI Y PROCESOS HIJOS (2026-10-23)
+
+`scripts/nexo.mjs` ejecuta consultas/previews dentro del proceso, pero delega Chronicle append mediante `spawnSync` a `scripts/nexo-chronicle-session.mjs`, reenviando argumentos. En append, el child debe ser el único dueño del lock de raíz; consultas/previews también requieren admisión antes de leer snapshots. El parser child aún acepta rutas independientes y no `--root`.
+
+La suite de entrypoint invoca status, plan, misión y preview con `--continuity`, y append/replay con rutas independientes de Continuity y Chronicle. La migración debe probar cada familia de comandos con root, rechazar combinaciones/duplicados antes de abrir stores y conservar envelopes y garantías de no mutación.
+
+`assistants` es un comando compuesto separado: usa `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH`, `NEXO_CONTINUITY_PATH`, abre Continuity vía `nexo-continuity.mjs` y contiene `--nexo-repair-once`. No declararlo root-managed hasta enrutar Continuity por una operación de instancia explícita. Simulación y memoria Lúmina permanecen fuera de la raíz Nexo. Repair sigue excluido por `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; root admission no concede permiso de repair. Inspección documental solamente; no se ejecutaron tests ni se cambiaron archivos runtime/tests/workflows.
