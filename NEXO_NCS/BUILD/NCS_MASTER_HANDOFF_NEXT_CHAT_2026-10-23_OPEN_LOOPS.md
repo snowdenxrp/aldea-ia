@@ -385,3 +385,10 @@ Este comando usa `NEXO_CONTINUITY_PATH` o `.nexo-continuity.json`, abre Continui
 No envolver automáticamente todo el comando en root lock: eso sería una decisión arquitectónica nueva que podría cubrir trabajo de Lúmina y varias persistencias con semánticas propias. D1 debe determinar si `assistants` queda explícitamente fuera del contrato de instancia, si se bloquea su persistencia Nexo o si se integra mediante API explícita con límites claros. En cualquiera de los casos, Lúmina memory y world state no se mueven silenciosamente a la raíz de Nexo. `--nexo-repair-once` sigue excluido por `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`.
 
 Este es un caller confirmado, no evidencia de que el inventario completo de callers esté cerrado.
+
+
+## Hallazgo de lectura: `loadCurrent()` no toma los locks de store
+
+Verificado en `src/nexo/core/continuity-store.mjs` (blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`) y `src/nexo/core/chronicle-store.mjs` (blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`): `loadCurrent()` lee y devuelve el documento sin adquirir el lock de mutación. `src/nexo/application/continuity-queries.mjs` usa directamente ese método para status/mission status/plan/previews y expone también `loadNexoOpenLoops`.
+
+Consecuencia: la admisión debe envolver la operación completa desde una frontera superior, antes de la primera lectura persistida. Añadir lock solo a mutaciones deja bypasses de lectura. No poner adquisición recursiva dentro de `loadCurrent()`; pasar contexto de instancia admitida a helpers. Mantener los locks existentes como capa separada hasta validar la interacción. Esto informa D2, pero no la cierra.
