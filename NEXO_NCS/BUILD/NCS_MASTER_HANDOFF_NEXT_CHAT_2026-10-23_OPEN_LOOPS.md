@@ -259,3 +259,13 @@ Verification matrix now explicitly covers invalid root, timeout, corrupt/unknown
 The new section does not close D2 or D1. Next: inspect all consumers of existing operation result shapes and the indirect caller edges; record a reproducible caller matrix with current branch SHAs; then define automated no-bypass/concurrency/release-uncertain tests. No runtime, tests, workflows or CLI changed. Canonical state remains M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
 
 Updated contract: [NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md](NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
+
+
+
+## 18. D2 follow-up — existing result compatibility and indirect callers
+
+Section 17 of the root contract records the current result contracts from continuity queries, Chronicle append, continuity-service, the narrow application export, Chronicle effect adapter, owner-backed runtime and repair modules. The important compatibility rule: preserve business states such as `loaded/not_found` and Chronicle's `completed/blocked/conflict/unknown/observed/invalid`; root admission is not authorization. The runtime repair gate remains `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` and must not be bypassed.
+
+The review used these exact branch blobs: continuity queries `e1915e94e53e71d37a37952fead37ba62bdae79a`; Chronicle append `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`; continuity service `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`; application index `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3`; Chronicle adapter `6daf742eb0048724557151a728bf807613a854e9`; owner-backed runtime `a7a014489209273ce78d0103afa785728d4c467c`; repair entrypoint `74d0fa92c447034e7454b7b846d584819ac81ffd`; repair session `1ce95a621ed5bb9f473c9d0f15b5ee3f2f1459a5`; repair dispatch `ed45438be7604d3b341cecd5fbcfc69adda2447e`; settlement `2f6e91d494b4edb012c2b2db5a077b875c5b0348`; mission verification `6f9c58cac203faa65e23c1a076af4746f5c22324`; runtime gate `f67b6fbe1b6f0098ebf23b35055cc668f96df991`.
+
+This is not an exhaustive caller matrix. GitHub code search yielded no usable matches in this session, so no absence-of-callers claim is justified. Next deliverable: reproducible matrix caller → entrypoint → store/owner/adapter → proposed admission boundary → current classification (production, primitive/test, excluded) → source SHA → bypass risk, then an automated no-bypass test design. D1/D2 remain OPEN; no runtime, tests or workflows changed. Canonical state unchanged.
