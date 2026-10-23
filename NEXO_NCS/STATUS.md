@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D0 INSTANCE-ROOT DECISION LEDGER
+
+- Nuevo ledger documental: [NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md](BUILD/NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md), commit `013dfe3f6c72c0012a190b86590688bb3dd05614`.
+- El ledger divide D0 en 11 decisiones comprobables: configuración CLI/API, env precedence, bootstrap, canonicalización/aliases, layout/collisions, legacy compatibility, side effects, error contract y migración de datos existentes.
+- Cada decisión separa evidencia actual, recomendación aún no aprobada, riesgo, evidencia de aceptación y dependencias. No se atribuye al propietario aprobación de subdecisiones.
+- Trabajo documental únicamente: no cambió runtime, tests, workflows, CLI ni almacenes; no se ejecutaron tests/CI.
+- Próximo paso: revisar consistencia del ledger con los artefactos D1 existentes y registrar solo contradicciones/huecos reales; no repetir el censo previo sin cambio de snapshot.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — RECONCILIACIÓN DE LÍMITES DE DECISIÓN D0/D1/D2/D3
 
 - Nuevo documento: [NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md), commit `1c67919dddae59d7772f9beeca9b6d88e89770b6`.
