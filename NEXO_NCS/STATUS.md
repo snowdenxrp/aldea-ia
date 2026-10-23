@@ -1,3 +1,13 @@
+# CHECKPOINT CORRECTIVO — 2026-10-23 — SIMULATION REVISION MUST BE WRITABLE
+
+- Hallazgo adicional reproducible en la misma frontera: una raíz de simulación congelada o con `nexoEffectRevision` no escribible podía pasar la validación inicial y fallar más tarde cuando el adaptador intentara incrementar la revisión, dejando una ruta de ejecución que no podía cumplir su contrato de versión.
+- Corrección: si `nexoEffectRevision` existe, se exige propiedad de datos enumerable y escribible; si no existe, la raíz debe ser extensible para poder crearla. Se rechaza en bootstrap en lugar de fallar tras entrar en la ruta de efecto.
+- Regresiones: raíz congelada y revisión propia no escribible rechazadas.
+- CI sobre SHA exacto `5c98c71c80a013f377d55cff2ca3ecdb682f1f8f`: 3/3 SUCCESS — [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883642669), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883642629), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883642800).
+- Límite: no neutraliza `Proxy traps` ni evita que el llamador altere después la simulación. El gate de producto M0 Option A permanece cerrado.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-23 — SIMULATION ADAPTER BOOTSTRAP INPUT GUARD
 
 - Hallazgo reproducible: `createLuminaEffectAdapter(simulation, options)` desestructuraba las opciones antes de validar descriptores y accedía a `simulation.agents/world` directamente. Getters ordinarios en las opciones o en la raíz de simulación podían ejecutarse durante la construcción del adaptador.
