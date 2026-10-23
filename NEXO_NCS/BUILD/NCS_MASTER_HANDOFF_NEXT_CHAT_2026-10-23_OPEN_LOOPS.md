@@ -374,3 +374,14 @@ La admisión de raíz debe ejecutarse antes de la primera lectura persistida. En
 
 ### No repetir
 No reiniciar auditorías antiguas ni retomar Step 7 como tarea principal. No afirmar root admission implementado, no afirmar pruebas ejecutadas, no inferir ausencia de bypass a partir de búsquedas que no recorren el repositorio. Mantener autorización `NOT_EVALUATED`, root legítimo `PENDING/UNKNOWN`, efectos protegidos `STOP`.
+
+
+## Hallazgo adicional de caller: `assistants.mjs`
+
+Fuente revisada: `scripts/assistants.mjs`, blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`.
+
+Este comando usa `NEXO_CONTINUITY_PATH` o `.nexo-continuity.json`, abre Continuity directamente mediante el reexport `scripts/nexo-continuity.mjs`, registra misión con `continuity.owner.recordMission`, escribe `NEXO_LUMINA_MEMORY_PATH`/ `.lumina-assistant-memory.json` y persiste `NEXO_STATE_PATH`/ `world-state.json`. Es una secuencia compuesta con persistencia en varios almacenes; no se vuelve root-managed por añadir `--root` al CLI principal.
+
+No envolver automáticamente todo el comando en root lock: eso sería una decisión arquitectónica nueva que podría cubrir trabajo de Lúmina y varias persistencias con semánticas propias. D1 debe determinar si `assistants` queda explícitamente fuera del contrato de instancia, si se bloquea su persistencia Nexo o si se integra mediante API explícita con límites claros. En cualquiera de los casos, Lúmina memory y world state no se mueven silenciosamente a la raíz de Nexo. `--nexo-repair-once` sigue excluido por `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`.
+
+Este es un caller confirmado, no evidencia de que el inventario completo de callers esté cerrado.
