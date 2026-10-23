@@ -734,3 +734,13 @@ Estado canónico sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; ra�
 - Esta reconciliación es documental; no cambia runtime ni pruebas y no modifica el estado constitucional.
 
 Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Regresión de consultas de plan — 2026-10-23
+
+- Commit de pruebas: `53bd1a84ba2f9db8f82e0eedf69e590c2e852389`; se amplió `tests/nexo/chronicle-runtime.test.mjs` para cubrir `loadNexoMissionPlan()` dentro de la regresión de solo lectura ya existente.
+- Se comprueba respuesta `planned` para misión presente y `not_found` para ausente; en ambos casos `authorization: NOT_EVALUATED` y `dispatchAttempted: false`. El bloque circundante ya comprueba bytes sin cambios, mtime estable y ausencia de inicialización de una ruta inexistente.
+- Verificación de publicación: el archivo actualizado y las aserciones nuevas se leyeron de vuelta desde la rama. El conector disponible no proporciona resultados de CI para este push; **no declarar tests/CI PASS** hasta obtener una ejecución ligada al SHA exacto.
+- No se modificó runtime ni se amplió autoridad. Esta cobertura es regresión local de consultas, no evidencia de raíz legítima ni enforcement de efectos protegidos.
+- Continuidad: reutilizar inventarios M0-E existentes; no repetir auditorías de rutas/sinks. Exigir defecto reproducible antes de tocar runtime.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
