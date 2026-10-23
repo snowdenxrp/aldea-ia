@@ -10,7 +10,7 @@ import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mj
 import { createNexoChronicleEffectContracts } from "../../src/nexo/adapters/chronicle-effect.mjs";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { runNexoChronicleAppend } from "../../src/nexo/application/index.mjs";
-import { loadNexoContinuityStatus, loadNexoMissionStatus } from "../../src/nexo/application/continuity-queries.mjs";
+import { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan } from "../../src/nexo/application/continuity-queries.mjs";
 import { publicChronicleResult, recordNexoMissionSafely } from "../../src/nexo/application/chronicle-append.mjs";
 import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-session.mjs";
 import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
@@ -1896,6 +1896,14 @@ try {
   assert.equal(status.status, "loaded");
   const mission = await loadNexoMissionStatus(existingPath, "read-only-query-mission");
   assert.equal(mission.status, "reconstructed");
+  const plan = await loadNexoMissionPlan(existingPath, "read-only-query-mission");
+  assert.equal(plan.status, "planned");
+  assert.equal(plan.authorization, "NOT_EVALUATED");
+  assert.equal(plan.dispatchAttempted, false);
+  const absentPlan = await loadNexoMissionPlan(existingPath, "not-present");
+  assert.equal(absentPlan.status, "not_found");
+  assert.equal(absentPlan.authorization, "NOT_EVALUATED");
+  assert.equal(absentPlan.dispatchAttempted, false);
   const absentMission = await loadNexoMissionStatus(existingPath, "not-present");
   assert.equal(absentMission.status, "not_found");
 
