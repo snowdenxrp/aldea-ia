@@ -1,3 +1,12 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — MAPA DE DEPENDENCIAS D0/D1/D2/D3
+
+- Nuevo mapa: [NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md](BUILD/NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md), commit ac205fda2d1ed490f54efa0ace1a3c974a1ce8c6.
+- Dependencias preservadas: D1-S0 pendiente de decisión; D1-DESIGN no es una prueba ejecutada; D2 requiere cerrar alcance y sección crítica del snapshot y caracterizar locks; D3 requiere identificar runtime real y control de relanzamientos; límites agregados de heap/disco no demostrados.
+- No se repitió el censo de callers. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+- Estado canónico: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — SEPARACIÓN DE ENTORNOS D3
 
 - Documento nuevo: [NCS_M0_D3_ENVIRONMENT_SCOPE_SEPARATION_2026-10-23.md](BUILD/NCS_M0_D3_ENVIRONMENT_SCOPE_SEPARATION_2026-10-23.md), commit `726a579ef0014f940fcc21a5f01a0a71e06047b1`.
