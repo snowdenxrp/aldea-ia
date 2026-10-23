@@ -2,7 +2,7 @@
 
 Date: 2026-10-23  
 Branch: `ncs-clean-architecture`  
-Status: **CONTRACT / PRE-IMPLEMENTATION REVIEW — NO RUNTIME CHANGE**
+Status: **INITIAL QUERY IMPLEMENTED — REGRESSION ADDED; CI VERIFICATION PENDING**
 
 ## Decision
 
@@ -22,7 +22,7 @@ No closed mission-lineage, serialization, idempotency, or restart audit is being
 
 ## Proposed first-slice contract
 
-Candidate API name: `loadNexoOpenLoops(continuityPath)`. This name is provisional until the tests confirm a useful, stable contract.
+Implemented API: `loadNexoOpenLoops(continuityPath)`, exported from the stable application index. The initial contract is now exercised by `tests/nexo/open-loops-query.test.mjs`.
 
 ### Input and read semantics
 
@@ -82,8 +82,12 @@ A missing store or invalid snapshot is `blocked`, not an empty inventory. A vali
 - Which mission statuses are terminal in the current canonical reconstruction contract? Reuse the existing semantics rather than defining a second status taxonomy.
 - Does the current stable CLI need a dedicated `open-loops` command now, or should the first slice remain application-only until an actual caller requires CLI exposure? Do not widen CLI surface without an acceptance case.
 
-## Gate
+## Implementation result and remaining gate
 
-Do not implement this as a second task ledger. First confirm the exact journal record fields/statuses and locate the existing test fixture helpers for valid continuity snapshots. Then implement one small query plus tests in the existing test suite. If safe per-record identity cannot be established, start with bounded counts and explicit UNKNOWN rather than inventing linkage.
+The first query slice is implemented and wired into the public application API (not yet into the CLI). It loads one validated snapshot, returns non-completed mission/step summaries separately from `prepared` and `reconciled_observed` effect-journal obligations, excludes `settled_observed`, and never returns target/context payloads. The output is capped at 1,000 projected items; exceeding the cap returns a blocked result rather than a silently truncated inventory. Invalid journal linkage returns `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN`.
 
-No runtime or tests were changed by this contract. Canonical status remains M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+Regression coverage was added for missing-store non-creation, empty/invalid path semantics, mission-loop projection, separate journal statuses, target privacy, no mutation (bytes and mtime), deterministic output, and UNKNOWN on malformed unresolved-journal linkage. `npm test` now includes the test; the stable-export contract test was updated.
+
+CI is still the required next verification. If it reveals a semantic mismatch, fix it before calling this capability verified. CLI exposure is intentionally deferred until an actual caller/acceptance need is established. No new store, queue, scheduler, or task identity was introduced.
+
+Canonical status remains M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
