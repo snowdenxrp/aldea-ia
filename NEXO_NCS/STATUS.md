@@ -1133,3 +1133,10 @@ Enlace: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_
 Se amplió el censo para cubrir también los 45 tests `tests/nexo/**`, los 50 tests restantes y `functions/api/capture.js`, además de los 93 archivos de aplicación ya inventariados. Los tests Nexo importan internals deliberadamente y deben estar segregados del allowlist productivo; los 50 tests fuera de `tests/nexo/` no mostraron imports directos a stores/API path-based. `package.json` confirma tres comandos productivos (`nexo`, `assistants`, `simulate`); la sesión Chronicle hija es una superficie adicional por ejecución directa.
 
 Esto completa la revisión de imports estáticos conocidos del conjunto de 188 archivos, pero **no** prueba ausencia de imports dinámicos/computados ni cierra el grafo de seguridad. El siguiente paso sigue siendo el test arquitectónico negativo descrito en el borrador de allowlist. No se ejecutaron pruebas.
+
+
+### Escaneo de imports dinámicos y procesos hijos en aplicación (2026-10-23)
+
+Se inspeccionaron los 13 scripts, 34 módulos `src/nexo/**` y 45 módulos `src/**` externos a Nexo buscando `import(...)`, `require`, `createRequire`, `eval`, `Function`, procesos hijos y guardas directas. Único proceso hijo productivo observado: `scripts/nexo.mjs` → `spawnSync` de `nexo-chronicle-session.mjs`. Únicos guards directos relevantes: `nexo.mjs`, `nexo-chronicle-session.mjs`, `simulate.mjs`. No se encontraron imports dinámicos/require/eval en scripts ni en `src/nexo/**`; el único import dinámico fuera de Nexo está en `src/three-remote.js` para cargar Three.js.
+
+Esto reduce el alcance de mecanismos dinámicos conocidos en aplicación, pero no reemplaza una prueba arquitectónica que proteja el grafo transitivo contra cambios futuros. El resultado está registrado en el borrador de allowlist. D1 sigue OPEN; sin tests ejecutados.
