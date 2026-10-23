@@ -91,6 +91,32 @@ La afirmación histórica de temporales únicos queda sustituida por la revisió
 
 Esta revisión es documental: no modifica runtime ni vuelve a ejecutar suites cerradas. No se afirma CI nuevo para esta revisión documental. El checkpoint anterior de Continuity (`cd9082d8e81bf2fe2c38f849f39de7429d300ea0`) conserva su evidencia histórica para ese SHA.
 
+## Matriz de entrypoints y raíz de instancia — inspección 2026-10-23
+
+Callsites concretos inspeccionados en la rama actual:
+
+| Entrada/capa | Operación de almacén | ¿Incluida en una exclusión global? |
+|---|---|---|
+| `scripts/nexo.mjs` → `chronicle-append` | delega a `scripts/nexo-chronicle-session.mjs` como proceso hijo | No |
+| `scripts/nexo-chronicle-session.mjs` | llama `runNexoChronicleAppend` | No; cada invocación crea un proceso nuevo |
+| `src/nexo/application/chronicle-append.mjs` | preflight Chronicle + Continuity, abre owner y muta ambos stores en fases | No; comparte deadline monotónico, no un lock de operación común |
+| `src/nexo/application/continuity-queries.mjs` | status, mission-status, mission-plan, preview y Open Loops leen Continuity | No; solo usan el lock/lectura del store cuando aplica |
+| `src/nexo/core/continuity-service.mjs` / `scripts/nexo-continuity.mjs` | abre owner sobre una ruta Continuity | No |
+| `src/nexo/core/chronicle-store.mjs` y `continuity-store.mjs` | factories de almacén con locks independientes por archivo | No existe lock común que abarque ambos |
+
+Fuentes de callsite revisadas:
+- `scripts/nexo.mjs`, blob `e471eb478a09aa8a9a8323795583e198cdf0a127`.
+- `scripts/nexo-chronicle-session.mjs`, blob `30a53de2f108aa255a1dfd61ce78c19788de160b`.
+- `src/nexo/application/index.mjs`, blob `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3`.
+- `src/nexo/application/chronicle-append.mjs`, blob `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`.
+- `src/nexo/application/continuity-queries.mjs`, blob `e1915e94e53e71d37a37952fead37ba62bdae79a`.
+- `src/nexo/core/continuity-service.mjs`, blob `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`.
+- `src/nexo/core/continuity-store.mjs`, blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`.
+
+**Root-cause conclusion:** `runNexoChronicleAppend` receives two independently supplied file paths; the repository does not establish a canonical instance-root object/path shared by every query, store factory, and process. Deriving a “global lock” from only one of the two paths would not serialize calls that share the other path or use another entrypoint. A global lock now would therefore be a partial, bypassable patch, not a proven process-wide resource bound.
+
+Before implementation, the owner-level architecture decision needed is whether to introduce a canonical Nexo instance root that owns both store paths and the operation lock, or to keep these path-based APIs and explicitly leave aggregate concurrency unsupported/unbounded. This is a real contract decision; do not silently change CLI arguments or derive a common root from assumptions.
+
 ## Próxima decisión única
 
 Resolver el modo de concurrencia que M0 soporta y qué garantías se compromete a imponer. No añadir un lock global hasta trazar todos los entrypoints y definir una raíz de instancia común; no aceptar el modo serial como garantía si solo aparece en documentación. Si no se decide enforcement, registrar explícitamente que el heap agregado y el disco total siguen sin cota estricta.
