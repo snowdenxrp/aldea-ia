@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — EFFECT ADAPTER REQUEST INPUT GUARD
+
+- Hallazgo reproducible: `execute(request)`, `executePrepared(request, options)` y `verifyPrepared(request)` leían campos caller-owned directamente o por destructuring. Un getter podía ejecutarse antes de que el adaptador clasificara la solicitud.
+- Corrección runtime: los tres entrypoints extraen solo campos consumidos mediante descriptores propios de datos de objetos planos/prototipo nulo. `execute` rechaza entrada inválida como `INVALID_EFFECT_REQUEST`; `executePrepared` requiere una confirmación de PREPARED con datos válidos; `verifyPrepared` devuelve `UNKNOWN` ante entrada inválida. El campo `reconcile` se conserva como dato para mantener la clasificación fail-closed existente; no se invoca el callback del solicitante.
+- Regresiones agregadas a `tests/nexo/effect-adapter.test.mjs`: getters en solicitud de ejecución, solicitud preparada, opción `preparedCommit` y solicitud de verificación no se ejecutan.
+- Commits: request guard [`5abf21e0f6b2994bdb03389709d57592ea5e1d86`](https://github.com/snowdenxrp/aldea-ia/commit/5abf21e0f6b2994bdb03389709d57592ea5e1d86); corrección de compatibilidad y CI [`b44f704dd8719aa7756b6de0c74de432931ab858`](https://github.com/snowdenxrp/aldea-ia/commit/b44f704dd8719aa7756b6de0c74de432931ab858). El SHA intermedio `533e63cb14cdf8657898491ff476e79a98db54c1` falló porque el lector omitía `reconcile` y cambiaba el código de clasificación; la corrección preserva ese campo sin ejecutarlo.
+- CI sobre el SHA exacto `b44f704dd8719aa7756b6de0c74de432931ab858`: 3/3 workflows SUCCESS — [efectos y crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882625559), [admisión/continuidad](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882625581), [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882625513).
+- Límite explícito: los argumentos de entrada ahora se leen sin ejecutar getters ordinarios en los campos consumidos. Los registros de `executionJournal` siguen siendo una frontera separada con lecturas directas; no se afirma que el adaptador completo esté libre de accessors ni de `Proxy traps`.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: revisar los registros de `executionJournal` para determinar cómo rechazar entradas malformadas sin romper su semántica compartida entre adaptadores; no introducir una copia aislada que rompa el ledger compartido.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — EFFECT ADAPTER BOOTSTRAP REGISTRY GUARD
 
 - Hallazgo reproducible: `createEffectAdapter({ ... } = {})` desestructuraba configuración sin validar sus descriptores y luego construía los registros con `Object.entries`, lo que ejecutaba getters de `handlers` o `verifiers` durante el arranque del adaptador.
@@ -8,6 +21,7 @@
 - Límite explícito: esta corrección cubre la configuración de arranque y los registros de handlers/verifiers. No afirma que los objetos de `executionJournal` ni los argumentos de `execute/executePrepared` estén libres de accessors; son fronteras separadas que deben revisarse sin extrapolar esta garantía. Los `Proxy traps` tampoco quedan neutralizados.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Siguiente: revisar la entrada pública `execute/executePrepared` y el uso de `executionJournal` del adaptador, porque permanecen fuera del alcance de esta guardia; no declarar el adaptador completo hasta cubrir o delimitar esas rutas.
+- Read-back documental: el commit de STATUS [`0ee41e877e7dac236275c5499493f77fb1039839`](https://github.com/snowdenxrp/aldea-ia/commit/0ee41e877e7dac236275c5499493f77fb1039839) completó persistencia determinista en [run 39882405762 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882405762).
 
 ---
 
