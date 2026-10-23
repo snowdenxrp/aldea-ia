@@ -270,3 +270,26 @@ El siguiente cambio permitido sin autorización de implementación es seguir cer
 - modificar protocolos .tmp, locks per-store o workflows.
 
 Para salir de diseño deben registrarse las decisiones de D0, una matriz de callers completa y el test plan final. La autorización de implementación será un paso separado.
+
+
+## 12. Recomendación consolidada D0 — revisión 2026-10-23
+
+El propietario indicó que no tiene por qué escoger entre opciones técnicas y pide que se recomiende la combinación conveniente. Esta sección registra la **recomendación del consultor**, no atribuye al propietario una aceptación técnica específica ni autoriza runtime.
+
+| Tema | Recomendación | Por qué |
+|---|---|---|
+| Configuración | CLI con `--root`; API con objeto de instancia validado; sin variable de entorno en la primera migración. | Una sola fuente explícita, menor ambigüedad entre proceso padre e hijo. |
+| Raíz inexistente | Rechazar por defecto; bootstrap explícito separado. | Una consulta/preview no debe crear una instancia ni inventar estado. |
+| Admisión | Una primitiva cross-process reusable en la frontera de operación; mantener locks per-store hasta probar compatibilidad. | Cubre procesos y entrypoints distintos sin descartar defensas existentes. |
+| Migración | Dry-run primero; copia/backup verificable; corte explícito; no merge, dual-write ni borrado automático del origen. | Evita pérdida o mezcla silenciosa de continuidad. |
+| Canonicalización | Exigir raíz existente y usar `realpath`; probar alias/symlink cooperantes. No prometer protección contra TOCTOU hostil ni equivalencia de mount aliases no probada. | La normalización lexical no unifica necesariamente directorios reales. |
+| Alcance | Exclusión exclusiva para operaciones que lean/modifiquen los stores o materialicen snapshots; una sola adquisición en la frontera superior y contexto heredado por helpers. | Evita snapshots concurrentes incoherentes y locks anidados. |
+| Fallos | Timeout monotónico bounded; ante adquisición, ownership o liberación inciertos, bloquear y reportar estado estructurado/UNKNOWN; no borrar locks stale automáticamente. | No convertir incertidumbre en éxito ni ejecutar una ruta de fallback. |
+| Compatibilidad | No aceptar silenciosamente paths independientes junto con `--root`; adaptador legacy solo si demuestra equivalencia canónica, de lo contrario error explícito. | Evita bypasses del gate de instancia. |
+| API low-level | Conservar factories para tests/composición, pero exigir API/contexto de instancia en producción; el inventario automatizado debe detectar bypasses. | Un lock en la CLI solamente no es garantía de repositorio. |
+
+### Consecuencia operativa
+
+Recomiendo usar esta combinación como base para cerrar el diseño documental. Antes de implementación aún deben resolverse con evidencia: matriz completa de callers, contrato exacto del lock reusable (incluyendo stale ownership y release failure), códigos de error, compatibilidad de rutas existentes y procedimiento de migración por instalación. La aceptación de esta recomendación por sí sola no cambia el estado canónico ni abre el gate de runtime.
+
+Estado: D0 **recomendación consolidada**, D1 **abierto**, runtime **SIN CAMBIOS**.
