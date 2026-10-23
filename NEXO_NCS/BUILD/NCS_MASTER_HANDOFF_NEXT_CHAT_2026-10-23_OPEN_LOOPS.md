@@ -960,3 +960,11 @@ Targeted read of `src/nexo/core/continuity-store.mjs` blob `9ffd28930abdbe29f5b0
 D2 must decide whether external lock recovery is allowed concurrently with release. If yes, token re-read alone does not close the race; choose and test a protocol that distinguishes the lock instance being removed, or keep recovery exclusive/offline under a demonstrated quiescence precondition. Add deterministic test injection between token validation and removal; require the replacement survives and ambiguous ownership yields UNKNOWN/BLOCKED. Inspect Chronicle and the instance-lock implementation plan before asserting a shared release contract. No runtime patch without explicit authorization.
 
 Recorded in checkpoint commit `075950f1a91320ba476595a7467a18773bfd43e7`, blob `1e853f818e25da6e5e7d875f35badef3964e4631`. No runtime/tests/workflows changed; no tests/CI run.
+
+### Cross-store confirmation: release race and missing deterministic replacement fixture
+
+Confirmed same verify-token-then-recursive-remove sequence in Chronicle source blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`. Difference remains: Chronicle returns failure after one failed `rm`; Continuity retries once and stores a local failed-release marker. Chronicle already warns that stale-lock check-then-remove is racy, but its release path still has the check/use interval.
+
+Targeted source search in `tests/nexo/continuity-store.test.mjs` blob `c3af56077b94c8d641979e0853de7f70fa45d82f` and `tests/nexo/chronicle-store.test.mjs` blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26` found tests for release errors and not-owned outcomes, but no deterministic test that replaces the lock directory between token validation and recursive removal. This is static test inspection only, not a test run. Also inspect the failure path after owner-record creation: both stores attempt recursive removal of the lock path there, so it needs the same ownership/replacement review.
+
+Next: resolve concurrent external recovery policy; define and test replacement interleavings for release and failed owner creation; preserve store-specific contracts unless an explicitly authorized refactor is proven. Checkpoint update commit `6feb3c9fb32835cdb0e4fad919eba657bd80963d`, blob `9218e0e5b84e9363f6bd7137d771d7d5db68572e`. No runtime/tests/workflows changed; no tests/CI run.
