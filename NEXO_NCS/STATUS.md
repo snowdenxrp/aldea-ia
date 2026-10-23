@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — CRUCE DOCUMENTAL D0 ↔ D1
+
+- Nuevo cruce documental: [NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md](BUILD/NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md), commit `203e35d88f419893c4392ee50af01729683e3a3e`.
+- Resultado: no se encontró contradicción material entre las propuestas D0 y la evidencia de diseño D1 revisada. Esto no cierra gates ni prueba implementación.
+- Caveat exacto: la reconciliación D1 referencia un blob histórico del contrato de raíz (`1d82f04f67b5ed15a6823cc23051ec59c43629a5)); el blob actual consultado es `22622ad2dff1c231cad31d5c4b7d875758b08958`. La clasificación externa de `scripts/nexo-continuity.mjs` sigue UNKNOWN; no volver a inferir ausencia de callers.
+- El test de grafo/no-bypass D1 sigue especificado, no implementado ni ejecutado. `assistants`/`simulate` son disposiciones de diseño, no bloqueos de runtime verificados por esta revisión.
+- No se modificó runtime/tests/workflows/CLI/stores; no se ejecutaron tests ni CI.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D0 INSTANCE-ROOT DECISION LEDGER
 
 - Nuevo ledger documental: [NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md](BUILD/NCS_M0_D0_INSTANCE_ROOT_DECISION_LEDGER_2026-10-23.md), commit `013dfe3f6c72c0012a190b86590688bb3dd05614`.
