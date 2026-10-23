@@ -1044,3 +1044,8 @@ Los métodos `loadCurrent()` de Continuity y Chronicle leen el documento sin adq
 ### Segundo caller de Continuity confirmado — `scripts/simulate.mjs` (2026-10-23)
 
 El comando `simulate` también abre `openNexoContinuityOwner` con `.nexo-continuity.json`, `legacyMemory` y posible inicialización, además de persistir por separado el estado del mundo. Su lock local protege el world state y tiene semántica de recuperación distinta; no es un root lock. D1 debe decidir explícitamente si `simulate` se excluye de operaciones Nexo o se integra mediante API de instancia. D1 sigue OPEN.
+
+
+### Candidato de diseño D1 (pendiente, no implementado)
+
+Recomendación: desacoplar `simulate` de Continuity para que no inicialice Nexo incidentalmente; mantener `assistants` como generador de misión candidata, pero canalizar lectura/escritura de Continuity mediante API de instancia, con revisión condicional y sin mantener root lock durante análisis Lúmina. No mezclar world state ni memoria Lúmina con la raíz. Esto sigue siendo propuesta; D1/D2/D3 continúan OPEN.
