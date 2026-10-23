@@ -800,3 +800,23 @@ Añadir al diseño de pruebas (no implementadas ni ejecutadas por esta revisión
 `tests/nexo/entrypoint.test.mjs` protege la superficie de exportación, el grafo de imports estáticos desde las dos entradas, varios códigos/JSON de salida, la privacidad de contenido y algunas propiedades de persistencia. No contiene todavía pruebas de root admission, lock de raíz, rutas mixtas ni bloqueo de todos los bypasses. `tests/nexo/root-bootstrap-protocol.test.mjs` verifica protocolo criptográfico P-256, no la raíz del filesystem ni sus locks. Los nombres de archivo no sustituyen la inspección de lo que prueban.
 
 **Estado de decisión:** D1, D2 y D3 continúan OPEN. Este inventario mejora la trazabilidad, pero no cierra por sí solo ninguna puerta. No se modificaron runtime, tests ni workflows y no se ejecutaron pruebas en esta revisión.
+
+
+## 2026-10-23 — Caller inventory extension: composite `assistants` path
+
+Direct inspection of `scripts/assistants.mjs` (blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`) confirms a second, materially different execution path. It is not the narrow `nexo` CLI and must not be implicitly declared root-managed.
+
+Observed behavior:
+- Resolves Continuity from `NEXO_CONTINUITY_PATH` or `.nexo-continuity.json`; resolves environment state from `NEXO_STATE_PATH` or `world-state.json`; resolves Lúmina learning memory from `NEXO_LUMINA_MEMORY_PATH` or `.lumina-assistant-memory.json`.
+- Reads environment state, then calls `openNexoContinuityOwner({ filePath, legacyMemory, allowEmptyInitialization })` directly.
+- Records a mission through `continuity.owner.recordMission(...)`, writes Lúmina memory directly, persists environment state, and only then checks optional `--nexo-repair-once`.
+- The imported runtime repair gate currently returns `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, but the composite command still has its own state/memory/mission persistence effects.
+
+Implications:
+1. `assistants` is a no-bypass caller candidate that must be explicitly inventoried for D1. Root admission cannot be considered universal while this path opens Continuity and persists missions outside the proposed instance API.
+2. The state file and Lúmina memory projection remain separate stores; do not silently relocate them under Nexo root or treat them as root-managed data.
+3. Do not simply add a lock around the whole script: the script has a multi-store sequence with existing semantics and could hold a lock across Lúmina work or conflicting persistence. First decide whether `assistants` is out of scope, must be blocked for Nexo persistence, or needs a deliberate instance API integration with explicit boundaries.
+4. `--nexo-repair-once` is not authority. Keep repair excluded and preserve the existing fail-closed gate; no root-admission result may grant repair permission.
+5. The direct call to `openNexoContinuityOwner` is a compatibility re-export through `scripts/nexo-continuity.mjs`, which re-exports `src/nexo/core/continuity-service.mjs`. Replacing only the CLI parser will not establish no-bypass coverage.
+
+**D1 remains OPEN.** This is one concrete caller found, not a complete repository-wide proof that all callers have been enumerated.
