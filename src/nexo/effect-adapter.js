@@ -224,6 +224,7 @@ export function createEffectAdapter(options = {}) {
   // bootstrap configuration; operation callers cannot supply or replace it.
   // This method never settles the journal and never authorizes redispatch.
   async function verifyPrepared(request = {}) {
+    try { readSafeJournalSnapshot(executionJournal); } catch { return { status: "unknown", code: "EFFECT_JOURNAL_INVALID" }; }
     const input = readEffectRecord(request, ["idempotencyKey", "missionId", "stepId", "action", "target"]);
     if (!input) return { status: "unknown", code: "EFFECT_RECONCILIATION_CONTEXT_INVALID" };
     const { idempotencyKey, missionId, stepId, action, target = null } = input;
@@ -386,6 +387,7 @@ export function createEffectAdapter(options = {}) {
   }
 
   async function executePrepared(request = {}, options = {}) {
+    try { readSafeJournalSnapshot(executionJournal); } catch { return { status: "blocked", code: "EFFECT_JOURNAL_INVALID", verified: false }; }
     const input = readEffectRequest(request, ["preparedOperation"]);
     const optionValues = readEffectRecord(options, ["preparedCommit"]);
     const preparedCommit = optionValues
