@@ -442,3 +442,49 @@ assert.equal(preconditionLocalJournal.length,0,"owner-prepared precondition fail
 assert.equal(preconditionPersistCalls,0,"owner-prepared precondition failure must not call local persistence");
 assert.equal(preconditionAdapter.hasExecuted("canonical-m3:s1"),false);
 console.log("Nexo: canonical mode precondition block remains single-ledger.");
+
+\n// Bootstrap options and function registries are public inputs: reject accessors
+// through descriptors before copying or invoking any configured capability.
+let adapterOptionGetterCalls = 0;
+const accessorAdapterOptions = {};
+Object.defineProperty(accessorAdapterOptions, "handlers", {
+  enumerable: true,
+  get() {
+    adapterOptionGetterCalls += 1;
+    throw new Error("handlers option getter must not execute");
+  }
+});
+assert.throws(() => createEffectAdapter(accessorAdapterOptions), /enumerable data fields/);
+assert.equal(adapterOptionGetterCalls, 0);
+
+let handlerRegistryGetterCalls = 0;
+const accessorHandlerRegistry = {};
+Object.defineProperty(accessorHandlerRegistry, "dangerous_effect", {
+  enumerable: true,
+  get() {
+    handlerRegistryGetterCalls += 1;
+    throw new Error("handler registry getter must not execute");
+  }
+});
+assert.throws(() => createEffectAdapter({ handlers: accessorHandlerRegistry }), /enumerable data properties/);
+assert.equal(handlerRegistryGetterCalls, 0);
+
+let verifierRegistryGetterCalls = 0;
+const accessorVerifierRegistry = {};
+Object.defineProperty(accessorVerifierRegistry, "dangerous_effect", {
+  enumerable: true,
+  get() {
+    verifierRegistryGetterCalls += 1;
+    throw new Error("verifier registry getter must not execute");
+  }
+});
+assert.throws(() => createEffectAdapter({ verifiers: accessorVerifierRegistry }), /enumerable data properties/);
+assert.equal(verifierRegistryGetterCalls, 0);
+
+const guardedBootstrapAdapter = createEffectAdapter({
+  handlers: { safe_effect: async () => ({ status: "completed" }) },
+  verifiers: { safe_effect: async () => ({ status: "applied" }) },
+  getStateVersion: () => 0
+});
+assert.equal(guardedBootstrapAdapter.supports("safe_effect"), true);
+assert.equal(guardedBootstrapAdapter.supportsReconciliation("safe_effect"), true);
