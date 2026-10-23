@@ -189,3 +189,30 @@ Follow-up inspection confirms the same verify-token-then-recursive-remove sequen
 Existing test files `tests/nexo/continuity-store.test.mjs` (blob `c3af56077b94c8d641979e0853de7f70fa45d82f`) and `tests/nexo/chronicle-store.test.mjs` (blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`) cover release failures and not-owned results, but the targeted search did not find a deterministic fixture that replaces the lock directory after token validation and before recursive removal. This is a test-coverage observation from source inspection, not a test run. Both store implementations also attempt recursive removal of the lock path after owner-record creation fails; that cleanup path should be included in the same replacement/ownership review rather than assumed safe.
 
 Contract action remains: specify whether recovery can run concurrently with release; test replacement interleavings in release and failed-owner initialization; preserve Chronicle/Continuity behavior differences unless an authorized, tested refactor changes them. Runtime/tests/workflows unchanged; no tests/CI run.
+
+
+---
+
+# CHECKPOINT — D2 PROTOCOLO DE ADMISIÓN: LECTURA DIRIGIDA — 2026-10-23
+
+Revisión dirigida del contrato de raíz (blob `bac9493af98c3f86001e323dab153bdee78b5f31`), del candidato D2 y de `tests/nexo/root-bootstrap-protocol.test.mjs` (blob `996c031224ba4544d8982ca4fd1762e9d4f44dc0`). No se repitió el censo de callers.
+
+## Hallazgos concretos
+
+1. **El test no prueba el bootstrap de instancia.** Pese al nombre del archivo, verifica el vector wire-format de un challenge y una firma ECDSA/SHA-256 con fixture de software. No ejercita creación de raíz, carrera de primer lock, escritura fallida de `owner.json`, admisión entre procesos ni liberación. Es cobertura criptográfica de protocolo de prueba, no evidencia de concurrencia/bootstrap.
+2. **Primer uso sigue sin protocolo completo.** El candidato D2 presupone raíz existente y usa `mkdir(<root>/.nexo-instance.lock)`; no resuelve cómo coordinar la creación autorizada de raíz, la inicialización parcial y el lock inicial sin una ventana en la que un segundo proceso pueda adelantarse o ambos interpreten estado parcial como instancia lista. No agregar un lock hermano, marcador persistente o creación implícita por intuición. D0-C2/D2 deben definirlo; si no hay protocolo defendible, bootstrap permanece BLOCKED/UNKNOWN.
+3. **El owner record ausente tiene una tolerancia temporal, pero no una prueba de propiedad completa.** Reintentar `ENOENT` durante la escritura inicial es candidato, no prueba de que el creador siga siendo dueño ni de que el directorio no haya sido sustituido. La creación fallida de `owner.json` y su limpieza deben probar que nunca eliminan un lock de reemplazo.
+4. **Liberación conserva una carrera check/use.** Leer y validar el token antes de `rm(lockPath,{recursive:true})` no ata la eliminación al mismo objeto validado si se permite reemplazo concurrente. Requiere decidir y hacer cumplir recuperación externa offline/exclusiva, o seleccionar una primitiva que distinga la instancia de lock a retirar. No declarar protección contra actores locales hostiles.
+5. **Persistencia y release son dos resultados distintos.** Si la operación ya escribió o el commit no puede determinarse y luego falla la liberación, conservar el resultado de persistencia observado junto con `release_uncertain`; bloquear nuevas operaciones de esa raíz y no reintentar automáticamente la operación de negocio. Esta regla es consistente con el contrato, pero necesita pruebas de error tras commit y fallo de release.
+
+## Pruebas mínimas antes de cerrar D2
+
+- Dos procesos compiten por primer bootstrap; el perdedor no inicializa ni lee como si la instancia estuviera lista.
+- El creador falla antes/durante/después de escribir `owner.json`; el estado queda UNKNOWN/BLOCKED sin borrar lock ajeno.
+- Inyección determinista de reemplazo del lock entre validación del token y limpieza, tanto en liberación normal como tras fallo de creación del owner; el reemplazo debe sobrevivir o el diseño debe impedir esa carrera.
+- Fallo de release después de persistencia confirmada y después de persistencia ambigua: resultado compuesto fiel, sin retry de negocio y sin nueva admisión local.
+- Recuperación externa concurrente contra liberación viva: rechazarla por contrato o probar el mecanismo escogido; no asumir exclusión operacional sin evidencia.
+
+Estado: **solo revisión documental**. No se modificaron runtime/tests/workflows; no se ejecutaron tests ni CI. M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+Siguiente paso: añadir una matriz D2 de estados/transiciones (root absent/partial/ready; lock absent/owner-writing/owned/stale/unknown/releasing/release-uncertain) y revisar cada transición contra los invariantes anteriores. Mantener la matriz como propuesta hasta cerrar D0-C2/D2 y obtener autorización explícita de implementación.
