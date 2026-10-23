@@ -644,3 +644,17 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - Límite de la afirmación: bloquear el wrapper de aplicación no demostraría por sí solo que todas las APIs inferiores de almacén están bloqueadas. Enumerar las superficies mutantes dentro del alcance antes de afirmar prevención global de escrituras.
 - Sin cambios de runtime; gate todavía no implementado; CI de esta revisión documental no confirmado.
 - Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+# CHECKPOINT DE FUENTE — 2026-10-23 — CHRONICLE MUTATION SURFACE / TEST OWNERSHIP
+
+- Inventario nuevo: [NCS_CHRONICLE_MUTATION_SURFACE_AND_TEST_OWNERSHIP_2026-10-23.md](BUILD/NCS_CHRONICLE_MUTATION_SURFACE_AND_TEST_OWNERSHIP_2026-10-23.md).
+- Commit de creación del inventario: `1031dfc0aee8946ff27d7c3955ccdbd21bf51cec`.
+- Confirmación de la API estable: `src/nexo/application/index.mjs` exporta Chronicle append como único caso de uso mutante; las consultas y previews siguen siendo superficies separadas.
+- `scripts/nexo-chronicle-session.mjs` lee stdin acotado y llama a la API estable; `scripts/nexo.mjs` expone `chronicle-append` y rechaza comandos genéricos.
+- Límite de seguridad: un gate en la API pública puede bloquear esa ruta soportada, pero no prueba que todo import interno de los módulos store sea imposible. El alcance de cualquier afirmación debe nombrarse con precisión.
+- Clasificación de pruebas pendiente: no mover pruebas de concurrencia/replay/recuperación por simple renombrado; conservar evidencia de sus invariantes en la frontera adecuada sin crear bypass público ni autoridad ficticia.
+- Sin cambio de runtime. Gate no implementado. CI para este commit documental todavía no consultado.
+- Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
