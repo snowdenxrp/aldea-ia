@@ -410,3 +410,10 @@ No retener el root lock durante todo el pipeline de Lúmina. Candidato:
 - No tratar el registro de una misión como autorización ni ejecución.
 
 Es recomendación documentada, no decisión cerrada ni implementación. Antes de cerrar D1, terminar inventario de callers y vías de import/reexport; luego revisar si hay más callers productivos fuera de `simulate`, `assistants` y la API de aplicación.
+
+
+## Migración legacy y clasificación de repair
+
+`tests/nexo/continuity-migration.test.mjs` confirma que `openNexoContinuityOwner({ legacyMemory })` puede migrar memoria legacy a la store canónica. Por tanto, `simulate`/`assistants` pueden inicializar o migrar Continuity incidentalmente; D3 debe convertir ese comportamiento en una operación explícita, no en compatibilidad automática invisible.
+
+`scripts/nexo-repair-entrypoint.mjs` es un helper exportado, no un CLI de package. El camino productivo de `assistants` pasa por `scripts/nexo-runtime-session.mjs`, que hoy devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` sin dispatch ni persistencia. Mantener los helpers de repair fuera de la API de instancia y sin permiso de efectos. No confundirlos con los callers productivos `simulate`/`assistants`.
