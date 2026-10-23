@@ -1,3 +1,15 @@
+## 0. Latest continuation checkpoint — separate D3 environments (2026-10-23)
+
+New document: `NEXO_NCS/BUILD/NCS_M0_D3_ENVIRONMENT_SCOPE_SEPARATION_2026-10-23.md`, commit `726a579ef0014f940fcc21a5f01a0a71e06047b1`.
+
+Important distinction: development environment (A), CI (B), first runtime instance using Continuity/Chronicle (C), and migration host/operator (D) are separate scopes. A/B do not establish writer quiescence or relaunch control in C/D. C and D may coincide only if explicitly stated and verified. Do not assume the POCO X7 Pro M1 prototype is the first Continuity/Chronicle runtime.
+
+Next factual discriminator: establish whether C already exists. If yes, identify only its deployment form and launch mechanism first, then gather the profile details needed for D3. If no, record that no runtime target has been selected and continue document-only design. Do not repeat the caller census, select OS-specific controls by guess, or implement with gates open.
+
+STATUS update commit: `bed1248eb1ce1176ab15028f199ee3bbd8e83e68`. No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+---
+
 ## 0. Latest continuation checkpoint — D0 ID crosswalk (2026-10-23)
 
 Updated D0 ledger commit `bfec45d8fd2524a8f3739846729d241e70013b39`: added mapping from ledger IDs `D0-01..11` to matrix IDs `D0-C1..C4`. This avoids parallel decision taxonomies being mistaken for new or closed decisions. STATUS update commit: `d88adb17df5ce6e65fe2976ccfdff67c6438ace9`.
