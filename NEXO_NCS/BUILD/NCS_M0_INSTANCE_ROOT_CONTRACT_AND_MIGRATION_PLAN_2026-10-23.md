@@ -217,3 +217,56 @@ Se hizo una segunda pasada sobre todos los módulos `.mjs/.js` de `src/nexo/` y 
 - **Consumidores indirectos que requieren sección crítica heredada:** owner, owner-backed runtime, adapters, repair y settlement/verification.
 - **Superficies que deben seguir bloqueadas o fuera de garantía:** repair/dispatch y ejecución protegida; no heredan autorización por usar raíz.
 - **No-bypass aún no demostrado:** el sweep estático identifica rutas conocidas, pero no reemplaza una matriz exhaustiva de callsites, reexports, importaciones dinámicas y consumidores fuera del repo. La fase D1 solo se cierra al guardar las búsquedas/callsite matrix completa y al añadir una regresión automatizada.
+
+## 8. D0 — subdecisiones propuestas con fundamento técnico (pendientes de cierre)
+
+Estas recomendaciones evitan inventar comportamiento durante la implementación. Son propuestas técnicas, no decisiones atribuidas al propietario.
+
+| Subdecisión | Recomendación propuesta | Motivo / prueba de salida |
+|---|---|---|
+| Interfaz pública inicial | CLI: exigir --root en todos los comandos de instancia. API: aceptar un objeto de instancia validado, no rutas de stores sueltas. No usar env var en la primera migración. | Una sola fuente explícita; evita precedencia CLI/env y raíces implícitas. La falta de raíz o raíz duplicada debe bloquear antes de abrir stores. |
+| Compatibilidad CLI antigua | Sin fallback silencioso. Aceptar la interfaz antigua solo si un adaptador explícito deriva una raíz inequívoca y comprueba que ambas rutas son las canónicas bajo ella; de lo contrario, error estructurado. Si no puede demostrarse equivalencia, retirar el modo antiguo en el mismo corte. | Evita comandos antiguos fuera de la admisión compartida. No mover ni reescribir datos automáticamente. |
+| Raíz inexistente | Rechazar por defecto. Creación solo mediante operación de bootstrap separada y explícita; nunca como efecto lateral de status/preview. | Las consultas de solo lectura no deben crear directorios ni mundos nuevos. Test: cero mutaciones ante raíz inexistente. |
+| Canonicalización | Requerir directorio existente y resolverlo con realpath antes de derivar rutas. Symlinks que resuelvan al mismo directorio deben converger. Cambios adversarios de symlink entre validación y uso quedan fuera del modelo cooperante. | Normalización lexical no basta. Probar alias/symlinks cooperantes, symlink roto y archivo usado como raíz. Mount aliases no demostrados quedan fuera de garantía. |
+| Layout | Derivar nombres canónicos solo de la raíz resuelta. Antes de confirmar continuity.json y chronicle.json, verificar conflictos con instalaciones existentes. No añadir manifiesto ni instance ID salvo necesidad demostrada. | Evita nuevas fuentes de verdad y sistemas de identidad paralelos. |
+| Alcance de admisión | Serializar operaciones completas que leen o mutan Continuity/Chronicle y las que materializan snapshots/proyecciones. Excluir funciones puras. Repair/dispatch solo se cubre para consistencia si su gate independiente lo permite; el lock nunca autoriza efectos. | Busca snapshot coherente por instancia, no serializar todo Nexo ni cambiar el gate constitucional. |
+| Lecturas concurrentes | En primera versión, incluir consultas y previews que cargan snapshots en la misma admisión exclusiva. Reconsiderar read/write lock solo con evidencia de necesidad. | Más simple de demostrar; coste de latencia explícito. |
+| Reentrancia | Lock de instancia no reentrante. La frontera superior lo adquiere una vez y pasa contexto/lease a helpers; ningún helper vuelve a adquirirlo. | Evita deadlock propio y hace visible el límite de sección crítica. |
+| Timeout | Usar el contrato monotónico existente en lock-deadline.mjs y documentar presupuesto explícito. El default actual de locks existentes es 2,000 ms. No copiar un deadline absoluto entre procesos: el reloj monotónico es local a cada proceso. | El timeout limita espera cooperante, no interrumpe una syscall que no regresa. |
+| Lock cross-process | Especificar una única primitiva reusable de lock para la instancia, sin copiar una tercera implementación. Comparar/extraer primero el protocolo existente y mantener locks per-store como segunda barrera. | Chronicle y Continuity se parecen, pero no son idénticos: Continuity recuerda fallos de liberación en un Set local; Chronicle devuelve fallo sin esa memoria. No son intercambiables sin pruebas. |
+| Propiedad stale / release incierto | Fail closed; no borrar automáticamente lock stale ni asumir liberación. Preservar fase, writeStarted y resultado de liberación en los errores. | Evita borrar un lock nuevo o convertir estado desconocido en éxito. Probar proceso muerto, owner record parcial y release fallido. |
+| Stores de bajo nivel | Mantener factories para tests/composición; producción debe obtener stores mediante una API de instancia que haga difícil omitir admisión por diseño. No confiar solo en grep de CLI. | Las factories exportadas aceptan paths; cualquier caller productivo directo invalida el claim agregado. |
+| Fuente de datos previa | No asumir que archivos existentes están ya bajo una raíz única. Descubrir paths, contenido y revisiones antes de migrar; si están fuera, preparar cutover verificable por instalación. | No copiar ni mover sin verificar. No merge automático, dual-write ni borrar el origen durante el cutover. |
+| Variable de entorno | No soportarla inicialmente. Si se añade luego, resolverla en una sola frontera y rechazar discrepancia entre env y argumento. | Evita divergencias entre CLI padre e hijo y raíces heredadas implícitamente. |
+
+## 9. Lock protocol — diferencia observada que condiciona el diseño
+
+Los stores comparten algunas propiedades, pero sus implementaciones no son idénticas:
+- Ambos crean un directorio de lock derivado del store, escriben owner.json con PID/token, esperan con deadline monotónico, detectan locks stale sin recuperarlos automáticamente y fallan cerrados ante owner state desconocido.
+- Chronicle no tiene el mismo registro local de fallos de liberación que Continuity; Continuity mantiene un Set local para bloquear reintentos hasta limpieza externa, mientras Chronicle devuelve status failed.
+- El default de espera en lock-deadline.mjs es 2,000 ms; ambas implementaciones consultan deadline y usan reintentos breves.
+- El lock de instancia debe ser compartido por procesos; no puede basarse en mutex de módulo ni en el Set local. Requiere contrato persistente cross-process de adquisición, propietario y liberación.
+- Recomendación: especificar primero un único contrato reusable de file-lock y sus pruebas; decidir solo durante implementación autorizada si se extrae/refactoriza la lógica per-store o si la nueva primitiva es independiente. No cambiar ahora el protocolo de stores ni declarar equivalencia sin tests.
+
+## 10. D1 — criterio de inventario reproducible
+
+La búsqueda de código de GitHub no devolvió resultados utilizables en esta sesión; el inventario actual se obtuvo revisando el árbol recursivo de la rama y abriendo los módulos relevantes. Por eso el sweep no demuestra ausencia exhaustiva de referencias.
+
+Antes de cerrar D1, ejecutar desde el checkout exacto de la rama esta búsqueda:
+
+    rg -n --hidden --glob '!node_modules/**' 'createNexoChronicleStore|createNexoContinuityStore|openNexoContinuityOwner|runNexoChronicleAppend|continuityPath|chroniclePath|--continuity|--chronicle|\.loadCurrent\(|\.initialize\(|\.commitIfCurrent\(|\.append\(' src scripts tests .github package.json
+
+Clasificar cada match en una matriz con archivo, función/caller, tipo de acceso (read/write/bootstrap/preview/effect-adjacent), proceso, admisión requerida, test y evidencia. Revisar también imports dinámicos y reexports. Guardar salida bruta, SHA y resumen en un artefacto documental; añadir un test automatizado de arquitectura durante la implementación.
+
+**Limitación operativa actual:** este comando no se ha ejecutado en un checkout local de la rama en esta sesión. No afirmar que la matriz está cerrada. El repositorio remoto solo recibió cambios documentales.
+
+## 11. Gate explícito antes de runtime
+
+El siguiente cambio permitido sin autorización de implementación es seguir cerrando el contrato y completar la matriz de callers. Todavía no se permite:
+- introducir el lock de instancia;
+- cambiar firmas públicas de APIs o factories;
+- cambiar resolución de rutas de CLI o proceso hijo;
+- migrar/copiar archivos de usuario;
+- modificar protocolos .tmp, locks per-store o workflows.
+
+Para salir de diseño deben registrarse las decisiones de D0, una matriz de callers completa y el test plan final. La autorización de implementación será un paso separado.
