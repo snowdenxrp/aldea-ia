@@ -508,3 +508,13 @@ URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS
 
 ### Próxima acción exacta
 No repetir el censo de aplicación. Usar el manifiesto para construir un allowlist arquitectónico verificable de imports/callers de producción, separado de tests, fixtures y helpers internos. Debe cubrir CLI principal, hijo Chronicle invocable directamente, `assistants`, `simulate`, reexport legacy, API path-based y fábricas filesystem. Diseñar las pruebas que fallen ante un bypass nuevo; luego cerrar D1. D2 y D3 siguen abiertos y no se toca runtime/tests hasta cerrar las tres puertas.
+
+
+## Borrador de allowlist D1 creado y enlazado
+
+Archivo: `NEXO_NCS/RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`  
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md
+
+El documento define entrypoints actuales (`nexo`, `assistants`, `simulate`, más el hijo Chronicle invocable directamente), API de instancia objetivo, primitivas path-based que deben quedar internas, tests que pueden importar internals y reglas para un test arquitectónico. Se inspeccionaron los imports de los 45 tests `tests/nexo/**` y los 50 tests restantes; estos últimos no mostraron imports directos a stores/API Nexo.
+
+**No se cerró D1:** sigue faltando prueba arquitectónica ejecutable de imports/reexports transitivos, imports dinámicos/computados, spawn/spawnSync y ejecución directa, con fixtures negativos de bypass. No ejecutar cambios de runtime antes de cerrar D1/D2/D3.
