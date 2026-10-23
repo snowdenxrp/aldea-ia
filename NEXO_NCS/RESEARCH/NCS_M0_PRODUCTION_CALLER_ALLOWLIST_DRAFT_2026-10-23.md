@@ -113,3 +113,14 @@ Hallazgos positivos:
 - `assistants.mjs` lee archivos de código por `fs.readFile` para análisis, pero no usa esa lectura como importación/ejecución dinámica.
 
 Este escaneo reduce incertidumbre sobre los mecanismos dinámicos en la superficie de aplicación, pero no reemplaza el test arquitectónico: debe proteger contra cambios futuros y verificar el grafo transitivo de imports/reexports, la invocación directa de entrypoints y los procesos hijos. Los tests pueden usar `spawnSync` deliberadamente para probar CLI/locks; sus edges deben clasificarse como TEST_ONLY y no confundirse con producción.
+
+
+## 9. Escaneo de mecanismos dinámicos en tests: separar los harnesses de producción
+
+La pasada de 95 tests distingue los siguientes mecanismos deliberados de prueba:
+- CLI/hijos: `tests/nexo/assistants-runtime-cli.test.mjs`, `chronicle-runtime.test.mjs`, `entrypoint.test.mjs`, `mission-preview-input-resource-limit.test.mjs`, `mission-request-preview.test.mjs`, `chronicle-store.test.mjs`, `continuity-store.test.mjs` y `simulation-restart-persistence.test.mjs` usan `spawn`/`spawnSync` para probar CLI, contención o límites.
+- Import dinámico del store con URL de entorno: `tests/nexo/continuity-store.test.mjs` construye un worker con `import(process.env.NEXO_STORE_MODULE_URL)`. Es TEST_ONLY y no debe copiarse al código productivo.
+- Imports dinámicos de memoria en pruebas: `tests/nexo/runtime-concurrency.test.mjs`, `tests/nexo/runtime.test.mjs` y `tests/assistants.test.mjs` importan `src/assistants/memory.js` para probar reconstrucción/memoria.
+- Otros imports dinámicos de tests: `tests/specialization-audit.test.mjs` carga `src/society.js`; `tests/system-audit.test.mjs` y `tests/visual-detail-audit.test.mjs` cargan `node:fs/promises` para inspección/lectura de archivos. No son vías de apertura de stores Nexo.
+
+El escaneo de producción sigue sin encontrar imports dinámicos, `require`, `eval` o `Function` en scripts o `src/nexo/**`; `src/three-remote.js` es el único import dinámico en los 45 módulos externos de `src/`, y carga Three.js. No se hallaron imports computados de stores Nexo en los módulos de aplicación. Aun así, el test arquitectónico futuro debe distinguir explícitamente `TEST_ONLY` de producción y cubrir cambios nuevos.
