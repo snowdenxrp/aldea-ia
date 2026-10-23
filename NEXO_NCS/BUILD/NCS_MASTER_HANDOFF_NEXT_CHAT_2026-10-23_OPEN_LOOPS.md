@@ -796,3 +796,17 @@ Propuesta pendiente: ventana explícita de quiescencia de writers legacy; regist
 Estado: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
 
 Próximo trabajo: reconciliar este requisito con el contrato de raíz y el plan D3, actualizar ese plan como propuesta pendiente, y luego verificar STATUS/handoff. No volver a censar el código ni implementar hasta que se cierren contratos y exista autorización explícita.
+
+## 18. Actualización del contrato de raíz — D3 quiescencia legacy (2026-10-23)
+
+Se añadió la sección 9 al contrato principal de raíz/migración:
+- `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md`
+- Commit: `036c877e97475aa1489cc83d70f05c48e7fa8b9f`
+- Blob: `bac9493af98c3f86001e323dab153bdee78b5f31`
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md
+
+Se documenta que los procesos legacy no participan del lock de instancia propuesto y podrían modificar la fuente mientras se copia. La propuesta requiere quiescencia verificable, hashes/revisiones antes y después, cancelar cutover si el origen cambia, preservar el origen y prohibir rollback automático hacia atrás o merge. Si no puede demostrarse quiescencia/concurrencia, D3 = UNKNOWN/BLOCKED. Sigue siendo propuesta pendiente; no runtime/tests/workflows cambiados.
+
+STATUS actualizado en commit `8cd0647088dabb74018d1616c8e975aad189685b`, blob `f89a7f30e84c5180e0b714c93d1aa750dac8d8fc`.
+
+Estado canónico no cambia: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. No tests/CI ejecutados.
