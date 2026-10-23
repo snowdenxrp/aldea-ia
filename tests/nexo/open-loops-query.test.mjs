@@ -121,6 +121,39 @@ try {
   assert.equal(unknownLinkage.authorization, "NOT_EVALUATED");
   assert.equal(unknownLinkage.dispatchAttempted, false);
 
+  // Present-looking identifiers are not enough: an unresolved journal row
+  // must resolve to the actual canonical mission and step in this snapshot.
+  const orphanLinkageSnapshot = {
+    ...candidate,
+    effectJournal: [...candidate.effectJournal, {
+      idempotencyKey: "ghost:step",
+      missionId: "ghost",
+      stepId: "ghost-step",
+      action: "local_analysis",
+      status: "reconciled_observed"
+    }]
+  };
+  assert.equal((await store.commitIfCurrent(2, orphanLinkageSnapshot)).status, "committed");
+  const orphanLinkage = await loadNexoOpenLoops(filePath);
+  assert.equal(orphanLinkage.status, "blocked");
+  assert.equal(orphanLinkage.code, "NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN");
+
+  // The journal action must also agree with the linked canonical step.
+  const actionMismatchSnapshot = {
+    ...candidate,
+    effectJournal: [...candidate.effectJournal, {
+      idempotencyKey: "mission-open:step-open",
+      missionId: "mission-open",
+      stepId: "step-open",
+      action: "different_action",
+      status: "reconciled_observed"
+    }]
+  };
+  assert.equal((await store.commitIfCurrent(3, actionMismatchSnapshot)).status, "committed");
+  const actionMismatch = await loadNexoOpenLoops(filePath);
+  assert.equal(actionMismatch.status, "blocked");
+  assert.equal(actionMismatch.code, "NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN");
+
   // The projection must fail explicitly rather than silently truncate its
   // inventory when the documented output ceiling is exceeded.
   const capPath = path.join(root, "cap-continuity.json");
