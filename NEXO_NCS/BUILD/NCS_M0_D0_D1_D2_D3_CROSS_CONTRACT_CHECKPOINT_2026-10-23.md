@@ -130,3 +130,12 @@ Correction commit: `92821951db0c47bb0904560635cc3cd1cf7baf4f`.
 Corrected document blob: `79b554a0d4d056eebb569d1e8ab98405421cbe9b`.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+
+## Follow-up: root configuration interface wording (2026-10-23)
+
+Targeted review of the current root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` found an internal wording ambiguity, not an accepted interface decision: §1.1 says CLI/env remains a subdecision and that env may be considered as a transport; later recommendations (including the detailed CLI/API boundary) recommend `--root` plus a validated API instance object and no root environment variable in the first migration. The owner decision packet likewise lists `--root`/no env as a recommendation, not an owner-approved decision.
+
+Correct resolution: keep D0-C1 OPEN; treat explicit `--root` + validated API object/no env as the current recommendation only, and do not implement or infer owner approval. A narrow edit to the 146 KB root contract was attempted but blocked by tool security controls; therefore the root-contract wording itself has **not** been changed. This note records the ambiguity so it is not mistaken for a decision.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
