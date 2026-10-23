@@ -203,3 +203,20 @@ Lock protocol review: Chronicle and Continuity both use per-store lock directori
 D1 remains OPEN. GitHub code search returned no usable matches in this session. Inventory is based on recursive tree review and relevant file reads, not exhaustive source grep. No local checkout was available/confirmed for running rg. Do not claim the caller matrix is complete.
 
 Next: complete the callsite matrix from an exact branch checkout and ask owner to close D0 subdecisions before any implementation. Runtime, tests, workflows, CLI paths and store APIs remain unchanged.
+
+
+## 13. Nuevo checkpoint — recomendación consolidada D0 (2026-10-23)
+
+El propietario indicó que prefiere que el asistente recomiende la combinación técnica más conveniente en lugar de elegir entre opciones de implementación. El contrato ahora registra la recomendación consolidada, sin atribuirle aceptación específica ni autorización de runtime:
+- CLI `--root`, API con instancia validada, sin env var en la primera migración.
+- Rechazo de raíz inexistente por defecto; bootstrap separado.
+- Admisión cross-process reusable en la frontera de operación; conservar locks per-store hasta demostrar compatibilidad.
+- Migración dry-run, copia verificable y corte explícito; sin merge, dual-write ni borrado automático del origen.
+- `realpath` para raíz existente; documentar límites frente a symlink TOCTOU hostil y mount aliases no demostrados.
+- Lecturas/previews que materialicen snapshots bajo admisión exclusiva; lock no reentrante con contexto heredado.
+- Timeout bounded y fail-closed en ownership/liberación inciertos; no recuperación automática de locks stale.
+- Sin fallback silencioso de rutas legacy; factories low-level no deben servir de bypass productivo.
+
+Fuente: [contrato de raíz de instancia y plan verificable](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
+
+Próximo trabajo: continuar D1 con evidencia disponible del árbol/archivos del branch, distinguiendo claramente el inventario revisado de una búsqueda local exhaustiva. No declarar D1 cerrado mientras no exista matriz completa reproducible con SHA y prueba automatizada de no-bypass. Runtime, tests y workflows siguen sin cambios. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
