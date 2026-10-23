@@ -895,3 +895,12 @@ El propietario pidió recomendación técnica sobre las subdecisiones de raíz d
 Documento: [NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md](BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
 
 Esto es una recomendación del consultor, no una afirmación de que el propietario haya aceptado cada subdecisión. D1 continúa abierto: no hay matriz exhaustiva de callers con evidencia guardada. Runtime, tests y workflows siguen SIN CAMBIOS. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+# CHECKPOINT — BARRIDO REMOTO DE MÓDULOS PRODUCTIVOS (2026-10-23)
+
+Se inspeccionaron los 44 módulos actuales src/nexo/**/*.mjs|js y scripts/nexo*.mjs|js desde el árbol recursivo de la rama. Confirmaciones: el CLI padre usa --continuity para consultas/previews; el child de Chronicle usa --continuity y --chronicle; application append construye ambos stores por rutas separadas; queries y continuity-service acceden directamente a stores; repair/dispatch/settlement/verification son consumidores indirectos. El barrido no encontró otras coincidencias literales en el resto de esos módulos.
+
+Evidencia, tree SHA, blobs y limitaciones en BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md, sección 13.
+
+D1 continúa ABIERTO: no equivale a rg en checkout completo, no incluye todos los archivos fuera de esos árboles, no clasifica exhaustivamente alias/imports dinámicos y aún no hay test automatizado de no-bypass. Solo se muestrearon 10 archivos de tests. Runtime, tests y workflows SIN CAMBIOS. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
