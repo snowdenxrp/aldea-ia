@@ -782,3 +782,17 @@ Hallazgos contractuales destacados:
 - Exclusión por instancia no implica cota de heap ni cuota de disco, y no levanta el gate constitucional de repair/dispatch/efectos.
 
 Estos puntos no contradicen los contratos existentes; precisan condiciones de cierre todavía no resueltas. D0/D1/D2/D3 siguen OPEN. No se tocó runtime/tests/workflows y no se ejecutó CI. Próximo paso: reconsultar los dos nuevos documentos, STATUS y handoff, y luego revisar la coherencia documental de D0–D3 sobre el mismo snapshot sin repetir el censo de código.
+
+## 17. Cross-check D0/D1/D2/D3 y nuevo hueco D3 (2026-10-23)
+
+Documento: `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md`
+Commit de creación: `8eb093131b8e4395cae95303e519691463fef31f`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md
+
+El cross-check documental encontró compatibilidad general entre las propuestas D0-D3, pero identificó una condición de migración todavía no especificada: los writers legacy actuales no coordinan con el nuevo lock de instancia. Si alguno escribe durante la copia, el destino puede quedar obsoleto aunque la copia haya sido verificada.
+
+Propuesta pendiente: ventana explícita de quiescencia de writers legacy; registrar hashes/revisiones/tamaños del origen antes de copiar y volver a compararlos antes del cutover; si cambian, cancelar y volver a inventariar; si no puede garantizarse o detectarse concurrencia, migración UNKNOWN/BLOCKED. No borrar origen, no dual-write, no merge automático. Esto no protege contra procesos locales hostiles.
+
+Estado: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+
+Próximo trabajo: reconciliar este requisito con el contrato de raíz y el plan D3, actualizar ese plan como propuesta pendiente, y luego verificar STATUS/handoff. No volver a censar el código ni implementar hasta que se cierren contratos y exista autorización explícita.
