@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D1-S0 SEQUENCE GATE ANALYSIS
+
+- Nuevo análisis de secuencia: [NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md](BUILD/NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md), commit `e375bf9e789ce40676d682a6b3ca9eae62063057`.
+- El documento formaliza el ciclo lógico entre “D1 exige test ejecutado” y “no modificar tests hasta cerrar el diseño”. Recomienda separar D1-DESIGN de D1-IMPLEMENTATION, pero deja explícito que la decisión del propietario no está registrada.
+- Opción 1 no autoriza implementación: cualquier cambio en runtime/tests/workflows sigue necesitando gate separado. Opción 2 requiere cambiar explícitamente la secuencia; Opción 3 no se recomienda por mezclar diseño y prueba.
+- Para D1-DESIGN siguen pendientes: manifiesto reproducible, clasificación completa de callers, tratamiento del caller UNKNOWN de `scripts/nexo-continuity.mjs`, allowlist, resolver de imports/cargas, fixtures negativos y consistencia con D0/D2/D3.
+- No se modificó runtime/tests/workflows/CLI/stores; no se ejecutaron tests ni CI.
+- Estado canónico: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — CRUCE DOCUMENTAL D0 ↔ D1
 
 - Nuevo cruce documental: [NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md](BUILD/NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md), commit `203e35d88f419893c4392ee50af01729683e3a3e`.
