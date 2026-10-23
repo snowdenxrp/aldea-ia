@@ -1293,3 +1293,13 @@ URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS
 Consolida, sin convertirlas en decisiones aprobadas, las cuatro subdecisiones D0 (interfaz/root, bootstrap, alias/symlinks, legacy/migración), la recomendación D1-S0 de separar diseño e implementación, y disposiciones propuestas para CLI, hijo Chronicle, queries, factories, assistants, simulate y repair. Distingue hechos de fuente, recomendación, riesgo y evidencia de cierre.
 
 El paquete es documental. Runtime/tests/workflows sin cambios; tests/CI no ejecutados. M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. La instrucción general de continuar no se interpreta como aprobación de las decisiones de diseño.
+
+### Reconciliación contractual D2/D3 — 2026-10-23
+
+Nuevo documento: `NEXO_NCS/BUILD/NCS_M0_D2_D3_CONTRACT_GAP_RECONCILIATION_2026-10-23.md`.
+Commit de creación: `9b483a083c2c2b0bfd645caf9e5e77d3572826ef`.
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_D3_CONTRACT_GAP_RECONCILIATION_2026-10-23.md
+
+El análisis separa cinco temas D2: alcance de snapshots, exclusiones constitucionales, ownership de admisión del hijo Chronicle, lock raíz independiente vs primitiva compartida, y stale/timeout/release incierto. Para D3 concreta inventario por instalación, dry-run, copia/verificación, cutover explícito, rollback cuando el destino ya recibió escrituras y política de symlinks en stores internos.
+
+Se mantiene la distinción: admisión no es autoridad; lock no es cuota de heap/disco; PID no es identidad criptográfica; rollback no puede copiar hacia atrás ni fusionar automáticamente datos posteriores al cutover. D2/D3 OPEN; D0/D1 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. Documento solo analítico: runtime/tests/workflows sin cambios; tests/CI no ejecutados.
