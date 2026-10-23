@@ -1,3 +1,14 @@
+# CONTINUITY DECISION — 2026-10-23 — DO NOT REPEAT CLOSED EFFECT-DURABILITY AUDIT
+
+- Cross-check of current sources confirms `scripts/nexo-runtime-session.mjs` is an explicit M0 Option A gate: it returns `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`. The assistant entrypoint only invokes that repair session behind explicit `--nexo-repair-once`; the gate itself still prevents dispatch.
+- Existing audits already establish the durability boundary and are not to be rerun as fresh research: `NEXO_CONTINUITY/AB104.147–AB104.150`, `NEXO_CONTINUITY/P112_PREPARED_CHECKPOINT_OWNER_AUDIT_V1_2026-10-07.md`, and `docs/nexo/NEXO_AB104_214_EFFECT_PATH_DURABILITY_UNKNOWN_REEXECUTION_AUDIT_V1_2026-09-26.md`. Their established result: no production caller currently invokes `executeLuminaNexoStep()` with an authoritative `persistPreparedIntent` owner; `persistState` is not automatically a durable external-effect journal; the effect path must not be promoted to end-to-end durable execution.
+- Consequence: the shared-journal guard just validated is a defensive module-boundary improvement, not permission to connect effect execution to production. Do not wire a persistence callback from a component that does not own canonical state/revision, and do not repeat the closed AB104.214/P112 research unless code changes invalidate its evidence.
+- Current implementation evidence remains module-level only: code SHA `af49db18c8818675bb6ef4c8cf325772c57af8aa` passed 3/3 workflows; STATUS update before this note passed [persistence run 39883319766](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883319766).
+- Next work must remain within M0 Option A and use the current `STATUS → MASTER/CORE → BUILD` order. Choose a non-effect public boundary with a concrete reproducible gap; keep the product runtime repair path `STOP` until a legitimate canonical execution/persistence owner is designed and evidenced.
+- Constitutional state unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-23 — SHARED EFFECT JOURNAL DATA-INTEGRITY GUARD
 
 - Hallazgo reproducible: `executionJournal` se compartía entre adaptadores, pero sus elementos se leían con `.filter/.find`, accesos ordinarios y se mutaban sin verificar que el array fuera denso/canónico ni que los registros tuvieran propiedades de datos. Un accessor o un array sparse/malformado podía ejecutar código durante la admisión o interrumpir una ruta de efecto.
