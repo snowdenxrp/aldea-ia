@@ -620,3 +620,57 @@ The repository does have a partial static import-graph guard and a separate assi
 6. Preserve the repair exclusion test exactly in meaning: instance admission never authorizes effects, and the repair path remains blocked.
 
 This closes one ambiguity in the earlier notes: a guard exists, but its scope is two CLI import graphs and runtime/Lúmina isolation, not instance-root enforcement. D1/D2 remain OPEN. Runtime, tests and workflows were not changed in this checkpoint.
+
+
+## 21. D3 — candidate public instance API and explicit assistants disposition (design only, 2026-10-23)
+
+### 21.1 Single instance context: public shape
+
+The public production boundary should accept a single explicit root and construct one validated, immutable-by-contract instance context. Proposed internal shape (illustrative, not yet code/API):
+
+- \`instance.root\`: canonical absolute directory selected by the caller and validated before store access.
+- \`instance.paths.continuity\` and \`instance.paths.chronicle\`: paths derived only inside the instance composition module from the root and fixed filenames. They are not caller-overridable in the production instance API.
+- \`instance.admission\`: internal capability/context available only after the cross-process root lock has been acquired. It must not be forgeable by passing \`{ admitted: true }\` or a caller-supplied string.
+- \`instance.run(operation)\` (or an equivalent private higher-order boundary): validates configuration, acquires admission before any persisted read/snapshot, runs the complete operation, and classifies lock-release certainty before producing the public result.
+- Low-level helpers receive the already-admitted context and must not reacquire the root lock. A helper cannot accept independent root and store paths.
+
+The context is a coordination/configuration capability, **not** a credential, owner proof, constitutional decision, or authorization token. Root admission must not change \`authorization: NOT_EVALUATED\`, legitimate root \`PENDING/UNKNOWN\`, or protected effects \`STOP\`.
+
+### 21.2 CLI and API boundary
+
+Recommended first implementation interface:
+1. Add explicit \`--root <directory>\` for production instance commands; no \`NEXO_ROOT\` environment override in the first iteration.
+2. Require an existing directory for normal operations. Root creation/bootstrap is a separate explicit operation after a separate protocol is designed; no implicit \`mkdir\`, store initialization, migration, or fallback during ordinary reads.
+3. Reject duplicate \`--root\`, missing root, a root combined with legacy \`--continuity\` / \`--chronicle\`, and unknown/conflicting arguments before any store is opened.
+4. Chronicle CLI passes only \`--root\` to its child. The child validates the root and acquires the root lock itself. The parent must not acquire that same lock.
+5. Keep path-oriented functions as low-level/internal compatibility primitives during migration, but make them inaccessible to supported production entrypoints except through the instance composition module. Do not silently reinterpret existing public functions as instance-safe.
+6. Preserve business result contracts (\`loaded\`, \`not_found\`, Chronicle's existing result states) separately from admission state. On uncertain lock release, never present clean success and never automatically retry/re-execute the operation.
+
+The public instance API naming and exact result envelope remain to be reviewed against every consumer; the above is a design contract, not an implementation claim.
+
+### 21.3 \`scripts/assistants.mjs\`: explicit disposition
+
+For the first root-admission migration, treat \`scripts/assistants.mjs\` as a **composite integration with a separately scoped Nexo persistence sub-operation**, not as a generic Nexo CLI and not as one atomic transaction.
+
+- \`NEXO_STATE_PATH\` / world-state and \`NEXO_LUMINA_MEMORY_PATH\` remain independently owned by the existing simulation/Lúmina workflow in this phase. They must not be silently moved under the Nexo root.
+- The Continuity interaction initiated by this script (open owner, mission record, any Continuity snapshot/commit) must either be invoked as a named operation through the instance API, or be explicitly rejected in root-managed mode until that adapter exists.
+- Do not imply that the root lock coordinates or atomically commits world-state, Lúmina learning memory and Continuity. It coordinates only cooperating operations routed through the Nexo instance boundary.
+- \`NEXO_CONTINUITY_PATH\` is not a supported override in root-managed production mode. If retained temporarily for existing tests or an explicit legacy mode, the mode must be visibly selected, fail closed on mixed root/path configuration, and must not be described as satisfying the instance-root contract.
+- Keep \`--nexo-repair-once\` blocked by \`NEXO_M0_OPTION_A_EFFECT_EXCLUDED\`; this disposition cannot authorize repair or external effects.
+
+This choice preserves the Nexo/Lúmina separation and allows the Continuity sub-operation to migrate without claiming cross-file transactionality. It also means D3 cannot be marked closed until the team decides how production \`assistants.mjs\` obtains/uses the instance context and how its legacy mode is exposed or retired.
+
+### 21.4 Migration protocol gates
+
+1. **Inventory gate:** every supported production entrypoint and each direct owner/store/application path has a source SHA and a defined boundary; dynamic imports/re-exports and composite entrypoints are accounted for.
+2. **API gate:** root-only production contract, path derivation, initialization policy, symlink/canonicalization behavior, and public result compatibility are specified.
+3. **Lock gate:** lock-file protocol, ownership token, timeout clock, process ownership, uncertain release, and stale/corrupt owner handling have executable tests; no automatic stale lock deletion.
+4. **No-bypass gate:** architecture test fails if a production entrypoint imports or calls low-level path-oriented owner/store/query APIs outside the narrow composition allowlist.
+5. **Behavior gate:** same-root operations serialize across processes; different roots progress independently; read-only snapshots are admitted; business blocked/conflict/error results remain distinguishable from admission failure.
+6. **Migration gate:** legacy data is inventoried read-only; a dry-run plan records source/destination/size/hash/conflicts; backup and verification precede explicit cutover; no automatic merge, dual-write, delete or fallback.
+7. **Safety gate:** repair exclusion and authority states remain unchanged; root admission is never treated as owner/Constitution/Policy authorization.
+8. **CI gate:** run targeted tests and the required regression suite on the actual implementation commit; documentation-only changes do not count as runtime proof.
+
+### 21.5 Current conclusion
+
+This section advances D3 design, but does not close D1/D2/D3. The API and assistants disposition are now concrete proposals with explicit unresolved compatibility decisions. No runtime, tests, workflows or data stores were changed in this checkpoint.
