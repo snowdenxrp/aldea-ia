@@ -913,3 +913,12 @@ The authenticated GitHub identity resolved to `snowdenxrp`; repository collabora
 
 No runtime, tests, workflows, or CI were changed/run by this check. Canonical project state remains unchanged: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
 
+
+## Targeted D2/D3 consistency correction — 2026-10-23
+
+A focused review (not a repeated caller census) found one wording mismatch: the D2/D3 gap reconciliation had prescribed rejection of symlinks for reserved store/lock names, although the owner decision packet and reserved-path matrix leave D0-C3 OPEN and do not approve universal rejection. The sentence was corrected to require an explicit owner policy first, then tests against the accepted cases.
+
+- Corrected `NEXO_NCS/BUILD/NCS_M0_D2_D3_CONTRACT_GAP_RECONCILIATION_2026-10-23.md`: commit `92821951db0c47bb0904560635cc3cd1cf7baf4f`, blob `79b554a0d4d056eebb569d1e8ab98405421cbe9b`.
+- Cross-contract checkpoint appended with the correction: commit `94698077ba830ad71e6dc8dd2852ffe4087dda61`, blob `9b7f58b03b3ce64d736e862c54b3129e315a81d3`.
+
+This was a documentary consistency fix, not an implementation or policy decision. No runtime/tests/workflows changed; no tests/CI run. State remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
