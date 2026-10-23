@@ -84,6 +84,16 @@ function assertSimulationRoot(simulation) {
     if (descriptor && (!descriptor.enumerable || !("value" in descriptor))) {
       throw new TypeError("simulación de Lúmina debe contener campos de datos");
     }
+    if (key === "nexoEffectRevision" && descriptor && descriptor.writable !== true) {
+      throw new TypeError("nexoEffectRevision debe ser mutable");
+    }
+  }
+  const revisionDescriptor = Object.getOwnPropertyDescriptor(simulation, "nexoEffectRevision");
+  if (!revisionDescriptor) {
+    let extensible;
+    try { extensible = Object.isExtensible(simulation); }
+    catch { throw new TypeError("simulación de Lúmina debe permitir la revisión mutable"); }
+    if (!extensible) throw new TypeError("simulación de Lúmina debe permitir la revisión mutable");
   }
   const agents = Object.getOwnPropertyDescriptor(simulation, "agents")?.value;
   const world = Object.getOwnPropertyDescriptor(simulation, "world")?.value;
