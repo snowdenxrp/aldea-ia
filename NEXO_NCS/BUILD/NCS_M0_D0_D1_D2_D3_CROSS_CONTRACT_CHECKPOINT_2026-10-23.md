@@ -14,6 +14,7 @@ Estado: **REVISIÓN DOCUMENTAL — NO CIERRA GATES — SIN IMPLEMENTACIÓN**
 - `NCS_M0_AGGREGATE_RESOURCE_BUDGET_GAP_ANALYSIS_2026-10-23.md` — blob `abec8b1d97e6db64b79a689d113073d2559bfeda`.
 
 - `NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md` — propuesta de evidencia operacional, commit `2fdde9d9f7df9a25a9c6bdf01d1e3ad1d1cab1a9`.
+- `NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md` — entradas de entorno necesarias para elegir un mecanismo operacional, commit `f4c65b81abc19244eb777d821c7945ced45ee21e`.
 
 Este es un cross-check entre contratos escritos. No se reabrió el censo de código y no se ejecutaron tests/CI.
 
@@ -45,7 +46,7 @@ El contrato de raíz ahora incluye la sección 9 con esta propuesta de control:
 
 Referencia actual del contrato: blob `bac9493af98c3f86001e323dab153bdee78b5f31`, commit `036c877e97475aa1489cc83d70f05c48e7fa8b9f`.
 
-**Resultado del cross-check:** el hueco ya está documentado en el contrato y se añadió una propuesta específica de evidencia operacional. Ninguno de los documentos cierra el gate: no se ha elegido un mecanismo concreto para una instalación real, no hay procedimiento ejecutado ni evidencia de migración. Una captura de procesos más hashes no elimina por sí sola la carrera de relanzamiento; sin prevención verificable de nuevos lanzamientos, el resultado debe seguir siendo `UNKNOWN/BLOCKED`. La quiescencia controla procesos cooperantes; no es una barrera frente a procesos locales hostiles.
+**Resultado del cross-check:** el hueco ya está documentado en el contrato y se añadió una propuesta específica de evidencia operacional. Ninguno de los documentos cierra el gate: no se ha determinado el entorno objetivo ni elegido un mecanismo concreto para una instalación real, no hay procedimiento ejecutado ni evidencia de migración. Una captura de procesos más hashes no elimina por sí sola la carrera de relanzamiento; sin prevención verificable de nuevos lanzamientos, el resultado debe seguir siendo `UNKNOWN/BLOCKED`. La quiescencia controla procesos cooperantes; no es una barrera frente a procesos locales hostiles.
 
 ## 4. Otras decisiones que no deben confundirse
 
@@ -81,4 +82,4 @@ Este orden es una recomendación de ingeniería, no una decisión aceptada autom
 
 ## 7. Continuidad
 
-STATUS y handoff ya reflejan esta actualización. Siguiente: revisar el protocolo de evidencia contra la sección 9 del contrato de raíz y especificar qué dato de la instalación real falta para escoger un mecanismo de mantenimiento verificable. No repetir el censo de código ni implementar.
+STATUS y handoff deben registrar el nuevo perfil de entorno requerido. Siguiente: identificar el despliegue objetivo y comparar sus controles reales con el protocolo; mientras no se conozca, continuar solo la revisión documental y mantener D3 OPEN. No repetir el censo de código ni implementar.
