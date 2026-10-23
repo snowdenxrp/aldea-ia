@@ -1,3 +1,15 @@
+# CHECKPOINT DE VERIFICACIÓN — 2026-10-23 — NESTED RUNTIME CONTRACT INPUT GUARD CI
+
+- Código: `16c700563d5f4fc423aeeb4952c7b486f4f01bc0`.
+- Pruebas: `5ac87888a25c3387749df7a0c262d1cf51163e2f`.
+- STATUS y checkpoint: `337f8df311eb31e9fe3031a6d11ecc2b7b8f35c3`.
+- CI determinista / `npm test` sobre el commit de STATUS, que contiene código y pruebas: [run 39884629420 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39884629420).
+- CI adicional sobre el SHA de pruebas: [admisión/continuidad 39884623524 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39884623524), [STEP 4 39884623591 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39884623591), [STEP 5 39884623623 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39884623623).
+- Interpretación: las regresiones añadidas pasan en CI; no significa que se haya cerrado la decisión arquitectónica del límite de objetos JavaScript arbitrarios. El informe `NCS_CORE_BOUNDARY_PROXY_TRAPS_DESIGN_STOP_2026-10-17.md` sigue vigente: no se afirma aislamiento frente a Proxy traps. No añadir otra capa de guards ni migrar a serialización hasta que la frontera de confianza esté decidida desde MASTER/CORE.
+- Estado constitucional permanece: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-23 — NESTED RUNTIME CONTRACT INPUT GUARD
 
 - Hallazgo reproducible: el guard anterior validaba el registro superior de opciones, pero después el runtime leía mission.missionId, mission.steps y adapter.execute de objetos anidados ordinarios; getters en la misión, en un paso o en el adaptador podían ejecutarse antes de rechazo.
