@@ -370,3 +370,28 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 - El CI del SHA `739405e42a3ef49e09238980bdf5c8b91734030d` detectó una incompatibilidad real: el límite provisional de 256 KiB por cadena rechazaba el fixture de snapshot válido de 16 MiB antes de que `continuity-store` pudiera devolver su resultado contractual `NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED`.
 - Ajuste para respetar contratos existentes: profundidad 40 (por encima del preflight global de continuidad de 35), 100 000 objetos, 16 MiB por cadena y 17 MiB agregados de cadenas/keys. Así el preflight de contratos no debe apropiarse de la clasificación de capacidad que pertenece al store.
 - Se elevan las regresiones de nodo/cadena para probar los nuevos límites reales. La ejecución previa de CI del SHA anterior permanece registrada como FAIL y no se atribuye al SHA correctivo.
+
+
+---
+
+# VERIFICACIÓN FINAL DE CI — CONTRATOS CORE — SHA `babd2bff70364fb41c174632b944e83edafd8932`
+
+La matriz siguiente corresponde al SHA exacto que contiene el código y las regresiones de contratos tras el ajuste de límites. Las ocho ejecuciones terminaron en SUCCESS:
+
+- STEP 4 semantic validation: [run 39880513860 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880513860).
+- STEP 5 outcome classification: [run 39880513939 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880513939).
+- STEP 3A/3B/3C verification: [run 39880513994 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880513994).
+- STEP 7 policyContext contract: [run 39880514039 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880514039).
+- M0 non-authority core contracts: [run 39880513975 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880513975). Su job ejecutó `node tests/nexo/core-contracts.test.mjs` y las regresiones de observación, clasificación y transición protegida.
+- Integrated acceptance regression: [run 39880514383 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880514383). Todas las etapas de contratos canónicos, transiciones, Chronicle/runtime, recuperación/crash cuts y clasificación de resultados pasaron.
+- Deterministic persistence tests: [run 39880513855 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880513855). `npm test`, que ahora inicia con la prueba directa de contratos, y la regresión de limpieza temporal pasaron.
+- Repair settlement crash cuts: [run 39880513945 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39880513945).
+
+## Interpretación y límites
+
+- Trigger: push del commit `babd2bff70364fb41c174632b944e83edafd8932` a `ncs-clean-architecture`.
+- Head/pin: todas las ejecuciones anteriores apuntan a ese SHA.
+- Jobs y logs: las ejecuciones enlazadas conservan los pasos ejecutados y sus logs; la prueba directa de contratos aparece con resultado satisfactorio tanto en el workflow específico de contratos como en STEP 7.
+- Resultado: las regresiones añadidas y las matrices seleccionadas pasan en el SHA exacto. Los fallos de los SHA previos `76194883df726b413ae604fb3b7ba224456671f9` y `739405e42a3ef49e09238980bdf5c8b91734030d` se conservaron y corrigieron; no se cuentan como PASS.
+- Alcance: esto no equivale a una demostración de producción, no neutraliza traps de Proxy, no demuestra autoridad raíz legítima y no habilita efectos protegidos.
+- Estado canónico permanece: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
