@@ -783,3 +783,13 @@ Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítim
 - No runtime code or tests changed. No security exploit or authority proof is claimed.
 - Next: continue tracing the generic runtime export's consumers only where current-branch source evidence is available; otherwise move to a distinct internal M0 capability with a concrete contract/test rather than repeating the same trust-boundary review.
 - Canonical state unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+
+## Open Loops — existing capability reconciliation and next gate — 2026-10-23
+
+- Added `BUILD/NCS_M0_OPEN_LOOPS_QUERY_CONTRACT_2026-10-23.md` (contract only; no runtime/test change).
+- Cross-check found that the master concept is not wholly absent: the stable application API already has read-only continuity status, mission status and single-mission dependency-plan queries. A new “Open Loops engine” or duplicate task ledger would be architectural duplication.
+- The candidate extension is a bounded read-only projection over one validated canonical continuity snapshot, keeping mission loops separate from prepared/observed-unsettled effect-journal obligations. It must never infer commitments/deadlines/provenance, grant authorization, or trigger redispatch.
+- Before implementation, verify journal record schema/linkage and locate existing valid-snapshot test fixtures. The query must preserve store revision, privacy projection, discrepancy/UNKNOWN semantics, no-mutation guarantees and explicit output bounds. Missing/corrupt state must not appear as an empty successful inventory.
+- This contract is an 🔵 EXTENSION candidate, not an implementation claim. No runtime code/tests changed; no CI PASS is claimed for this documentation commit.
+- Canonical status unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
