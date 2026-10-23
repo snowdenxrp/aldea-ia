@@ -247,3 +247,15 @@ Section 15 of the root contract now maps observed calls for status/mission queri
 Important scope guard: repair modules still exist and export store access, but scripts/nexo-runtime-session.mjs currently blocks runtime repair with NEXO_M0_OPTION_A_EFFECT_EXCLUDED. Root work must not reactivate or widen this excluded path.
 
 D2 remains OPEN pending full caller inventory and explicit tests for operation-wide exclusion, process concurrency, release uncertainty, no reentrancy, no-bypass, read-only query semantics, and preserved repair exclusion. No runtime/tests/workflows changed. Canonical state unchanged.
+
+
+
+## 17. D2 follow-up — admission result and uncertain release semantics
+
+The root contract now has Section 16. It separates business outcome from root admission; a lock acquisition failure prevents the operation from starting; business failure remains the business result if release is confirmed; and release uncertainty must never be surfaced as clean success or trigger automatic re-execution. `writeStarted` is conservative and does not prove external effects completed or did not partially occur. Candidate codes remain internal drafts pending consumer compatibility review.
+
+Verification matrix now explicitly covers invalid root, timeout, corrupt/unknown/stale owner, read-only snapshot operations, business blocked/conflict, exception, release failure after possible write, ownership loss, same-root contention, different-root independence, Chronicle child-only ownership, no-bypass and preservation of `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`.
+
+The new section does not close D2 or D1. Next: inspect all consumers of existing operation result shapes and the indirect caller edges; record a reproducible caller matrix with current branch SHAs; then define automated no-bypass/concurrency/release-uncertain tests. No runtime, tests, workflows or CLI changed. Canonical state remains M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+Updated contract: [NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md](NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
