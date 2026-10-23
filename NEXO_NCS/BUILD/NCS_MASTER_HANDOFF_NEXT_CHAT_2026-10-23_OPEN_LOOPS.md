@@ -422,3 +422,8 @@ Es recomendación documentada, no decisión cerrada ni implementación. Antes de
 ## Matriz de errores CLI exactos añadida
 
 El documento de contrato ahora registra errores de argumentos y opciones requeridas para `status`, `mission-status`, `mission-plan`, `mission-draft-preview`, `mission-request-preview` y sesión hija Chronicle. También distingue parse error, `not_found`, root admission y fallo de spawn. Preservar esos contratos o documentar explícitamente la transición al futuro `--root`; el padre Chronicle hoy delega la validación de argumentos al hijo.
+
+
+## Bypass crítico adicional: el hijo Chronicle puede ejecutarse directamente
+
+`scripts/nexo-chronicle-session.mjs` tiene una guarda de ejecución directa, así que `node scripts/nexo-chronicle-session.mjs ...` evita el router padre. Su parser acepta rutas legacy y flags de inicialización. La no-bypass boundary debe exigir `--root` en el hijo, derivar rutas internamente y tomar el root lock antes de preflight/lecturas; el padre no lo toma. Añadir prueba negativa que invoque el hijo directamente con rutas legacy y compruebe que no lee ni crea archivos. Esto mantiene D1/D3 OPEN.
