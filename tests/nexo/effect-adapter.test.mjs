@@ -490,7 +490,8 @@ const guardedBootstrapAdapter = createEffectAdapter({
 assert.equal(guardedBootstrapAdapter.supports("safe_effect"), true);
 assert.equal(guardedBootstrapAdapter.supportsReconciliation("safe_effect"), true);
 
-\n// Public execute, executePrepared, and verifyPrepared entrypoints must inspect
+
+// Public execute, executePrepared, and verifyPrepared entrypoints must inspect
 // caller-owned records before reading fields or accepting a prepare receipt.
 let effectRequestGetterCalls = 0;
 const accessorEffectRequest = {};
