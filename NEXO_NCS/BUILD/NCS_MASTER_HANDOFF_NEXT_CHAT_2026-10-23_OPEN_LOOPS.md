@@ -825,3 +825,17 @@ La propuesta sigue sin aprobación ni ejecución; no equivale a cierre D3. La qu
 ### Siguiente paso exacto
 
 Analizar el requisito de evidencia operacional para quiescencia legacy: qué significa “no quedan operaciones activas”, qué proceso detiene/observa los writers, cómo se trata un writer que no puede inspeccionarse y cuál es la señal verificable de abort/cancelación. No afirmar que PID/lock ausente prueba por sí solo quiescencia. Mantener D0/D1/D2/D3 OPEN, M0 INCOMPLETO, autorización NOT_EVALUATED, raíz legítima PENDING/UNKNOWN y efectos STOP. No implementar hasta que contratos y autorización estén explícitos.
+
+## 20. Protocolo de evidencia operacional para quiescencia D3 — 2026-10-23
+
+Documento nuevo:
+- `NEXO_NCS/BUILD/NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md`
+- Commit: `2fdde9d9f7df9a25a9c6bdf01d1e3ad1d1cab1a9`
+
+Define como propuesta los criterios para enumerar writers/launchers, detener sesiones y relanzamientos, inspeccionar procesos con cobertura suficiente, registrar huellas iniciales, verificar copia y revalidar inmediatamente antes del cutover. Un proceso ambiguo, acceso denegado, inventario incompleto, fallo de lectura o cambio de fuente obliga a `UNKNOWN/BLOCKED`; no se hace cutover. El texto señala que una captura de procesos más hashes no elimina la carrera si aún pueden iniciarse nuevos writers; hace falta un control de mantenimiento/previsión de lanzamientos demostrable para la instalación real.
+
+Cross-contract checkpoint actualizado:
+- Commit: `97f5f630cf1264418f53b260679ec7f95298f22c`
+- Blob: `329b2eeeac372e728dd029974296df7c8b1551ec`
+
+Siguiente paso exacto: comprobar coherencia entre el protocolo y el contrato D3; después identificar qué información del entorno de despliegue se necesita para escoger un mecanismo real de prevención de nuevos lanzamientos. No inventar un control específico de SO ni afirmar que quiescencia está probada. D0/D1/D2/D3 siguen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. No runtime/tests/workflows ni tests/CI en esta pasada.
