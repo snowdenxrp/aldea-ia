@@ -1005,3 +1005,29 @@ Opciones que deben compararse antes de D2 cerrado:
 **Recomendación:** preparar primero una matriz de caracterización de los dos locks actuales y su suite de pruebas, y comparar contra un contrato compartido que permita políticas explícitas. Elegir B solo si las diferencias pueden representarse sin ampliar la abstracción ni cambiar resultados observables; de lo contrario, documentar A como separación deliberada, con owner distinto y pruebas independientes. No implementar ninguna opción hasta cerrar la decisión y su matriz de regresión.
 
 Esto es una tensión de arquitectura real, no una tarea para ocultar mediante duplicación. D2 sigue OPEN.
+
+
+## Matriz de caracterización existente para decidir la primitiva de lock (D2)
+
+La revisión de `tests/nexo/continuity-store.test.mjs` (blob `c3af56077b94c8d641979e0853de7f70fa45d82f`) y `tests/nexo/chronicle-store.test.mjs` (blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`) confirma cobertura de locks de stores, pero también diferencias que deben sobrevivir cualquier abstracción:
+
+| Comportamiento | Continuity | Chronicle | Requisito de compatibilidad |
+|---|---|---|---|
+| Owner record | `pid`, `token`, `createdAt` | `pid`, `token` | No asumir esquemas idénticos sin migración de tests |
+| Owner ilegible/corrupto/oversized | UNKNOWN, preservar lock | UNKNOWN, preservar lock | Fail-closed y límite de bytes |
+| Lock stale (PID muerto + edad excedida) | Requiere recuperación explícita | Requiere recuperación explícita | Nunca borrar automáticamente |
+| Timeout de adquisición | Resultado estructurado con fase y no-write | Resultado estructurado con fase y no-write | Mantener códigos de cada store y `writeStarted:false` |
+| Token distinto al liberar | `not_owned`; no éxito limpio | `not_owned`; no éxito limpio | No borrar lock de otro dueño; preservar persistencia observada |
+| Error transitorio al borrar lock | Reintenta una vez; puede devolver `released_after_retry` | Devuelve fallo de liberación sin retry equivalente | Diferencia observable a preservar o migrar explícitamente |
+| Error persistente al borrar | Marca ruta en conjunto local; nuevas adquisiciones fallan cerradas mientras lock persista | Devuelve fallo, sin el mismo conjunto local | Política de cuarentena no equivalente |
+| Lectura `loadCurrent()` | Sin lock de lectura | Sin lock de lectura | Root admission debe estar por encima de ambos stores |
+
+Las pruebas actuales de Continuity incluyen contención entre procesos, fallos de liberación y bloqueo de reentrada local tras liberación fallida. Chronicle cubre stale, owner corrupto, timeout y fallo de release, pero esta revisión no encontró una prueba equivalente de contención root-level porque aún no existe ese protocolo.
+
+Para evaluar una primitiva compartida, el plan mínimo es:
+1. Convertir cada fila de la tabla en tests de caracterización con resultados y bytes persistidos exactos.
+2. Diseñar adapters de política que mantengan las diferencias actuales mientras se valida la primitiva común.
+3. Comparar los resultados antes/después en ambos stores, incluyendo release failure, no-owned token y timeout tardío.
+4. Solo entonces decidir si compartir el mecanismo sin cambiar contratos; si la abstracción requiere demasiados flags o debilita la claridad, mantener una primitiva de raíz separada y justificar explícitamente la duplicación.
+
+La existencia de tests robustos de stores no equivale a una prueba de root admission. D2 sigue OPEN.
