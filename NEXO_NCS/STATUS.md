@@ -1027,3 +1027,10 @@ Hallazgos que deben condicionar la implementación:
 - Las pruebas negativas propuestas están registradas en `BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md`.
 
 **Próximo paso:** cerrar la matriz exacta de resultados/códigos de salida y el inventario de bypasses (incluyendo `assistants.mjs`, reexportaciones, importaciones dinámicas y creación de procesos hijos). Después cerrar D1/D2/D3 en diseño. No comenzar cambios de runtime antes de esas puertas.
+
+
+### Caller adicional confirmado — `assistants.mjs` (2026-10-23)
+
+La auditoría directa confirma que `scripts/assistants.mjs` abre Continuity por `openNexoContinuityOwner`, registra una misión, escribe memoria Lúmina y persiste el estado del mundo mediante rutas configurables por variables de entorno. Es una vía de persistencia separada de la CLI estrecha `nexo`; no debe declararse root-managed sin una decisión e integración explícitas. El gate de reparación sigue devolviendo `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, pero eso no elimina los otros efectos del comando.
+
+**Consecuencia:** D1 sigue OPEN hasta inventariar todos los callers/bypasses. No envolver todo `assistants` en un lock por intuición; decidir primero alcance y límites multi-store. Estado de raíz legítima y autorización no cambia.
