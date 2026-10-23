@@ -169,3 +169,14 @@ Potential race requiring an explicit contract: if bootstrap process A creates th
 D0-C2/D2 must define a first-creation protocol that coordinates the root creation and initialization boundary, including simultaneous bootstrap, crash after root creation but before lock acquisition, partial initialization, and retry/recovery. It must also reconcile the no-extra-marker constraint with any mechanism selected. Do not assume “root exists” means “bootstrap complete”; do not invent a global/sibling lock or silently initialize. If the contract cannot distinguish these states safely, return BLOCKED/UNKNOWN and preserve all data.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
+
+
+## Follow-up: release-token check is not atomic with recursive lock removal (2026-10-23)
+
+Targeted source inspection of `src/nexo/core/continuity-store.mjs` at blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae` confirmed the release sequence: read `owner.json`, compare `current.token` to the caller token, then call `rm(lockPath, { recursive: true, force: true })`; on failure, retry the same recursive removal once. The D2 root-lock candidate similarly proposes verify-token-then-remove.
+
+This is a check/use interval, not an atomic ownership-and-removal operation. If the lock directory is removed/replaced after the token check but before `rm`, the removal can target the replacement directory. That interleaving requires external removal/replacement (or another actor capable of changing the lock path); it is not proof of a currently observed runtime incident or hostile-process protection claim. Nevertheless, because the contract explicitly contemplates external recovery, lock replacement, and uncertain ownership, D2 must state whether external recovery is permitted concurrently with a live release. If it is, a token check followed by recursive removal alone does not establish that only the original lock instance is removed.
+
+Required closure: define recovery as an exclusive/offline operation with a demonstrable quiescence precondition, or select and test a filesystem protocol that safely distinguishes the lock instance being removed from a replacement. Do not assert that re-reading the token alone closes the interval; it only moves the interval. Tests should deterministically inject replacement between ownership validation and removal, verify the replacement survives, and require UNKNOWN/BLOCKED when safe ownership cannot be proven. Apply the same review to Chronicle and the proposed instance lock before claiming a shared release contract. Do not patch runtime until design/implementation authorization is explicit.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
