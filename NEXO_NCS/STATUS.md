@@ -979,3 +979,12 @@ Se añadieron gates de inventario, API, lock, no-bypass, concurrencia, migració
 # CHECKPOINT — HECHOS DE LOCK DE LOS STORES (2026-10-23)
 
 La lectura directa confirma que loadCurrent() en ambos stores lee/clona sin adquirir lock per-store; openNexoContinuityOwner() puede leer, inicializar solo si está permitido y releer. La admisión raíz debe cubrir desde antes de la primera lectura, incluidas consultas. Chronicle y Continuity tienen locks duplicados con diferencias en release; conservarlos inicialmente. performance.now() es local al proceso: el child Chronicle debe crear su propio deadline a partir de una duración. Las lecturas normales no deben activar inicialización vacía ni proyección legacy. Repair sigue excluido por NEXO_M0_OPTION_A_EFFECT_EXCLUDED. Se documentaron pruebas de admisión antes de loadCurrent, no reentrada, release incierto, propiedad única del child y ausencia de inicialización implícita. D1/D2/D3 OPEN; runtime/tests/workflows sin cambios; estado canónico sin cambios.
+
+
+# CHECKPOINT — MATRIZ DE FRONTERAS Y CANONICALIZACIÓN (2026-10-23)
+
+Se registró una matriz con SHA de los entrypoints CLI, child Chronicle, append de aplicación, queries, export de Continuity, assistants y factories de stores. Hallazgos: el CLI principal usa API orientada a rutas; el child llama al append; append construye los dos stores y abre owner directamente; las queries construyen stores por ruta; assistants abre owner a través del wrapper de compatibilidad. Son fronteras directas verificadas, no prueba aún de todos los callers indirectos.
+
+Decisión propuesta de canonicalización: raíz existente y directorio obligatorio; realpath antes de derivar filenames fijos; aliases por symlink convergen a la misma ruta canónica; rutas legacy independientes se rechazan en modo root; lectura normal no crea stores ni snapshots; lock reservado con estado desconocido/corrupto falla cerrado y nunca se borra automáticamente. Limitaciones explícitas: no se afirma protección contra procesos locales hostiles, TOCTOU, aliases de montaje, hardlinks o filesystem de red.
+
+El buscador de código devuelve cero incluso para símbolos conocidos existentes, por lo que sus resultados negativos no sirven para probar ausencia. D1 sigue OPEN hasta cerrar callers indirectos, scripts de package y procesos hijo. D2/D3 OPEN. Runtime/tests/workflows sin cambios; estado canónico sin cambios.
