@@ -853,7 +853,7 @@ No hay evidencia en esta revisión de que el root lock esté implementado. D2 si
 
 ## 2026-10-23 — Segundo caller de Continuity: `scripts/simulate.mjs`
 
-La inspección directa de `scripts/simulate.mjs` (blob `623d316c7a1efd10cc2f06a3080c9d9f06087596`) encuentra otro caller productivo además de `assistants.mjs`. El comando `simulate` está declarado en `package.json`, importa `openNexoContinuityOwner`, carga el estado del mundo, abre Continuity en la ruta fija `.nexo-continuity.json` con `legacyMemory` y `allowEmptyInitialization`, persiste el estado del mundo y devuelve la revisión de Continuity en su salida. Aunque no despacha una misión, abrir Continuity puede inicializarla o reconciliar datos legacy; por ello no es un lector inocuo para la frontera de instancia.
+La inspección directa de `scripts/simulate.mjs` (blob `623d316c7a1efd10cc2f06a3080c0d9f06087596`) encuentra otro caller productivo además de `assistants.mjs`. El comando `simulate` está declarado en `package.json`, importa `openNexoContinuityOwner`, carga el estado del mundo, abre Continuity en la ruta fija `.nexo-continuity.json` con `legacyMemory` y `allowEmptyInitialization`, persiste el estado del mundo y devuelve la revisión de Continuity en su salida. Aunque no despacha una misión, abrir Continuity puede inicializarla o reconciliar datos legacy; por ello no es un lector inocuo para la frontera de instancia.
 
 La ruta de estado del mundo tiene un lock separado implementado localmente en `simulate.mjs`. Ese lock pertenece al archivo de mundo, no a la raíz de Nexo; su política de recuperación de locks obsoletos incluye borrado automático. **No reutilizar esa política como contrato del root lock**, cuya recuperación debe ser explícita y fail-closed.
 
