@@ -1150,3 +1150,8 @@ Se clasificaron los imports dinámicos y procesos hijos de tests: los workers/CL
 ### Conflicto de secuencia D1 documentado (2026-10-23)
 
 Se detectó un ciclo en las instrucciones previas: D1 exige un test arquitectónico ya implementado para cerrar, pero a la vez se prohíbe modificar tests hasta cerrar D1/D2/D3. Se documentó en el contrato y el allowlist una recomendación para separar `D1-DESIGN` (inventario, tratamientos, allowlist y test spec completos) de `D1-IMPLEMENTATION` (test implementado/ejecutado después de cerrar todas las puertas de diseño). No se cambia el estado a cerrado ni se implementan tests; falta aceptar/revisar esta separación. D1/D2/D3 siguen OPEN.
+
+
+### Hallazgo de cobertura: 17 tests Nexo no listados en `npm test` (2026-10-23)
+
+Comparación estática de `package.json` contra el árbol: existen 44 archivos `tests/nexo/*.test.mjs`; el script `test` invoca 27 y omite explícitamente 17, listados en `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`. No se declara automáticamente que sea un defecto: hay que determinar por prueba omitida si la exclusión es intencional. La futura prueba arquitectónica de D1 deberá estar conectada explícitamente a la verificación requerida; no bastará con que exista como archivo.
