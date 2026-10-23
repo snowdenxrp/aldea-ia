@@ -330,3 +330,10 @@ D1 remains open until indirect callers, package scripts and child process constr
 The package manifest confirms two user-facing command entrypoints: `nexo` runs scripts/nexo.mjs and `assistants` runs scripts/assistants.mjs. The serial test command includes root-bootstrap, store/runtime, entrypoint, continuity, repair crash-cut, and Open Loops tests. These package commands must be part of the production entrypoint allowlist.
 
 The runtime-session gate still returns NEXO_M0_OPTION_A_EFFECT_EXCLUDED, while dedicated repair modules retain state-persistence paths. Classify them as blocked/internal repair tooling; root admission cannot authorize their use. D1/D2/D3 remain open; runtime/tests/workflows unchanged.
+
+
+## 27. Existing guard and test semantics
+
+The application index is intentionally narrow but persistence-backed APIs remain path-oriented. `tests/nexo/entrypoint.test.mjs` is an import-isolation and behavioral compatibility guard, not proof of root admission: it currently accepts separate `--continuity` and `--chronicle` paths. Preserve its behavioral invariants during migration: replay must not redispatch or change stored bytes; status/plan queries must not mutate Continuity; previews stay `persisted:false` and `dispatchAttempted:false`; authorization remains `NOT_EVALUATED`; the narrow Chronicle append action remains distinct from excluded repair.
+
+`tests/nexo/root-bootstrap-protocol.test.mjs` tests P-256 signature vectors and rejection of altered inputs, not filesystem roots or locks. It is not root-admission evidence. Current CLI parsers have no `--root` option; the parent forwards parsed args to the Chronicle child, whose parser accepts independent Continuity/Chronicle paths. No tests were run during this documentation pass.
