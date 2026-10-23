@@ -149,3 +149,31 @@ assert.equal(failed.uncertainty,"effect_may_or_may_not_have_occurred");
 assert.equal(depletedSimulation.nexoEffectRevision,0);
 
 console.log("Nexo: adaptador concreto de Lúmina con consecuencias reales, whitelist y evidencia OK.");
+
+
+// Bootstrap configuration and simulation roots are caller-owned public inputs.
+// Reject accessors from descriptors before ordinary field reads can execute them.
+let simulationBootstrapGetterCalls = 0;
+const accessorSimulationOptions = {};
+Object.defineProperty(accessorSimulationOptions, "executionJournal", {
+  enumerable: true,
+  get() {
+    simulationBootstrapGetterCalls += 1;
+    throw new Error("simulation adapter option getter must not execute");
+  }
+});
+assert.throws(() => createLuminaEffectAdapter({ agents: [], world: {} }, accessorSimulationOptions), /enumerable data fields/);
+assert.equal(simulationBootstrapGetterCalls, 0);
+
+const accessorSimulationRoot = { world: {} };
+Object.defineProperty(accessorSimulationRoot, "agents", {
+  enumerable: true,
+  get() {
+    simulationBootstrapGetterCalls += 1;
+    throw new Error("simulation root getter must not execute");
+  }
+});
+assert.throws(() => createLuminaEffectAdapter(accessorSimulationRoot), /campos de datos/);
+assert.equal(simulationBootstrapGetterCalls, 0);
+
+assert.throws(() => createLuminaEffectAdapter({ agents: [], world: {} }, { persistPreparedIntent: true }), /must be a function or null/);
