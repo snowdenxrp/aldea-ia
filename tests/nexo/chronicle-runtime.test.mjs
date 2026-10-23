@@ -1912,4 +1912,68 @@ try {
   await fs.rm(readOnlyQueryRoot, { recursive: true, force: true });
 }
 
+// The exported public-result sanitizer must not execute ordinary accessors
+// while projecting untrusted internal result records.
+let publicResultGetterCalls = 0;
+const accessorResult = { code: "NEXO_TEST_PUBLIC_RESULT_CODE", dispatchAttempted: true };
+Object.defineProperty(accessorResult, "status", {
+  enumerable: true,
+  get() { publicResultGetterCalls += 1; throw new Error("status getter must not execute"); }
+});
+const sanitizedAccessorResult = publicChronicleResult(accessorResult, "safe-mission", "safe-step");
+assert.equal(publicResultGetterCalls, 0);
+assert.equal(sanitizedAccessorResult.status, "unknown");
+assert.equal(sanitizedAccessorResult.code, "NEXO_TEST_PUBLIC_RESULT_CODE");
+assert.equal(sanitizedAccessorResult.dispatchAttempted, true);
+assert.equal(sanitizedAccessorResult.authorization, "NOT_EVALUATED");
+assert.equal(sanitizedAccessorResult.redispatchAuthorized, false);
+
+const accessorTimeout = {
+  status: "blocked",
+  dispatchAttempted: false,
+  code: "NEXO_TEST_PUBLIC_TIMEOUT"
+};
+Object.defineProperty(accessorTimeout, "prepared", {
+  enumerable: true,
+  get() { publicResultGetterCalls += 1; throw new Error("prepared getter must not execute"); }
+});
+const nestedAccessorTimeout = {};
+Object.defineProperties(nestedAccessorTimeout, {
+  code: { enumerable: true, value: "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT" },
+  phase: { enumerable: true, get() { publicResultGetterCalls += 1; throw new Error("phase getter must not execute"); } },
+  writeStarted: { enumerable: true, get() { publicResultGetterCalls += 1; throw new Error("writeStarted getter must not execute"); } },
+  lockRelease: { enumerable: true, get() { publicResultGetterCalls += 1; throw new Error("lockRelease getter must not execute"); } }
+});
+Object.defineProperty(accessorTimeout, "lineage", {
+  enumerable: true,
+  value: nestedAccessorTimeout
+});
+const sanitizedNestedAccessorTimeout = publicChronicleResult(accessorTimeout, "safe-timeout", "step-1");
+assert.equal(publicResultGetterCalls, 0);
+assert.equal(sanitizedNestedAccessorTimeout.status, "blocked");
+assert.equal(sanitizedNestedAccessorTimeout.lockAcquisitionCode,
+  "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
+assert.equal(Object.hasOwn(sanitizedNestedAccessorTimeout, "phase"), false);
+assert.equal(Object.hasOwn(sanitizedNestedAccessorTimeout, "writeStarted"), false);
+assert.equal(Object.hasOwn(sanitizedNestedAccessorTimeout, "lockRelease"), false);
+
+const accessorLockRelease = { status: "failed" };
+Object.defineProperty(accessorLockRelease, "code", {
+  enumerable: true,
+  get() { publicResultGetterCalls += 1; throw new Error("lock release code getter must not execute"); }
+});
+const lockReleaseAccessorResult = publicChronicleResult({
+  status: "blocked",
+  dispatchAttempted: false,
+  prepared: {
+    phase: "lock_acquisition",
+    writeStarted: false,
+    lockRelease: accessorLockRelease
+  }
+}, "safe-lock-release", "step-1");
+assert.equal(publicResultGetterCalls, 0);
+assert.equal(lockReleaseAccessorResult.phase, "lock_acquisition");
+assert.equal(lockReleaseAccessorResult.writeStarted, false);
+assert.equal(Object.hasOwn(lockReleaseAccessorResult, "lockRelease"), false);
+
 console.log("Nexo Chronicle owner-backed runtime tests passed");
