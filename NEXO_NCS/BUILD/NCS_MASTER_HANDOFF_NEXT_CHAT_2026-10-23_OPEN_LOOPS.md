@@ -839,3 +839,15 @@ Cross-contract checkpoint actualizado:
 - Blob: `bd055435e14ae16e38c635c39ee4ced792776b50`
 
 Siguiente paso exacto: comprobar coherencia entre el protocolo y el contrato D3; después identificar qué información del entorno de despliegue se necesita para escoger un mecanismo real de prevención de nuevos lanzamientos. No inventar un control específico de SO ni afirmar que quiescencia está probada. D0/D1/D2/D3 siguen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. No runtime/tests/workflows ni tests/CI en esta pasada.
+
+## 21. Perfil del entorno requerido para concretar quiescencia D3 — 2026-10-23
+
+Documento nuevo: `NEXO_NCS/BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md`, commit `f4c65b81abc19244eb777d821c7945ced45ee21e`.
+
+El protocolo de quiescencia es coherente con la sección 9 del contrato D3, pero aún no puede convertirse en procedimiento ejecutable porque no se conoce el entorno objetivo. El perfil lista los datos operacionales necesarios: sistema/forma de despliegue; quién puede detener writers y bloquear relanzamientos; launchers/wrappers/supervisores/tareas; rutas físicas y aliases; ventana/recuperación; y vínculo de evidencia. No compartir secretos ni datos privados de Continuity/Chronicle.
+
+Cross-contract checkpoint actualizado: commit `c2bdf8c047c8824116d3faafef2f14687308ca21`, blob `65dc79f8fd40d6183d4975578a9508ad51125352`.
+
+Siguiente paso exacto: identificar el entorno donde se ejecutará la primera instancia Nexo que use Continuity/Chronicle y el control real disponible para suspender/bloquear nuevos writers. Si todavía no existe un despliegue objetivo, registrar ese hecho y mantener D3 como requisito pendiente; no diseñar un procedimiento de SO por conjetura. No repetir el censo salvo cambio verificable. No implementar sin cierre contractual y autorización explícita.
+
+Estado: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. No runtime/tests/workflows ni tests/CI en esta pasada.
