@@ -66,3 +66,33 @@ Estos hechos describen la fuente revisada; no prueban un grafo transitivo cerrad
 ## 6. Estado al crear este documento
 
 Documento de análisis únicamente. No se modificó runtime, tests ni workflows; no se ejecutaron tests ni CI. D0/D1/D2/D3 siguen OPEN. El documento no sustituye el contrato principal ni el STATUS canónico.
+
+
+## 7. Caracterización de fuente: locks existentes (2026-10-23)
+
+Fuentes revisadas directamente en la rama; esto es análisis estático, no ejecución:
+
+- `src/nexo/core/continuity-store.mjs`, blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`.
+- `src/nexo/core/chronicle-store.mjs`, blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`.
+- Tests asociados: `tests/nexo/continuity-store.test.mjs` blob `c3af56077b94c8d641979e0853de7f70fa45d82f`; `tests/nexo/chronicle-store.test.mjs` blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`.
+
+### Coincidencias demostradas en código
+
+1. Ambos usan directorio de lock por store (`<file>.lock`), `owner.json` limitado por `NEXO_RESOURCE_LIMITS.lockOwnerBytes`, token de propiedad, retry de 10 ms y umbral stale de 60,000 ms.
+2. Ambos dejan de recuperar automáticamente un lock considerado stale y devuelven `NEXO_*_LOCK_STALE_RECOVERY_REQUIRED`.
+3. Ambos hacen fail-closed si la inspección del lock es incierta y normalizan errores de adquisición a contratos propios del store.
+4. Ambos verifican el token antes de eliminar el lock, pero la respuesta de release y la política tras fallo no son equivalentes.
+
+### Diferencias materiales
+
+- Continuity conserva un conjunto de rutas `lockReleaseFailures`; tras fallar dos intentos de liberación, bloquea nuevas adquisiciones mientras el lock siga presente y permite continuar solo si la limpieza externa hizo desaparecer el lock. El release reintenta una vez y puede informar `released_after_retry`.
+- Chronicle no muestra ese registro persistente de fallos de release; ante error de `rm` devuelve fallo de liberación después de un intento. Por tanto, no se debe inferir la misma recuperación de un release incierto.
+- Ambos usan códigos públicos separados (`NEXO_CONTINUITY_STORE_*` y `NEXO_CHRONICLE_*`); la similitud del algoritmo no constituye un contrato compartido.
+- El código Chronicle documenta explícitamente que no reclama resistencia frente a ataques de symlink/path; no elevar el lock de raíz a una garantía de seguridad local hostil.
+- La prueba `root-bootstrap-protocol.test.mjs` es un vector software conocido para codificación/firma; el propio test indica que no es la raíz de Nexo y no incluye integración de hardware ni provisioning independiente. No confundir ese test con admisión de instancia ni autoridad legítima.
+
+### Decisión técnica derivada (recomendación, no aprobación)
+
+**No unificar todavía los locks por extracción mecánica.** Primero mantener cada contrato por-store intacto, especificar un contrato de admisión raíz independiente y añadir tests para su alcance multiproceso, rechazo de configuración contradictoria, child Chronicle directo, liberación incierta y recuperación explícita. Si después se comparte código, exigir tests de equivalencia que preserven diferencias de errores y release, o decidir explícitamente una migración de contrato. No introducir nuevos estados/colas/leases para tapar estas diferencias.
+
+No se ejecutaron tests ni CI; runtime/tests/workflows no fueron modificados. D0/D1/D2/D3 permanecen OPEN.
