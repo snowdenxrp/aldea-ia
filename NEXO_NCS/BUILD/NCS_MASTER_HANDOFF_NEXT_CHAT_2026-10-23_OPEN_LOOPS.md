@@ -1,3 +1,15 @@
+## 0. Latest continuation checkpoint — D1-S0 sequence gate analysis (2026-10-23)
+
+Created [NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md](NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md), commit `e375bf9e789ce40676d682a6b3ca9eae62063057`. STATUS checkpoint update: `5975439b32fa39e6c3e149ee8992461870b5ba6a`.
+
+The analysis documents the cycle between “D1 requires an implemented/passing architecture test” and “no tests/runtime may change before design closure.” It recommends (not owner-approved) splitting D1-DESIGN from D1-IMPLEMENTATION. Design closure would require a reproducible entrypoint manifest, classified caller graph, explicit allowlists, resolver/UNKNOWN rules and negative fixtures; implementation verification would require a separately authorized change plus tests/CI on exact code+test SHA. The note does not authorize implementation.
+
+Next: continue targeted design closure work without repeating the full census. Resolve the known UNKNOWN classification for external callers of `scripts/nexo-continuity.mjs` by a focused callsite search if available; otherwise preserve UNKNOWN/BLOCKED. Reconcile the manifest and test fixtures against the exact source snapshot, then specify D2/D3 dependencies. Do not mark D1-DESIGN closed until its listed evidence criteria are met; do not edit runtime/tests/workflows without separate authorization.
+
+No runtime/tests/workflows/CLI/stores changed; no tests/CI executed. Canonical status remains M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+---
+
 ## 0. Latest continuation checkpoint — D0↔D1 documentary cross-check (2026-10-23)
 
 Created [NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md](NCS_M0_D0_D1_DESIGN_CROSSCHECK_2026-10-23.md), commit `203e35d88f419893c4392ee50af01729683e3a3e`. STATUS checkpoint update: `72982fc33e1291cb54bb40f32e4386a72a3ef241`.
