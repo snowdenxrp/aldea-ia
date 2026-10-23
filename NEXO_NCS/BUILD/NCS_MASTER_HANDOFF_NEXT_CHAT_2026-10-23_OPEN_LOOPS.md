@@ -890,3 +890,17 @@ Cross-contract checkpoint actualizado: commit `c2bdf8c047c8824116d3faafef2f14687
 Siguiente paso exacto: identificar el entorno donde se ejecutará la primera instancia Nexo que use Continuity/Chronicle y el control real disponible para suspender/bloquear nuevos writers. Si todavía no existe un despliegue objetivo, registrar ese hecho y mantener D3 como requisito pendiente; no diseñar un procedimiento de SO por conjetura. No repetir el censo salvo cambio verificable. No implementar sin cierre contractual y autorización explícita.
 
 Estado: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. No runtime/tests/workflows ni tests/CI en esta pasada.
+
+## Latest cross-contract checkpoint — decisions vs evidence (2026-10-23)
+
+Updated cross-contract checkpoint commit: 58c13b65dc22ef6193c78f8ced5992ea72f60c04.
+
+No new textual contradiction was found among the current D0 ledger/matrix, owner decision packet, D1-S0 analysis, dependency map and reserved-path matrix that warrants repeating the caller census. Keep two categories separate:
+
+- Owner-reserved decisions: D1-S0 sequence; D0-C1 interface/configuration; D0-C2 bootstrap; D0-C3 alias/symlink policy; D0-C4 migration policy; final D2 admission details.
+- Evidence gates: D1 architecture test executed against an exact SHA; D2 multiprocess ownership/release and snapshot-scope tests; negative reserved-path fixtures; separately demonstrated aggregate resource bounds; D3 actual target environment and writer-quiescence/cutover/rollback evidence.
+
+The reserved-path matrix decomposes D0-C3; it does not approve universal symlink rejection. D1 design/implementation split remains a recommendation, not an owner decision. No runtime/tests/workflows changed; no tests/CI run.
+
+Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; D1-S0 pending owner; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
