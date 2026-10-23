@@ -1140,3 +1140,8 @@ Esto completa la revisión de imports estáticos conocidos del conjunto de 188 a
 Se inspeccionaron los 13 scripts, 34 módulos `src/nexo/**` y 45 módulos `src/**` externos a Nexo buscando `import(...)`, `require`, `createRequire`, `eval`, `Function`, procesos hijos y guardas directas. Único proceso hijo productivo observado: `scripts/nexo.mjs` → `spawnSync` de `nexo-chronicle-session.mjs`. Únicos guards directos relevantes: `nexo.mjs`, `nexo-chronicle-session.mjs`, `simulate.mjs`. No se encontraron imports dinámicos/require/eval en scripts ni en `src/nexo/**`; el único import dinámico fuera de Nexo está en `src/three-remote.js` para cargar Three.js.
 
 Esto reduce el alcance de mecanismos dinámicos conocidos en aplicación, pero no reemplaza una prueba arquitectónica que proteja el grafo transitivo contra cambios futuros. El resultado está registrado en el borrador de allowlist. D1 sigue OPEN; sin tests ejecutados.
+
+
+### Imports dinámicos de tests clasificados como TEST_ONLY (2026-10-23)
+
+Se clasificaron los imports dinámicos y procesos hijos de tests: los workers/CLI están en `tests/nexo/**`; el único import con URL de entorno para cargar un módulo de store está en `tests/nexo/continuity-store.test.mjs` y es un harness de prueba; imports dinámicos de memoria/society/fs pertenecen a tests. No se encontró un import dinámico de store en código de aplicación. `src/three-remote.js` usa `import(url)` exclusivamente para Three.js. La separación de tests y producción queda registrada en el allowlist borrador; D1 sigue OPEN hasta que exista la prueba arquitectónica ejecutable.
