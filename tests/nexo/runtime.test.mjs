@@ -549,3 +549,25 @@ assert.equal(
   replanPersistedNexoMission(Object.create({ memory: createLearningMemory(), previousMissionId: "inherited-mission" })).code,
   "NEXO_RUNTIME_OPTIONS_INVALID"
 );
+
+const rejectedAccessorExecution = await executeNexoStep(accessorReplanOptions);
+assert.equal(runtimeOptionGetterCalls, 0);
+assert.equal(rejectedAccessorExecution.status, "invalid");
+assert.equal(rejectedAccessorExecution.code, "NEXO_RUNTIME_OPTIONS_INVALID");
+
+const rejectedAccessorLuminaExecution = await executeLuminaNexoStep(accessorReplanOptions);
+assert.equal(runtimeOptionGetterCalls, 0);
+assert.equal(rejectedAccessorLuminaExecution.status, "invalid");
+assert.equal(rejectedAccessorLuminaExecution.code, "NEXO_RUNTIME_OPTIONS_INVALID");
+
+const accessorAdapterOptions = {};
+Object.defineProperty(accessorAdapterOptions, "adapter", {
+  enumerable: true,
+  get() {
+    runtimeOptionGetterCalls += 1;
+    throw new Error("runtime adapter getter must not execute");
+  }
+});
+const rejectedAccessorAdapter = await executeNexoStep(accessorAdapterOptions);
+assert.equal(runtimeOptionGetterCalls, 0);
+assert.equal(rejectedAccessorAdapter.code, "NEXO_RUNTIME_OPTIONS_INVALID");
