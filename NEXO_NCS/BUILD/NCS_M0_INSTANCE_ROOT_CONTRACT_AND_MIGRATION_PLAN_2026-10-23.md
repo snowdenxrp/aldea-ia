@@ -594,3 +594,29 @@ The next caller closure method must use the complete tree and targeted file read
 - Keep concurrency/release-uncertain behavioral tests separate from static no-bypass checks; static import checks do not prove lock correctness.
 
 D1 and D2 remain OPEN. Runtime, tests and workflows remain unchanged.
+
+
+## 20. Existing architecture guard: verified scope and remaining gap (2026-10-23)
+
+### Direct source evidence
+
+- `tests/nexo/entrypoint.test.mjs` (blob `ff1bd2e9d292e21e00049b354249aee684837bbc`) already walks static local imports and re-exports from exactly two roots: `scripts/nexo.mjs` and `scripts/nexo-chronicle-session.mjs`. It verifies that the narrow application API exports only the expected seven use cases and that these entrypoints do not transitively import the compatibility runtime/Lúmina simulation path.
+- The same test currently asserts the old path-oriented API shape: `--continuity` is accepted by query/preview commands and Chronicle append accepts independent `--continuity` and `--chronicle` paths. Therefore this is a useful isolation guard, but **not** a root-admission/no-bypass test.
+- `tests/nexo/assistants-runtime-cli.test.mjs` (blob `2c4ffb83e3bb849ac35ec381b268ef4f74a13225`) exercises `scripts/assistants.mjs` with all three independent path environment variables. It verifies the repair runtime remains blocked with `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, with no dispatch, no effect journal obligation and no repeated environment write. This is behavioral evidence for the exclusion gate, not evidence that assistants is under a canonical instance root.
+- `scripts/nexo.mjs` invokes the Chronicle session as a child process (`spawnSync`); future root admission must be owned by the child process that actually executes append, not acquired in both parent and child.
+- `src/nexo/application/index.mjs` remains a path-oriented public surface that re-exports the query and preview functions. No root-oriented API or admission contract is implemented in the inspected source.
+
+### Corrected test classification
+
+The repository does have a partial static import-graph guard and a separate assistants repair-exclusion test. It would be inaccurate to say that there are no architecture tests at all. The exact gap is narrower and more consequential: no verified test currently enforces canonical root admission for every production entrypoint, blocks direct owner/store/path APIs from bypassing that boundary, or tests root-lock concurrency and release uncertainty.
+
+### Closure criteria before implementation
+
+1. Keep the existing Nexo-vs-Lúmina isolation guard and extend its explicit root list to include every supported production entrypoint, including `scripts/assistants.mjs` once its intended disposition is decided.
+2. Add a distinct root-admission architecture assertion: production entrypoints must receive/create a validated instance context; direct path-based application functions, `openNexoContinuityOwner`, low-level store factories and direct adapters are forbidden outside a narrow composition allowlist, tests and migration tooling.
+3. Do not simply add `scripts/assistants.mjs` to the existing Nexo-only import walker: it intentionally imports Lúmina/assistant modules. Give it a separate composite-integration contract/test so the Nexo isolation rule does not incorrectly classify Lúmina dependencies as a violation.
+4. Preserve existing CLI result shapes until compatibility is deliberately migrated; update tests that currently assert legacy path arguments only as part of the explicitly designed API transition, not by weakening them silently.
+5. Keep static graph checks separate from multi-process contention, bounded timeout, release-failure, ownership-loss, corrupt/stale lock, same-root exclusion and different-root independence tests.
+6. Preserve the repair exclusion test exactly in meaning: instance admission never authorizes effects, and the repair path remains blocked.
+
+This closes one ambiguity in the earlier notes: a guard exists, but its scope is two CLI import graphs and runtime/Lúmina isolation, not instance-root enforcement. D1/D2 remain OPEN. Runtime, tests and workflows were not changed in this checkpoint.
