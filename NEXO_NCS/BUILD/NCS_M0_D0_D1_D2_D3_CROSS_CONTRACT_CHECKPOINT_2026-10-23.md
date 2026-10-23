@@ -81,4 +81,4 @@ Este orden es una recomendación de ingeniería, no una decisión aceptada autom
 
 ## 7. Continuidad
 
-Actualizar STATUS y handoff con el hecho de que el riesgo D3 ya fue incorporado al contrato, y enfocar el siguiente análisis en cómo demostrar operacionalmente quiescencia de writers cooperantes y abortar de forma segura. No repetir el censo de código ni implementar.
+STATUS y handoff ya reflejan esta actualización. Siguiente: revisar el protocolo de evidencia contra la sección 9 del contrato de raíz y especificar qué dato de la instalación real falta para escoger un mecanismo de mantenimiento verificable. No repetir el censo de código ni implementar.
