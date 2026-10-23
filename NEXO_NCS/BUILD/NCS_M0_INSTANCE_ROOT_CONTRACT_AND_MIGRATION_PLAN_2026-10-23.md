@@ -935,3 +935,16 @@ Este hallazgo amplía la lista de entrypoints. D1/D3 permanecen OPEN.
 ### Condición verificable de cierre D1
 
 D1 no se cierra solo porque exista una lista. Requiere: (a) cada superficie tiene un tratamiento aprobado; (b) el grafo de callers de producción queda enumerado; (c) las rutas path-based quedan fuera de la API de producción; (d) pruebas de arquitectura verifican que ningún entrypoint productivo alcanza stores sin instancia admitida; (e) las pruebas incluyen invocación directa del hijo Chronicle y los flujos legacy `simulate`/`assistants`. Hasta entonces D1 = OPEN.
+
+
+## Hueco de diseño adicional — symlinks en los archivos internos derivados
+
+La política actual ya propone canonicalizar la raíz con `realpath`, pero eso no impide que `<root>/continuity.json` o `<root>/chronicle.json` sean symlinks a archivos fuera de la raíz. Los stores actuales abren esas rutas normales y siguen el symlink al leer/escribir. Por tanto, “rutas derivadas de root” no basta para demostrar que los bytes persistidos están físicamente dentro del directorio de instancia.
+
+Antes de cerrar D3, decidir y probar la política para los destinos internos existentes:
+- Rechazar symlinks en los nombres reservados de store y exigir archivos regulares cuando existan; tratar el archivo ausente como ausencia normal sin crearlo durante validación.
+- Rechazar también un lock de raíz preexistente que sea symlink o tenga forma inesperada; lock corrupto/ambiguo significa fail-closed.
+- Mantener explícito que esto no resuelve TOCTOU contra un proceso local hostil que pueda cambiar el árbol entre comprobación y uso. La garantía es de configuración cooperante, no sandbox.
+- Incluir pruebas de symlink de store apuntando fuera, symlink roto, archivo/directory conflictivo en nombre reservado y raíz aliasada por symlink. Ninguna prueba debe dejar escrituras externas ni mutar la raíz al fallar.
+
+Este hueco es de contención de rutas/configuración, no una nueva capa de autoridad. D3 continúa OPEN hasta fijar el comportamiento.
