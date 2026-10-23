@@ -750,3 +750,18 @@ Separate production path confirmed: scripts/nexo.mjs launches scripts/nexo-chron
 Scope boundary: the narrow in-repository wrapper question is resolved for inspected scripts/ and src/nexo/ files. External/downstream consumers, dynamic/computed imports, complete transitive production graph, and all direct path-based bypasses remain UNKNOWN/OPEN. No runtime/tests/workflows changed and no tests/CI were executed. Do not treat this source-reference scan as D1 closure.
 
 Next: continue D1-DESIGN against exact branch snapshot; reconcile every direct factory/owner/query/child-process edge and negative fixture. Keep D0/D1/D2/D3 OPEN; M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP. D1-S0 sequencing split remains a recommendation, not owner-approved; no implementation authorization.
+
+## 15. Paquete de decisión D0/D1 consolidado (2026-10-23)
+
+Documento nuevo: `NEXO_NCS/BUILD/NCS_M0_OWNER_DECISION_PACKET_D0_D1_SEQUENCE_2026-10-23.md`
+Commit de creación: `5f9aa9e75864145b13bafdc271131662fadfa7b6`
+URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_OWNER_DECISION_PACKET_D0_D1_SEQUENCE_2026-10-23.md
+
+Este paquete reúne las recomendaciones D0-C1…C4 y D1-S0 con alternativas, riesgos y criterios de cierre. No es aprobación del propietario ni autorización de implementación. Recomendación técnica integrada: raíz explícita única sin fallback; bootstrap/migración separados; alias/estado ambiguo bloqueados; D1-DESIGN separado de D1-IMPLEMENTATION; queries bajo admisión si se conserva la garantía de snapshots; assistants/simulate fuera de la ruta ordinaria hasta definir sus contratos multi-store; hijo Chronicle con admisión propia si permanece ejecutable directamente.
+
+### Próximo trabajo permitido sin convertir propuestas en decisiones
+1. Reconciliar D2 (scope, lock order, no-reentrancy, child ownership, timeout/release uncertainty) y D3 (inventory, dry-run, copy/verify, cutover/rollback) contra el paquete y los contratos existentes.
+2. Enumerar incompatibilidades reales y dependencias no resueltas; no volver a ejecutar el censo general mientras no cambie el snapshot de código.
+3. Mantener todos los estados D0/D1/D2/D3 OPEN y no tocar runtime/tests/workflows sin autorización de implementación explícita.
+
+El paquete no cambia estado constitucional: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. No hubo cambios de runtime/tests/workflows ni ejecución de tests/CI.
