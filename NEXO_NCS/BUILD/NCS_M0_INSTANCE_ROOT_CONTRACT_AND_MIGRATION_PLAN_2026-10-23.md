@@ -948,3 +948,20 @@ Antes de cerrar D3, decidir y probar la política para los destinos internos exi
 - Incluir pruebas de symlink de store apuntando fuera, symlink roto, archivo/directory conflictivo en nombre reservado y raíz aliasada por symlink. Ninguna prueba debe dejar escrituras externas ni mutar la raíz al fallar.
 
 Este hueco es de contención de rutas/configuración, no una nueva capa de autoridad. D3 continúa OPEN hasta fijar el comportamiento.
+
+
+## Candidato concreto para D2 — lock de raíz como directorio reservado
+
+Para eliminar la ambigüedad entre “archivo de lock” y “directorio de lock”, la recomendación de diseño es usar `<root>/.nexo-instance.lock/` como directorio reservado creado atómicamente con `mkdir`, con `owner.json` dentro. Es coherente con la primitiva ya usada por los stores, pero constituye una capa de instancia separada y no comparte sus rutas ni estado local.
+
+Owner record mínimo candidato: `pid`, token aleatorio de propiedad y `createdAt`. No agregar `instanceId`, cola, lease renovable ni otro identificador sin una necesidad demostrada. La ruta del directorio identifica el recurso de coordinación; no es identidad de autoridad.
+
+Protocolo candidato:
+1. Validar raíz existente y canonicalizarla antes de derivar el lock.
+2. Intentar `mkdir(<root>/.nexo-instance.lock)`; solo quien lo crea puede escribir owner y ejecutar la operación.
+3. Al encontrar el lock, leer owner con límite de bytes. Si el owner aún no existe y la lectura devuelve `ENOENT`, reintentar solo durante la ventana de creación; JSON inválido, permiso denegado, owner incompleto persistente o token/PID malformado producen `NEXO_INSTANCE_LOCK_STATE_UNKNOWN`.
+4. Si el lock parece obsoleto, no borrarlo: devolver `NEXO_INSTANCE_LOCK_STALE_RECOVERY_REQUIRED`. Si no se puede obtener dentro del presupuesto, `NEXO_INSTANCE_LOCK_ACQUISITION_TIMEOUT`.
+5. Liberar solo después de releer y verificar el token de propiedad. Si el token no coincide o no se puede confirmar la eliminación, devolver liberación incierta y bloquear reuso local hasta recuperación explícita.
+6. Nunca mantener este lock mientras el padre espera a un hijo que también debe adquirirlo. El hijo Chronicle crea su propio deadline monotónico desde un presupuesto relativo.
+
+No está aprobado como protocolo final. D2 sigue OPEN hasta fijar códigos públicos, timeout/stale policy, release retry/quarantine y pruebas concurrentes/negative.
