@@ -362,3 +362,41 @@ Este shape es una propuesta interna de diseño, no un contrato público definiti
 - **Tests low-level:** las pruebas de store deben continuar ejercitando los locks per-store; una suite de API de instancia debe verificar la exclusión compuesta y que cada entrypoint de producción no pueda acceder directamente sin contexto.
 
 **Recomendación de cierre:** aceptar el diseño de capa de admisión adicional, pero mantener D2 abierto hasta que se documente el grafo de llamadas de los entrypoints críticos (especialmente repair/runtime), se decida el dueño del lock para el proceso Chronicle padre/hijo y se redacte la matriz de pruebas de release incierto y no-bypass. No cambiar runtime, tests ni workflows antes de ese cierre.
+
+
+## 15. D2 — mapa de llamadas y propiedad de admisión por entrypoint (2026-10-23)
+
+### Call graph confirmado en el código actual
+
+| Entry point / helper | Acceso observado | Frontera recomendada para admisión | Alcance actual |
+|---|---|---|---|
+| `scripts/nexo.mjs` → `continuity-queries.mjs` | Queries status, mission status/plan, draft preview y Open Loops leen Continuity y materializan snapshots. | Envolver cada comando en API de instancia antes de llamar a la query; query recibe contexto/store ya admitido o se vuelve helper interno. | Lectura/preview; no despacho. |
+| `scripts/nexo-chronicle-session.mjs` → `runNexoChronicleAppend` | CLI hijo acepta paths de Continuity y Chronicle separados; application append construye stores, lee ambos, abre owner, inicializa Chronicle y consulta Continuity. | El proceso que ejecuta el append adquiere exactamente una vez la admisión raíz; no asumir que un caller externo ya la tiene. En el CLI actual, el hijo es dueño. | Escritura de Chronicle y acceso compuesto. |
+| `continuity-service.mjs` → `openNexoContinuityOwner` | Lee Continuity; si no existe puede inicializar desde legacy memory o bootstrap explícito. | API de instancia controla bootstrap y llama al servicio interno dentro de una admisión única. No convertir missing store en creación automática. | Lectura y potencial inicialización. |
+| `nexo-repair-entrypoint.mjs` → preparation/dispatch/settlement | El protocolo encadena varias lecturas de owner, prepara un journal, puede despachar una reparación al archivo de entorno, registra lineage y liquida por CAS. | Si vuelve a estar habilitado en producción, debe tener una única admisión de operación de extremo a extremo, pero la operación sobre archivo de entorno no es atómica con Continuity; no prometer transacción cross-store. | El wrapper `nexo-runtime-session.mjs` bloquea hoy esta integración con `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`. Mantener el bloqueo. |
+| `nexo-repair-settlement.mjs` / `nexo-repair-mission-verification.mjs` | Helpers exportados leen stores directamente; settlement hace CAS; verification revalida la revisión después de observar estado externo. | Si se admiten en una API productiva futura, wrapper en la frontera superior; no agregar lock raíz dentro de estos helpers si ya reciben contexto. | Helpers/protocolo; no son por sí mismos prueba de ruta runtime habilitada. |
+| `chronicle-effect.mjs` y `owner-backed-runtime.mjs` | Consumidores indirectos de store/owner observados. | Auditar callers concretos y propagar contexto; no inferir admisión por el mero hecho de recibir un owner. | Requiere clasificación de uso completa. |
+
+### Propiedad del lock para Chronicle CLI
+
+Recomendación: **el proceso que ejecuta `runNexoChronicleAppend` es el único propietario de la admisión raíz**. No colocar un lock raíz en el CLI padre si este delega a un hijo; no pasar un deadline absoluto entre procesos. La CLI hija valida la raíz y adquiere su propia admisión con un presupuesto relativo local. Si en el futuro el padre adquiere admisión y realiza la operación sin hijo, será otro diseño y deberá cambiarse de manera explícita con pruebas, no combinar ambos modelos.
+
+La API pública en proceso debe seguir la misma regla: wrapper de instancia como única frontera, helpers internos que reciben contexto ya admitido. No se deben exponer funciones de aplicación que acepten rutas arbitrarias y accedan a los stores como una segunda API productiva paralela. Las factories low-level se conservan para tests de primitivas y composición interna.
+
+### Corrección importante del alcance
+
+Los módulos de reparación siguen existiendo y tienen funciones exportadas con acceso directo a stores; sin embargo, el runtime session actual devuelve bloqueado antes de despachar por decisión M0 Option A. Esto significa que la integración runtime de reparación permanece excluida, no que los módulos de reparación hayan desaparecido ni que sus pruebas sean innecesarias. La primera migración de raíz no debe reactivar ni ensanchar esta ruta. Debe decidirse por separado si los helpers excluidos requieren una envoltura de instancia ahora o solo cuando su integración vuelva a ser autorizada.
+
+### Pruebas requeridas antes de D2 cerrado
+
+1. Un solo lock raíz cubre toda la operación compuesta y se libera tras éxito, error, excepción y retorno bloqueado.
+2. Segundo proceso sobre la misma raíz recibe timeout/blocked y no observa estado intermedio; proceso en otra raíz puede progresar independientemente.
+3. El lock raíz no se adquiere dos veces dentro del mismo flujo; test explícito detecta reentrada y orden raíz→store.
+4. Chronicle child es el único dueño del lock en el CLI actual; test de integración impide que padre e hijo intenten adquirir el mismo lock.
+5. Lock owner corrupto, PID desconocido, stale lock, pérdida de ownership y release failure dan UNKNOWN/blocked y nunca éxito limpio ni limpieza automática.
+6. Las queries/previews toman admisión aunque sean read-only porque leen estado mutable; no llaman a dispatch ni escriben stores.
+7. API productiva no acepta `--continuity`/`--chronicle` independientes junto con root; legacy paths son rechazados salvo migración explícita con equivalencia probada.
+8. Tests low-level de stores continúan cubriendo locks por almacén; suite de arquitectura revisa entrypoints y detecta factories/paths usados fuera de los límites permitidos.
+9. M0 runtime repair sigue devolviendo `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; añadir la raíz nunca puede cambiar esa decisión de alcance.
+
+D2 sigue abierto hasta convertir estos requisitos en una matriz completa de entrypoints y revisar los callers indirectos de adapters/runtime. No hay autorización de implementación en esta sección.
