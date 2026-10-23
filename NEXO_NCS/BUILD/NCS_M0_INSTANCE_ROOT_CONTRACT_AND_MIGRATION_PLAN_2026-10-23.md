@@ -400,3 +400,74 @@ Los módulos de reparación siguen existiendo y tienen funciones exportadas con 
 9. M0 runtime repair sigue devolviendo `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; añadir la raíz nunca puede cambiar esa decisión de alcance.
 
 D2 sigue abierto hasta convertir estos requisitos en una matriz completa de entrypoints y revisar los callers indirectos de adapters/runtime. No hay autorización de implementación en esta sección.
+
+
+## 16. D2 — contrato de resultados de admisión y liberación incierta (2026-10-23)
+
+### Propósito y regla de precedencia
+
+La admisión por raíz es un resultado de coordinación, separado del resultado de negocio. El wrapper no debe reemplazar ni reinterpretar silenciosamente los códigos de las operaciones existentes. Para evitar un falso éxito, la decisión externa combina ambos resultados siguiendo esta precedencia:
+
+1. Si la raíz no se puede validar o el lock no se adquiere, la operación de negocio no comienza. Resultado externo: `blocked`; `admission.status = blocked`; `writeStarted = false`.
+2. Si la operación termina y la liberación del lock queda confirmada, el resultado de negocio original se conserva dentro de `operation`, con `admission.status = acquired` como evidencia de que la admisión fue adquirida y luego cerrada correctamente. El nombre `acquired` describe el estado de admisión obtenido; no implica que el lock siga retenido después de retornar.
+3. Si la operación falla pero la liberación queda confirmada, se conserva el resultado de fallo original de la operación. No se transforma un fallo de negocio en fallo de lock.
+4. Si la liberación del lock no puede confirmarse, el resultado externo es `unknown` o `blocked` según el contrato público que se consolide; nunca un éxito limpio. Se preservan el resultado observado de la operación y la fase `lock_release` como datos diagnósticos internos. No se reintenta automáticamente la operación.
+5. Si se pierde la propiedad del lock mientras la operación está en curso, no se asume exclusión válida para el resto de la operación. Se bloquea la continuación cuando sea posible, se registra la incertidumbre y no se afirma atomicidad retroactiva.
+
+### Forma interna recomendada
+
+La forma siguiente es una propuesta de diseño interno y no debe publicarse como API hasta cotejar todos los consumidores:
+
+- `operation`: resultado original de negocio, si la operación llegó a ejecutarse; ausente si no empezó.
+- `admission.status`: `acquired | blocked | release_uncertain`.
+- `admission.code`: código estable para un bloqueo o una incertidumbre; nulo cuando no hay error de admisión.
+- `admission.phase`: `root_validation | lock_acquisition | operation | lock_release`.
+- `admission.writeStarted`: indicador conservador de que se alcanzó el inicio de una escritura administrada por la operación; no afirma que el efecto externo se completara ni que no ocurrieran efectos parciales.
+- `admission.rootIdentity`: no incluir ruta sensible completa en salida pública ni presentar el nombre/ruta de la raíz como identidad constitucional. Si hace falta correlación diagnóstica, diseñarla por separado y con minimización de datos.
+
+No introducir un segundo `status` de negocio ambiguo en el mismo nivel. El wrapper de instancia es dueño del resultado de admisión; la función de negocio conserva su propio resultado. Los consumidores deben distinguirlos explícitamente.
+
+### Clasificación provisional de errores
+
+Los códigos son candidatos internos y necesitan compararse con las convenciones ya existentes antes de fijar la superficie pública:
+
+| Fase | Condición | Resultado exigido |
+|---|---|---|
+| `root_validation` | Raíz ausente, inexistente, no canónica o inaccesible | Bloqueado; la operación no comienza |
+| `lock_acquisition` | Presupuesto agotado | Bloqueado; no ejecutar la operación |
+| `lock_acquisition` | Owner ilegible, corrupto o con identidad/PID desconocidos | Estado desconocido; no borrar el lock |
+| `lock_acquisition` | Lock stale o posible pérdida de propiedad | Requiere recuperación explícita; no reclamar el lock automáticamente |
+| `operation` | La operación devuelve `blocked`, `conflict`, `unknown` u otro estado existente | Conservar exactamente la semántica de negocio |
+| `lock_release` | El token/owner no coincide, el directorio no se puede retirar o el resultado de liberación es incierto | No devolver éxito limpio; no repetir automáticamente la operación |
+
+Códigos internos propuestos a evaluar: `NEXO_INSTANCE_ROOT_INVALID`, `NEXO_INSTANCE_LOCK_ACQUISITION_TIMEOUT`, `NEXO_INSTANCE_LOCK_STATE_UNKNOWN`, `NEXO_INSTANCE_LOCK_STALE_RECOVERY_REQUIRED` y `NEXO_INSTANCE_LOCK_RELEASE_UNCERTAIN`. No sustituir por ellos los errores específicos de los stores ni fijarlos como API pública antes de revisar los contratos existentes.
+
+### Reglas de liberación y repetición
+
+- La adquisición solo se considera válida tras crear el lock y verificar que el registro de propietario corresponde al proceso/token que lo creó.
+- La liberación debe verificar la propiedad antes de retirar el lock; jamás eliminar un lock cuyo propietario actual no coincida con el token local.
+- Si la operación ya pudo escribir, una liberación incierta no prueba que la escritura falló. El llamador no debe volver a ejecutar append/repair como “reintento seguro” sin una reconciliación específica de esa operación.
+- La capa raíz no puede borrar las diferencias actuales de liberación de Chronicle y Continuity. Se conservan los locks per-store y su semántica hasta que las pruebas demuestren compatibilidad.
+- El timeout acota la espera cooperativa por adquirir el lock; no promete interrumpir operaciones de filesystem bloqueadas.
+- El lock solo coordina procesos cooperantes sobre almacenamiento local compatible. No acredita autoridad, no protege frente a procesos hostiles y no prueba durabilidad ante pérdida de energía.
+
+### Matriz de verificación necesaria para cerrar D2
+
+| Caso | Resultado observable requerido | Efecto prohibido |
+|---|---|---|
+| Raíz inválida/ausente | Bloqueado antes de llamar a negocio | Bootstrap implícito |
+| Contención y timeout | Bloqueado; ningún acceso al snapshot de la operación | Seguir sin lock |
+| Owner corrupto/desconocido/stale | UNKNOWN o bloqueado, evidencia preservada | Limpieza automática |
+| Operación de lectura correcta | Resultado original + liberación confirmada | Snapshot compuesto fuera de admisión |
+| Operación devuelve bloqueo/conflicto | Estado original + liberación confirmada | Reetiquetar como éxito |
+| Excepción de negocio | Excepción normalizada según el contrato existente + intento de liberar | Omitir liberación |
+| Fallo de liberación tras operación correcta | UNKNOWN/bloqueado; fase `lock_release` | Éxito limpio o reejecución automática |
+| Pérdida de ownership | UNKNOWN/bloqueado | Continuar afirmando exclusión |
+| Dos procesos, misma raíz | Exclusión; segundo espera o bloquea por timeout | Lectura de estado intermedio |
+| Dos procesos, raíces distintas | Progreso independiente | Lock global accidental |
+| Chronicle CLI actual | El proceso que ejecuta `runNexoChronicleAppend` posee el único lock raíz | Lock raíz duplicado padre/hijo |
+| Repair/runtime | Se mantiene `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` | Reactivación indirecta por el wrapper |
+
+### Estado de cierre
+
+Esta sección mejora la precisión del contrato, pero **no cierra D2 ni D1**. Falta cotejar los consumidores que esperan formas concretas de resultado, completar la matriz de callers indirectos con evidencia reproducible y definir pruebas automatizadas de no-bypass. Sin una checkout completa no se declarará un barrido equivalente a `rg` de todo el repositorio. No se cambiaron runtime, tests ni workflows en este checkpoint.
