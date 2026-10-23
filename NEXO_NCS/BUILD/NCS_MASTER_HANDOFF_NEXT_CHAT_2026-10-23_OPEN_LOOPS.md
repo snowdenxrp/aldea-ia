@@ -977,3 +977,12 @@ Checkpoint: `NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md` updated
 Concrete open gaps: first-root creation and partial bootstrap are not coordinated by the proposed in-root lock; owner.json creation failure cleanup must not remove a replacement lock; token-check-then-recursive-remove has a check/use race if external replacement is allowed; and a confirmed/ambiguous persistence result must remain separate from uncertain lock release, with no automatic business retry. Required D2 tests and state-transition matrix are recorded in the checkpoint.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP. Next: construct the proposed D2 state-transition matrix and check it against D0-C2/bootstrap, owner creation/cleanup, release, external recovery, and ambiguous persistence. Do not implement or mark a recommendation accepted without the owner's explicit decision and implementation gate.
+
+
+## Latest continuation — D2 state-transition matrix (2026-10-23)
+
+Created `NEXO_NCS/BUILD/NCS_M0_D2_INSTANCE_ADMISSION_STATE_TRANSITION_MATRIX_2026-10-23.md`, creation commit `f27981d451b76a67c96d6db3b28e6a0004d7caad`. It maps root/lock/owner/operation/persistence/release/bootstrap-partial states and candidate transitions. Key open issues: first bootstrap before an in-root lock exists; owner-write failure cleanup must not remove a replacement; token-check then recursive path removal has a check/use race if external replacement is allowed; persistence outcome and lock-release outcome must remain separate and must never trigger an automatic business retry.
+
+The existing `tests/nexo/root-bootstrap-protocol.test.mjs` is a software cryptographic vector test, not a test of instance bootstrap, cross-process lock acquisition, or release races. No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+Next: compare the matrix against D0-C2 and external-recovery assumptions. Keep all protocol choices as proposals until owner decision and separate implementation authorization. Do not repeat the caller census without a changed source snapshot.
