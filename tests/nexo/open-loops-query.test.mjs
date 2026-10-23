@@ -87,10 +87,15 @@ try {
   assert.equal(result.dispatchAttempted, false);
   assert.deepEqual(result.missionLoops, [{
     missionId: "mission-open",
-    status: "planned",
-    objective: "local_analysis",
-    openSteps: [{ stepId: "step-open", action: "local_analysis", status: "planned" }]
-  }]);
+    status: "blocked",
+    objective: "reconcile_prepared_effect",
+    openSteps: [{
+      stepId: "step-open",
+      action: "local_analysis",
+      status: "blocked",
+      blockCode: "NEXO_EFFECT_RECONCILIATION_REQUIRED"
+    }]
+  }], "a prepared effect must preserve the canonical reconciliation block");
   assert.deepEqual(result.effectObligations, [
     { missionId: "mission-open", stepId: "step-open", action: "local_analysis", status: "prepared" },
     { missionId: "mission-open", stepId: "step-open", action: "local_analysis", status: "reconciled_observed" }
