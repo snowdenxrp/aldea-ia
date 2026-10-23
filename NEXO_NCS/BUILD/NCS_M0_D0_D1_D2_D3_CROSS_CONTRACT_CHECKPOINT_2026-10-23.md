@@ -158,3 +158,14 @@ A targeted check of root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31
 This is not necessarily a contradiction if bootstrap first establishes a safely coordinated root, but the bootstrap's first coordination point is not specified by these statements. An in-root lock cannot be acquired before the root/lock directory exists. Do not silently create the root before validation or invent a sibling/global lock. D0-C2 and D2 must explicitly specify the first-creation race/coordination protocol, the exact mutations permitted during bootstrap, and fail-closed behavior if two bootstrap attempts race or ownership is uncertain. If no defensible protocol is chosen, bootstrap stays blocked/UNKNOWN rather than bypassing admission.
 
 Status: concrete contract gap; not implemented. This is distinct from the earlier D0-C1 interface and D0-C3 canonicalization wording notes. No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
+
+
+## Follow-up: first bootstrap race under the proposed in-root mkdir lock (2026-10-23)
+
+A deeper read of the D2 candidate protocol in root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` sharpens the prior bootstrap gap. The candidate says: root must already exist and be canonicalized; contenders then `mkdir(<root>/.nexo-instance.lock)`; only the creator writes `owner.json`. Separately, the root policy says a nonexistent root can be created only by explicit bootstrap, and the contract says not to add a persistent bootstrap marker without demonstrated need.
+
+Potential race requiring an explicit contract: if bootstrap process A creates the root directory but has not yet created the in-root lock, process B can observe an existing root and create the lock first. The atomic creation of the lock serializes operations only after the lock directory exists; it does not by itself establish that root bootstrap has completed or which process owns the right to initialize stores. This is a concrete race scenario to prove or rule out, not a claim that it has already occurred in runtime.
+
+D0-C2/D2 must define a first-creation protocol that coordinates the root creation and initialization boundary, including simultaneous bootstrap, crash after root creation but before lock acquisition, partial initialization, and retry/recovery. It must also reconcile the no-extra-marker constraint with any mechanism selected. Do not assume “root exists” means “bootstrap complete”; do not invent a global/sibling lock or silently initialize. If the contract cannot distinguish these states safely, return BLOCKED/UNKNOWN and preserve all data.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
