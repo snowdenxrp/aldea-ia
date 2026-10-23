@@ -621,3 +621,13 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - Importante: esto es una propuesta documentada, NO un bloqueo implementado. El CLI actual todavía puede ejecutar `chronicle-append`; no afirmar lo contrario. No se cambió runtime.
 - Antes de implementar: cerrar contrato y error mapping, bloquear en la frontera de aplicación antes de inicializar stores/locks/escritura, probar ausencia de archivos y dispatch en rechazo, conservar consultas de solo lectura y ejecutar CI sobre el SHA exacto.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+# ESPECIFICACIÓN DE GATE CHRONICLE PRE-COMMISSIONING — 2026-10-23
+
+- Trazado de orden confirmado en `runNexoChronicleAppend`: tras validar opciones, construye stores, lee ambos, abre el owner (que puede inicializar Continuity), puede inicializar Chronicle, puede persistir la misión y luego despacha el append. Por ello, un gate solo delante de `store.append()` sería tardío e incompleto.
+- Documento técnico: [NCS_CHRONICLE_PRECOMMISSIONING_GATE_IMPLEMENTATION_SPEC_2026-10-23.md](BUILD/NCS_CHRONICLE_PRECOMMISSIONING_GATE_IMPLEMENTATION_SPEC_2026-10-23.md), commit `58451953094befc9807834eddf74fb73a2032642`.
+- Contrato propuesto: con raíz y evaluator aún no verificados, el gate deny-only debe ejecutarse al inicio de la use case, antes de cualquier operación de store/lock/owner/admission/initialization. No aceptar un booleano, flag CLI, misión admitida ni objeto caller-supplied como prueba de autoridad.
+- Regresiones especificadas: no crear archivos ni locks con ambos flags de inicialización; preservar archivos existentes; no llamar stores/owner/admission/handler; respuesta bloqueada con `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `redispatchAuthorized: false`; mantener las consultas de solo lectura.
+- **Runtime no modificado; gate no implementado.** La recomendación es fail-closed, pero no se presume que el usuario haya ratificado un cambio de comportamiento solo por pedir que continúe el trabajo.
+- Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
