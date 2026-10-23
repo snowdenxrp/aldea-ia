@@ -108,6 +108,72 @@ try {
   assert.deepEqual(await loadNexoOpenLoops(filePath), result,
     "the same continuity revision must produce a deterministic projection");
 
+  // A planned mission without effect-journal entries is surfaced directly,
+  // not hidden behind a synthetic journal obligation.
+  const plannedPath = path.join(root, "planned-continuity.json");
+  const plannedStore = createNexoContinuityStore({ filePath: plannedPath });
+  assert.equal((await plannedStore.initialize(empty)).status, "committed");
+  const plannedSnapshot = recordNexoMissionInSnapshot(empty, {
+    missionId: "mission-planned",
+    objective: "local_analysis",
+    status: "planned",
+    steps: [{ id: "step-planned", action: "local_analysis", status: "planned", dependsOn: [] }]
+  });
+  assert.equal((await plannedStore.commitIfCurrent(0, plannedSnapshot)).status, "committed");
+  const plannedResult = await loadNexoOpenLoops(plannedPath);
+  assert.equal(plannedResult.status, "loaded");
+  assert.deepEqual(plannedResult.missionLoops, [{
+    missionId: "mission-planned",
+    status: "planned",
+    objective: "local_analysis",
+    openSteps: [{ stepId: "step-planned", action: "local_analysis", status: "planned" }]
+  }]);
+
+  // A failed step stays visible as a replan-required loop.
+  const failedPath = path.join(root, "failed-continuity.json");
+  const failedStore = createNexoContinuityStore({ filePath: failedPath });
+  assert.equal((await failedStore.initialize(empty)).status, "committed");
+  const failedSnapshot = recordNexoMissionInSnapshot(empty, {
+    missionId: "mission-failed",
+    objective: "local_analysis",
+    status: "planned",
+    steps: [{ id: "step-failed", action: "local_analysis", status: "planned", dependsOn: [] }]
+  });
+  failedSnapshot.missions[0].steps[0].status = "failed";
+  assert.equal((await failedStore.commitIfCurrent(0, failedSnapshot)).status, "committed");
+  const failedResult = await loadNexoOpenLoops(failedPath);
+  assert.equal(failedResult.status, "loaded");
+  assert.deepEqual(failedResult.missionLoops, [{
+    missionId: "mission-failed",
+    status: "needs_replan",
+    objective: "replan_after_failure",
+    openSteps: [{ stepId: "step-failed", action: "local_analysis", status: "failed" }]
+  }]);
+
+  // A persisted terminal claim unsupported by reconstruction must block the
+  // inventory instead of silently omitting or trusting the claimed completion.
+  const discrepancyPath = path.join(root, "discrepancy-continuity.json");
+  const discrepancyStore = createNexoContinuityStore({ filePath: discrepancyPath });
+  assert.equal((await discrepancyStore.initialize(empty)).status, "committed");
+  const discrepancySnapshot = recordNexoMissionInSnapshot(empty, {
+    missionId: "mission-discrepant",
+    objective: "local_analysis",
+    status: "planned",
+    steps: [{ id: "step-discrepant", action: "local_analysis", status: "planned", dependsOn: [] }]
+  });
+  discrepancySnapshot.missions[0].status = "completed";
+  assert.equal((await discrepancyStore.commitIfCurrent(0, discrepancySnapshot)).status, "committed");
+  const discrepancy = await loadNexoOpenLoops(discrepancyPath);
+  assert.equal(discrepancy.status, "blocked");
+  assert.equal(discrepancy.code, "NEXO_MISSION_STATUS_DISCREPANCY");
+
+  // Corrupt continuity must not be misreported as an empty inventory.
+  const corruptPath = path.join(root, "corrupt-continuity.json");
+  await fs.writeFile(corruptPath, "{not-json", "utf8");
+  const corrupt = await loadNexoOpenLoops(corruptPath);
+  assert.equal(corrupt.status, "blocked");
+  assert.equal(corrupt.code, "NEXO_CONTINUITY_STORE_INVALID_JSON");
+
   // An unresolved journal row without stable mission/step/action linkage must
   // not be silently omitted or turned into a fabricated identity.
   const malformed = {
