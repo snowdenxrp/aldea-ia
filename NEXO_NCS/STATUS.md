@@ -956,3 +956,12 @@ D1 y D2 continúan ABIERTOS. Próximo: rastrear imports de `nexo-continuity.mjs`
 La sección 19 registra que `scripts/assistants.mjs` configura de forma independiente `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH` y `NEXO_CONTINUITY_PATH` (blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`, líneas 19–25 y 47–54). La recomendación es tratarlo como integración compuesta Lúmina+Nexo: no mover automáticamente world-state ni memoria Lúmina al root Nexo, no declarar transacción entre archivos y definir qué suboperación Nexo queda bajo admisión. No se implementó.
 
 Las búsquedas de código del conector devolvieron cero resultados para símbolos que sí existen en fuentes revisadas; esto es limitación de búsqueda, no ausencia de callers. D1 sigue OPEN hasta cierre reproducible del call graph y prueba de arquitectura/no-bypass. D2 sigue OPEN hasta contrato, compatibilidad y pruebas de lock. Runtime/tests/workflows sin cambios. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+# CHECKPOINT — ALCANCE REAL DEL TEST DE ARQUITECTURA (2026-10-23)
+
+Lectura directa de `tests/nexo/entrypoint.test.mjs` (blob `ff1bd2e9d292e21e00049b354249aee684837bbc`) confirma que ya existe un guard estático de imports/reexports, pero solo parte de `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`. Comprueba la API estrecha y evita acoplamiento transitivo con el runtime de compatibilidad/Lúmina; no exige raíz canónica ni bloquea APIs de rutas independientes. De hecho, sus assertions actuales fijan `--continuity` y `--chronicle` como entradas aceptadas.
+
+`tests/nexo/assistants-runtime-cli.test.mjs` (blob `2c4ffb83e3bb849ac35ec381b268ef4f74a13225`) confirma la exclusión conductual de repair (`NEXO_M0_OPTION_A_EFFECT_EXCLUDED`), pero también configura explícitamente los tres paths independientes; no demuestra admisión por root. `scripts/nexo.mjs` delega Chronicle al proceso hijo mediante `spawnSync`, por lo que ese hijo debe ser el único dueño de la futura admisión.
+
+Corrección precisa del estado previo: sí hay guard de arquitectura parcial; falta el guard distinto de root/no-bypass, con lista completa de entradas productivas y contrato separado para `scripts/assistants.mjs` (integración compuesta Nexo+Lúmina). No se cambiaron runtime/tests/workflows. D1/D2 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
