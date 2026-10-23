@@ -629,3 +629,17 @@ Hallazgo que no debe repetirse sin cambio de blobs: aunque ambos usan directorio
 `tests/nexo/root-bootstrap-protocol.test.mjs` solo contiene vector software conocido; declara que no representa raíz de Nexo ni hardware/provisioning. No es prueba de autoridad.
 
 Siguiente paso: completar D0/D1/D2/D3 como contratos documentales y reconciliar los callers que quedan UNKNOWN; no tocar runtime/tests hasta cerrar diseño. Estado: sin ejecución de tests/CI; D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## 12. Continuation checkpoint — aggregate resource budget (2026-10-23)
+
+New document:
+- `NEXO_NCS/BUILD/NCS_M0_AGGREGATE_RESOURCE_BUDGET_GAP_ANALYSIS_2026-10-23.md`
+- Commit: `065df83a49ae853f8c93ca21919f545ac7322c25`
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_AGGREGATE_RESOURCE_BUDGET_GAP_ANALYSIS_2026-10-23.md
+
+Source limits confirmed: Continuity document 16 MiB; Chronicle document 32 MiB; 48 MiB combined serialized-document ceiling only, not heap. Per-collection, stdin and temporary-directory limits do not create an aggregate heap or total disk quota. Do not invent a heap multiplier. Aggregate heap and total disk remain OPEN / NOT DEMONSTRATED. Full-operation cross-entrypoint admission remains NOT IMPLEMENTED.
+
+No runtime/tests/workflows changed and no tests/CI executed in this pass. Canonical state unchanged: M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+Next: reconcile the transitive caller graph against one exact source-tree snapshot, mark unresolved/dynamic edges UNKNOWN/BLOCKED, then close D0 subdecisions, D1-DESIGN sequencing, D2 admission scope and D3 migration before runtime changes.
