@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-23 — RUNTIME PUBLIC OPTIONS GUARD
+
+- Hallazgo reproducible: `replanPersistedNexoMission(options)`, `executeNexoStep(options)` y `executeLuminaNexoStep(options)` recibían opciones por destructuring. Un getter propio en `memory`, `adapter` u otro campo consumido podía ejecutarse antes de cualquier validación de memoria/mission.
+- Corrección: las tres entradas usan `readRuntimeOptions`, que acepta solo un registro plano/prototipo nulo y extrae los campos consumidos mediante descriptores propios enumerables de datos. Opciones con accessor o prototipo no permitido se rechazan con `NEXO_RUNTIME_OPTIONS_INVALID` sin ejecutar el getter.
+- Regresiones en `tests/nexo/runtime.test.mjs`: getter de memoria no ejecutado en replan y en ambas entradas de ejecución; getter de adapter no ejecutado; objeto con opciones heredadas rechazado.
+- Commits: runtime [`d2f1e6bd4385e8386ca1cea46dde55ea3abfe4e6`](https://github.com/snowdenxrp/aldea-ia/commit/d2f1e6bd4385e8386ca1cea46dde55ea3abfe4e6), ejecución pública [`0894852a95f1f5695b799b4a62f2c7e3501bdab3`](https://github.com/snowdenxrp/aldea-ia/commit/0894852a95f1f5695b799b4a62f2c7e3501bdab3), regresiones [`43f5d00337b9e074e17ad310012c711c5aa56615`](https://github.com/snowdenxrp/aldea-ia/commit/43f5d00337b9e074e17ad310012c711c5aa56615) y [`bdc31b4b7fdcf684afce1fbf8d6e4f62a5a40f1b`](https://github.com/snowdenxrp/aldea-ia/commit/bdc31b4b7fdcf684afce1fbf8d6e4f62a5a40f1b).
+- CI sobre SHA exacto `bdc31b4b7fdcf684afce1fbf8d6e4f62a5a40f1b`: 4/4 SUCCESS — [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883839952), [admisión y continuidad](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883840103), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883840014), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39883839962).
+- Límite: los guards no neutralizan `Proxy traps` ni certifican la confianza de los valores que las opciones referencian. El runtime no adquiere autoridad ni se activa ningún efecto de producto.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: continuar desde la siguiente frontera pública con un defecto reproducible; no repetir guards ya registrados ni reabrir AB104.214/P112 sin evidencia de que su conclusión haya quedado obsoleta.
+
+---
+
 # CHECKPOINT CORRECTIVO — 2026-10-23 — SIMULATION REVISION MUST BE WRITABLE
 
 - Hallazgo adicional reproducible en la misma frontera: una raíz de simulación congelada o con `nexoEffectRevision` no escribible podía pasar la validación inicial y fallar más tarde cuando el adaptador intentara incrementar la revisión, dejando una ruta de ejecución que no podía cumplir su contrato de versión.
