@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — OWNER-BACKED RUNTIME PUBLIC INPUT GUARD
+
+- Hallazgo reproducible: `executeNexoStepWithContinuityOwner(args = {})` copiaba opciones con spread antes de validar y comprobaba métodos de `owner/adapter` mediante acceso ordinario. Getters en campos consumidos o en capacidades podían ejecutarse antes de que el runtime rechazara el contexto.
+- Corrección runtime: la envoltura extrae los siete campos consumidos mediante descriptores propios de datos desde un objeto plano/prototipo nulo; no copia claves desconocidas. Las capacidades de propietario/adaptador se proyectan como vistas con métodos extraídos de descriptores de datos y llamadas enlazadas al objeto original. Capacidades accessor o ausentes se rechazan antes de invocar el propietario o iniciar dispatch.
+- Regresiones agregadas a `tests/nexo/chronicle-runtime.test.mjs`: getter en `missionId`, getter en `owner.loadCurrent` y getter en `adapter.supports`; se exige cero ejecución de getters, cero llamadas al propietario cuando el adaptador es inválido y `dispatchAttempted: false`.
+- Commits: runtime [`0d0675783763d573c4c24583ddd7b1ca68396342`](https://github.com/snowdenxrp/aldea-ia/commit/0d0675783763d573c4c24583ddd7b1ca68396342); regresiones [`3d277c1bfb1bc8b2a0d6ef094bde18daec2db088`](https://github.com/snowdenxrp/aldea-ia/commit/3d277c1bfb1bc8b2a0d6ef094bde18daec2db088).
+- CI sobre el SHA exacto `3d277c1bfb1bc8b2a0d6ef094bde18daec2db088`: 6/6 workflows SUCCESS — [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882067636), [admisión y continuidad](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882067599), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882067646), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882067775), [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882067714), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882067746).
+- Interpretación y límites: no se ejecutan getters ordinarios en las opciones/capacidades consumidas. No neutraliza todos los `Proxy traps`, no autentica capacidades inyectadas y no cambia el estado de autoridad ni habilita efectos protegidos.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: continuar con un defecto reproducible en una frontera aún no cubierta; no ampliar estos guards a una afirmación de confianza de los objetos, sus implementaciones o la autoridad constitucional.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — CONTINUITY SERVICE OPTIONS GUARD
 
 - Hallazgo reproducible: la función pública `openNexoContinuityOwner({ ... } = {})` desestructuraba las opciones en la firma, antes de cualquier validación del store. Un getter ordinario en `filePath`, `legacyMemory` u otra opción podía ejecutarse antes de que las guardias de `createNexoContinuityStore` tuvieran oportunidad de rechazarla.
@@ -8,6 +21,7 @@
 - Interpretación y límites: se elimina la lectura prematura de getters ordinarios de las opciones consumidas por este servicio. No neutraliza todos los `Proxy traps`, no autentica la memoria heredada, no establece autoridad legítima ni habilita efectos protegidos.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Siguiente: seguir con otra frontera pública no cubierta solo cuando exista un defecto reproducible; no repetir los guards ya registrados de contratos, Chronicle, admisión de misión ni este servicio.
+- Read-back documental: el commit de STATUS [`a132598a35ebf2b22289abd05a2d6e567cf71ed9`](https://github.com/snowdenxrp/aldea-ia/commit/a132598a35ebf2b22289abd05a2d6e567cf71ed9) completó persistencia determinista en [run 39881927971 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881927971).
 
 ---
 
