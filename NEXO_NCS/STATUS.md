@@ -1,3 +1,15 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D1 CALLER LEDGER
+
+- Nuevo ledger D1 y especificación de test arquitectónico: [NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md](BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md), commit `a399cb77abfe397454ebd479d8068f1afdbc38df`.
+- Snapshot recursivo consultado antes del nuevo commit: tree SHA `74e044d2307f69350f7d5a46b01f43ee1c69061b`, no truncado, 2.982 entradas; 121 archivos identificados en los grupos de código/configuración revisados. Esto no demuestra clasificación completa de cada edge.
+- Hallazgo de diseño: las queries de solo lectura también materializan snapshots. Si la garantía D2 incluye perfil de snapshot/heap agregado, deben pasar por admisión; si solo se serializan escrituras, esa garantía más estrecha debe declararse explícitamente. Recomendación registrada: admitir todas las operaciones que cargan snapshots canónicos.
+- `assistants` y `simulate` mezclan Continuity con otros dominios de persistencia; un lock de raíz no da atomicidad multi-store. Recomendación: excluirlos de la entrada Nexo ordinaria hasta tener contrato explícito.
+- Chronicle child es invocable directamente; no debe depender del lock del padre. Evitar que el padre retenga un lock no reentrante mientras espera un hijo que intenta adquirirlo.
+- Test arquitectónico aún no implementado; D1 no está cerrado. Runtime/tests/workflows sin cambios; no se ejecutaron tests/CI.
+- Estado canónico: M0 `INCOMPLETO`; D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — AGREGADO DE RECURSOS Y GATES D0/D1/D2/D3
 
 - Nuevo análisis de brecha de presupuesto agregado: [NCS_M0_AGGREGATE_RESOURCE_BUDGET_GAP_ANALYSIS_2026-10-23.md](BUILD/NCS_M0_AGGREGATE_RESOURCE_BUDGET_GAP_ANALYSIS_2026-10-23.md), commit `065df83a49ae853f8c93ca21919f545ac7322c25`.
