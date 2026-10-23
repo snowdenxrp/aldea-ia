@@ -68,13 +68,14 @@ function readEffectRecord(value, fields) {
 function readEffectRequest(request, extraFields = []) {
   const values = readEffectRecord(request, [
     "missionId", "stepId", "action", "target", "idempotencyKey",
-    "context", "precondition", "postcondition", ...extraFields
+    "context", "precondition", "postcondition", "reconcile", ...extraFields
   ]);
   if (!values) return null;
   if (values.target === undefined) values.target = null;
   if (values.context === undefined) values.context = {};
   if (values.precondition !== undefined && typeof values.precondition !== "function") return null;
   if (values.postcondition !== undefined && typeof values.postcondition !== "function") return null;
+  if (values.reconcile !== undefined && typeof values.reconcile !== "function") return null;
   return values;
 }
 
