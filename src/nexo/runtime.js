@@ -8,7 +8,33 @@ const runtimeCommitLocks = new WeakMap();
 
 // Replan only from the durable reconstructed mission; preserve the old attempt and
 // persist the successor candidate before a caller can decide whether to execute it.
-export function replanPersistedNexoMission({memory,previousMissionId,simulation=null,reports=[],reason=null}={}) {
+function readRuntimeOptions(options, fields) {
+  if (options === undefined) options = {};
+  if (!options || typeof options !== "object" || Array.isArray(options)) return null;
+  try {
+    const prototype = Object.getPrototypeOf(options);
+    if (prototype !== Object.prototype && prototype !== null) return null;
+    const values = Object.create(null);
+    for (const key of fields) {
+      const descriptor = Object.getOwnPropertyDescriptor(options, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      values[key] = descriptor.value;
+    }
+    return values;
+  } catch {
+    return null;
+  }
+}
+
+export function replanPersistedNexoMission(options = {}) {
+  const input = readRuntimeOptions(options, ["memory", "previousMissionId", "simulation", "reports", "reason"]);
+  if (!input) return { mission: null, memory: null, status: "invalid", code: "NEXO_RUNTIME_OPTIONS_INVALID" };
+  const memory = input.memory;
+  const previousMissionId = input.previousMissionId;
+  const simulation = input.simulation ?? null;
+  const reports = input.reports ?? [];
+  const reason = input.reason ?? null;
   if(!memory || typeof previousMissionId!=="string" || !previousMissionId.trim())
     return {mission:null,memory,status:"invalid"};
   try {
