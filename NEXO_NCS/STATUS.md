@@ -248,7 +248,6 @@
 ---
 
 # CHECKPOINT NUEVO — 2026-10-22 — CHRONICLE OBSERVATION INPUT GUARD
-
 - Hallazgo: `observeChronicleOperation()` recibía opciones por destructuring, que podía ejecutar getters de `store`, identidad de operación o `target` antes de la validación. También leía `store.loadCurrent` y `target.content` por acceso de propiedad.
 - Corrección: `src/nexo/adapters/chronicle-observation.mjs` ahora inspecciona descriptores propios de las opciones y del campo `content`, obtiene `loadCurrent` como método propio de datos y valida la forma básica del resultado leído antes de clasificar la observación. Los casos inválidos retornan `UNKNOWN` y no llaman al store.
 - Regresión: `tests/nexo/chronicle-observation-input-guard.test.mjs` comprueba que getters de opciones y de `target.content` no se ejecutan, y que una observación válida de ausencia conserva la semántica `not_applied` / causalidad no establecida. Integrada en `npm test`.
@@ -497,8 +496,7 @@ Este resultado verifica esos workflows para ese SHA. El checkpoint documental se
 - Integración de la prueba en `npm test`: [`f512e800`](https://github.com/snowdenxrp/aldea-ia/commit/f512e8007a311df141d950f7e89f7e54a6a7211a).
 - Estado CI actualizado para el SHA correctivo `8a63cba5aee4f434da90aff3c1707708131b7d7d`: aceptación integrada [SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865107760); persistencia determinista [SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39865107828). El CI del SHA intermedio `f512e800` falló por el mismo error de sintaxis; no se considera validación del guard.
 - Límite de la corrección: se valida el contenedor de opciones antes de extraer campos y se rechazan prototipos/accessors. Esto no neutraliza todos los traps posibles de Proxy ni prueba autoridad legítima. No se ejecutó dispatch deliberado durante esta corrección.
-- Siguiente paso obligatorio: esperar resultados del SHA correctivo, resolver cualquier fallo real y sólo entonces continuar auditando otra frontera.
-- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente paso obligatorio: esperar resultados del SHA correctivo, resolver cualquier fallo real y sólo entonces continuar auditando otra frontera.- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 
 ---
@@ -775,3 +773,13 @@ Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítim
 - Decisión técnica de esta revisión: no modificar runtime ni repetir matrices/ataques cerrados. Mantener opción A para persistencia interna explícita y acotada; no elevar Chronicle a autoridad. Mantener reparación, Lúmina/simulación, shell/comandos, red y sinks protegidos en STOP.
 - Próximo paso legítimo: continuar construyendo la capacidad interna de Nexo bajo opción A cuando exista una mejora funcional concreta respaldada por contrato y prueba; en paralelo, no implementar el camino de autoridad positiva hasta que la base independiente de reconocimiento/provisión pueda verificarse. Ninguna raíz ni mecanismo físico se presume existente.
 - Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Esta nota registra revisión de fuentes; no cambia runtime ni pruebas.
+
+## Caller-trace continuation — Core input trust boundary — 2026-10-23
+
+- Reused and extended `BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md`; no duplicate matrix or repeated Proxy audit was created.
+- Current-branch trace confirms the production Chronicle path: `scripts/nexo.mjs → src/nexo/application/index.mjs → src/nexo/application/chronicle-append.mjs → executeNexoStepWithContinuityOwner`, with Chronicle-specific owner/store/effect contracts. `tests/nexo/entrypoint.test.mjs` asserts the six-use-case public API and walks the CLI import/re-export graph to keep the compatibility runtime and Lúmina/simulation outside that route.
+- The owner-backed runtime blocks canonical repair actions and any action other than `chronicle_append` before dispatch. Chronicle append remains a bounded local mutation under accepted Option A; result authority remains `NOT_EVALUATED`. This does not prove root authority, generic protected execution, or that every direct internal-module caller is unreachable.
+- Reflection in the live-object guards still cannot neutralize Proxy traps or authenticate injected owner/adapter/store implementations. No runtime patch is justified without selecting and enforcing the input trust model; preserve existing error contracts and do not add another local guard.
+- No runtime code or tests changed. No security exploit or authority proof is claimed.
+- Next: continue tracing the generic runtime export's consumers only where current-branch source evidence is available; otherwise move to a distinct internal M0 capability with a concrete contract/test rather than repeating the same trust-boundary review.
+- Canonical state unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
