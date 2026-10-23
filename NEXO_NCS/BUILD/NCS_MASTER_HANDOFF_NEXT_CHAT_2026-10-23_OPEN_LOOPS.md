@@ -229,3 +229,12 @@ A recursive Git tree fetch of ncs-clean-architecture was not truncated. All 44 c
 Confirmed entrypoints: scripts/nexo.mjs (Continuity CLI for queries/previews); scripts/nexo-chronicle-session.mjs (separate Continuity/Chronicle paths); chronicle-append.mjs (constructs both stores and opens owner); continuity-queries.mjs (five read-only queries/previews construct stores); continuity-service.mjs (owner open/load/initialize); indirect consumers in repair entrypoint/session/dispatch/settlement/verification, Chronicle effect adapter and owner-backed runtime.
 
 Ten related tests were sampled and show direct factories/per-store locking are extensively used as primitive tests; this does not prove production has no bypass. D1 remains OPEN: no full local checkout rg artifact, no exhaustive scan of all repo files/reexports/dynamic imports, and no automated architecture/no-bypass test. Do not label the caller matrix complete. No runtime/tests/workflows changed. Canonical state unchanged.
+
+
+## 15. D2 — proposed instance admission lock contract
+
+The store sources and lock-deadline helper were read from the current branch. Chronicle and Continuity have separate per-store lock implementations with materially different release-failure behavior: Continuity retries once and maintains an in-process failed-release Set; Chronicle does not implement that same policy. Both stores' loadCurrent() reads do not acquire per-store locks. The deadline helper uses performance.now() and a default 2000ms budget; absolute deadlines must not be copied across processes.
+
+Design recommendation recorded in Section 14 of the instance-root contract: add a root-level exclusive operation admission layer; retain per-store locks initially; fixed acquisition order root then store; one admission boundary per operation; no nested/reentrant root lock; no automatic stale-lock reclamation; no claims of authority, hostile-process protection, fsync durability or network filesystem safety. Proposed lock errors are internal draft, not a finalized public API.
+
+D2 remains OPEN until call graphs for repair/runtime are mapped, a single owner is chosen for admission in Chronicle parent/child flow, and release-uncertain/no-bypass tests are specified. No runtime/tests/workflows changed. Canonical state unchanged.
