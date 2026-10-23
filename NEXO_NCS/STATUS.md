@@ -1,3 +1,15 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — INSTANCE ROOT DESIGN ACCEPTED AS DIRECTION
+
+- El propietario aceptó Opción A como dirección de diseño; esto **no** autoriza runtime.
+- Contrato, inventario de entrypoints, riesgos y plan verificable: [NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md](BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md), commit `01d9e11544df480a29d1a375052e53e4f7a7b7a9`, blob `12bdfc0ff2c97b79a479d263c4073b32ea8915a5`.
+- Se actualizó la propuesta original: Opción A queda aceptada como dirección; el diseño sigue abierto en subdecisiones explícitas. No se modificó ningún archivo runtime, test ni workflow.
+- Inventario inicial incluye CLI padre/hijo, Chronicle append, cinco consultas/previews de continuidad, API de aplicación, owner-service, factories per-store, reexports, sesiones de repair/runtime y test workers. La completitud aún exige búsqueda de todos los callsites y clasificación antes de implementación.
+- Garantías objetivo limitadas a exclusión entre operaciones cooperantes bajo una raíz compartida; no promete heap exacto, cuota global de disco, resistencia a procesos locales hostiles, fsync ni autoridad.
+- Próximo paso: cerrar D0/D1 (precedencia de configuración, raíz inexistente, symlinks/alias, alcance exacto del lock, protocolo cross-process, errores/timeout, compatibilidad y migración) y completar inventario. Runtime sigue SIN CAMBIOS.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — AGGREGATE RESOURCE BUDGET
 
 - Revisión de recursos agregada, análisis de código: [commit e2208578bde2efd1d39aacaf70ba314411885113](https://github.com/snowdenxrp/aldea-ia/commit/e2208578bde2efd1d39aacaf70ba314411885113). El análisis previo sobre temporales únicos fue corregido: los almacenes ya usan `.tmp` estable y limpieza acotada bajo lock propio.
