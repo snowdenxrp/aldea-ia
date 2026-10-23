@@ -81,7 +81,11 @@ Implementation:
 - Returns `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN` if an unresolved journal row lacks mission/step/action linkage.
 - Test coverage includes missing-store non-creation, required path, valid empty snapshot, mission/step projection, journal-status separation, private target omission, unchanged bytes/mtime, deterministic repeated result, unknown linkage, and output cap.
 
-**CRITICAL VERIFICATION GAP:** the current STATUS and contract explicitly say the Open Loops implementation has not yet had CI verified for the exact final code+test SHA. No local test execution was available in this workflow. Do not call it verified and do not infer PASS from other recent workflows. This is the first task in the next chat.
+**Exact-SHA CI verification completed after the initial handoff.** The combined implementation+test SHA is `443014e2309a5ff8d487f1b3b56f842e286fb792`. All three workflows passed on that exact SHA: [deterministic persistence / npm test run 39979056812](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979056812), job `120501276361`; [STEP 4 run 39979056795](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979056795); [STEP 5 run 39979057695](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979057695).
+
+During the implementation audit, a concrete gap was found: journal rows with syntactically present but orphaned mission/step references, or an action differing from the canonical step, could be projected as obligations. The query now validates each unresolved journal row against the mission and step in the same canonical snapshot and blocks with `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN` when the reference is missing or discordant. Regression tests cover missing fields, orphan references, and action mismatch.
+
+This verifies the read-only Open Loops implementation+test SHA; it does not verify owner authority, a protected execution path, or a broader Open Loops engine. Do not repeat the now-closed exact-SHA CI check unless the implementation/tests change.
 
 ### Exact next actions
 
