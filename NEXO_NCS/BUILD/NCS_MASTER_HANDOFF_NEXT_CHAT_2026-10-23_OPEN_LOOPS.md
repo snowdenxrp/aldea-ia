@@ -81,7 +81,7 @@ Implementation:
 - Returns `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN` if an unresolved journal row lacks mission/step/action linkage.
 - Test coverage includes missing-store non-creation, required path, valid empty snapshot, mission/step projection, journal-status separation, private target omission, unchanged bytes/mtime, deterministic repeated result, unknown linkage, and output cap.
 
-**Exact-SHA CI verification completed after the initial handoff.** The combined implementation+test SHA is `34e8500989fd53555304e4c625dcd681b371dbc7`. All three workflows passed on that exact SHA: [deterministic persistence / npm test run 39979508417](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979508417), job `120502863761`; [STEP 4 run 39979508452](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979508452); [STEP 5 run 39979508444](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979508444).
+**Exact-SHA CI verification completed after the initial handoff.** The combined implementation+test SHA is `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a`. All three workflows passed on that exact SHA: [deterministic persistence / npm test run 39979814293](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814293), job `120503839135`; [STEP 4 run 39979814347](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814347); [STEP 5 run 39979814116](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979814116).
 
 During the implementation audit, a concrete gap was found: journal rows with syntactically present but orphaned mission/step references, or an action differing from the canonical step, could be projected as obligations. The query now validates each unresolved journal row against the mission and step in the same canonical snapshot and blocks with `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN` when the reference is missing or discordant. Regression tests cover missing fields, orphan references, and action mismatch.
 
@@ -89,14 +89,14 @@ This verifies the read-only Open Loops implementation+test SHA; it does not veri
 
 ### Exact next actions — updated after exact-SHA verification
 
-1. Do not repeat the exact-SHA CI check unless implementation/tests change. The combined implementation+test SHA `34e8500989fd53555304e4c625dcd681b371dbc7` passed:
-   - deterministic persistence / `npm test`: run `39979508417`, job `120502863761`, SUCCESS;
-   - STEP 4: run `39979508452`, SUCCESS;
-   - STEP 5: run `39979508444`, SUCCESS.
+1. Do not repeat the exact-SHA CI check unless implementation/tests change. The combined implementation+test SHA `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a` passed:
+   - deterministic persistence / `npm test`: run `39979814293`, job `120503839135`, SUCCESS;
+   - STEP 4: run `39979814347`, SUCCESS;
+   - STEP 5: run `39979814116`, SUCCESS.
 2. The implementation audit found and fixed two silent-omission hazards:
    - orphan/mismatched unresolved-journal links; each journal mission/step/action must resolve against the same canonical snapshot;
    - an unrecognized journal status could be silently omitted when there were no missions to reconstruct. The query now blocks with `NEXO_OPEN_LOOPS_JOURNAL_STATUS_UNKNOWN` for any journal status other than `prepared`, `reconciled_observed`, or the explicitly excluded terminal `settled_observed`.
-   Regression coverage includes missing fields, orphan references, action mismatch, and unknown status with zero missions.
+   Regression coverage includes missing fields, orphan references, action mismatch, unknown status with zero missions, direct planned and failed mission projection, completed-status discrepancy, and corrupt continuity.
 3. Keep Open Loops scoped as an application-level read-only projection. Do not add CLI exposure, a new store, queue, scheduler, or task identity without a concrete acceptance case.
 4. Next work unit: consult the current MASTER/CORE and existing BUILD/DECISIONS plan to choose one already-supported internal capability and define its smallest concrete acceptance case before implementation. Do not infer the next feature from the broad master vision alone.
 5. Preserve exact evidence rules: implementation+test SHA, run/job IDs, and conclusions must match. A documentation commit does not substitute for runtime/test proof.
@@ -126,5 +126,5 @@ This verifies the read-only Open Loops implementation+test SHA; it does not veri
 ## 7. Current handoff status
 
 - The handoff and STATUS are continuity records; neither alters runtime or constitutional state.
-- Open Loops implementation+test SHA `34e8500989fd53555304e4c625dcd681b371dbc7` is verified by deterministic persistence/`npm test`, STEP 4, and STEP 5 workflows; see Section 4 and the Open Loops contract.
+- Open Loops implementation+test SHA `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a` is verified by deterministic persistence/`npm test`, STEP 4, and STEP 5 workflows; see Section 4 and the Open Loops contract.
 - Next chat should begin at `STATUS → MASTER/CORE → BUILD`, then select one next internal capability with a concrete acceptance case. Do not restart trust-boundary research or repeat the closed Open Loops CI check.
