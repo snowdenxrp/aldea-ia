@@ -344,3 +344,33 @@ The application index is intentionally narrow but persistence-backed APIs remain
 `scripts/nexo.mjs` handles query/preview commands in-process but delegates Chronicle append via `spawnSync` to `scripts/nexo-chronicle-session.mjs`. The child must be the sole root-lock owner for append; queries/previews also need admission before persisted reads. Current parsers accept independent paths, not `--root`. Existing entrypoint tests use path-oriented options, so migration must preserve their output/result and no-mutation guarantees while adding root-mode coverage and rejecting mixed/duplicate options before store access.
 
 The `assistants` package command reads `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH`, and `NEXO_CONTINUITY_PATH`, opens Continuity through `nexo-continuity.mjs`, and includes `--nexo-repair-once`. Do not call it root-managed until Continuity uses an explicit instance operation. Keep simulation and Lúmina memory outside Nexo root. Repair remains blocked by `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; root admission is not repair permission. Documentation-only review; no tests executed and no runtime/test/workflow changes.
+
+## 2026-10-23 — Continuación: matriz de CLI y fronteras de admisión
+
+### Qué se hizo
+- Inspección directa de `scripts/nexo.mjs`, `scripts/nexo-chronicle-session.mjs`, `src/nexo/application/index.mjs`, `src/nexo/application/chronicle-append.mjs`, `package.json` y `tests/nexo/entrypoint.test.mjs`.
+- Se documentó el inventario de comandos, los contratos de resultado observados, las limitaciones de las pruebas actuales y diez grupos de pruebas negativas requeridas en el documento de contrato de raíz de instancia.
+- Se actualizó `NEXO_NCS/STATUS.md` para que la puerta de entrada de continuidad refleje el nuevo hallazgo.
+- Cambios solo documentales. No se tocaron fuentes, pruebas ni workflows; no se ejecutó CI ni pruebas locales. D1/D2/D3 siguen OPEN.
+
+### Evidencia técnica concreta
+- `scripts/nexo.mjs`: parser y router de consultas/vistas previas en el proceso padre; `chronicle-append` delega con `spawnSync` y `stdio: inherit`.
+- `scripts/nexo-chronicle-session.mjs`: parser de sesión acepta `--continuity`, `--chronicle`, `--mission`, `--step` y flags de inicialización/stdin; no acepta `--root`.
+- `src/nexo/application/index.mjs`: siete exportaciones concretas; no existe API pública genérica de dispatch.
+- `src/nexo/application/chronicle-append.mjs`: resultado público sanitizado mantiene `authorization: NOT_EVALUATED`, `redispatchAuthorized: false` y, en los casos aplicables, fase de lock, `writeStarted` y liberación.
+- `tests/nexo/entrypoint.test.mjs`: cubre lista estrecha de exports, grafo de imports estáticos, comandos desconocidos, códigos/salidas JSON, privacidad del payload, replay y propiedades de persistencia; no prueba root admission ni bloqueos de raíz.
+- `tests/nexo/root-bootstrap-protocol.test.mjs`: pruebas de firma/protocolo P-256, no prueba de raíz de filesystem.
+
+### Decisión arquitectónica derivada
+La admisión de raíz debe ejecutarse antes de la primera lectura persistida. En las consultas/vistas previas el propietario es el proceso padre. Para `chronicle-append`, el hijo debe ser el propietario exclusivo del root lock durante toda la operación; el padre no debe retener el mismo lock mientras espera. La frontera de admisión no puede convertir `validated` en autorización, ni habilitar reparación o efectos protegidos.
+
+### Siguiente secuencia obligatoria
+1. Terminar el inventario de todos los entrypoints y vías de acceso: `assistants.mjs`, `nexo-continuity.mjs`, repair/runtime helpers, reexports, imports dinámicos, `spawn`/`spawnSync` y scripts de package.
+2. Construir tabla por comando con argumentos admitidos, errores de parseo, códigos de salida, JSON estable y si hay lectura/escritura antes de la frontera.
+3. Cerrar D1: inventario de callers y no-bypass con evidencia de import/call graph; no aceptar búsquedas de código con cero resultados como prueba de ausencia.
+4. Cerrar D2: semántica de root lock, propietario por operación, timeout, lock corrupto/obsoleto, liberación incierta e interacción con locks de Continuity/Chronicle.
+5. Cerrar D3: contrato de instancia, CLI `--root`, compatibilidad/rechazo de rutas legacy y protocolo explícito de bootstrap/migración.
+6. Solo después de cerrar las tres puertas, proponer cambios runtime y pruebas de regresión; mantenerlos en un cambio acotado y auditable.
+
+### No repetir
+No reiniciar auditorías antiguas ni retomar Step 7 como tarea principal. No afirmar root admission implementado, no afirmar pruebas ejecutadas, no inferir ausencia de bypass a partir de búsquedas que no recorren el repositorio. Mantener autorización `NOT_EVALUATED`, root legítimo `PENDING/UNKNOWN`, efectos protegidos `STOP`.
