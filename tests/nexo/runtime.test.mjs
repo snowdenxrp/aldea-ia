@@ -527,3 +527,25 @@ assert.equal(noAdapterVerifierResult.code,"NEXO_EFFECT_RECONCILIATION_VERIFIER_U
 assert.equal(noAdapterVerifierResult.dispatchAttempted,false);
 assert.equal(adapterVerifierPrepareCalls,0,"missing adapter verifier must block before PREPARED");
 assert.equal(adapterVerifierDispatchCalls,0,"missing adapter verifier must block before dispatch");
+
+
+// Replan options are an external boundary: accessor fields must be rejected
+// before memory normalization, mission reconstruction, or ordinary reads.
+let runtimeOptionGetterCalls = 0;
+const accessorReplanOptions = {};
+Object.defineProperty(accessorReplanOptions, "memory", {
+  enumerable: true,
+  get() {
+    runtimeOptionGetterCalls += 1;
+    throw new Error("replan memory getter must not execute");
+  }
+});
+const rejectedAccessorReplan = replanPersistedNexoMission(accessorReplanOptions);
+assert.equal(runtimeOptionGetterCalls, 0);
+assert.equal(rejectedAccessorReplan.status, "invalid");
+assert.equal(rejectedAccessorReplan.code, "NEXO_RUNTIME_OPTIONS_INVALID");
+
+assert.equal(
+  replanPersistedNexoMission(Object.create({ memory: createLearningMemory(), previousMissionId: "inherited-mission" })).code,
+  "NEXO_RUNTIME_OPTIONS_INVALID"
+);
