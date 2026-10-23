@@ -1145,3 +1145,8 @@ Esto reduce el alcance de mecanismos dinámicos conocidos en aplicación, pero n
 ### Imports dinámicos de tests clasificados como TEST_ONLY (2026-10-23)
 
 Se clasificaron los imports dinámicos y procesos hijos de tests: los workers/CLI están en `tests/nexo/**`; el único import con URL de entorno para cargar un módulo de store está en `tests/nexo/continuity-store.test.mjs` y es un harness de prueba; imports dinámicos de memoria/society/fs pertenecen a tests. No se encontró un import dinámico de store en código de aplicación. `src/three-remote.js` usa `import(url)` exclusivamente para Three.js. La separación de tests y producción queda registrada en el allowlist borrador; D1 sigue OPEN hasta que exista la prueba arquitectónica ejecutable.
+
+
+### Conflicto de secuencia D1 documentado (2026-10-23)
+
+Se detectó un ciclo en las instrucciones previas: D1 exige un test arquitectónico ya implementado para cerrar, pero a la vez se prohíbe modificar tests hasta cerrar D1/D2/D3. Se documentó en el contrato y el allowlist una recomendación para separar `D1-DESIGN` (inventario, tratamientos, allowlist y test spec completos) de `D1-IMPLEMENTATION` (test implementado/ejecutado después de cerrar todas las puertas de diseño). No se cambia el estado a cerrado ni se implementan tests; falta aceptar/revisar esta separación. D1/D2/D3 siguen OPEN.
