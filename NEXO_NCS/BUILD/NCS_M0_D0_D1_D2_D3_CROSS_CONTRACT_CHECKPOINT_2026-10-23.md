@@ -1,3 +1,13 @@
+# CHECKPOINT — RUTAS RESERVADAS Y SYMLINKS — 2026-10-23
+
+Documento nuevo: [NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md](NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md), commit 7a2f2dd0fbaec192de3a134da5b27e188b207fc7.
+
+Hallazgo: canonicalizar la raíz no basta para demostrar que continuity.json, chronicle.json, el lock de instancia y owner.json sean destinos regulares dentro de ella. La matriz separa raíz/alias, tipo de archivo reservado, symlink, bootstrap, lock y límite TOCTOU. Rechazar symlinks en nombres reservados es una propuesta candidata, no una decisión aceptada ni implementada.
+
+No se cambió runtime/tests/workflows; tests/CI no ejecutados. Estado canónico permanece M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP.
+
+---
+
 # CHECKPOINT — MAPA DE DEPENDENCIAS D0/D1/D2/D3 — 2026-10-23
 
 Nuevo mapa documental: [NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md](NCS_M0_D0_D1_D2_D3_DEPENDENCY_CLOSURE_MAP_2026-10-23.md), commit ac205fda2d1ed490f54efa0ace1a3c974a1ce8c6.
