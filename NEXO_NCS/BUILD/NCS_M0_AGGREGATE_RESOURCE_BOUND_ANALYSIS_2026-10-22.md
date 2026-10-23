@@ -1,6 +1,7 @@
 # NCS M0 — análisis de la cota agregada de recursos
-Fecha: 2026-10-22
-Estado: ANÁLISIS DE CÓDIGO — presupuesto agregado OPEN; no declara seguridad agregada.
+Fecha original: 2026-10-22
+Revisión de continuidad: 2026-10-23
+Estado: ANÁLISIS DE CÓDIGO ACTUALIZADO — presupuesto agregado OPEN; no declara seguridad agregada.
 
 ## Pregunta concreta
 
@@ -30,9 +31,11 @@ Con ambos archivos canónicos en su máximo y un temporal de escritura por store
 
 Esto es solo un subtotal derivado, no un presupuesto de disco total. No incluye locks, logs, otros archivos de la aplicación ni temporales huérfanos.
 
-**Bloqueo real:** ambos stores generan nombres temporales únicos que incluyen PID, tiempo y secuencia. Los errores manejados limpian el temporal, pero una terminación abrupta del proceso puede dejarlo en disco. Repetidas interrupciones y reinicios pueden dejar varios temporales; el código inspeccionado no impone una cardinalidad máxima a esos residuos ni los reconcilia automáticamente. Por tanto, el disco total no tiene una cota estricta demostrada por los límites actuales.
+**Corrección tras inspeccionar el HEAD actual (2026-10-23):** la descripción anterior de nombres temporales únicos ya no corresponde al código actual. Tanto `src/nexo/core/chronicle-store.mjs` como `src/nexo/core/continuity-store.mjs` usan el nombre estable `<filePath>.tmp`. Antes de escribir, `removeStaleTemporaryFiles` escanea el directorio bajo el lock existente, con topes de `temporaryDirectoryEntries=10.000` y `staleTemporaryFiles=4.096`; completa el escaneo acotado antes de borrar candidatos. Luego se escribe el temporal estable y se renombra sobre el archivo canónico. Los tests de ambos stores crean explícitamente un temporal estable y uno legacy y verifican que una escritura exitosa no deje temporales coincidentes.
 
-No se recomienda borrar residuos a ciegas: antes hay que especificar cuándo un temporal es abandonado, cómo se excluye una escritura activa y cómo se conserva la verdad del archivo canónico. El contrato actual no reclama durabilidad ante pérdida de energía.
+**Qué mejora realmente:** con escritores cooperantes que ejecutan esta versión, el temporal creado por cada store tiene nombre estable y tamaño limitado por el máximo del documento; las interrupciones repetidas no generan una secuencia nueva de nombres temporales del propio código actual. En el caso normal, el subtotal de canónicos + un temporal por store sigue siendo 96 MiB.
+
+**Qué no queda demostrado:** el total de disco aún no tiene una cota global. Puede haber residuos legacy anteriores, entradas ajenas, logs y otros archivos. Si el escaneo supera sus topes, la operación se bloquea antes de borrar o escribir; eso evita una limpieza parcial, pero no reduce el espacio ya ocupado. Tampoco se afirma fsync/durabilidad ante pérdida de energía. No borrar archivos fuera del patrón y protocolo conocidos, ni elevar el subtotal de 96 MiB a una garantía de disco total.
 
 ## Heap: por qué no se puede sumar 32 + 16 MiB
 
@@ -50,12 +53,13 @@ Los locks por archivo evitan que dos writers cooperantes reemplacen simultáneam
 
 ## Decisión arquitectónica recomendada
 
-No añadir un semáforo global, cola, wrapper transaccional ni política de limpieza como parche aislado. Primero decidir y especificar dos fronteras coherentes:
+No añadir un semáforo global, cola, wrapper transaccional ni política de limpieza como parche aislado.
 
-1. **Temporales de persistencia:** un protocolo acotado y recuperable que garantice un número máximo de temporales por store, bajo el lock ya existente, y que distinga temporal abandonado de escritura incierta. Evaluar si un nombre temporal estable bajo lock permite resolver la causa raíz sin cambiar el contrato de commit.
-2. **Presupuesto de heap operativo:** definir el modo de ejecución soportado para M0 (CLI local de una operación a la vez frente a múltiples operaciones/procesos). Si se requiere concurrencia, establecer un mecanismo explícito de admisión y una cota basada en el ciclo de vida real de los objetos; no inventar un número de heap sin medir/derivar la representación.
+1. **Temporales de persistencia:** el protocolo de nombre estable y limpieza acotada ya existe en el HEAD inspeccionado; no reimplementar esa solución. El trabajo restante es delimitar qué se puede afirmar sobre residuos legacy y sobre el directorio confiable. Si el escaneo alcanza el límite, el resultado conservador es bloqueo, no borrado parcial.
+2. **Presupuesto de heap operativo:** los locks son por almacén, no por operación Nexo completa. Chronicle y Continuity pueden ser usados por operaciones/procesos distintos en paralelo. El tamaño JSON limita el documento persistido, pero no ofrece una cota exacta de heap de V8 ni limita el número total de procesos. No inventar un multiplicador de heap.
+3. **Decisión pendiente para una garantía de concurrencia:** definir si M0 solo documenta uso local no concurrente (sin afirmar que el runtime lo impone), o si exige enforcement de una sola operación activa que cubra el flujo completo y todos los entrypoints/procesos. La segunda opción necesita una frontera común de instancia/rutas y un contrato explícito; los locks por archivo no pueden fingir que ya lo hacen.
 
-Si estas fronteras no se pueden garantizar con los contratos actuales, conservar el estado OPEN y limitar explícitamente el alcance de la afirmación; no fingir una cota.
+Mientras esa decisión no esté implementada y probada, mantener OPEN el presupuesto agregado de heap y la cota total de disco. La implementación actual sí mejora el número de temporales nuevos por store, pero no demuestra una cota total de recursos del proceso/dispositivo.
 
 ## Evidencia ya cerrada y no repetir
 
@@ -74,3 +78,19 @@ Perfil individual: aceptado como base y con pruebas de frontera/concurrencia rep
 Presupuesto agregado de disco: OPEN.
 Presupuesto agregado de heap: OPEN.
 M0: `INCOMPLETO`; autorización: `NOT_EVALUATED`; raíz legítima: `PENDING/UNKNOWN`; efectos protegidos: `STOP`.
+
+
+## Revisión de código vigente — 2026-10-23
+
+La afirmación histórica de temporales únicos queda sustituida por la revisión anterior. Fuentes inspeccionadas en la rama `ncs-clean-architecture`:
+
+- `src/nexo/core/chronicle-store.mjs`, blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`: `removeStaleTemporaryFiles` y `writeDocument` usan temporal estable `.tmp`, limpieza bajo el lock del store y límites de escaneo.
+- `src/nexo/core/continuity-store.mjs`, blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`: mismo protocolo para `writeEnvelope`.
+- `src/nexo/core/resource-limits.mjs`, blob `98355d5dc8298695233495d4bab2264b3eeba7b3`: máximos de directorio y cantidad de residuos legacy.
+- `tests/nexo/chronicle-store.test.mjs` y `tests/nexo/continuity-store.test.mjs`: los tests cubren temporales legacy + estable y su ausencia tras una escritura exitosa.
+
+Esta revisión es documental: no modifica runtime ni vuelve a ejecutar suites cerradas. No se afirma CI nuevo para esta revisión documental. El checkpoint anterior de Continuity (`cd9082d8e81bf2fe2c38f849f39de7429d300ea0`) conserva su evidencia histórica para ese SHA.
+
+## Próxima decisión única
+
+Resolver el modo de concurrencia que M0 soporta y qué garantías se compromete a imponer. No añadir un lock global hasta trazar todos los entrypoints y definir una raíz de instancia común; no aceptar el modo serial como garantía si solo aparece en documentación. Si no se decide enforcement, registrar explícitamente que el heap agregado y el disco total siguen sin cota estricta.
