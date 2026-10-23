@@ -188,3 +188,18 @@ Updated design document:
 Second pass inspected all current `.mjs/.js` modules under `src/nexo/` and all `scripts/nexo*.mjs`. Direct store factory construction was found in application append/query and continuity-service; additional consumers include chronicle effect adapter, continuity owner, owner-backed runtime, repair entrypoint/session, dispatch, settlement and mission verification. These consumers must inherit the operation-level admission; they must not add nested lock acquisition or infer authorization from the root. Repair/dispatch remains under its existing constitutional gate.
 
 The design doc now separates known production entrypoints, indirect store consumers, low-level factories, adapters, and test workers. Do not call the inventory mathematically complete yet: D1 requires a saved caller matrix including reexports/dynamic imports and an automated no-bypass regression. No runtime/tests/workflows changed.
+
+
+## 12. D0 subdecision proposals and lock protocol (2026-10-23)
+
+Updated design document:
+- `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md`
+- Commit `3221b254b1121930373787d30565d7c5482f2443`, blob `d2f027f51ace2913eac7c0e289a9a016d6bee9d6`.
+
+The design now proposes (not owner-decided): explicit CLI --root; no environment variable in first migration; reject missing root except separate explicit bootstrap; realpath canonicalization for cooperating symlink aliases; exclusive admission for reads/previews that materialize snapshots; non-reentrant admission with context passed to helpers; monotonic timeout contract; fail closed on stale/uncertain/release failure; no automatic merge/dual-write during data migration.
+
+Lock protocol review: Chronicle and Continuity both use per-store lock directories with PID/token owner records, monotonic deadlines and stale-lock fail-closed handling, but differ in local release-failure tracking. Do not blindly copy or declare equivalence; specify one reusable contract and test before runtime changes.
+
+D1 remains OPEN. GitHub code search returned no usable matches in this session. Inventory is based on recursive tree review and relevant file reads, not exhaustive source grep. No local checkout was available/confirmed for running rg. Do not claim the caller matrix is complete.
+
+Next: complete the callsite matrix from an exact branch checkout and ask owner to close D0 subdecisions before any implementation. Runtime, tests, workflows, CLI paths and store APIs remain unchanged.
