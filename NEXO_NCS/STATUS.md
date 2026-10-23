@@ -886,3 +886,12 @@ Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítim
 - Source changes were made through GitHub connector. No local test execution was available in this workflow. **CI on the final code+test SHA is required before this capability is called verified.** Do not claim PASS until workflow completion is observed for that exact SHA.
 - CLI exposure is deferred; no actual caller currently requires it. No scheduler, queue, task registry, new identity or authority mechanism was added.
 - Canonical status unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+
+# CHECKPOINT — RECOMENDACIÓN CONSOLIDADA D0 (2026-10-23)
+
+El propietario pidió recomendación técnica sobre las subdecisiones de raíz de instancia. Se añadió al contrato una combinación recomendada: CLI `--root` y API con instancia validada; sin env var inicialmente; raíz inexistente rechazada salvo bootstrap explícito; admisión cross-process reusable manteniendo locks per-store hasta probar compatibilidad; dry-run y corte verificable sin merge/dual-write/borrado automático; `realpath` con límites de symlink/mount declarados; fail-closed ante timeout/ownership/release inciertos; sin fallback silencioso de paths legacy.
+
+Documento: [NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md](BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
+
+Esto es una recomendación del consultor, no una afirmación de que el propietario haya aceptado cada subdecisión. D1 continúa abierto: no hay matriz exhaustiva de callers con evidencia guardada. Runtime, tests y workflows siguen SIN CAMBIOS. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
