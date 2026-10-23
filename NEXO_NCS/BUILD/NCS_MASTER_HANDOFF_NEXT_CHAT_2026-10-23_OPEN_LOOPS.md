@@ -537,3 +537,12 @@ El detalle está en `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-2
 ## Mecanismos dinámicos y workers de tests clasificados
 
 El escaneo de los 95 tests encontró procesos `spawn`/`spawnSync` en los tests de CLI, stores y concurrencia, y un import dinámico con URL de entorno en `tests/nexo/continuity-store.test.mjs`; todo es TEST_ONLY. Otros imports dinámicos en tests cargan memoria, `society.js` o `node:fs/promises`. No se encontró import dinámico de stores en código productivo; `src/three-remote.js` carga Three.js con `import(url)`. Se añadió la clasificación al allowlist borrador. No cerrar D1 hasta implementar y probar el test arquitectónico.
+
+
+## Conflicto de secuencia D1: diseño vs implementación
+
+Se documentó un ciclo previo: D1 requería el test arquitectónico ya ejecutado para cerrar, mientras que la regla prohibía modificar tests antes de cerrar D1/D2/D3. El contrato y el allowlist ahora proponen separar:
+- `D1-DESIGN`: inventario, tratamiento por superficie, allowlist y test spec/fixtures completos; puede cerrarse como diseño, sin afirmar seguridad implementada.
+- `D1-IMPLEMENTATION`: implementar y ejecutar el test arquitectónico después de cerrar D1/D2/D3 de diseño.
+
+La separación es recomendación pendiente, no decisión aceptada. No cambiar estado de gates ni tocar runtime/tests hasta resolverla. La especificación propuesta cubre imports transitivos, imports dinámicos/computados, procesos hijos, hijo Chronicle directo y callers legacy.
