@@ -449,3 +449,8 @@ Se recomienda `<root>/.nexo-instance.lock/` como directorio reservado creado at�
 ### D2 candidato de lock — parámetros aún por verificar
 
 El documento de contrato propone, sin aprobar ni implementar: espera relativa 2000 ms, polling 10 ms, stale si edad >60 s y PID no vivo, ningún borrado automático, owner acotado por `NEXO_RESOURCE_LIMITS.lockOwnerBytes`, owner regular (no symlink), liberación con token y como máximo un intento adicional de limpieza. Si release sigue incierto, cuarentena local por raíz hasta que la ruta desaparezca; nunca repetir automáticamente la operación de negocio. Tests requeridos: PID vivo/muerto, owner ausente/corrupto, reemplazo de lock, timeout, fallo de release y recuperación externa.
+
+
+## Censo estático externo parcial
+
+Se inspeccionaron los 13 scripts y los 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/` en el árbol no truncado `6c5ad80d49bb592f0d6d1f5e6ab161d489731241` (3.019 entradas, 188 archivos JS/MJS/CJS). Los callers directos externos encontrados se concentran en el CLI principal, el hijo Chronicle, `simulate`, `assistants` y el reexport `nexo-continuity.mjs`. `src/assistants/memory.js` tiene registros Nexo legacy en memoria, no acceso directo a stores. Este censo no cierra D1: falta un allowlist arquitectónico probado y revisar los módulos internos path-based como frontera de producción.
