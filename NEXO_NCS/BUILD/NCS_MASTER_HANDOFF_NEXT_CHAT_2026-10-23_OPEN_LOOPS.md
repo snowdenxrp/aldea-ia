@@ -269,3 +269,15 @@ Section 17 of the root contract records the current result contracts from contin
 The review used these exact branch blobs: continuity queries `e1915e94e53e71d37a37952fead37ba62bdae79a`; Chronicle append `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`; continuity service `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`; application index `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3`; Chronicle adapter `6daf742eb0048724557151a728bf807613a854e9`; owner-backed runtime `a7a014489209273ce78d0103afa785728d4c467c`; repair entrypoint `74d0fa92c447034e7454b7b846d584819ac81ffd`; repair session `1ce95a621ed5bb9f473c9d0f15b5ee3f2f1459a5`; repair dispatch `ed45438be7604d3b341cecd5fbcfc69adda2447e`; settlement `2f6e91d494b4edb012c2b2db5a077b875c5b0348`; mission verification `6f9c58cac203faa65e23c1a076af4746f5c22324`; runtime gate `f67b6fbe1b6f0098ebf23b35055cc668f96df991`.
 
 This is not an exhaustive caller matrix. GitHub code search yielded no usable matches in this session, so no absence-of-callers claim is justified. Next deliverable: reproducible matrix caller → entrypoint → store/owner/adapter → proposed admission boundary → current classification (production, primitive/test, excluded) → source SHA → bypass risk, then an automated no-bypass test design. D1/D2 remain OPEN; no runtime, tests or workflows changed. Canonical state unchanged.
+
+
+
+## 19. Caller matrix — additional direct production entrypoint discovered
+
+Contract Section 18 records a reproducible caller matrix based on the recursive Git tree for `ncs-clean-architecture`: tree SHA `cbf0a28c4c31ee1c0be55ad40f76e361d6152893`, `truncated=false`, 3,019 entries and 188 JS/MJS/CJS files. This is a complete path listing, not a completed semantic scan of every import edge.
+
+Critical new finding: `scripts/assistants.mjs` directly opens `openNexoContinuityOwner`, records a mission, writes learning memory and persists environment state. Source blob SHA `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`; lines 47–54, 89–106, 109–122. Therefore migrating only `scripts/nexo.mjs` and the Chronicle CLI is insufficient. The composite workflow must be explicitly brought under a named instance operation/admission or explicitly kept outside the root-managed persistence boundary. In either case, no cross-file transaction/atomicity claim is permitted.
+
+The matrix covers CLI queries/previews, Chronicle append, application API, request preview, assistants, continuity facade/service, store primitives, Chronicle effect adapter, owner-backed runtime, simulation runtime, repair protocol and the runtime repair exclusion gate. The latter must remain `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; root admission is not authority and must not enable protected transition.
+
+Next: trace all imports of `scripts/nexo-continuity.mjs`, `openNexoContinuityOwner`, path-based application APIs, adapter registration and runtime exports; explicitly disposition the assistants workflow; then define architecture/no-bypass tests and close the migration protocol. D1/D2 remain OPEN; no runtime, tests or workflows changed. Canonical state unchanged.
