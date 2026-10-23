@@ -192,3 +192,28 @@ El diseño documental no está cerrado hasta que cada respuesta tenga decisión 
 - Efectos protegidos: `STOP`.
 
 Siguiente paso: terminar D0/D1 desde el inventario completo de producción y resolver las subdecisiones del contrato. No implementar runtime ni crear un lock aislado antes de cerrar esas decisiones.
+
+
+## 7. Inventario de implementación ampliado — sweep de módulos actuales
+
+Se hizo una segunda pasada sobre todos los módulos `.mjs/.js` de `src/nexo/` y los scripts `scripts/nexo*.mjs` de la rama actual. No apareció otra construcción directa de las factories Chronicle/Continuity fuera de las rutas indicadas en la matriz; sí aparecen consumidores de objetos `owner/store` que deben quedar dentro del contexto de admisión. Esto mejora el inventario, pero la comprobación final de no-bypass deberá convertirse en una búsqueda/test repetible durante la implementación.
+
+| Grupo | Callers/consumidores encontrados | Clasificación de migración |
+|---|---|---|
+| Factory de Continuity | `src/nexo/application/continuity-queries.mjs`, `src/nexo/application/chronicle-append.mjs`, `src/nexo/core/continuity-service.mjs` | Entradas productivas primarias; reciben path directamente hoy. Migrar a instancia/admisión. |
+| Factory de Chronicle | `src/nexo/application/chronicle-append.mjs` | Entrada productiva primaria; recibe path directamente hoy. Migrar a instancia/admisión. |
+| Store primitive consumers | `src/nexo/adapters/chronicle-effect.mjs` llama `store.append`; `src/nexo/core/continuity-owner.mjs` expone `loadCurrent`; `src/nexo/core/owner-backed-runtime.mjs` llama `owner.loadCurrent`; `src/nexo/core/protected-transition.mjs` usa puerto `conditionalCommit` | No crean raíz por sí mismos. La admisión debe adquirirse en el dueño de operación antes de cargar el store y mantenerse hasta finalizar el ciclo; no introducir locks anidados en helpers. |
+| Repair entrypoint / session | `scripts/nexo-repair-entrypoint.mjs`, `scripts/nexo-repair-session.mjs` leen `owner.loadCurrent()` y coordinan fases | Consumidores indirectos de persistencia. La admisión común solo puede abarcar su acceso a datos si/ cuando el flujo sea permitido; este documento no levanta el gate constitucional de repair. |
+| Repair preparation/dispatch/settlement/verification | `scripts/nexo-repair-preparation.mjs`, `nexo-repair-dispatch.mjs`, `nexo-repair-settlement.mjs`, `nexo-repair-mission-verification.mjs`; aparecen lecturas `owner.loadCurrent()` o `store.loadCurrent()` en dispatch/entrypoint/settlement/verification | Son fases con fronteras distintas, y dispatch es un posible efecto. No unir dispatch a la raíz ni tratar lock como permiso. Primero mapear cómo reciben owner/store y confirmar el gate actual. |
+| CLI de Continuity | `scripts/nexo-continuity.mjs` reexporta `openNexoContinuityOwner` | Superficie de reexport; determinar consumidores externos. Debe exigir instancia o quedar declarada como primitive low-level no apta para el claim agregado. |
+| Runtime session | `scripts/nexo-runtime-session.mjs` coordina una sesión; no construye directamente los dos stores en el módulo revisado | Mantener dentro del inventario por dependencia transitiva; no asumir cobertura por nombre ni reabrir/activar efectos. |
+| Adaptadores y validadores | `chronicle-observation.mjs`, `persisted-repair-observation.mjs`, `conditional-commit-persist-state.mjs`, contratos, snapshot/data guards y validadores | No crean stores directamente en el sweep; pueden recibir funciones/objetos conectados a persistencia. Confirmar el caller de cada adapter al revisar el grafo completo. |
+| Tests/workers | `tests/nexo/chronicle-store.test.mjs`, `continuity-store.test.mjs`, `persistence-lock-worker.mjs` y procesos inline | Pruebas de primitive/per-store; conservarlas. No cuentan como entrypoints de producción, pero sirven de base para cross-process tests nuevos. |
+| Orquestación genérica | `src/nexo/orchestrator.js`, `runtime.js`, `effect-adapter.js`, `simulation-adapter.js` | No crean directamente stores en el sweep. Mantener separadas las operaciones de runtime/efectos; no afirmar cubiertas por raíz salvo que la cadena de llamadas se pruebe. |
+
+### Resultado del sweep
+
+- **Entradas productivas que aceptan rutas independientes:** CLI de status/mission/preview, CLI Chronicle child y API de aplicación/store/owner identificadas arriba.
+- **Consumidores indirectos que requieren sección crítica heredada:** owner, owner-backed runtime, adapters, repair y settlement/verification.
+- **Superficies que deben seguir bloqueadas o fuera de garantía:** repair/dispatch y ejecución protegida; no heredan autorización por usar raíz.
+- **No-bypass aún no demostrado:** el sweep estático identifica rutas conocidas, pero no reemplaza una matriz exhaustiva de callsites, reexports, importaciones dinámicas y consumidores fuera del repo. La fase D1 solo se cierra al guardar las búsquedas/callsite matrix completa y al añadir una regresión automatizada.
