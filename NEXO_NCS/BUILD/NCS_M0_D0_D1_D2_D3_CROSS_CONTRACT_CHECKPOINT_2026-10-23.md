@@ -139,3 +139,13 @@ Targeted review of the current root-contract blob `bac9493af98c3f86001e323dab153
 Correct resolution: keep D0-C1 OPEN; treat explicit `--root` + validated API object/no env as the current recommendation only, and do not implement or infer owner approval. A narrow edit to the 146 KB root contract was attempted but blocked by tool security controls; therefore the root-contract wording itself has **not** been changed. This note records the ambiguity so it is not mistaken for a decision.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
+
+
+## Follow-up: canonicalization recommendation versus open D0-C3 (2026-10-23)
+
+A second targeted read of root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` found a policy-level ambiguity: §1.2 says not to claim route aliases converge until the symlink/canonicalization contract is decided and tested, while the later recommendation table says symlinks resolving to the same directory “must converge.” The table is in a recommendations section, but its normative wording can be misread as already-selected behavior.
+
+Interpretation pending owner decision: D0-C3 remains OPEN; “same resolved directory converges” is only a candidate recommendation, not current runtime behavior or accepted policy. Before implementation, the root contract should label it explicitly as proposed and specify how realpath identity, symlink races, and mount aliases are bounded. The earlier matrix still correctly leaves reserved-child symlink cases undecided.
+
+A direct edit to the 146 KB root contract was blocked by tool security controls during the previous correction attempt; no source wording has been changed. This checkpoint records the ambiguity, not a policy decision.
+No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
