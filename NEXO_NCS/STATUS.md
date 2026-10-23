@@ -586,3 +586,13 @@ La matriz siguiente corresponde al SHA exacto que contiene el código y las regr
 - No se selecciona todavía el modelo de confianza A/B/C ni se modifica runtime. No añadir guards ni migrar a serialización hasta completar el trace y definir el contrato/error mapping.
 - CI documental para la actualización de STATUS pendiente de observar; no se atribuye un resultado antes de verificarlo.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+# AMPLIACIÓN — 2026-10-23 — OWNER-BACKED RUNTIME TRACE
+
+- La matriz se amplió tras inspeccionar `owner-backed-runtime.mjs`, `runtime.js`, `continuity-service.mjs`, `nexo-continuity.mjs`, `nexo.mjs` y `application/index.mjs`.
+- Hallazgo: `executeNexoStepWithContinuityOwner` se exporta públicamente por `runtime.js`, recibe owner/adapter por argumentos y construye vistas de capacidades mediante reflexión. El protocolo fuente sí exige PREPARED confirmado con avance de revisión antes de invocar `adapter.executePrepared`, y luego registra lineage/reconciliación; sin embargo, no se confirmó un caller productivo directo de esa exportación ni se autenticó el origen del owner/adapter.
+- La CLI independiente `scripts/nexo.mjs` usa una superficie de aplicación estrecha vía `src/nexo/application/index.mjs`, que declara Chronicle append como único caso mutante expuesto. No debe confundirse esa ruta con la exportación genérica owner-backed.
+- Matriz actualizada: [NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md](BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md), revisión registrada en commit `0787c6310557b6334e06f8cfc4886463b3068c75`.
+- Próximo trace acotado: `src/nexo/application/chronicle-append.mjs`, fábricas owner/adapter y tests de la CLI; además, localizar imports directos de `executeNexoStepWithContinuityOwner` desde fuente actual. No añadir guards locales ni elegir aún A/B/C.
+- No se modificó runtime. Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
