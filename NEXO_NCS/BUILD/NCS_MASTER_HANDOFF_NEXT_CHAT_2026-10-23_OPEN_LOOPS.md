@@ -944,3 +944,11 @@ A targeted contract review found an unresolved D0-C2/D2 ordering edge in root-co
 Next step: define the first-creation race/coordination protocol, allowed bootstrap mutations, and failure behavior for simultaneous bootstrap attempts/uncertain ownership. Do not silently create root before validation, invent a sibling/global lock, or bypass admission. If no defensible protocol is specified, bootstrap remains blocked/UNKNOWN. Full note in cross-contract checkpoint commit `e0702087ba4191bdcb3f078e63c45aacb87fdbc5`, blob `f060b9983006dbc0170102eaa422737364fc732b`.
 
 No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+## Follow-up: first-bootstrap race is sharper than a missing lock order — 2026-10-23
+
+Root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` proposes an in-root lock: after validating an existing root, a process atomically creates `<root>/.nexo-instance.lock/`; only its creator writes `owner.json`. But explicit bootstrap is also the only operation allowed to create a nonexistent root. Race to resolve: process A creates the root and pauses before creating the lock; process B sees the now-existing root and wins the in-root lock. Atomic lock mkdir alone does not establish bootstrap completion or who may initialize stores. A crash after root creation and partial initialization also needs an explicit recovery rule; the contract cautions against adding a persistent bootstrap marker without proven need.
+
+Treat this as a concrete D0-C2/D2 contract gap, not a verified runtime failure. Specify the atomic first-creation/initialization boundary, simultaneous attempts, crash/partial initialization, and recovery while reconciling the no-extra-marker constraint. Never infer “root exists” = “bootstrap complete”; no global/sibling lock or implicit initialization by assumption. If unresolved, BLOCKED/UNKNOWN. Recorded in cross-contract checkpoint commit `3c00d3cf563ce1498e18070bf3f1dabb7f79e6c0`, blob `68d442babe9c624edc182a055af55adc9194178f`.
+
+No runtime/tests/workflows changed; no tests/CI run. Canonical state remains M0 INCOMPLETO; D0/D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
