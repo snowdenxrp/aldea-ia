@@ -1059,3 +1059,8 @@ La prueba `tests/nexo/continuity-migration.test.mjs` confirma que `openNexoConti
 ### Matriz de errores CLI completada como documentación (2026-10-23)
 
 El contrato ahora registra los códigos exactos de parseo por comando y los errores de la sesión hija Chronicle, además de la diferencia entre error de parseo, resultado semántico `not_found`, fallo de admisión y fallo de inicio del proceso hijo. Sigue siendo documentación de compatibilidad; no se ha implementado `--root` ni se han ejecutado pruebas.
+
+
+### Bypass adicional: sesión Chronicle ejecutable directamente
+
+`scripts/nexo-chronicle-session.mjs` tiene guardia de ejecución directa y acepta rutas `--continuity`/`--chronicle` más flags de inicialización. Por tanto, no basta con proteger el padre `scripts/nexo.mjs`: el hijo debe exigir `--root`, derivar rutas internas y adquirir el root lock antes de cualquier lectura. D1/D3 siguen OPEN.
