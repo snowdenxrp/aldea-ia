@@ -7,7 +7,7 @@ Estado: D1-DESIGN EN PROGRESO — NO IMPLEMENTADO — NO EJECUTADO
 
 ## 1. Alcance de esta revisión
 
-Se volvió a consultar el árbol recursivo de GitHub para ncs-clean-architecture. El árbol respondió truncated=false, con 2.982 entradas; se identificaron 121 archivos de código/configuración en los grupos src/nexo/, scripts/, tests/nexo/, workflows y package.json. El SHA identifica un snapshot concreto, no prueba que todos los callsites semánticos hayan quedado clasificados.
+Se volvió a consultar el árbol recursivo de GitHub para ncs-clean-architecture. El inventario original de 2.982 entradas (tree 74e044d2307f69350f7d5a46b01f43ee1c69061b) identificó 121 archivos de código/configuración en los grupos src/nexo/, scripts/, tests/nexo/, workflows y package.json. En la continuación se consultó de nuevo el árbol completo: tree fc546b0e998abcecafb44ead2b2ae9dd1222d539, truncated=false, 2.982 entradas. Los archivos de runtime citados abajo conservaron los blobs indicados; la nueva inspección de referencias no constituye prueba de que todos los callsites semánticos estén clasificados.
 
 Fuentes reconsultadas:
 - package.json — blob e45dc6d215db53ea2758009cd501f565634e3610
@@ -33,7 +33,7 @@ Fuentes reconsultadas:
 | src/nexo/core/continuity-service.mjs | Opens/initializes store; can import legacy memory or initialize empty state under explicit option | Internal bootstrap/owner primitive; called only under admitted operation/bootstrap contract | OPEN |
 | src/nexo/core/continuity-store.mjs | Exported path-based factory and per-store lock; loadCurrent read path not covered by mutation lock | INTERNAL_ONLY/test primitive, or explicit admission context required; do not remove per-store contract | OPEN |
 | src/nexo/core/chronicle-store.mjs | Exported path-based factory and per-store lock | INTERNAL_ONLY/test primitive, or explicit admission context required; preserve lock semantics | OPEN |
-| scripts/nexo-continuity.mjs | Reexports owner API | Determine external production callers; preserve only as admitted wrapper or explicitly legacy-only | UNKNOWN pending full callsite search |
+| scripts/nexo-continuity.mjs | Reexports openNexoContinuityOwner; exact-branch scan found production imports in assistants.mjs and simulate.mjs, plus test imports. No other reference to the wrapper was found in the inspected scripts/ and src/nexo/ source set. | Classify both current production callers explicitly; determine downstream/external consumers separately. Preserve only as admitted wrapper or explicitly legacy-only after the public API contract is fixed. | INTERNAL REPO SCAN: 2 production callers found; external/downstream callers UNKNOWN |
 | scripts/assistants.mjs | Opens Continuity with legacy memory, records mission, writes Lúmina memory and world state separately; may invoke repair | Compound multi-domain operation; cannot claim atomicity. Exclude from ordinary Nexo persistent entry until explicit contract and commit-conflict semantics exist | OPEN / exclusion recommendation |
 | scripts/simulate.mjs | Opens/initializes Continuity and has a separate world-state lock with stale-lock deletion behavior | Not an equivalent root-admission protocol; exclude from ordinary persistent Nexo path pending explicit integration design | OPEN / exclusion recommendation |
 | Repair/runtime sessions and dispatch/settlement helpers | Separate multi-phase paths; some touch stores/effect adapters | Store access inherits admission; dispatch/repair remains separately blocked by constitutional gate | OPEN |
@@ -41,6 +41,22 @@ Fuentes reconsultadas:
 | npm test | Explicit chain of individual scripts in package.json, not globbed | Add architecture-gate tests only after design freeze and update relevant workflow paths | OPEN |
 | Chronicle CI workflow | Runs Chronicle store, runtime and entrypoint tests | Must include root-admission tests and new files when implementation is authorized | NOT UPDATED |
 | Mission-admission/Continuity CI workflow | Runs selected continuity, migration, runtime and Chronicle tests | Must cover all production entrypoints touched by cutover | NOT UPDATED |
+
+### 2.1 Exact-branch wrapper/callsite recheck (2026-10-23)
+
+A targeted reference scan was performed against ncs-clean-architecture, tree fc546b0e998abcecafb44ead2b2ae9dd1222d539 (truncated=false). Relevant source blobs re-read:
+
+- scripts/nexo-continuity.mjs — f08969f2d77a2e90f74d01c96242e29de89e3f22: one compatibility re-export of openNexoContinuityOwner.
+- scripts/assistants.mjs — d31c6dba86159ee0403f0cc1c236b89863e4d5cb: imports the wrapper and opens Continuity.
+- scripts/simulate.mjs — 623d316c7a1efd10cc2f06a3080c0d9f06087596: imports the wrapper and opens Continuity.
+- src/nexo/core/continuity-service.mjs — 8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c: owner service constructs the path-based Continuity store.
+- src/nexo/application/chronicle-append.mjs — 5a20044bcddbaee79d0117934eefaea5f3b2c3bc: direct application path constructs both store factories and opens the owner; this is a separate production route, not a wrapper import.
+- src/nexo/application/continuity-queries.mjs — e1915e94e53e71d37a37952fead37ba62bdae79a: query/preview routes call the path-based Continuity factory directly.
+- scripts/nexo.mjs — e471eb478a09aa8a9a8323795583e198cdf0a127 and scripts/nexo-chronicle-session.mjs — 30a53de2f108aa255a1dfd61ce78c19788de160b: parent launches the child with spawnSync; child imports the public application append route and is directly executable.
+
+Test-only imports/usages of the compatibility wrapper were observed in tests/nexo/assistants-runtime-cli.test.mjs, tests/nexo/continuity-migration.test.mjs, tests/nexo/entrypoint.test.mjs, tests/nexo/chronicle-runtime.test.mjs, and tests/nexo/continuity-contract.test.mjs. Direct factory use in store/runtime tests is expected for low-level persistence tests and does not demonstrate production admission.
+
+**Interpretation boundary:** this closes the narrow question “which current in-repository production files import scripts/nexo-continuity.mjs?” for the inspected source set: two (assistants, simulate). It does not prove there are no external/downstream consumers, no dynamic/computed module edges, or no other path-based production bypass. Those remain D1-DESIGN UNKNOWN/OPEN until the architecture graph and acceptance fixtures exist. No source/test/workflow files were modified and no tests/CI were run by this scan.
 
 ## 3. Contract-level issues surfaced
 
@@ -86,7 +102,7 @@ No runtime, test, or workflow source was modified in this review. No tests or CI
 
 ## 6. Next actions
 
-1. Complete exact callsite classification for the remaining source scope, including reexports, dynamic loading and all child-process edges; unresolved edges remain UNKNOWN/BLOCKED.
+1. Complete exact callsite classification for remaining semantic edges, dynamic/computed loading and external consumers; the compatibility-wrapper scan found two current production callers (assistants, simulate) but does not close the whole graph. Unresolved edges remain UNKNOWN/BLOCKED.
 2. Freeze the D1-DESIGN acceptance conditions and choose the D1-S0 sequencing split before writing tests.
 3. Resolve D0 configuration precedence, existing-root/bootstrap policy, symlink/alias behavior and legacy CLI/API behavior.
 4. Resolve D2 scope (recommendation: all snapshot-loading operations), child-process ownership, non-reentrancy, timeout and uncertain release.
