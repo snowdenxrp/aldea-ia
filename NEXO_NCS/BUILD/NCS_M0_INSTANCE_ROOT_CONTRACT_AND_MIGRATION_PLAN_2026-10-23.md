@@ -674,3 +674,12 @@ This choice preserves the Nexo/Lúmina separation and allows the Continuity sub-
 ### 21.5 Current conclusion
 
 This section advances D3 design, but does not close D1/D2/D3. The API and assistants disposition are now concrete proposals with explicit unresolved compatibility decisions. No runtime, tests, workflows or data stores were changed in this checkpoint.
+
+
+## 22. D2/D3 source-level lock facts that constrain implementation
+
+Direct source inspection confirms that the current loadCurrent() methods in both stores read and clone persisted state without acquiring their per-store locks. openNexoContinuityOwner() can read Continuity, initialize it when explicitly allowed, and then reread. Therefore root admission must wrap the entire operation from before the first snapshot read; a lock only around append() or commit() would be too late.
+
+Chronicle and Continuity have separate per-store lock implementations with different release-failure handling. The first root layer should preserve those implementations rather than unify them during this migration. createNexoLockDeadline() uses process-local performance.now(); across the Chronicle parent/child boundary, pass a duration and let the child construct its own deadline. Normal instance reads must not silently enable legacy-memory projection or empty initialization. Repair remains blocked by NEXO_M0_OPTION_A_EFFECT_EXCLUDED.
+
+Required tests: admission precedes every loadCurrent(), including read-only queries and owner opening; helpers do not reacquire the root lock; per-store release and root release uncertainty are tested separately; the Chronicle child is the sole root-lock owner; ordinary reads of a missing store do not initialize it; repair exclusion remains invariant. These are source-grounded constraints, not implementation or test results. D1/D2/D3 remain OPEN; runtime, tests and workflows unchanged.
