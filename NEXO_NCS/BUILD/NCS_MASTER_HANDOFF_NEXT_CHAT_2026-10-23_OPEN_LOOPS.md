@@ -1,3 +1,15 @@
+## 0. Latest continuation checkpoint — D1 static graph test gap (2026-10-23)
+
+New design-only note: [NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md), commit `57ae9855c4eba9060a70f7a44dcdb0e2c373f2fe`.
+
+A fresh read of `tests/nexo/entrypoint.test.mjs` confirmed that the existing guard follows static imports/reexports and checks CLI contracts, but does not by itself close D1: it does not establish the complete entrypoint manifest, robustly classify dynamic/computed loading, trace all factory/owner/store access paths, validate every process edge, or fail closed on every unresolved edge. The new note specifies a future AST-based graph approach, entrypoint manifest, UNKNOWN/BLOCKED behavior, 10 negative fixtures, and eventual npm/CI integration.
+
+**No D1 architecture test was implemented or executed. No runtime, test, or workflow files changed. No tests/CI were run.** This is a design finding only, not a PASS.
+
+Next: resolve the documented D1-DESIGN vs D1-IMPLEMENTATION sequencing decision and close the root/admission/child-process/lock/migration contracts before implementation. Do not repeat the completed source census unless a code/snapshot change invalidates it. Canonical state remains M0 `INCOMPLETO`, D0/D1/D2/D3 `OPEN`, authorization `NOT_EVALUATED`, legitimate root `PENDING/UNKNOWN`, protected effects `STOP`.
+
+---
+
 # NCS — Master handoff for the next chat
 Date: 2026-10-23
 Branch: `ncs-clean-architecture`
