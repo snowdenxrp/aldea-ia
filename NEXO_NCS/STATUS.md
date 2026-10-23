@@ -1155,3 +1155,10 @@ Se detectó un ciclo en las instrucciones previas: D1 exige un test arquitectón
 ### Hallazgo de cobertura: 17 tests Nexo no listados en `npm test` (2026-10-23)
 
 Comparación estática de `package.json` contra el árbol: existen 44 archivos `tests/nexo/*.test.mjs`; el script `test` invoca 27 y omite explícitamente 17, listados en `RESEARCH/NCS_M0_PRODUCTION_CALLER_ALLOWLIST_DRAFT_2026-10-23.md`. No se declara automáticamente que sea un defecto: hay que determinar por prueba omitida si la exclusión es intencional. La futura prueba arquitectónica de D1 deberá estar conectada explícitamente a la verificación requerida; no bastará con que exista como archivo.
+
+
+### Punto de recuperación tras interrupciones (2026-10-23)
+
+El trabajo se detuvo durante el censo de referencias/callers de Nexo y la sincronización de documentación. Último punto: matriz de fronteras de producción añadida al contrato de raíz de instancia; incluye CLI principal, hijo Chronicle ejecutable directamente, `assistants`, `simulate`, API de aplicación, fábricas path-based y helpers repair. La sesión hija Chronicle es un bypass real de la frontera del padre; `loadCurrent()` no adquiere locks; `simulate`/`assistants` pueden abrir o migrar Continuity incidentalmente. No se modificó runtime/tests/workflows ni se ejecutaron pruebas.
+
+El handoff `NEXO_NCS/BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md` contiene el punto de recuperación detallado y las instrucciones de continuidad. D1/D2/D3 siguen OPEN; M0 incompleto; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Próximo paso: recuperar/verificar el censo completo, resolver la recomendación pendiente de separar D1-DESIGN de D1-IMPLEMENTATION, y no reiniciar investigaciones antiguas.
