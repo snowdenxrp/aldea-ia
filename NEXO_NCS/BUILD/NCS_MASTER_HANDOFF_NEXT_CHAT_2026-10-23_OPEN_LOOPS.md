@@ -810,3 +810,18 @@ Se documenta que los procesos legacy no participan del lock de instancia propues
 STATUS actualizado en commit `8cd0647088dabb74018d1616c8e975aad189685b`, blob `f89a7f30e84c5180e0b714c93d1aa750dac8d8fc`.
 
 Estado canónico no cambia: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. No tests/CI ejecutados.
+
+## 19. Reconciliación del cross-check D3 — 2026-10-23
+
+Se revisó el cross-contract checkpoint contra la versión vigente del contrato de raíz. Se corrigió una instrucción obsoleta: ya no falta incorporar al contrato la quiescencia de writers legacy; esa propuesta está en la sección 9 del contrato con huellas antes/después, cancelación ante cambio/no lectura, cutover explícito, origen preservado y rollback sin copia inversa ni merge automático.
+
+Checkpoint actualizado:
+- `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_CROSS_CONTRACT_CHECKPOINT_2026-10-23.md`
+- Commit: `7a704c1832506c2164f6332a63f00382d8a07597`
+- Blob: `46baf1e58b4d87554a739eb69f26bd670f8a4028`
+
+La propuesta sigue sin aprobación ni ejecución; no equivale a cierre D3. La quiescencia es control operacional para procesos cooperantes, no protección contra procesos locales hostiles. No se repitió el censo de código ni se modificó runtime/tests/workflows.
+
+### Siguiente paso exacto
+
+Analizar el requisito de evidencia operacional para quiescencia legacy: qué significa “no quedan operaciones activas”, qué proceso detiene/observa los writers, cómo se trata un writer que no puede inspeccionarse y cuál es la señal verificable de abort/cancelación. No afirmar que PID/lock ausente prueba por sí solo quiescencia. Mantener D0/D1/D2/D3 OPEN, M0 INCOMPLETO, autorización NOT_EVALUATED, raíz legítima PENDING/UNKNOWN y efectos STOP. No implementar hasta que contratos y autorización estén explícitos.
