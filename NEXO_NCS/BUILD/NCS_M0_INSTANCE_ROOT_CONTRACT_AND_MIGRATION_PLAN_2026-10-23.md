@@ -753,3 +753,50 @@ Existing entrypoint tests exercise status, plan, mission and preview using `--co
 The separate package command `assistants` reads `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH`, and `NEXO_CONTINUITY_PATH`; it opens Continuity through `nexo-continuity.mjs` and includes a `--nexo-repair-once` path. Do not classify it as root-managed until its Continuity operation is routed through an explicit instance operation. Simulation state and Lúmina memory remain outside Nexo root. Repair stays excluded by `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; root admission grants no repair permission.
 
 This is source inspection and documentation only. No tests were executed and no runtime, test, or workflow files were changed.
+
+## 2026-10-23 — Auditoría de compatibilidad de la CLI y contratos de resultado (documentación; sin cambios de runtime)
+
+### Inventario de comandos públicos observado en el código
+
+La fuente auditada es `scripts/nexo.mjs` (blob `e471eb478a09aa8a9a8323795583e198cdf0a127`), junto con `scripts/nexo-chronicle-session.mjs` (blob `30a53de2f108aa8a9a8323795583e198cdf0a127` no se presume; SHA verificado de este archivo: `30a53de2f108aa8a9a8323795583e198cdf0a127`), el índice de aplicación y `tests/nexo/entrypoint.test.mjs` (blob `ff1bd2e9d292e21e00049b354249aee684837bbc`). Esta sección describe el estado actual observado; no implica que las decisiones de diseño estén cerradas.
+
+| Familia | Entrada actual | Operación/resultado exitoso esperado | Riesgo de admisión que debe resolverse |
+|---|---|---|---|
+| Estado de Continuity | `status --continuity PATH` | `status: loaded`; proceso 0 | Debe adquirir admisión de instancia antes de la primera lectura persistida |
+| Estado de misión | `mission-status --continuity PATH --mission ID` | `status: reconstructed`; proceso 0 | Igual; incluye misión ausente y discrepancias como resultados no exitosos |
+| Plan de misión | `mission-plan --continuity PATH --mission ID` | `status: planned`; proceso 0 | Igual; plan no significa autorización |
+| Vista previa de borrador | `mission-draft-preview --continuity PATH --draft PATH` | `status: validated`; proceso 0 | Debe validar/admitir raíz antes de leer datos persistidos; la lectura del borrador también tiene límite de bytes |
+| Vista previa de solicitud | `mission-request-preview --continuity PATH --request PATH` | `status: validated`; proceso 0 | Igual; interpretación/autoridad no se pueden inferir del resultado validado |
+| Añadir a Chronicle | `chronicle-append ...` en padre; sesión hija con `--continuity`, `--chronicle`, `--mission`, `--step`, `--content-stdin` | El hijo serializa el resultado público y usa código de salida 0 solo para `completed` | El hijo debe ser dueño exclusivo de la admisión durante toda la operación; el padre no debe mantener el mismo lock |
+
+La entrada principal rechaza comandos desconocidos y devuelve `NEXO_COMMAND_UNSUPPORTED` con `dispatchAttempted:false`. Los errores de parseo son resultados bloqueados. La sesión Chronicle también rechaza opciones duplicadas/desconocidas y exige entrada por stdin. La lista de opciones actual no contiene `--root`; añadirlo cambia el contrato de CLI y exige una matriz de compatibilidad deliberada, no una inserción incidental.
+
+### Contratos de resultado y compatibilidad que deben preservarse
+
+- Los errores de CLI se emiten como JSON sin volcar rutas, contenido privado ni errores crudos.
+- Las consultas pueden devolver resultados semánticos como `not_found` o `blocked`; la admisión de raíz debe ser una capa distinta y no convertir esos resultados en éxito.
+- Las vistas previas mantienen `authorization: NOT_EVALUATED`, `dispatchAttempted: false` y `persisted: false`; `validated` significa validación de entrada/contexto, no autorización para ejecutar.
+- Chronicle expone un resultado sanitizado con estados públicos acotados, `authorization: NOT_EVALUATED`, `redispatchAuthorized: false` y, cuando corresponde, `phase`, `writeStarted`, `lockRelease` y `lockAcquisitionCode`. La nueva admisión no debe ocultar un resultado de negocio conocido ni transformar incertidumbre de liberación en éxito limpio.
+- El proceso padre usa `spawnSync` con `stdio: inherit`; el resultado JSON de Chronicle lo emite el hijo. Si falla el inicio del hijo, el padre devuelve `NEXO_ENTRYPOINT_DISPATCH_FAILED` con `dispatchAttempted:false`. Este indicador describe el despacho de negocio según el contrato actual, no una prueba de que no ocurrió ningún efecto externo en cualquier fallo de proceso.
+- `src/nexo/application/index.mjs` exporta siete casos de uso concretos: consultas de estado/plan/open-loops, dos vistas previas y `runNexoChronicleAppend`. No exporta un despachador genérico.
+
+### Pruebas negativas requeridas antes de modificar runtime
+
+Añadir al diseño de pruebas (no implementadas ni ejecutadas por esta revisión):
+
+1. Todas las familias de comando rechazan `--root` ausente, duplicado, vacío o combinado con rutas heredadas; la admisión falla antes de abrir almacenes.
+2. Cualquier combinación de `--root` con `--continuity` / `--chronicle` heredados falla antes de la primera lectura o escritura; no hay precedencia silenciosa.
+3. Raíz inexistente en operación normal: bloqueada sin crear directorio, almacén, snapshot ni proyección legacy.
+4. Lock ocupado: resultado de admisión bloqueado/timeout con contrato público estable; el caso de uso no se ejecuta.
+5. Lock corrupto, propietario desconocido, lock obsoleto y liberación incierta: fail-closed; no borrar lock automáticamente ni reejecutar operación.
+6. Excepción de consulta, vista previa o escritura después de adquirir el lock: resultado de negocio y resultado de admisión permanecen diferenciados; liberación incierta no permite reportar éxito limpio.
+7. Para Chronicle, el proceso padre no toma la admisión que debe tomar el hijo; se verifica que no hay deadlock, doble adquisición ni ejecución de caso de uso antes de admisión.
+8. Verificar códigos de salida y JSON en cada familia, incluyendo `not_found`, entrada demasiado grande, bootstrap parcial, replay, y `dispatchAttempted:false` en bloqueos pre-despacho.
+9. Alias de ruta mediante symlink resuelven al mismo `realpath`; esto no se debe describir como defensa contra TOCTOU hostil, hardlinks, bind mounts ni semánticas de filesystem de red.
+10. Verificar que el resultado de admisión no cambia `authorization: NOT_EVALUATED`, ni habilita reparación/efectos protegidos.
+
+### Límites de la evidencia actual
+
+`tests/nexo/entrypoint.test.mjs` protege la superficie de exportación, el grafo de imports estáticos desde las dos entradas, varios códigos/JSON de salida, la privacidad de contenido y algunas propiedades de persistencia. No contiene todavía pruebas de root admission, lock de raíz, rutas mixtas ni bloqueo de todos los bypasses. `tests/nexo/root-bootstrap-protocol.test.mjs` verifica protocolo criptográfico P-256, no la raíz del filesystem ni sus locks. Los nombres de archivo no sustituyen la inspección de lo que prueban.
+
+**Estado de decisión:** D1, D2 y D3 continúan OPEN. Este inventario mejora la trazabilidad, pero no cierra por sí solo ninguna puerta. No se modificaron runtime, tests ni workflows y no se ejecutaron pruebas en esta revisión.
