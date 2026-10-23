@@ -671,3 +671,17 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - El commit documental fue leído de vuelta. Consulta de estado combinado y workflow runs asociados: ambos devolvieron colecciones vacías; **CI no confirmado**, no PASS.
 - Sin cambios de runtime ni de pruebas. La política sigue propuesta, no ratificada; no se implementó gate.
 - Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+# RECONCILIACIÓN DE POLÍTICA — CHRONICLE BAJO OPCIÓN A — 2026-10-23
+
+- Reconciliación añadida: [NCS_CHRONICLE_OPTION_A_POLICY_RECONCILIATION_2026-10-23.md](BUILD/NCS_CHRONICLE_OPTION_A_POLICY_RECONCILIATION_2026-10-23.md), documento leído de vuelta, blob `13d61a49c8f22bce00fdb3294564687b0ba2936b`, 4,854 caracteres.
+- Se contrastó la propuesta reciente de gate deny-first con las decisiones expresas ya registradas: [NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md](DECISIONS/NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md) y [NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md](DECISIONS/NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md).
+- Resultado: opción A permite persistencia interna acotada de Chronicle/Continuity para continuidad/evidencia; el documento de decisión menciona expresamente `chronicle_append` como persistencia interna. La propuesta deny-first omitió reconciliar esa decisión anterior y queda superseded en cuanto a bloquear por defecto esta ruta.
+- No implementar `NCS_CHRONICLE_PRECOMMISSIONING_GATE_IMPLEMENTATION_SPEC_2026-10-23.md` bajo el alcance vigente; no migrar las pruebas de persistencia/replay a un bypass interno. Mantener las pruebas públicas de Chronicle y la superficie local estrecha.
+- Los límites siguen siendo estrictos: rutas controladas por el invocador confiable, sin selección desde contenido no confiable; `authorization: NOT_EVALUATED`; Chronicle no demuestra raíz legítima ni autoriza reparación, Lúmina/simulación, red, comandos o efectos protegidos.
+- Este cambio es documental: runtime sin cambios; gate deny-first no implementado; CI de esta actualización documental no comprobado.
+- Próximo trabajo: verificar enforcement de las operaciones excluidas y consultas read-only en HEAD actual, luego retomar la brecha M0-E de raíz legítima → Constitución exacta → Policy/contexto → sink protegido, sin inventar autoridad.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
