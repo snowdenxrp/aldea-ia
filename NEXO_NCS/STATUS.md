@@ -1274,3 +1274,12 @@ La matriz separa hechos observados de recomendaciones y decisiones que correspon
 La matriz [NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md](BUILD/NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md) fue ampliada con la lectura directa de `continuity-store.mjs` y `chronicle-store.mjs`. Confirmado: ambos usan lock por-store, token y fail-closed para estado incierto; no son intercambiables. Continuity registra fallos persistentes de release, reintenta una vez y puede informar `released_after_retry`; Chronicle devuelve fallo tras un intento y no presenta el mismo registro persistente. El test de bootstrap existente es solo vector software, no raíz legítima ni integración hardware.
 
 Esto refuerza la recomendación de no unificar los locks por extracción mecánica y diseñar admisión raíz como contrato separado. Análisis estático únicamente: no se ejecutaron tests/CI ni se modificó runtime/tests/workflows. D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+### Revalidación exacta de callers del wrapper Continuity — 2026-10-23
+
+Se actualizó el ledger D1 tras consultar de nuevo el árbol exacto de ncs-clean-architecture (`fc546b0e998abcecafb44ead2b2ae9dd1222d539`, `truncated=false`, 2.982 entradas). El scan de `scripts/nexo-continuity.mjs` confirma dos callers de producción en el repositorio: `scripts/assistants.mjs` y `scripts/simulate.mjs`. La ruta de Chronicle es independiente: `scripts/nexo.mjs` lanza el hijo ejecutable `scripts/nexo-chronicle-session.mjs`; el hijo llama a la API pública de append; `chronicle-append.mjs` crea ambas factories path-based; `continuity-queries.mjs` accede directamente a Continuity.
+
+Documento actualizado: `NEXO_NCS/BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md`, commit `6512851d57f785c3e056e6c7774d4c4e22eb244d`, blob `93020e104345a9794ab5d70ade09323622b85371`. Handoff actualizado: `NEXO_NCS/BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md`, commit `edc0021ca754453bb67db9502238ba7053821308`, blob `d788d7d88fbe556313d0f5bd5fe2050e112f3411`.
+
+Este scan cierra únicamente la pregunta estrecha de imports actuales del wrapper dentro de los archivos de producción inspeccionados. No prueba ausencia de consumidores externos, carga dinámica/computada ni otros bypasses path-based. D1-DESIGN sigue OPEN; no se modificó runtime/tests/workflows y no se ejecutaron tests/CI. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
