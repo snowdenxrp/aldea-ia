@@ -1011,3 +1011,19 @@ El package manifest expone `nexo` (`node scripts/nexo.mjs`) y `assistants` (`nod
 La suite de entrypoint invoca status, plan, misión y preview con `--continuity`, y append/replay con rutas independientes de Continuity y Chronicle. La migración debe probar cada familia de comandos con root, rechazar combinaciones/duplicados antes de abrir stores y conservar envelopes y garantías de no mutación.
 
 `assistants` es un comando compuesto separado: usa `NEXO_STATE_PATH`, `NEXO_LUMINA_MEMORY_PATH`, `NEXO_CONTINUITY_PATH`, abre Continuity vía `nexo-continuity.mjs` y contiene `--nexo-repair-once`. No declararlo root-managed hasta enrutar Continuity por una operación de instancia explícita. Simulación y memoria Lúmina permanecen fuera de la raíz Nexo. Repair sigue excluido por `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; root admission no concede permiso de repair. Inspección documental solamente; no se ejecutaron tests ni se cambiaron archivos runtime/tests/workflows.
+
+## Actualización NCS — 2026-10-23 — CLI y contratos de resultado
+
+**Estado:** diseño de raíz de instancia sigue OPEN. D1/D2/D3 no están cerrados. No se modificó runtime, tests ni workflows; no se ejecutaron pruebas en esta revisión.
+
+Se inspeccionaron directamente `scripts/nexo.mjs`, `scripts/nexo-chronicle-session.mjs`, `src/nexo/application/index.mjs`, `src/nexo/application/chronicle-append.mjs`, `package.json` y `tests/nexo/entrypoint.test.mjs`.
+
+Hallazgos que deben condicionar la implementación:
+- Comandos actuales: `status`, `mission-status`, `mission-plan`, `mission-draft-preview`, `mission-request-preview`, `chronicle-append`. El contrato actual usa rutas heredadas; `--root` aún no existe.
+- Consultas/vistas previas operan en el proceso principal. Chronicle append se delega con `spawnSync` a `nexo-chronicle-session.mjs`; el hijo debe poseer el root admission lock para append y el padre no debe mantener el mismo lock.
+- La API de aplicación es estrecha (siete casos de uso concretos), no un despachador genérico.
+- Las pruebas de entrada protegen exportaciones, imports estáticos y compatibilidad de varios resultados; no demuestran todavía root admission, bloqueo global ni rechazo de rutas mixtas. La prueba de bootstrap con nombre similar cubre vectores P-256, no filesystem locks.
+- Preservar `authorization: NOT_EVALUATED`, `dispatchAttempted:false` en bloqueos pre-despacho, salidas JSON sanitizadas y distinción entre resultado de negocio y resultado de admisión.
+- Las pruebas negativas propuestas están registradas en `BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md`.
+
+**Próximo paso:** cerrar la matriz exacta de resultados/códigos de salida y el inventario de bypasses (incluyendo `assistants.mjs`, reexportaciones, importaciones dinámicas y creación de procesos hijos). Después cerrar D1/D2/D3 en diseño. No comenzar cambios de runtime antes de esas puertas.
