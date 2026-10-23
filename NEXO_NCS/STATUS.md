@@ -1,3 +1,15 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — AGREGADO DE RECURSOS Y GATES D0/D1/D2/D3
+
+- Nuevo análisis de brecha de presupuesto agregado: [NCS_M0_AGGREGATE_RESOURCE_BUDGET_GAP_ANALYSIS_2026-10-23.md](BUILD/NCS_M0_AGGREGATE_RESOURCE_BUDGET_GAP_ANALYSIS_2026-10-23.md), commit `065df83a49ae853f8c93ca21919f545ac7322c25`.
+- Fuente actual declara límites por documento: Continuity 16 MiB y Chronicle 32 MiB; suma nominal de documentos serializados = 48 MiB, NO límite de heap. Límites por colección/stdin/temporales tampoco son cuota total de disco.
+- Heap agregado: `OPEN / NO DEMOSTRADO`; disco total: `OPEN / NO DEMOSTRADO`; exclusión entre operaciones completas: `OPEN / NO IMPLEMENTADA`.
+- Se mantiene la decisión de no inventar un multiplicador fijo de heap ni atribuir al lock una cuota de disco. El lock de instancia solo coordina operaciones cooperantes; no confiere autoridad.
+- Runtime/tests/workflows sin cambios; no se ejecutaron tests ni CI en esta revisión.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: terminar reconciliación de callers/grafo estático contra un snapshot exacto y marcar no clasificables como `UNKNOWN/BLOCKED`; luego cerrar las subdecisiones D0/D1-DESIGN/D2/D3 antes de implementación.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D0 SUBDECISIONES PROPUESTAS
 
 - Dirección A aceptada por el propietario; runtime continúa SIN CAMBIOS.
