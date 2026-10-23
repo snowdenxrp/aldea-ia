@@ -251,3 +251,12 @@ Nuevo documento: [NCS_M0_D0_C2_DECISION_READINESS_AND_ENVIRONMENT_GATE_2026-10-2
 Revisión cruzada con el perfil D3: el runtime C y el host/operador D siguen sin determinarse. Por ello, la opción A solo es evaluable si existe un entorno elegido donde pueda imponerse y evidenciarse la quiescencia; B depende de garantías reales del filesystem; C no coordina por sí solo; D añade una nueva identidad y recuperación de lock. No hay base factual para elegir ninguna como política aceptada. La entrada mínima para el próximo avance es confirmar si ya existe una primera instancia que usará Continuity/Chronicle; si no, documentar RUNTIME_TARGET = NOT_SELECTED y mantener D3 OPEN.
 
 El documento define criterios candidatos para ROOT_READY y recuperación parcial, sin añadir marcadores, locks, IDs ni decisiones. Solo documentación; runtime/tests/workflows sin cambios; tests/CI no ejecutados. Estado canónico intacto.
+
+---
+# RECUPERACIÓN DE CONTEXTO — ¿YA SE HABÍA ELEGIDO RUNTIME C? — 2026-10-23
+
+Se revisó el contexto de conversaciones anteriores y el handoff maestro disponible, además de los documentos D3 y el gate D0-C2. El resultado es consistente: el POCO X7 Pro está documentado como dispositivo del prototipo local M1, pero **no** como decisión de que allí correrá la primera instancia que use Continuity/Chronicle. No se encontró una decisión explícita de runtime C ni de host/operador D.
+
+Interpretación precisa: RUNTIME_TARGET = NOT_DETERMINED (no hay selección documentada). Esto **no** demuestra que físicamente no exista un entorno; evita convertir falta de evidencia en la afirmación de que no existe. No pedir al propietario que reconstruya la investigación anterior ni volver a censar callers. La siguiente entrada mínima, cuando sea necesaria, es confirmar si ya se seleccionó un despliegue real. Mientras tanto, continuar revisión portable de contratos, sin escoger bootstrap A/B/C/D ni cerrar D3.
+
+No se modificó runtime/tests/workflows; no se ejecutaron tests/CI. Estado canónico sin cambios.
