@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D0 ID CROSSWALK
+
+- Se amplió el ledger D0 con un crosswalk entre IDs `D0-01..11` y la matriz canónica `D0-C1..C4`, evitando que referencias paralelas se interpreten como decisiones distintas. Commit de actualización del ledger: `bfec45d8fd2524a8f3739846729d241e70013b39`.
+- El crosswalk mapea configuración/CLI/API/env/legacy, bootstrap, symlinks/layout y migración. No cierra ninguno de esos contratos.
+- Análisis D1-S0 está en [NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md](BUILD/NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md), commit `e375bf9e789ce40676d682a6b3ca9eae62063057`; separar D1-DESIGN de D1-IMPLEMENTATION sigue siendo recomendación no aprobada.
+- No se modificó runtime/tests/workflows/CLI/stores; no se ejecutaron tests ni CI.
+- Estado canónico: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D1-S0 SEQUENCE GATE ANALYSIS
 
 - Nuevo análisis de secuencia: [NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md](BUILD/NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md), commit `e375bf9e789ce40676d682a6b3ca9eae62063057`.
