@@ -151,11 +151,36 @@ function readMissionAdmissionOptions(options) {
       if (!descriptor.enumerable || !("value" in descriptor)) return null;
       values[key] = descriptor.value;
     }
-    if (!values.owner || typeof values.owner.recordMission !== "function" ||
+    const recordMission = readPublicDataField(values.owner, "recordMission");
+    if (typeof recordMission !== "function" ||
         !Number.isSafeInteger(values.expectedRevision) || values.expectedRevision < 0 ||
         !values.mission || typeof values.mission !== "object" || Array.isArray(values.mission)) {
       return null;
     }
+    return { ...values, recordMission };
+  } catch {
+    return null;
+  }
+}
+
+function readMissionAdmissionResult(result) {
+  if (!isPublicDataRecord(result)) return null;
+  try {
+    const values = Object.create(null);
+    for (const key of ["status", "code", "persistenceStatus", "missionAdmissionCommitted", "storeRevision"]) {
+      const descriptor = Object.getOwnPropertyDescriptor(result, key);
+      if (!descriptor) continue;
+      if (!descriptor.enumerable || !("value" in descriptor)) return null;
+      values[key] = descriptor.value;
+    }
+    if (typeof values.status !== "string") return null;
+    if (Object.hasOwn(values, "persistenceStatus") && typeof values.persistenceStatus !== "string") return null;
+    if (Object.hasOwn(values, "code") && typeof values.code !== "string") return null;
+    if (Object.hasOwn(values, "storeRevision") &&
+        (!Number.isSafeInteger(values.storeRevision) || values.storeRevision < 0)) return null;
+    if (Object.hasOwn(values, "missionAdmissionCommitted") &&
+        typeof values.missionAdmissionCommitted !== "boolean" &&
+        values.missionAdmissionCommitted !== "UNKNOWN") return null;
     return values;
   } catch {
     return null;
@@ -177,36 +202,68 @@ export async function recordNexoMissionSafely(options) {
       redispatchAuthorized: false
     };
   }
-  const { owner, expectedRevision, mission } = input;
+  const { owner, recordMission, expectedRevision, mission } = input;
   try {
-    const result = await owner.recordMission({ expectedRevision, mission });
-    // Preserve a known durable commit while blocking an unsafe handoff.
-    if (result?.persistenceStatus === "committed") {
+    const rawResult = await recordMission.call(owner, { expectedRevision, mission });
+    const result = readMissionAdmissionResult(rawResult);
+    if (!result) {
+      return {
+        status: "unknown",
+        code: "NEXO_CHRONICLE_MISSION_ADMISSION_RESULT_INVALID",
+        missionAdmissionCommitted: "UNKNOWN",
+        dispatchAttempted: false,
+        redispatchAuthorized: false
+      };
+    }
+    const storeRevision = Number.isSafeInteger(result.storeRevision) && result.storeRevision >= 0
+      ? result.storeRevision : undefined;
+    const code = typeof result.code === "string" && result.code.trim()
+      ? result.code : undefined;
+    // Preserve a known durable commit while blocking an unsafe lock handoff.
+    if (result.persistenceStatus === "committed") {
       return {
         status: "blocked",
-        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_HANDOFF_UNSAFE",
+        code: code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_HANDOFF_UNSAFE",
         missionAdmissionCommitted: true,
         dispatchAttempted: false,
         redispatchAuthorized: false,
-        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
+        ...(storeRevision !== undefined ? { storeRevision } : {})
       };
     }
-    if (result?.status === "unknown" || result?.missionAdmissionCommitted === "UNKNOWN" ||
-        result?.persistenceStatus === "unknown") {
+    if (result.status === "unknown" || result.missionAdmissionCommitted === "UNKNOWN" ||
+        result.persistenceStatus === "unknown") {
       return {
         status: "unknown",
-        code: result.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
+        code: code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
         missionAdmissionCommitted: "UNKNOWN",
         dispatchAttempted: false,
         redispatchAuthorized: false,
-        ...(Number.isSafeInteger(result.storeRevision) ? { storeRevision: result.storeRevision } : {})
+        ...(storeRevision !== undefined ? { storeRevision } : {})
       };
     }
-    return result;
+    return {
+      status: result.status,
+      ...(code ? { code } : {}),
+      ...(storeRevision !== undefined ? { storeRevision } : {}),
+      ...(typeof result.missionAdmissionCommitted === "boolean" ||
+        result.missionAdmissionCommitted === "UNKNOWN"
+        ? { missionAdmissionCommitted: result.missionAdmissionCommitted } : {}),
+      dispatchAttempted: false,
+      redispatchAuthorized: false
+    };
   } catch (error) {
+    let code;
+    try {
+      const descriptor = error && (typeof error === "object" || typeof error === "function")
+        ? Object.getOwnPropertyDescriptor(error, "code") : null;
+      if (descriptor && descriptor.enumerable && "value" in descriptor &&
+          typeof descriptor.value === "string" && descriptor.value.trim()) {
+        code = descriptor.value;
+      }
+    } catch { /* use the closed fallback below */ }
     return {
       status: "unknown",
-      code: error?.code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
+      code: code ?? "NEXO_CHRONICLE_MISSION_ADMISSION_OUTCOME_UNKNOWN",
       missionAdmissionCommitted: "UNKNOWN",
       dispatchAttempted: false,
       redispatchAuthorized: false
