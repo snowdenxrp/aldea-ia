@@ -444,3 +444,8 @@ El contrato de raíz ahora contiene la matriz de tratamiento propuesto para ocho
 ## Candidato concreto D2 para el root lock
 
 Se recomienda `<root>/.nexo-instance.lock/` como directorio reservado creado atómicamente por `mkdir`, con `owner.json` mínimo (`pid`, token, `createdAt`). No agregar instance IDs/colas/leases. Owner corrupto o estado desconocido: fail-closed. Stale lock: recuperación explícita, nunca borrado automático. Liberación: comprobar token antes de retirar el directorio; incertidumbre bloquea éxito limpio y reuso local. Deadline monotónico se crea en cada proceso a partir de una duración, nunca se pasa absoluto por IPC. Es candidato, no protocolo aprobado; D2 sigue OPEN.
+
+
+### D2 candidato de lock — parámetros aún por verificar
+
+El documento de contrato propone, sin aprobar ni implementar: espera relativa 2000 ms, polling 10 ms, stale si edad >60 s y PID no vivo, ningún borrado automático, owner acotado por `NEXO_RESOURCE_LIMITS.lockOwnerBytes`, owner regular (no symlink), liberación con token y como máximo un intento adicional de limpieza. Si release sigue incierto, cuarentena local por raíz hasta que la ruta desaparezca; nunca repetir automáticamente la operación de negocio. Tests requeridos: PID vivo/muerto, owner ausente/corrupto, reemplazo de lock, timeout, fallo de release y recuperación externa.
