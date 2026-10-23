@@ -1171,3 +1171,10 @@ Se creó el informe documental [NCS_M0_D1_CALLER_RECONCILIATION_AND_LOCK_SCOPE_2
 Hallazgo adicional confirmado en fuente: `assistants.mjs` carga estado del mundo, abre Continuity con `legacyMemory`, registra misión, escribe memoria Lúmina y después persiste estado del mundo; no hay atomicidad conjunta. `simulate.mjs` mantiene un lock separado para world state con recuperación stale distinta y puede abrir/inicializar Continuity. Se recomienda excluir simulación de la persistencia ordinaria de Nexo hasta definir una operación explícita; no reutilizar su lock como admisión de instancia.
 
 Estado sin cambio: D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Esta revisión fue documental: sin cambios de runtime/tests/workflows y sin ejecución de tests/CI. El censo de callers sigue siendo parcial hasta cerrar el grafo con una prueba arquitectónica.
+
+
+### Matriz D0/D2/D3 de decisiones preparada — 2026-10-23
+
+Se creó [NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md](BUILD/NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md), commit documental `f352f7019b045d663bc8748d5173107827923f05`. Reduce las decisiones abiertas a contratos y criterios verificables: interfaz/precedencia de raíz, bootstrap, symlinks/alias, migración legacy, tratamiento de `simulate` y `assistants`, frontera path-based, alcance/orden del lock, errores de lock, proceso hijo Chronicle, cutover/rollback y límites de garantía.
+
+La matriz separa hechos observados de recomendaciones y decisiones que corresponden al propietario. **No se considera aprobación de ninguna subdecisión**; en particular, separar `D1-DESIGN` de `D1-IMPLEMENTATION` sigue pendiente. No se modificó runtime/tests/workflows ni se ejecutaron tests/CI. D0/D1/D2/D3 siguen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
