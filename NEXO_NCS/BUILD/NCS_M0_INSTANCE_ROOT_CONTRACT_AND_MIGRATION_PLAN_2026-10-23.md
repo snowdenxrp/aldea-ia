@@ -1088,3 +1088,24 @@ Puntos concretos añadidos:
 - La especificación de no-bypass se ha concretado, pero no se ha implementado ni ejecutado. El grafo transitivo sigue sin declararse cerrado.
 
 Este checkpoint no modifica el contrato constitucional ni autoriza runtime/tests. D1/D2/D3 siguen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## 9. D3 — hueco de concurrencia de writers legacy durante migración (2026-10-23)
+
+El cross-check contractual identificó una condición que el plan de migración debe resolver explícitamente: los entrypoints legacy actuales no adquieren la futura admisión de instancia. Por tanto, el lock de raíz nuevo no coordina a un proceso antiguo que siga escribiendo directamente en las rutas legacy durante el dry-run/copia.
+
+Si un writer legacy modifica la fuente mientras se copia, una copia válida por hash puede reflejar un estado anterior al último commit de la fuente. Hacer cutover a esa copia podría omitir operaciones recientes. No se puede asumir que adquirir el lock nuevo detiene a procesos que no lo usan.
+
+### Control propuesto (no aprobado ni implementado)
+
+1. Declarar una ventana explícita de quiescencia de todos los writers legacy, incluidos procesos hijos Chronicle invocados directamente. El plan debe enumerar cómo se detienen y cómo se comprueba que no quedan operaciones activas; ausencia del lock nuevo no es evidencia suficiente.
+2. Antes de copiar, registrar para cada fuente el hash de bytes, tamaño, revisión disponible y ruta resuelta. El dry-run solo inventaría; no debe crear stores ni modificar fuentes.
+3. Copiar a un destino de preparación sin mutar el origen y validar bytes/hash, revisión y contrato semántico del destino.
+4. Inmediatamente antes de cutover, volver a leer las huellas de las fuentes. Si cualquier fuente cambió o no puede leerse/validarse, cancelar cutover, conservar ambos lados y repetir inventario; no hacer merge heurístico.
+5. Registrar aprobación explícita del cutover. Preservar la fuente original después de cambiar la configuración; no hacer dual-write ni borrar la fuente en el mismo paso.
+6. Si no puede garantizarse o detectarse la quiescencia de writers legacy, el resultado de migración es `UNKNOWN/BLOCKED`; no afirmar que el destino está sincronizado.
+7. Si el nuevo destino ya recibió escrituras tras el cutover, rollback no puede copiar automáticamente hacia atrás ni fusionar historiales. Debe bloquear y exigir reconciliación explícita, preservando evidencia y ambos conjuntos de datos.
+
+Este control cubre cooperación operacional, no procesos locales hostiles que ignoren el protocolo. No crea una frontera de seguridad ni modifica autoridad constitucional.
+
+**Estado:** propuesta de D3, no decisión aceptada. D3 permanece OPEN hasta definir y probar quiescencia, huellas, cancelación por cambio de origen, cutover y rollback. No se modificó runtime/tests/workflows y no se ejecutaron pruebas/CI.
