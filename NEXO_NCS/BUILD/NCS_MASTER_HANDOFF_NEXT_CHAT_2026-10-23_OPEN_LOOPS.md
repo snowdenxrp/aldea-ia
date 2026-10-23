@@ -291,3 +291,12 @@ Contract Section 19 records that `scripts/assistants.mjs` has independent `NEXO_
 Code search returned zero hits for several symbols directly confirmed in source. These results are a connector search limitation, not proof of no callers. The remaining call-graph closure needs a reliable tree/file scan or checkout-local search; D1 stays OPEN. Section 19 also specifies the static no-bypass architecture test contract: explicit production entrypoint allowlist, low-level factory/import restriction, root-only public API, admitted reads, one Chronicle lock owner, explicit disposition of assistants, and an invariant test for repair exclusion. Static checks are not substitutes for behavioral concurrency/release tests.
 
 No runtime, tests or workflows changed. D1/D2 remain OPEN; canonical state unchanged.
+
+
+## 21. Verified scope of existing architecture tests
+
+The direct source review narrows the test gap. `tests/nexo/entrypoint.test.mjs` already performs a static local import/re-export walk from `scripts/nexo.mjs` and `scripts/nexo-chronicle-session.mjs`, checking the narrow application export list and separation from the legacy Lúmina/runtime modules. Blob SHA: `ff1bd2e9d292e21e00049b354249aee684837bbc`. It does **not** require an instance root, prevent path-oriented APIs from bypassing admission, or cover `scripts/assistants.mjs` as a composite entrypoint. Its current assertions explicitly accept independent `--continuity` / `--chronicle` paths.
+
+`tests/nexo/assistants-runtime-cli.test.mjs` (blob SHA `2c4ffb83e3bb849ac35ec381b268ef4f74a13225`) does verify the repair exclusion gate remains blocked with `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, but it does not establish root admission. Preserve this gate. `scripts/nexo.mjs` uses `spawnSync` for Chronicle; the child that executes append must own the single future root lock.
+
+Accurate gap statement: a partial architecture/isolation guard exists; the missing test is the separate canonical-root/no-bypass guard plus behavioral concurrency/release-uncertainty coverage. Do not add `scripts/assistants.mjs` to the Nexo-only import walker without a distinct composite Lúmina+Nexo contract. D1/D2 remain OPEN; no runtime, tests or workflows changed.
