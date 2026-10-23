@@ -463,3 +463,8 @@ No silently resolve the tension between (1) keeping the current Continuity/Chron
 - B: shared directory-lock primitive with policy adapters, less duplication but requires characterization tests proving unchanged codes, timeout, stale handling, release retry/quarantine and persistence result semantics.
 
 Recommendation: write the behavior matrix and characterization tests first; choose B only if the policies can be represented cleanly without broadening the abstraction or changing observable behavior. Otherwise document A as deliberate separation with independent tests. D2 remains OPEN; no runtime/test changes yet.
+
+
+### Store-lock characterization matrix added
+
+Contract now compares existing Continuity vs Chronicle lock semantics: owner metadata shape, stale/corrupt handling, timeout, token mismatch, transient/persistent release failure, local quarantine, and unlocked reads. Tests reviewed: `tests/nexo/continuity-store.test.mjs` SHA `c3af56077b94c8d641979e0853de7f70fa45d82f`; `tests/nexo/chronicle-store.test.mjs` SHA `8e182932ae98ad40c3655f6be3bf5e0585bfac26`. Characterization tests must precede any shared-lock refactor. No tests were run.
