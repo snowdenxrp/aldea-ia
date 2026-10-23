@@ -149,3 +149,12 @@ Interpretation pending owner decision: D0-C3 remains OPEN; “same resolved dire
 
 A direct edit to the 146 KB root contract was blocked by tool security controls during the previous correction attempt; no source wording has been changed. This checkpoint records the ambiguity, not a policy decision.
 No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
+
+
+## Follow-up: bootstrap versus in-root admission ordering (2026-10-23)
+
+A targeted check of root-contract blob `bac9493af98c3f86001e323dab153bdee78b5f31` found an unresolved ordering edge across D0-C2/D2. The root-resolution contract rejects a nonexistent root in normal operation and says root creation is only allowed through a separate explicit bootstrap operation (sections 1.2 and the root policy table). Yet the acceptance criteria later say owner bootstrap, legacy initialization, and commit/append use the same admission; the proposed lock lives inside the root as `<root>/.nexo-instance.lock/`.
+
+This is not necessarily a contradiction if bootstrap first establishes a safely coordinated root, but the bootstrap's first coordination point is not specified by these statements. An in-root lock cannot be acquired before the root/lock directory exists. Do not silently create the root before validation or invent a sibling/global lock. D0-C2 and D2 must explicitly specify the first-creation race/coordination protocol, the exact mutations permitted during bootstrap, and fail-closed behavior if two bootstrap attempts race or ownership is uncertain. If no defensible protocol is chosen, bootstrap stays blocked/UNKNOWN rather than bypassing admission.
+
+Status: concrete contract gap; not implemented. This is distinct from the earlier D0-C1 interface and D0-C3 canonicalization wording notes. No runtime/tests/workflows changed; no tests/CI run. Canonical state unchanged.
