@@ -106,7 +106,7 @@ Propuesta: durante la fase de diseño, definir una ventana de cutover y una cond
 
 ### D3-G4. Symlinks y rutas físicas
 
-Canonicalizar la raíz no impide que `continuity.json` o `chronicle.json` sean symlinks a archivos externos. El contrato debe especificar y probar que los nombres reservados de stores y lock no aceptan symlinks o formas ambiguas. También debe declarar el límite frente a TOCTOU, hard links, bind mounts y procesos locales hostiles; la raíz no es un sandbox.
+Canonicalizar la raíz no impide que `continuity.json` o `chronicle.json` sean symlinks a archivos externos. D0-C3 debe decidir explícitamente qué tipos de objeto y casos de symlink se admiten para la raíz, stores, lock y owner; no se presupone un rechazo universal antes de esa decisión. Una vez aprobada la política, las pruebas deben verificar los casos permitidos y rechazados, incluida la ausencia de mutaciones fuera de la raíz. También debe declararse el límite frente a TOCTOU, hard links, bind mounts y procesos locales hostiles; la raíz no es un sandbox.
 
 ### D3-G5. Prueba de recursos no sustituye migración
 
