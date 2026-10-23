@@ -835,7 +835,7 @@ Documento nuevo:
 Define como propuesta los criterios para enumerar writers/launchers, detener sesiones y relanzamientos, inspeccionar procesos con cobertura suficiente, registrar huellas iniciales, verificar copia y revalidar inmediatamente antes del cutover. Un proceso ambiguo, acceso denegado, inventario incompleto, fallo de lectura o cambio de fuente obliga a `UNKNOWN/BLOCKED`; no se hace cutover. El texto señala que una captura de procesos más hashes no elimina la carrera si aún pueden iniciarse nuevos writers; hace falta un control de mantenimiento/previsión de lanzamientos demostrable para la instalación real.
 
 Cross-contract checkpoint actualizado:
-- Commit: `97f5f630cf1264418f53b260679ec7f95298f22c`
-- Blob: `329b2eeeac372e728dd029974296df7c8b1551ec`
+- Commit: `77891a5372ee59ddbeb4f58045c6a21e68e170be`
+- Blob: `bd055435e14ae16e38c635c39ee4ced792776b50`
 
 Siguiente paso exacto: comprobar coherencia entre el protocolo y el contrato D3; después identificar qué información del entorno de despliegue se necesita para escoger un mecanismo real de prevención de nuevos lanzamientos. No inventar un control específico de SO ni afirmar que quiescencia está probada. D0/D1/D2/D3 siguen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. No runtime/tests/workflows ni tests/CI en esta pasada.
