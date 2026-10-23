@@ -238,3 +238,12 @@ The store sources and lock-deadline helper were read from the current branch. Ch
 Design recommendation recorded in Section 14 of the instance-root contract: add a root-level exclusive operation admission layer; retain per-store locks initially; fixed acquisition order root then store; one admission boundary per operation; no nested/reentrant root lock; no automatic stale-lock reclamation; no claims of authority, hostile-process protection, fsync durability or network filesystem safety. Proposed lock errors are internal draft, not a finalized public API.
 
 D2 remains OPEN until call graphs for repair/runtime are mapped, a single owner is chosen for admission in Chronicle parent/child flow, and release-uncertain/no-bypass tests are specified. No runtime/tests/workflows changed. Canonical state unchanged.
+
+
+## 16. D2 follow-up — entrypoint call graph and lock owner
+
+Section 15 of the root contract now maps observed calls for status/mission queries/previews, Chronicle append, continuity owner bootstrap, repair protocol, settlement/verification, and indirect adapters/runtime. Recommended lock owner for the current Chronicle CLI is the child process executing runNexoChronicleAppend; do not acquire the same root lock in both parent and child, and never transport absolute performance.now() deadlines across processes. Queries/previews must also use the instance admission boundary because they read mutable persisted state. Helpers inside an admitted operation should receive context and not reacquire the root lock.
+
+Important scope guard: repair modules still exist and export store access, but scripts/nexo-runtime-session.mjs currently blocks runtime repair with NEXO_M0_OPTION_A_EFFECT_EXCLUDED. Root work must not reactivate or widen this excluded path.
+
+D2 remains OPEN pending full caller inventory and explicit tests for operation-wide exclusion, process concurrency, release uncertainty, no reentrancy, no-bypass, read-only query semantics, and preserved repair exclusion. No runtime/tests/workflows changed. Canonical state unchanged.
