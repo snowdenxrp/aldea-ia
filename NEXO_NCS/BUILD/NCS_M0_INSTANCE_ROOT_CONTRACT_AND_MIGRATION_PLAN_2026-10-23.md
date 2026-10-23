@@ -758,7 +758,7 @@ This is source inspection and documentation only. No tests were executed and no 
 
 ### Inventario de comandos públicos observado en el código
 
-La fuente auditada es `scripts/nexo.mjs` (blob `e471eb478a09aa8a9a8323795583e198cdf0a127`), junto con `scripts/nexo-chronicle-session.mjs` (blob `30a53de2f108aa8a9a8323795583e198cdf0a127` no se presume; SHA verificado de este archivo: `30a53de2f108aa8a9a8323795583e198cdf0a127`), el índice de aplicación y `tests/nexo/entrypoint.test.mjs` (blob `ff1bd2e9d292e21e00049b354249aee684837bbc`). Esta sección describe el estado actual observado; no implica que las decisiones de diseño estén cerradas.
+La fuente auditada es `scripts/nexo.mjs` (blob `e471eb478a09aa8a9a8323795583e198cdf0a127`), junto con `scripts/nexo-chronicle-session.mjs` (blob `30a53de2f108aa255a1dfd61ce78c19788de160b`), el índice de aplicación y `tests/nexo/entrypoint.test.mjs` (blob `ff1bd2e9d292e21e00049b354249aee684837bbc`). Esta sección describe el estado actual observado; no implica que las decisiones de diseño estén cerradas.
 
 | Familia | Entrada actual | Operación/resultado exitoso esperado | Riesgo de admisión que debe resolverse |
 |---|---|---|---|
