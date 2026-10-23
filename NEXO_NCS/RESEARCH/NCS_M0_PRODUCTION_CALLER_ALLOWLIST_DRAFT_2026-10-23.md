@@ -99,3 +99,17 @@ Los otros 50 archivos `tests/**` fuera de `tests/nexo/**` importan módulos de p
 - D3 = OPEN: contrato `--root`, symlinks, bootstrap y migración siguen pendientes.
 - Autorización = `NOT_EVALUATED`; legitimidad de raíz/dueño = `PENDING/UNKNOWN`; efectos protegidos = `STOP`.
 - No modificar runtime/tests/workflows antes de cerrar D1/D2/D3.
+
+
+## 8. Escaneo adicional de mecanismos dinámicos en código de aplicación
+
+Se hizo una pasada específica por los 13 scripts, 34 módulos de `src/nexo/` y 45 módulos de `src/` fuera de `src/nexo/`, buscando imports dinámicos, `require`/createRequire, `eval`/Function, procesos hijos, guardas de ejecución directa y referencias directas a las APIs/stores de Continuity/Chronicle.
+
+Hallazgos positivos:
+- Único proceso hijo productivo identificado: `scripts/nexo.mjs` → `spawnSync(process.execPath, [nexo-chronicle-session.mjs, ...])`. Es el handoff de append ya documentado.
+- Guardas de ejecución directa identificadas en `scripts/nexo.mjs`, `scripts/nexo-chronicle-session.mjs` y `scripts/simulate.mjs`.
+- No se encontraron `import(...)`, `require()`, `createRequire`, `eval()` ni `new Function` en los scripts y módulos `src/nexo/**` revisados.
+- En los 45 módulos externos a `src/nexo/`, el único import dinámico observado es `src/three-remote.js` con `import(url)` para cargar Three.js; no está conectado a stores Nexo ni a APIs de Continuity/Chronicle.
+- `assistants.mjs` lee archivos de código por `fs.readFile` para análisis, pero no usa esa lectura como importación/ejecución dinámica.
+
+Este escaneo reduce incertidumbre sobre los mecanismos dinámicos en la superficie de aplicación, pero no reemplaza el test arquitectónico: debe proteger contra cambios futuros y verificar el grafo transitivo de imports/reexports, la invocación directa de entrypoints y los procesos hijos. Los tests pueden usar `spawnSync` deliberadamente para probar CLI/locks; sus edges deben clasificarse como TEST_ONLY y no confundirse con producción.
