@@ -112,6 +112,47 @@ function readFunctionRegistry(registry, label) {
   return entries;
 }
 
+function readSafeJournalSnapshot(journal) {
+  if (journal === null || journal === undefined) return [];
+  if (!Array.isArray(journal)) throw new TypeError("executionJournal must be an array");
+  if (Object.getPrototypeOf(journal) !== Array.prototype) {
+    throw new TypeError("executionJournal must use the canonical array prototype");
+  }
+  const arrayKeys = Reflect.ownKeys(journal);
+  const lengthDescriptor = Object.getOwnPropertyDescriptor(journal, "length");
+  if (!lengthDescriptor || !("value" in lengthDescriptor) ||
+      !Number.isSafeInteger(lengthDescriptor.value) || lengthDescriptor.value < 0 ||
+      arrayKeys.length !== lengthDescriptor.value + 1) {
+    throw new TypeError("executionJournal must be a dense canonical array");
+  }
+  const entries = [];
+  for (let index = 0; index < lengthDescriptor.value; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(journal, String(index));
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      throw new TypeError("executionJournal entries must be own data properties");
+    }
+    const entry = descriptor.value;
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new TypeError("executionJournal entries must be records");
+    }
+    const prototype = Object.getPrototypeOf(entry);
+    if (prototype !== Object.prototype && prototype !== null) {
+      throw new TypeError("executionJournal entries must be plain records");
+    }
+    const values = Object.create(null);
+    for (const key of Reflect.ownKeys(entry)) {
+      if (typeof key !== "string") throw new TypeError("executionJournal entries must not contain symbol keys");
+      const field = Object.getOwnPropertyDescriptor(entry, key);
+      if (!field || !field.enumerable || !("value" in field)) {
+        throw new TypeError("executionJournal entries must contain enumerable data properties");
+      }
+      values[key] = field.value;
+    }
+    entries.push({ reference: entry, values });
+  }
+  return entries;
+}
+
 export function createEffectAdapter(options = {}) {
   const {
     handlers, verifiers, getStateVersion, executionJournal, persistPreparedIntent
@@ -123,29 +164,33 @@ export function createEffectAdapter(options = {}) {
   // Verifiers are trusted bootstrap configuration, deliberately separate from
   // handlers and from caller-supplied request callbacks.
   const verifierRegistry = new Map(readFunctionRegistry(verifiers, "verifiers"));
-  const executed = new Map(Array.isArray(executionJournal)
-    ? executionJournal.filter(x=>x?.idempotencyKey&&x?.result).map(x=>[x.idempotencyKey,x.result]) : []);
+  const initialJournal = readSafeJournalSnapshot(executionJournal);
+  const executed = new Map(initialJournal
+    .filter(({values}) => values.idempotencyKey && values.result)
+    .map(({values}) => [values.idempotencyKey, values.result]));
 
   function journalEntry(key) {
-    if(!Array.isArray(executionJournal)) return null;
-    return executionJournal.find(x=>x?.idempotencyKey===key) ?? null;
+    const entries = readSafeJournalSnapshot(executionJournal);
+    return entries.find(({values}) => values.idempotencyKey === key)?.reference ?? null;
   }
 
   function pruneJournal() {
     // Unresolved prepared entries are recovery obligations, not disposable history.
     // Bound terminal history first; if every entry is unresolved, exceed the soft cap.
-    while(executionJournal.length>200) {
-      const terminalIndex=executionJournal.findIndex(entry=>entry?.status!=="prepared");
-      if(terminalIndex<0) return;
-      executionJournal.splice(terminalIndex,1);
+    let entries = readSafeJournalSnapshot(executionJournal);
+    while(entries.length > 200) {
+      const terminalIndex = entries.findIndex(({values}) => values.status !== "prepared");
+      if(terminalIndex < 0) return;
+      Array.prototype.splice.call(executionJournal, terminalIndex, 1);
+      entries = readSafeJournalSnapshot(executionJournal);
     }
   }
 
   function recordIntent(request) {
-    if(!Array.isArray(executionJournal)) return;
+    if(executionJournal === null || executionJournal === undefined) return;
     const {missionId,stepId,action,target=null,idempotencyKey}=request;
     if(!journalEntry(idempotencyKey)) {
-      executionJournal.push({
+      Array.prototype.push.call(executionJournal, {
         idempotencyKey, missionId, stepId, action, target,
         status:"prepared", at:new Date().toISOString()
       });
@@ -155,14 +200,15 @@ export function createEffectAdapter(options = {}) {
 
   function persist(key,result){
     executed.set(key,result);
-    if(Array.isArray(executionJournal)) {
-      const existing=executionJournal.find(x=>x?.idempotencyKey===key);
+    if(executionJournal !== null && executionJournal !== undefined) {
+      const entries = readSafeJournalSnapshot(executionJournal);
+      const existing = entries.find(({values}) => values.idempotencyKey === key)?.reference ?? null;
       if(existing) {
         existing.result=structuredClone(result);
         existing.status=result.status;
         existing.completedAt=new Date().toISOString();
       } else {
-        executionJournal.push({idempotencyKey:key,result:structuredClone(result),status:result.status,at:new Date().toISOString()});
+        Array.prototype.push.call(executionJournal, {idempotencyKey:key,result:structuredClone(result),status:result.status,at:new Date().toISOString()});
       }
       pruneJournal();
     }
