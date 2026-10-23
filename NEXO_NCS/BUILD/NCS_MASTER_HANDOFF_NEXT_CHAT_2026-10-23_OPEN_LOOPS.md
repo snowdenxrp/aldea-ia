@@ -151,3 +151,29 @@ Canonical state unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legit
 - The handoff and STATUS are continuity records; neither alters runtime or constitutional state.
 - Open Loops implementation+test SHA `962d1a327683b412c401f323514d401e7e8ec8f1` is verified by deterministic persistence/`npm test`, STEP 4, and STEP 5 workflows; see Section 4 and the Open Loops contract.
 - Next chat should begin at `STATUS → MASTER/CORE → BUILD`, then continue the aggregate resource-budget frontier in Section 4A. Do not restart trust-boundary research or repeat the closed Open Loops CI check.
+
+
+## 10. NUEVO CHECKPOINT — contrato de raíz de instancia (2026-10-23)
+
+El propietario aceptó Opción A como **dirección de diseño**, no como autorización para implementar. No se cambió runtime, tests ni workflows.
+
+Diseño documental:
+- `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md`
+- Commit: `01d9e11544df480a29d1a375052e53e4f7a7b7a9`
+- Blob: `12bdfc0ff2c97b79a479d263c4073b32ea8915a5`
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md
+
+Hallazgos de inventario inicial:
+- `scripts/nexo.mjs` parsea `--continuity` y deriva Chronicle append a un child.
+- `scripts/nexo-chronicle-session.mjs` acepta `--continuity` y `--chronicle` por separado.
+- `runNexoChronicleAppend` abre ambos stores y Continuity owner.
+- `continuity-queries.mjs` expone status, mission status, plan, draft preview y Open Loops por ruta independiente.
+- `mission-request-preview.mjs` delega al preview; `continuity-service.mjs` abre/initializa Continuity.
+- `createNexoContinuityStore` y `createNexoChronicleStore` son factories de bajo nivel con locks por archivo; son bypass potencial si producción los llama sin admisión.
+- Las sesiones repair/runtime y workers de tests requieren clasificación explícita. El inventario del documento es inicial, no prueba que no existan más callers.
+
+Contrato propuesto: una única raíz de configuración confiable por instancia, derivación única de rutas, ninguna combinación silenciosa con paths independientes, admisión compartida entre procesos antes de cargar snapshots, error fail-closed ante timeout/propiedad incierta, y preservación de locks per-store/protocolo `.tmp`. La raíz no es identidad/autoridad constitucional.
+
+Pendiente antes de implementar: cerrar precedencia CLI/API/env; política de raíz inexistente; symlink/alias; alcance exacto de sección crítica; protocolo cross-process y orden de locks; reentrancia; códigos de error y release failure; compatibilidad legacy y migración de datos; callsite matrix completa. Ejecutar tests de procesos separados, timeout sin mutación, no-bypass y CI sobre SHA exacto cuando haya autorización de implementación.
+
+**No implementar runtime por ahora.** Heap exacto y cuota global de disco siguen OPEN. Estado canónico sin cambio: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
