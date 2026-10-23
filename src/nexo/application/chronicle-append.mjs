@@ -49,38 +49,92 @@ const TRI_STATE_FIELDS = new Set([
   "terminalOutcomeRecorded", "missionAdmissionCommitted"
 ]);
 
+function isPublicDataRecord(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  try {
+    const prototype = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+  } catch {
+    return false;
+  }
+}
+
+function readPublicDataField(record, key) {
+  if (!isPublicDataRecord(record)) return undefined;
+  try {
+    const descriptor = Object.getOwnPropertyDescriptor(record, key);
+    return descriptor && descriptor.enumerable && "value" in descriptor
+      ? descriptor.value
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function sanitizePublicLockRelease(value) {
+  if (!isPublicDataRecord(value)) return undefined;
+  const status = readPublicDataField(value, "status");
+  const code = readPublicDataField(value, "code");
+  if (typeof status !== "string" || typeof code !== "string") return undefined;
+  return { status, code };
+}
+
 export function publicChronicleResult(result, missionId, stepId) {
+  // This exported sanitizer is also a public boundary. Never read caller-owned
+  // result fields through ordinary property access: accessors may execute here.
+  const statusValue = readPublicDataField(result, "status");
+  const codeValue = readPublicDataField(result, "code");
+  const dispatchAttempted = readPublicDataField(result, "dispatchAttempted");
   const safe = {
-    status: PUBLIC_CHRONICLE_STATUSES.has(result?.status) ? result.status : "unknown",
+    status: typeof statusValue === "string" && PUBLIC_CHRONICLE_STATUSES.has(statusValue)
+      ? statusValue : "unknown",
     // No owner-authority evaluator is wired into this prototype. Never let a
     // successful local Chronicle settlement imply authorization.
     authorization: "NOT_EVALUATED",
-    dispatchAttempted: result?.dispatchAttempted === true,
+    dispatchAttempted: dispatchAttempted === true,
     redispatchAuthorized: false,
-    missionId,
-    stepId
+    missionId: typeof missionId === "string" ? missionId : null,
+    stepId: typeof stepId === "string" ? stepId : null
   };
-  if (typeof result?.code === "string") safe.code = result.code;
+  if (typeof codeValue === "string") safe.code = codeValue;
   for (const field of TRI_STATE_FIELDS) {
-    const value = result?.[field];
+    const value = readPublicDataField(result, field);
     if (typeof value === "boolean" || value === "UNKNOWN") safe[field] = value;
   }
-  if (Number.isSafeInteger(result?.storeRevision) && result.storeRevision >= 0) {
-    safe.storeRevision = result.storeRevision;
+  const storeRevision = readPublicDataField(result, "storeRevision");
+  if (Number.isSafeInteger(storeRevision) && storeRevision >= 0) {
+    safe.storeRevision = storeRevision;
   }
-  const timeoutSources = [result, result?.prepared, result?.lineage, result?.reconciliation,
-    result?.outcome, result?.adapterResult];
+
+  const timeoutSources = [
+    result,
+    readPublicDataField(result, "prepared"),
+    readPublicDataField(result, "lineage"),
+    readPublicDataField(result, "reconciliation"),
+    readPublicDataField(result, "outcome"),
+    readPublicDataField(result, "adapterResult")
+  ];
   const timeoutSource = timeoutSources.find(value => value &&
-    (value.phase === "lock_acquisition" || typeof value.writeStarted === "boolean" || value.lockRelease));
-  const timeoutCodeSource = timeoutSources.find(value =>
-    typeof value?.code === "string" && value.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"));
+    (readPublicDataField(value, "phase") === "lock_acquisition" ||
+      typeof readPublicDataField(value, "writeStarted") === "boolean" ||
+      readPublicDataField(value, "lockRelease") !== undefined));
+  const timeoutCodeSource = timeoutSources.find(value => {
+    const code = readPublicDataField(value, "code");
+    return typeof code === "string" && code.endsWith("_LOCK_ACQUISITION_TIMEOUT");
+  });
   if (timeoutSource) {
-    if (typeof timeoutSource.phase === "string") safe.phase = timeoutSource.phase;
-    if (typeof timeoutSource.writeStarted === "boolean") safe.writeStarted = timeoutSource.writeStarted;
-    if (timeoutSource.lockRelease && typeof timeoutSource.lockRelease === "object") safe.lockRelease = timeoutSource.lockRelease;
+    const phase = readPublicDataField(timeoutSource, "phase");
+    const writeStarted = readPublicDataField(timeoutSource, "writeStarted");
+    const lockRelease = sanitizePublicLockRelease(readPublicDataField(timeoutSource, "lockRelease"));
+    if (typeof phase === "string") safe.phase = phase;
+    if (typeof writeStarted === "boolean") safe.writeStarted = writeStarted;
+    if (lockRelease) safe.lockRelease = lockRelease;
   }
-  if (timeoutCodeSource && !(typeof result?.code === "string" && result.code.endsWith("_LOCK_ACQUISITION_TIMEOUT"))) {
-    safe.lockAcquisitionCode = timeoutCodeSource.code;
+  if (timeoutCodeSource) {
+    const timeoutCode = readPublicDataField(timeoutCodeSource, "code");
+    if (!(typeof codeValue === "string" && codeValue.endsWith("_LOCK_ACQUISITION_TIMEOUT"))) {
+      safe.lockAcquisitionCode = timeoutCode;
+    }
   }
   return safe;
 }
