@@ -618,3 +618,14 @@ No es aprobación del propietario, cierre de gate ni autorización de implementa
 ### Siguiente acción
 
 Continuar desde la matriz nueva, no repetir el censo. Convertir cada fila pendiente en contrato revisable; primero resolver la secuencia D1-DESIGN vs D1-IMPLEMENTATION y congelar interfaz de raíz/bootstrap. Mantener los números de timeout/stale y el primitivo de lock como candidatos hasta caracterizar tests existentes. No modificar runtime/tests hasta que las puertas de diseño estén cerradas explícitamente.
+
+
+## CHECKPOINT 2 — caracterización de locks existente
+
+La matriz de decisiones fue actualizada (commit `bc16b4dab13ef10acff4511698c5e978b58df52c`) con evidencia estática de `src/nexo/core/continuity-store.mjs` y `src/nexo/core/chronicle-store.mjs`.
+
+Hallazgo que no debe repetirse sin cambio de blobs: aunque ambos usan directorio `<file>.lock`, `owner.json`, token, retry 10 ms y stale 60 s, sus contratos de liberación difieren. Continuity registra fallos persistentes de release, reintenta una vez e informa `released_after_retry`; Chronicle falla tras un intento y no tiene el mismo registro persistente. Los códigos públicos también difieren. Por ello, no unificar mecánicamente ni reemplazar locks existentes; especificar admisión raíz separada y preservar contratos por-store.
+
+`tests/nexo/root-bootstrap-protocol.test.mjs` solo contiene vector software conocido; declara que no representa raíz de Nexo ni hardware/provisioning. No es prueba de autoridad.
+
+Siguiente paso: completar D0/D1/D2/D3 como contratos documentales y reconciliar los callers que quedan UNKNOWN; no tocar runtime/tests hasta cerrar diseño. Estado: sin ejecución de tests/CI; D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
