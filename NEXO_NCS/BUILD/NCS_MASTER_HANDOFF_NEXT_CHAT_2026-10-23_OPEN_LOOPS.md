@@ -300,3 +300,12 @@ The direct source review narrows the test gap. `tests/nexo/entrypoint.test.mjs` 
 `tests/nexo/assistants-runtime-cli.test.mjs` (blob SHA `2c4ffb83e3bb849ac35ec381b268ef4f74a13225`) does verify the repair exclusion gate remains blocked with `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, but it does not establish root admission. Preserve this gate. `scripts/nexo.mjs` uses `spawnSync` for Chronicle; the child that executes append must own the single future root lock.
 
 Accurate gap statement: a partial architecture/isolation guard exists; the missing test is the separate canonical-root/no-bypass guard plus behavioral concurrency/release-uncertainty coverage. Do not add `scripts/assistants.mjs` to the Nexo-only import walker without a distinct composite Lúmina+Nexo contract. D1/D2 remain OPEN; no runtime, tests or workflows changed.
+
+
+## 22. D3 follow-up — proposed instance API and assistants boundary
+
+The root contract now specifies a candidate instance context: one validated explicit root; Chronicle/Continuity paths derived internally; an admission context that cannot be forged by a caller boolean; operation-wide root admission before persisted reads; helpers receive the admitted context without re-entry. First interface recommendation is \`--root\` only, no root environment override initially, existing directory required, and explicit root passed to the Chronicle child so only the child owns admission.
+
+\`scripts/assistants.mjs\` is explicitly classified as a composite Nexo+Lúmina integration. World-state and Lúmina learning memory stay outside the Nexo root for this phase; only its Continuity sub-operation may be migrated behind the instance API. No cross-file atomicity is claimed. \`NEXO_CONTINUITY_PATH\` must not act as a production override in root-managed mode. Repair remains blocked by \`NEXO_M0_OPTION_A_EFFECT_EXCLUDED\`.
+
+The contract adds migration gates for inventory, API, lock behavior, no-bypass, behavioral concurrency, dry-run/backup/cutover, authority safety and CI. These are design proposals only. D1/D2/D3 remain OPEN; runtime/tests/workflows/data stores unchanged; canonical status unchanged. Continue by closing exact source callers and the remaining lock/canonicalization decisions, not by implementing prematurely.
