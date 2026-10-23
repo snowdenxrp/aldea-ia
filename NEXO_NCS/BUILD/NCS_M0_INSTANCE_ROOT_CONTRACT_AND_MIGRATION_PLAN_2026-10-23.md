@@ -729,3 +729,16 @@ The package manifest (blob SHA e45dc6d215db53ea2758009cd501f565634e3610) exposes
 Repair boundary: scripts/nexo-runtime-session.mjs (SHA f67b6fbe1b6f0098ebf23b35055cc668f96df991) currently returns NEXO_M0_OPTION_A_EFFECT_EXCLUDED. Dedicated repair modules (including nexo-repair-entrypoint/session/dispatch and preparation/settlement/verification) still contain persistence and effect-capable paths, including environment state writes. They must be classified as blocked/internal repair tooling, not automatically migrated as normal instance operations. The exclusion gate remains a required regression test. Root admission is not permission to invoke them.
 
 This adds package scripts and repair paths to the inventory. The inventory is more complete but still not declared exhaustive until remaining import/re-export and child-process edges are checked. D1/D2/D3 OPEN; no runtime or tests changed.
+
+
+## 25. Existing entrypoint guard: compatibility facts and migration risk
+
+Direct inspection of `src/nexo/application/index.mjs` (SHA fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3) confirms its public exports are Chronicle append, Continuity/mission status and plan queries, open-loops query, mission draft preview and mission request preview. This is intentionally narrow, but all persistence-backed queries still take path-based arguments.
+
+`tests/nexo/entrypoint.test.mjs` (SHA ff1bd2e9d292e21e00049b354249aee684837bbc) walks imports and re-exports from the two CLI entrypoints, checks a narrow API export allowlist and excludes legacy runtime/Lúmina simulation imports. It explicitly accepts `--continuity` and `--chronicle` independently, tests the mutating Chronicle append and subsequent replay/status/plan/query behavior. Therefore it is an import-isolation guard and behavioral compatibility suite, not a root-admission or no-bypass proof. Migration must extend it rather than replace its existing output/result and no-write guarantees.
+
+Important compatibility invariants evidenced by the test: append result reports `authorization: NOT_EVALUATED` in mission planning; previews report `persisted: false` and `dispatchAttempted: false`; replay does not redispatch and leaves persisted bytes unchanged; status/plan queries do not change Continuity bytes; the append path can legitimately dispatch the narrowly allowed Chronicle action. These behaviors must be preserved while root admission is added. Do not confuse Chronicle's allowed append dispatch with the excluded repair path.
+
+`tests/nexo/root-bootstrap-protocol.test.mjs` (SHA 996c031224ba4544d8982ca4fd1762e9d4f44dc0) verifies a P-256 signature/protocol vector and altered-message/signature rejection. Despite its filename, it does not test a filesystem instance root or root admission. It cannot count as root-lock evidence.
+
+`parseNexoEntrypointArguments` currently has explicit legacy path options and the Chronicle child accepts `--continuity`, `--chronicle`, `--mission`, `--step`; neither parser has a `--root` path yet. Parent currently passes the parsed args to the child. The migration must define a root-only mode and reject mixed/duplicate options before any store is opened, while keeping any low-level legacy path route clearly internal or temporarily compatibility-gated. No claim that the current tests were executed in this documentation pass.
