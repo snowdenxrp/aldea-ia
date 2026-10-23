@@ -323,3 +323,10 @@ The root contract now includes a source-SHA caller matrix for the main CLI, Chro
 Canonicalization proposal: require an existing directory, canonicalize with realpath before deriving fixed store filenames, converge symlink aliases to the same canonical path, reject mixed root/legacy-path arguments, do not create stores during ordinary reads, and fail closed on corrupt or unknown root-lock state without automatic deletion. realpath does not solve hostile-process TOCTOU, mount aliases, hard-link aliases or network filesystem semantics; no such protection is claimed.
 
 D1 remains open until indirect callers, package scripts and child process construction are accounted for and result compatibility is reviewed. D2/D3 remain open; runtime/tests/workflows unchanged.
+
+
+## 26. Package entrypoints and repair exclusion inventory
+
+The package manifest confirms two user-facing command entrypoints: `nexo` runs scripts/nexo.mjs and `assistants` runs scripts/assistants.mjs. The serial test command includes root-bootstrap, store/runtime, entrypoint, continuity, repair crash-cut, and Open Loops tests. These package commands must be part of the production entrypoint allowlist.
+
+The runtime-session gate still returns NEXO_M0_OPTION_A_EFFECT_EXCLUDED, while dedicated repair modules retain state-persistence paths. Classify them as blocked/internal repair tooling; root admission cannot authorize their use. D1/D2/D3 remain open; runtime/tests/workflows unchanged.
