@@ -143,3 +143,28 @@ Propuesta de especificación mínima del test:
 7. El test debe probar el grafo, no ejecutar efectos de Nexo ni afirmar legitimidad/autoridad.
 
 Hasta acordar este ajuste de secuencia, el allowlist y su especificación son borradores; D1 sigue OPEN.
+
+
+## 11. Cobertura del script `npm test`: 17 tests Nexo no enlazados
+
+Comparación estática de `package.json` (blob `e45dc6d215db53ea2758009cd501f565634e3610`) con el árbol de archivos encontró 44 archivos `tests/nexo/*.test.mjs`; el script `test` ejecuta 27 y no invoca explícitamente estos 17:
+
+- `tests/nexo/assistants-runtime-cli.test.mjs`
+- `tests/nexo/continuity-migration.test.mjs`
+- `tests/nexo/continuity-store.test.mjs`
+- `tests/nexo/final-semantic-validator.test.mjs`
+- `tests/nexo/mission-preview-input-resource-limit.test.mjs`
+- `tests/nexo/observation-equivalence.test.mjs`
+- `tests/nexo/observation.test.mjs`
+- `tests/nexo/outcome-classifier.test.mjs`
+- `tests/nexo/policy-context-resolver.test.mjs`
+- `tests/nexo/reconciliation.test.mjs`
+- `tests/nexo/repair-mission-verification.test.mjs`
+- `tests/nexo/repair-owner-lifecycle.test.mjs`
+- `tests/nexo/repair-session.test.mjs`
+- `tests/nexo/step-7-negative-resource-equivalence.test.mjs`
+- `tests/nexo/step-7-negative-resource-handoff.test.mjs`
+- `tests/nexo/step-7-provenance.test.mjs`
+- `tests/nexo/temporary-cleanup-bounds.test.mjs`
+
+Esto es un **hallazgo de cobertura**, no una conclusión de que el script esté mal: no se ha establecido si cada omisión es intencional, histórica o accidental. Antes de declarar una prueba arquitectónica obligatoria, su invocación debe quedar explícita en el pipeline de test apropiado. En el futuro cambio de implementación, revisar también estas 17 omisiones y decidir cada una individualmente; no añadirlas todas automáticamente sin revisar coste, dependencias y propósito.
