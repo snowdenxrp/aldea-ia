@@ -1039,3 +1039,8 @@ La auditoría directa confirma que `scripts/assistants.mjs` abre Continuity por 
 ### Hallazgo de store: lecturas no bloqueadas (2026-10-23)
 
 Los métodos `loadCurrent()` de Continuity y Chronicle leen el documento sin adquirir los locks de mutación. Las consultas de aplicación usan directamente esas lecturas. Por tanto, la admisión de instancia debe rodear cada operación completa en la frontera superior, antes de la primera lectura persistida; no basta con añadir un lock a las escrituras. Evitar adquisición recursiva dentro de helpers y mantener los locks de stores como capa distinta hasta probar compatibilidad. D2 sigue OPEN.
+
+
+### Segundo caller de Continuity confirmado — `scripts/simulate.mjs` (2026-10-23)
+
+El comando `simulate` también abre `openNexoContinuityOwner` con `.nexo-continuity.json`, `legacyMemory` y posible inicialización, además de persistir por separado el estado del mundo. Su lock local protege el world state y tiene semántica de recuperación distinta; no es un root lock. D1 debe decidir explícitamente si `simulate` se excluye de operaciones Nexo o se integra mediante API de instancia. D1 sigue OPEN.
