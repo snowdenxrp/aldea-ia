@@ -1074,3 +1074,17 @@ Los documentos previos mezclaban dos criterios incompatibles: (1) D1 solo cerrar
 - La puerta de diseño habilita preparar un cambio de implementación acotado; no es evidencia de seguridad operativa ni de root admission implementado.
 
 Con esta distinción, la secuencia coherente sería: completar inventario → acordar allowlist y test spec → cerrar D1/D2/D3 de diseño → implementar en un cambio acotado tests arquitectónicos + API/CLI/locks necesarios → ejecutar CI y pruebas negativas → evaluar el cierre de implementación con evidencia. Hasta acordar esta separación, D1 sigue OPEN y no se toca runtime/tests.
+
+
+## Reconciliación D1 de callers — checkpoint 2026-10-23
+
+La comparación posterior del contrato con el censo, allowlist y fuentes concretas quedó consolidada en [NCS_M0_D1_CALLER_RECONCILIATION_AND_LOCK_SCOPE_2026-10-23.md](NCS_M0_D1_CALLER_RECONCILIATION_AND_LOCK_SCOPE_2026-10-23.md), commit documental `254cd885637576ef997a5a389d65a6b645ab3f62`.
+
+Puntos concretos añadidos:
+- `assistants.mjs` coordina Continuity, world state y memoria Lúmina sin atomicidad conjunta; el gate de repair permanece independiente.
+- `simulate.mjs` usa un lock distinto para world state y puede abrir/migrar Continuity incidentalmente; no reutilizar su lock como root admission.
+- `nexo-chronicle-session.mjs` debe validar y adquirir la admisión por sí mismo aunque lo lance el CLI padre.
+- La admisión de instancia debe preceder a la primera lectura persistida y cubrir el uso del snapshot; los locks por almacén se conservan hasta demostrar equivalencia.
+- La especificación de no-bypass se ha concretado, pero no se ha implementado ni ejecutado. El grafo transitivo sigue sin declararse cerrado.
+
+Este checkpoint no modifica el contrato constitucional ni autoriza runtime/tests. D1/D2/D3 siguen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
