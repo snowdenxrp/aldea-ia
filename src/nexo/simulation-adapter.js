@@ -37,8 +37,65 @@ export function createLuminaEffectPostcondition(simulation,action,target){
     }
   };
 }
-export function createLuminaEffectAdapter(simulation,{executionJournal=null,persistPreparedIntent=null}={}){
-  if(!simulation?.agents||!simulation?.world)throw new TypeError("simulación de Lúmina requerida");
+function readSimulationAdapterOptions(options) {
+  if (options === undefined) options = {};
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw new TypeError("simulation adapter options must be a record");
+  }
+  let prototype;
+  try { prototype = Object.getPrototypeOf(options); }
+  catch { throw new TypeError("simulation adapter options must be a plain record"); }
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("simulation adapter options must be a plain record");
+  }
+  const values = Object.create(null);
+  for (const key of ["executionJournal", "persistPreparedIntent"]) {
+    let descriptor;
+    try { descriptor = Object.getOwnPropertyDescriptor(options, key); }
+    catch { throw new TypeError("simulation adapter options must contain data fields"); }
+    if (!descriptor) continue;
+    if (!descriptor.enumerable || !("value" in descriptor)) {
+      throw new TypeError("simulation adapter options must contain enumerable data fields");
+    }
+    values[key] = descriptor.value;
+  }
+  const executionJournal = values.executionJournal ?? null;
+  const persistPreparedIntent = values.persistPreparedIntent ?? null;
+  if (persistPreparedIntent !== null && typeof persistPreparedIntent !== "function") {
+    throw new TypeError("persistPreparedIntent must be a function or null");
+  }
+  return { executionJournal, persistPreparedIntent };
+}
+
+function assertSimulationRoot(simulation) {
+  if (!simulation || typeof simulation !== "object" || Array.isArray(simulation)) {
+    throw new TypeError("simulación de Lúmina requerida");
+  }
+  let prototype;
+  try { prototype = Object.getPrototypeOf(simulation); }
+  catch { throw new TypeError("simulación de Lúmina debe ser un registro de datos"); }
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw new TypeError("simulación de Lúmina debe ser un registro de datos");
+  }
+  for (const key of ["agents", "world", "nexoEffectRevision"]) {
+    let descriptor;
+    try { descriptor = Object.getOwnPropertyDescriptor(simulation, key); }
+    catch { throw new TypeError("simulación de Lúmina debe contener campos de datos"); }
+    if (descriptor && (!descriptor.enumerable || !("value" in descriptor))) {
+      throw new TypeError("simulación de Lúmina debe contener campos de datos");
+    }
+  }
+  const agents = Object.getOwnPropertyDescriptor(simulation, "agents")?.value;
+  const world = Object.getOwnPropertyDescriptor(simulation, "world")?.value;
+  if (!Array.isArray(agents) || !world || typeof world !== "object" || Array.isArray(world)) {
+    throw new TypeError("simulación de Lúmina requerida");
+  }
+  return simulation;
+}
+
+export function createLuminaEffectAdapter(simulation, options = {}) {
+  const { executionJournal, persistPreparedIntent } = readSimulationAdapterOptions(options);
+  assertSimulationRoot(simulation);
   const handlers={
     repair_agent_state:async({target})=>{
       const agent=simulation.agents.find(a=>a.id===target);
