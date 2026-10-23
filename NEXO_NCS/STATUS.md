@@ -1342,3 +1342,11 @@ Se creó `NEXO_NCS/BUILD/NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_20
 Se actualizó también el cross-contract checkpoint en commit `77891a5372ee59ddbeb4f58045c6a21e68e170be`, blob `bd055435e14ae16e38c635c39ee4ced792776b50`, para incorporar la propuesta y corregir el siguiente paso. La propuesta no está aprobada ni ejecutada; no se ha elegido mecanismo para una instalación real.
 
 Estado canónico sin cambios: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+
+### D3 — perfil del entorno requerido — 2026-10-23
+
+Documento nuevo: `NEXO_NCS/BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md` (commit `f4c65b81abc19244eb777d821c7945ced45ee21e`). Enumera los datos mínimos para elegir un mecanismo real: sistema y forma de despliegue, autoridad para detener writers y bloquear relanzamientos, inventario de launchers, alcance físico de rutas, ventana/recuperación y trazabilidad. No presupone sistema operativo ni supervisor.
+
+Cross-contract checkpoint actualizado en commit `c2bdf8c047c8824116d3faafef2f14687308ca21`, blob `65dc79f8fd40d6183d4975578a9508ad51125352`. El entorno objetivo sigue sin determinarse; no hay procedimiento operacional ejecutado ni evidencia de migración.
+
+Estado canónico: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
