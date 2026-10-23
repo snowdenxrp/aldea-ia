@@ -229,3 +229,14 @@ La matriz enumera estados de raíz, lock, owner record, operación, persistencia
 El test `root-bootstrap-protocol.test.mjs` verifica únicamente un vector criptográfico de software; no prueba bootstrap de instancia ni concurrencia de locks. No se modificó runtime/tests/workflows y no se ejecutaron tests/CI. Estado canónico permanece M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP.
 
 Siguiente: contrastar esta matriz con la decisión D0-C2 y las opciones de recuperación externa; solo después de decisión explícita y autorización separada podrá prepararse implementación y pruebas.
+
+
+---
+
+# CHECKPOINT — OPCIONES D0-C2 PARA PRIMER BOOTSTRAP — 2026-10-23
+
+Nuevo análisis documental: [NCS_M0_D0_C2_BOOTSTRAP_PROTOCOL_OPTIONS_2026-10-23.md](NCS_M0_D0_C2_BOOTSTRAP_PROTOCOL_OPTIONS_2026-10-23.md), commit de creación `5cbe2e7f2fcc095296d4804dab6c30b59ad19e11`.
+
+Compara cuatro alternativas sin elegir por el propietario: A) bootstrap offline con quiescencia operacional demostrable; B) staging y publicación atómica con arbitraje de publicadores; C) marcador persistente de inicialización, que no sustituye la exclusión; D) coordinación externa a la raíz, que añade su propio problema de identidad/recuperación. Recomendación provisional no vinculante: no habilitar bootstrap concurrente/autónomo sin protocolo probado; considerar A solo si la quiescencia puede imponerse y evidenciarse, de lo contrario evaluar B según garantías del filesystem. C/D requieren necesidad demostrada. Ninguna opción está aceptada ni implementada.
+
+D0-C2 sigue OPEN hasta resolver qué convierte una raíz parcial en lista, cómo se impiden relanzamientos y qué recuperación explícita se permite. Runtime/tests/workflows sin cambios; tests/CI no ejecutados. Estado canónico permanece M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP.
