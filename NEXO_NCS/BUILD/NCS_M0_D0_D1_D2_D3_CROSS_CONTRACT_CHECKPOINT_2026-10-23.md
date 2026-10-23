@@ -216,3 +216,16 @@ Revisión dirigida del contrato de raíz (blob `bac9493af98c3f86001e323dab153bde
 Estado: **solo revisión documental**. No se modificaron runtime/tests/workflows; no se ejecutaron tests ni CI. M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
 
 Siguiente paso: añadir una matriz D2 de estados/transiciones (root absent/partial/ready; lock absent/owner-writing/owned/stale/unknown/releasing/release-uncertain) y revisar cada transición contra los invariantes anteriores. Mantener la matriz como propuesta hasta cerrar D0-C2/D2 y obtener autorización explícita de implementación.
+
+
+---
+
+# CHECKPOINT — MATRIZ CANDIDATA DE ESTADOS D2 — 2026-10-23
+
+Nuevo documento: [NCS_M0_D2_INSTANCE_ADMISSION_STATE_TRANSITION_MATRIX_2026-10-23.md](NCS_M0_D2_INSTANCE_ADMISSION_STATE_TRANSITION_MATRIX_2026-10-23.md), commit de creación `f27981d451b76a67c96d6db3b28e6a0004d7caad`.
+
+La matriz enumera estados de raíz, lock, owner record, operación, persistencia, liberación y bootstrap parcial; define transiciones candidatas, fallos seguros y pruebas necesarias. Mantiene como problemas separados: (a) coordinación del primer bootstrap antes de existir el lock dentro de raíz, (b) reemplazo del lock entre comprobación del token y borrado, (c) limpieza tras fallo de escritura del owner, y (d) resultado de persistencia versus release incierto. No elige políticas owner-reserved ni supone resuelto el protocolo.
+
+El test `root-bootstrap-protocol.test.mjs` verifica únicamente un vector criptográfico de software; no prueba bootstrap de instancia ni concurrencia de locks. No se modificó runtime/tests/workflows y no se ejecutaron tests/CI. Estado canónico permanece M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP.
+
+Siguiente: contrastar esta matriz con la decisión D0-C2 y las opciones de recuperación externa; solo después de decisión explícita y autorización separada podrá prepararse implementación y pruebas.
