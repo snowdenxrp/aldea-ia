@@ -1,3 +1,15 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — D0 SUBDECISIONES PROPUESTAS
+
+- Dirección A aceptada por el propietario; runtime continúa SIN CAMBIOS.
+- Contrato actualizado: [NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md](BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md), commit `3221b254b1121930373787d30565d7c5482f2443`, blob `d2f027f51ace2913eac7c0e289a9a016d6bee9d6`.
+- Añadidas recomendaciones D0: CLI `--root` explícito, sin env var inicialmente, raíz existente requerida (bootstrap separado), realpath para converger symlinks cooperantes, lock no reentrante, lecturas/previews bajo admisión exclusiva, timeout monotónico, fail-closed en stale/release incierto y migración sin merge/dual-write automático. Son propuestas técnicas, no decisiones atribuidas al propietario.
+- Revisado lock protocol actual: Chronicle/Continuity usan locks por store con owner PID/token y deadline, pero difieren en gestión local de fallo de liberación; no asumir que pueden reutilizarse sin contrato común/pruebas.
+- D1 sigue abierto: GitHub code search no entregó resultados utilizables; el inventario viene de tree recursivo y lectura de módulos. No se ejecutó rg local porque no hay checkout local confirmado en esta sesión. La matriz no se declara exhaustiva.
+- Siguiente paso: cerrar la matriz desde un checkout exacto o fuente que permita búsqueda completa y obtener confirmación del propietario sobre las subdecisiones de D0 antes de implementar. No introducir lock, no cambiar firmas, rutas, stores ni workflows.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — INSTANCE ROOT DESIGN ACCEPTED AS DIRECTION
 
 - El propietario aceptó Opción A como dirección de diseño; esto **no** autoriza runtime.
