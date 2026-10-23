@@ -920,3 +920,13 @@ D2 sigue ABIERTO hasta documentar grafo de llamadas repair/runtime, decidir el �
 Se documentó el call graph actual y la frontera recomendada por entrypoint en sección 15 del contrato. Decisión de diseño recomendada: en Chronicle CLI, el proceso que ejecuta runNexoChronicleAppend (el child actual) es el único dueño del lock raíz; no adquirirlo también en un padre ni transportar deadlines monotónicos absolutos por IPC. Para consultas/previews, el comando se envuelve en la API de instancia; helpers internos reciben contexto admitido. Las funciones de reparación mantienen acceso a stores, pero la integración runtime está actualmente bloqueada por NEXO_M0_OPTION_A_EFFECT_EXCLUDED; no reactivarla.
 
 D2 sigue ABIERTO hasta completar matriz de callers indirectos y pruebas de lock/release/no-bypass. No se ha implementado runtime. Estado canónico sin cambios: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+
+# CHECKPOINT — CONTRATO DE RESULTADOS DE ADMISIÓN (2026-10-23)
+
+Se añadió la sección 16 al contrato de raíz de instancia: precedencia entre resultado de negocio y admisión; semántica de liberación incierta; códigos candidatos internos; reglas de no repetición automática; matriz de pruebas de contención, owner corrupto/stale, release failure, no-bypass y exclusión de repair/runtime. Los códigos y la forma interna siguen siendo propuestas, no API pública definitiva.
+
+D2 sigue ABIERTO: falta cotejar consumidores de resultados, convertir la matriz en pruebas y completar el inventario reproducible de callers indirectos/no-bypass. D1 también ABIERTO: el barrido remoto previo no equivale a búsqueda exhaustiva en checkout local. No se cambiaron runtime, tests ni workflows. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+Fuente: [Contrato de raíz de instancia y plan de migración](BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
