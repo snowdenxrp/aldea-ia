@@ -489,3 +489,70 @@ const guardedBootstrapAdapter = createEffectAdapter({
 });
 assert.equal(guardedBootstrapAdapter.supports("safe_effect"), true);
 assert.equal(guardedBootstrapAdapter.supportsReconciliation("safe_effect"), true);
+
+\n// Public execute, executePrepared, and verifyPrepared entrypoints must inspect
+// caller-owned records before reading fields or accepting a prepare receipt.
+let effectRequestGetterCalls = 0;
+const accessorEffectRequest = {};
+Object.defineProperty(accessorEffectRequest, "missionId", {
+  enumerable: true,
+  get() {
+    effectRequestGetterCalls += 1;
+    throw new Error("effect request getter must not execute");
+  }
+});
+const publicRequestAdapter = createEffectAdapter({
+  handlers: { safe_effect: async () => ({ status: "completed" }) },
+  getStateVersion: () => 0
+});
+const rejectedExecuteRequest = await publicRequestAdapter.execute(accessorEffectRequest);
+assert.equal(effectRequestGetterCalls, 0);
+assert.equal(rejectedExecuteRequest.status, "failed");
+assert.equal(rejectedExecuteRequest.code, "INVALID_EFFECT_REQUEST");
+
+const rejectedPreparedRequest = await publicRequestAdapter.executePrepared(accessorEffectRequest, {
+  preparedCommit: { status: "committed", preparedCommitted: true, storeRevision: 1 }
+});
+assert.equal(effectRequestGetterCalls, 0);
+assert.equal(rejectedPreparedRequest.status, "blocked");
+assert.equal(rejectedPreparedRequest.code, "EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED");
+
+const accessorPreparedOptions = {};
+Object.defineProperty(accessorPreparedOptions, "preparedCommit", {
+  enumerable: true,
+  get() {
+    effectRequestGetterCalls += 1;
+    throw new Error("preparedCommit getter must not execute");
+  }
+});
+const validPreparedRequest = {
+  missionId: "guarded-request",
+  stepId: "step-1",
+  action: "safe_effect",
+  target: null,
+  idempotencyKey: "guarded-request:step-1",
+  preparedOperation: {
+    missionId: "guarded-request",
+    stepId: "step-1",
+    action: "safe_effect",
+    target: null,
+    idempotencyKey: "guarded-request:step-1"
+  }
+};
+const rejectedPreparedOptions = await publicRequestAdapter.executePrepared(validPreparedRequest, accessorPreparedOptions);
+assert.equal(effectRequestGetterCalls, 0);
+assert.equal(rejectedPreparedOptions.status, "blocked");
+assert.equal(rejectedPreparedOptions.code, "EFFECT_CANONICAL_PREPARE_CONFIRMATION_REQUIRED");
+
+const accessorVerifyRequest = {};
+Object.defineProperty(accessorVerifyRequest, "idempotencyKey", {
+  enumerable: true,
+  get() {
+    effectRequestGetterCalls += 1;
+    throw new Error("verify request getter must not execute");
+  }
+});
+const rejectedVerifyRequest = await publicRequestAdapter.verifyPrepared(accessorVerifyRequest);
+assert.equal(effectRequestGetterCalls, 0);
+assert.equal(rejectedVerifyRequest.status, "unknown");
+assert.equal(rejectedVerifyRequest.code, "EFFECT_RECONCILIATION_CONTEXT_INVALID");
