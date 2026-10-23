@@ -658,3 +658,16 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - Clasificación de pruebas pendiente: no mover pruebas de concurrencia/replay/recuperación por simple renombrado; conservar evidencia de sus invariantes en la frontera adecuada sin crear bypass público ni autoridad ficticia.
 - Sin cambio de runtime. Gate no implementado. CI para este commit documental todavía no consultado.
 - Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+# CHECKPOINT — CHRONICLE TEST BLOCK OWNERSHIP MAP — 2026-10-23
+
+- Inventario granular nuevo: [NCS_CHRONICLE_TEST_BLOCK_OWNERSHIP_MAP_2026-10-23.md](BUILD/NCS_CHRONICLE_TEST_BLOCK_OWNERSHIP_MAP_2026-10-23.md).
+- Commit de creación: `2c3afd16a5a46b5dc362de98319f9013b60e0122`; blob del documento verificado: `9f5ee80a528a890c258c9521314ea9e970747739`, 7,246 caracteres.
+- Clasifica los bloques exactos de `tests/nexo/chronicle-runtime.test.mjs` y `tests/nexo/entrypoint.test.mjs`: entrada inválida, límites de recursos, éxito/replay público, concurrencia, bootstrap parcial, recuperación y consultas de solo lectura.
+- Conclusión: los escenarios de éxito/replay público entran en conflicto con un eventual deny-first pre-commissioning gate; las invariantes de concurrencia/recovery deben preservarse en la frontera interna correcta, sin renombrado superficial ni bypass de producción.
+- El commit documental fue leído de vuelta. Consulta de estado combinado y workflow runs asociados: ambos devolvieron colecciones vacías; **CI no confirmado**, no PASS.
+- Sin cambios de runtime ni de pruebas. La política sigue propuesta, no ratificada; no se implementó gate.
+- Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
