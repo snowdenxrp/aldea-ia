@@ -720,3 +720,12 @@ This is a verified list of important direct surfaces, not yet proof of every ind
 - Keep assistants' simulation state, Lúmina learning memory and Nexo Continuity ownership separate.
 
 D1 remains OPEN pending complete caller trace and compatibility review. D2/D3 remain OPEN. No runtime or tests changed.
+
+
+## 24. Package scripts and repair-session boundary (2026-10-23)
+
+The package manifest (blob SHA e45dc6d215db53ea2758009cd501f565634e3610) exposes `nexo` as `node scripts/nexo.mjs` and `assistants` as `node scripts/assistants.mjs`; the test script runs a large serial suite including root-bootstrap-protocol, Chronicle/store/runtime, entrypoint, continuity, repair crash cuts, and Open Loops tests. These package commands are additional production entrypoint evidence and belong in the explicit supported-entrypoint inventory.
+
+Repair boundary: scripts/nexo-runtime-session.mjs (SHA f67b6fbe1b6f0098ebf23b35055cc668f96df991) currently returns NEXO_M0_OPTION_A_EFFECT_EXCLUDED. Dedicated repair modules (including nexo-repair-entrypoint/session/dispatch and preparation/settlement/verification) still contain persistence and effect-capable paths, including environment state writes. They must be classified as blocked/internal repair tooling, not automatically migrated as normal instance operations. The exclusion gate remains a required regression test. Root admission is not permission to invoke them.
+
+This adds package scripts and repair paths to the inventory. The inventory is more complete but still not declared exhaustive until remaining import/re-export and child-process edges are checked. D1/D2/D3 OPEN; no runtime or tests changed.
