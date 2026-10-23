@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — CONTINUITY SERVICE OPTIONS GUARD
+
+- Hallazgo reproducible: la función pública `openNexoContinuityOwner({ ... } = {})` desestructuraba las opciones en la firma, antes de cualquier validación del store. Un getter ordinario en `filePath`, `legacyMemory` u otra opción podía ejecutarse antes de que las guardias de `createNexoContinuityStore` tuvieran oportunidad de rechazarla.
+- Corrección runtime: la firma ahora recibe el contenedor sin destructuring. `readContinuityServiceOptions()` acepta solo objetos planos/prototipo nulo, extrae seis campos mediante descriptores propios de datos enumerables y conserva defaults previos. Un accessor de `filePath` devuelve `NEXO_CONTINUITY_STORE_PATH_REQUIRED`; otras opciones accessor o prototipos heredados devuelven `NEXO_STORE_OPTIONS_INVALID`.
+- Regresión nueva: `tests/nexo/continuity-service-options-input-guard.test.mjs` verifica getter de ruta no ejecutado, getter de `legacyMemory` no ejecutado, opciones heredadas rechazadas sin crear archivos y ruta válida con memoria heredada preservada. Integrada en `npm test`.
+- Commits: runtime [`647aff8d075928868368cbe9577744a0bcc42e3`](https://github.com/snowdenxrp/aldea-ia/commit/647aff8d075928868368cbe9577744a0bcc42e3); test [`ddf6e019dd99492b9622ffa719aaa91cdea27a4c`](https://github.com/snowdenxrp/aldea-ia/commit/ddf6e019dd99492b9622ffa719aaa91cdea27a4c); integración del test en `npm test` y SHA exacto de validación [`cb55c904e7edb272a12c3da34d9cd38ad11e507c`](https://github.com/snowdenxrp/aldea-ia/commit/cb55c904e7edb272a12c3da34d9cd38ad11e507c).
+- CI sobre el SHA exacto `cb55c904e7edb272a12c3da34d9cd38ad11e507c`: 4/4 workflows SUCCESS — [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881837784), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881838271), [admisión y continuidad tras reinicio](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881837944), [aceptación integrada](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881837946).
+- Interpretación y límites: se elimina la lectura prematura de getters ordinarios de las opciones consumidas por este servicio. No neutraliza todos los `Proxy traps`, no autentica la memoria heredada, no establece autoridad legítima ni habilita efectos protegidos.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: seguir con otra frontera pública no cubierta solo cuando exista un defecto reproducible; no repetir los guards ya registrados de contratos, Chronicle, admisión de misión ni este servicio.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — MISSION ADMISSION OWNER RESULT GUARD
 
 - Hallazgo reproducible: `recordNexoMissionSafely(options)` leía `owner.recordMission` y la respuesta del propietario mediante acceso ordinario. Un getter en la capacidad o en `persistenceStatus/status/code/storeRevision` podía ejecutarse antes de clasificar el resultado; además, una respuesta externa podía devolverse sin proyección.
@@ -10,6 +23,7 @@
 - Read-back documental: el commit de STATUS [`76cff468afca977a2aa8b1a8264fbbc2182192f5`](https://github.com/snowdenxrp/aldea-ia/commit/76cff468afca977a2aa8b1a8264fbbc2182192f5) completó persistencia determinista en [run 39881593289 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881593289).
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Siguiente: continuar con otra frontera pública solo si el defecto es reproducible; no repetir los guards de opciones, sanitización Chronicle ni admisión del propietario ya cubiertos.
+- Read-back documental: el checkpoint de STATUS en [`ada0ea43f63db98f8c316c8d9315d378d3220915`](https://github.com/snowdenxrp/aldea-ia/commit/ada0ea43f63db98f8c316c8d9315d378d3220915) completó persistencia determinista en [run 39881693946 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39881693946).
 
 ---
 
