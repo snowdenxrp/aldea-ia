@@ -177,3 +177,15 @@ assert.throws(() => createLuminaEffectAdapter(accessorSimulationRoot), /campos d
 assert.equal(simulationBootstrapGetterCalls, 0);
 
 assert.throws(() => createLuminaEffectAdapter({ agents: [], world: {} }, { persistPreparedIntent: true }), /must be a function or null/);
+
+const frozenSimulationRoot = Object.freeze({ agents: [], world: {} });
+assert.throws(() => createLuminaEffectAdapter(frozenSimulationRoot), /permitir la revisión mutable/);
+
+const readonlyRevisionSimulation = { agents: [], world: {} };
+Object.defineProperty(readonlyRevisionSimulation, "nexoEffectRevision", {
+  enumerable: true,
+  configurable: true,
+  writable: false,
+  value: 0
+});
+assert.throws(() => createLuminaEffectAdapter(readonlyRevisionSimulation), /nexoEffectRevision debe ser mutable/);
