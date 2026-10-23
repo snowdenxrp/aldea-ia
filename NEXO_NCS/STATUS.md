@@ -1334,3 +1334,11 @@ Checkpoint actualizado en commit `7a704c1832506c2164f6332a63f00382d8a07597`, blo
 Esto corrige la instrucción anterior que decía que todavía faltaba incorporar esa condición al contrato. El riesgo ya está tratado documentalmente, pero no cerrado como gate: la propuesta sigue sin aprobación, no existe evidencia de procedimiento operacional ejecutado y la quiescencia solo controla procesos cooperantes. Siguiente tarea: precisar qué evidencia operacional permitiría declarar que no quedan writers legacy activos y cómo se cancela de forma fail-closed si no puede demostrarse.
 
 Estado sin cambios: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+
+### D3 — protocolo propuesto de evidencia de quiescencia legacy — 2026-10-23
+
+Se creó `NEXO_NCS/BUILD/NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md` (commit `2fdde9d9f7df9a25a9c6bdf01d1e3ad1d1cab1a9`). Define criterios propuestos para inventario de writers/launchers, suspensión de sesiones y relanzamientos, inspección de procesos, huellas de fuente antes/después, cancelación fail-closed y evidencia mínima. Explicita que una captura de procesos y hashes no eliminan por sí solas la carrera de relanzamiento: si no hay control verificable de nuevos lanzamientos, la migración permanece UNKNOWN/BLOCKED.
+
+Se actualizó también el cross-contract checkpoint en commit `97f5f630cf1264418f53b260679ec7f95298f22c`, blob `329b2eeeac372e728dd029974296df7c8b1551ec`, para incorporar la propuesta y corregir el siguiente paso. La propuesta no está aprobada ni ejecutada; no se ha elegido mecanismo para una instalación real.
+
+Estado canónico sin cambios: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
