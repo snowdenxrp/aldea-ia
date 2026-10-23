@@ -557,3 +557,24 @@ const rejectedVerifyRequest = await publicRequestAdapter.verifyPrepared(accessor
 assert.equal(effectRequestGetterCalls, 0);
 assert.equal(rejectedVerifyRequest.status, "unknown");
 assert.equal(rejectedVerifyRequest.code, "EFFECT_RECONCILIATION_CONTEXT_INVALID");
+
+
+// Shared journal records must be canonical data records; accessors are rejected at bootstrap.
+let journalGetterCalls = 0;
+const accessorJournalEntry = {};
+Object.defineProperty(accessorJournalEntry, "idempotencyKey", { enumerable: true, get() { journalGetterCalls += 1; throw new Error("journal getter must not execute"); } });
+assert.throws(() => createEffectAdapter({ handlers: {}, executionJournal: [accessorJournalEntry] }), /enumerable data properties/);
+assert.equal(journalGetterCalls, 0);
+
+const sparseJournal = new Array(1);
+assert.throws(() => createEffectAdapter({ handlers: {}, executionJournal: sparseJournal }), /dense canonical array/);
+
+const guardedJournal = [];
+let guardedEffectCalls = 0;
+const guardedJournalAdapter = createEffectAdapter({ handlers: { guarded_effect: async () => { guardedEffectCalls += 1; return { status: "completed" }; } }, getStateVersion: () => 0, executionJournal: guardedJournal });
+Object.defineProperty(guardedJournal, "0", { enumerable: true, configurable: true, get() { journalGetterCalls += 1; throw new Error("mutated journal getter must not execute"); } });
+const invalidJournalResult = await guardedJournalAdapter.execute({ missionId: "m", stepId: "s", action: "guarded_effect", target: null, idempotencyKey: "m:s" });
+assert.equal(invalidJournalResult.status, "blocked");
+assert.equal(invalidJournalResult.code, "EFFECT_JOURNAL_INVALID");
+assert.equal(guardedEffectCalls, 0);
+assert.equal(journalGetterCalls, 0);
