@@ -1064,3 +1064,8 @@ El contrato ahora registra los códigos exactos de parseo por comando y los erro
 ### Bypass adicional: sesión Chronicle ejecutable directamente
 
 `scripts/nexo-chronicle-session.mjs` tiene guardia de ejecución directa y acepta rutas `--continuity`/`--chronicle` más flags de inicialización. Por tanto, no basta con proteger el padre `scripts/nexo.mjs`: el hijo debe exigir `--root`, derivar rutas internas y adquirir el root lock antes de cualquier lectura. D1/D3 siguen OPEN.
+
+
+### Matriz de no-bypass de producción documentada
+
+El contrato identifica ocho superficies: CLI principal, hijo Chronicle ejecutable directamente, `assistants`, `simulate`, API pública de aplicación path-based, reexport de continuidad, fábricas de store y helpers de reparación. Se definió condición verificable para D1: grafo de callers completo, rutas path-based fuera de la API de producción y pruebas arquitectónicas que incluyan el hijo directo y los flujos legacy. D1 permanece OPEN hasta cumplirlo.
