@@ -575,3 +575,14 @@ La matriz siguiente corresponde al SHA exacto que contiene el código y las regr
 - Resultado: las regresiones añadidas y las matrices seleccionadas pasan en el SHA exacto. Los fallos de los SHA previos `76194883df726b413ae604fb3b7ba224456671f9` y `739405e42a3ef49e09238980bdf5c8b91734030d` se conservaron y corrigieron; no se cuentan como PASS.
 - Alcance: esto no equivale a una demostración de producción, no neutraliza traps de Proxy, no demuestra autoridad raíz legítima y no habilita efectos protegidos.
 - Estado canónico permanece: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — CORE INPUT CALLER MATRIX (PARCIAL)
+
+- Matriz nueva: [NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md](BUILD/NCS_CORE_INPUT_TRUST_BOUNDARY_CALLER_MATRIX_2026-10-23.md).
+- Commit de la matriz: `0e864571121222f12d5b00ab9eee8600e84e49c9`.
+- Se verificaron directamente desde `ncs-clean-architecture` los blobs actuales de `protected-transition.mjs`, `mission-admission-contract.mjs`, `reconciliation.mjs`, `ownership.mjs`, `runtime.js` y el gate `scripts/nexo-runtime-session.mjs`. El índice de code search devolvió un commit antiguo; sus resultados no se trataron como prueba de callsites actuales.
+- Resultado: la matriz confirma límites y consumidores de pruebas conocidos, pero la gráfica completa de callers productivos no está cerrada. En particular queda por trazar `owner-backed-runtime.mjs`, las importaciones actuales de cada API pública y las entradas donde datos CLI/archivo/proveedor pasan a objetos vivos.
+- No se selecciona todavía el modelo de confianza A/B/C ni se modifica runtime. No añadir guards ni migrar a serialización hasta completar el trace y definir el contrato/error mapping.
+- CI documental para la actualización de STATUS pendiente de observar; no se atribuye un resultado antes de verificarlo.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
