@@ -1,3 +1,16 @@
+# CHECKPOINT NUEVO — 2026-10-22 — EFFECT ADAPTER BOOTSTRAP REGISTRY GUARD
+
+- Hallazgo reproducible: `createEffectAdapter({ ... } = {})` desestructuraba configuración sin validar sus descriptores y luego construía los registros con `Object.entries`, lo que ejecutaba getters de `handlers` o `verifiers` durante el arranque del adaptador.
+- Corrección runtime: las opciones se extraen de un objeto plano/prototipo nulo mediante descriptores propios de datos. Los registros `handlers` y `verifiers` también se recorren mediante descriptores; getters, claves símbolo y valores no función se rechazan sin ejecutar el accessor. Se valida `getStateVersion` como función.
+- Regresiones agregadas a `tests/nexo/effect-adapter.test.mjs`: getters en opción `handlers`, registro de handlers y registro de verifiers no se ejecutan; el registro válido conserva `supports` y `supportsReconciliation`.
+- Commits: runtime [`14ee7fe52d824f56640c7698523e8b3f75914a80`](https://github.com/snowdenxrp/aldea-ia/commit/14ee7fe52d824f56640c7698523e8b3f75914a80); prueba/formato corregido [`f327db999d5b2a0e0e16a29ebb274300991a7798`](https://github.com/snowdenxrp/aldea-ia/commit/f327db999d5b2a0e0e16a29ebb274300991a7798). El commit de prueba intermedio `af8c1b436a623ee9d950cb3d19df40d6cd50b5b0` falló por un literal `\\n` al inicio del bloque de test; fue corregido y esa ejecución fallida no se cuenta como PASS.
+- CI sobre el SHA exacto `f327db999d5b2a0e0e16a29ebb274300991a7798`: 5/5 workflows SUCCESS — [persistencia determinista / `npm test`](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882338213), [admisión y continuidad](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882338207), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882338017), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882338122), [efectos y crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882338052).
+- Límite explícito: esta corrección cubre la configuración de arranque y los registros de handlers/verifiers. No afirma que los objetos de `executionJournal` ni los argumentos de `execute/executePrepared` estén libres de accessors; son fronteras separadas que deben revisarse sin extrapolar esta garantía. Los `Proxy traps` tampoco quedan neutralizados.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Siguiente: revisar la entrada pública `execute/executePrepared` y el uso de `executionJournal` del adaptador, porque permanecen fuera del alcance de esta guardia; no declarar el adaptador completo hasta cubrir o delimitar esas rutas.
+
+---
+
 # CHECKPOINT NUEVO — 2026-10-22 — OWNER-BACKED RUNTIME PUBLIC INPUT GUARD
 
 - Hallazgo reproducible: `executeNexoStepWithContinuityOwner(args = {})` copiaba opciones con spread antes de validar y comprobaba métodos de `owner/adapter` mediante acceso ordinario. Getters en campos consumidos o en capacidades podían ejecutarse antes de que el runtime rechazara el contexto.
@@ -8,6 +21,7 @@
 - Interpretación y límites: no se ejecutan getters ordinarios en las opciones/capacidades consumidas. No neutraliza todos los `Proxy traps`, no autentica capacidades inyectadas y no cambia el estado de autoridad ni habilita efectos protegidos.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Siguiente: continuar con un defecto reproducible en una frontera aún no cubierta; no ampliar estos guards a una afirmación de confianza de los objetos, sus implementaciones o la autoridad constitucional.
+- Read-back documental: el commit de STATUS [`42d0634eabedf970fb29591987507a343e751864`](https://github.com/snowdenxrp/aldea-ia/commit/42d0634eabedf970fb29591987507a343e751864) completó persistencia determinista en [run 39882140733 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39882140733).
 
 ---
 
