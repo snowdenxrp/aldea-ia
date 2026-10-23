@@ -94,8 +94,31 @@ This verifies the read-only Open Loops implementation+test SHA; it does not veri
    - an unrecognized journal status could be silently omitted when there were no missions to reconstruct. The query now blocks with `NEXO_OPEN_LOOPS_JOURNAL_STATUS_UNKNOWN` for any journal status other than `prepared`, `reconciled_observed`, or the explicitly excluded terminal `settled_observed`.
    Regression coverage includes missing fields, orphan references, action mismatch, unknown status with zero missions, direct planned and failed mission projection, completed-status discrepancy, corrupt continuity, and resource-limit failure.
 3. Keep Open Loops scoped as an application-level read-only projection. Do not add CLI exposure, a new store, queue, scheduler, or task identity without a concrete acceptance case.
-4. Next work unit: consult the current MASTER/CORE and BUILD/DECISIONS to select one capability with a concrete acceptance case; do not infer a feature from the broad vision alone. Before adding a Chronicle read/write surface, reconcile the accepted `NCS_M0_E_SCOPE_A_ACCEPTED_2026-10-22.md` (internal persistence allowed under existing contracts, not authority) with `NCS_CHRONICLE_PRECOMMISSIONING_WRITE_POLICY_DECISION_2026-10-23.md` (a proposal recommending fail-closed, not an owner decision). Do not silently treat the proposal as approved or change runtime behavior based on it.
+4. Continue the M0 aggregate resource-budget frontier from Section 4A: trace all public/application entrypoints touching Chronicle/Continuity and decide the supported concurrency contract before any global-lock implementation. The current stable-temp protocol already exists; do not repeat that implementation.
 5. Preserve exact evidence rules: implementation+test SHA, run/job IDs, and conclusions must match. A documentation commit does not substitute for runtime/test proof.
+
+## 4A. Aggregate resource budget — current continuation frontier (2026-10-23)
+
+Current analysis:
+- `NEXO_NCS/BUILD/NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md`, now corrected against the current HEAD.
+- Analysis documentation commit: `31bff07ea76ddd86713c642b3f5ae25570e3ae57`.
+- Current code blobs inspected:
+  - `src/nexo/core/chronicle-store.mjs`: `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`
+  - `src/nexo/core/continuity-store.mjs`: `9ffd28930abdbe29f5b041711cc29b74dc99fbae`
+  - `src/nexo/core/resource-limits.mjs`: `98355d5dc8298695233495d4bab2264b3eeba7b3`
+  - `scripts/nexo-chronicle-session.mjs`: `30a53de2f108aa255a1dfd61ce78c19788de160b`
+  - `package.json`: `e45dc6d215db53ea2758009cd501f565634e3610`
+
+Important correction: current Chronicle and Continuity writers already use a stable `.tmp` filename and a bounded directory scan/cleanup under their own store lock. The previous analysis text claiming the current code creates unique PID/time/sequence temp files was stale. Existing store tests cover a stable temp plus a legacy temp and verify they are absent after successful write. Do not reimplement stable-temp cleanup or claim this review ran CI.
+
+What is proved vs open:
+- Current writer protocol limits its own active temporary to one stable temp per store, with document-size limits, under cooperating per-store locks.
+- A successful scan/cleanup does not prove a total disk quota: legacy residues, unrelated files/logs, and directory contents beyond the scan threshold remain outside a global budget. If the scan exceeds the configured bound, the store fails closed rather than performing a partial cleanup.
+- Heap is still not bounded by the 32 MiB Chronicle and 16 MiB Continuity serialized caps. Locks are per store, not for the full Nexo operation; the standalone Chronicle CLI and public application/store APIs do not establish a global single-operation gate. Multiple processes can overlap. Do not invent a V8 heap multiplier.
+
+**Next single task:** trace every actual public/application entrypoint that can touch Chronicle or Continuity, then decide whether M0 requires enforced instance-wide serialization or only explicitly limited local single-user usage. Do not implement a global lock until a common instance root/path contract and all participating entrypoints are identified. Documentation saying “single operation” is not enforcement. If no safe global boundary exists under current contracts, keep aggregate heap and total disk OPEN and record the exact limitation.
+
+Canonical state unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
 
 ## 5. Existing audits/constraints that must not be repeated
 
@@ -123,4 +146,4 @@ This verifies the read-only Open Loops implementation+test SHA; it does not veri
 
 - The handoff and STATUS are continuity records; neither alters runtime or constitutional state.
 - Open Loops implementation+test SHA `962d1a327683b412c401f323514d401e7e8ec8f1` is verified by deterministic persistence/`npm test`, STEP 4, and STEP 5 workflows; see Section 4 and the Open Loops contract.
-- Next chat should begin at `STATUS → MASTER/CORE → BUILD`, then select one next internal capability with a concrete acceptance case. Do not restart trust-boundary research or repeat the closed Open Loops CI check.
+- Next chat should begin at `STATUS → MASTER/CORE → BUILD`, then continue the aggregate resource-budget frontier in Section 4A. Do not restart trust-boundary research or repeat the closed Open Loops CI check.
