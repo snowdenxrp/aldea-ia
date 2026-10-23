@@ -9,7 +9,7 @@ import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import * as nexoApplication from "../../src/nexo/application/index.mjs";
 
 assert.deepEqual(Object.keys(nexoApplication).sort(), [
-  "loadNexoContinuityStatus", "loadNexoMissionPlan", "loadNexoMissionStatus", "previewNexoMissionDraft", "previewNexoMissionRequest", "runNexoChronicleAppend"
+  "loadNexoContinuityStatus", "loadNexoMissionPlan", "loadNexoMissionStatus", "loadNexoOpenLoops", "previewNexoMissionDraft", "previewNexoMissionRequest", "runNexoChronicleAppend"
 ].sort(), "public Nexo application API must remain narrow and must not expose a generic dispatcher");
 for (const exportedUseCase of Object.values(nexoApplication)) assert.equal(typeof exportedUseCase, "function");
 
