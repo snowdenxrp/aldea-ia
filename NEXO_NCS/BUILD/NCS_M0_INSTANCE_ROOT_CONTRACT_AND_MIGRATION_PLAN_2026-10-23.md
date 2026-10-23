@@ -988,3 +988,20 @@ Resultado dentro de ese alcance:
 - Los helpers de repair son módulos importables, pero no son CLIs autónomos; el gate de integración productiva sigue bloqueado.
 
 Este es cierre parcial del censo de fuentes de aplicación, no prueba de que no exista bypass en todo el repositorio: los módulos `src/nexo/**` exponen primitivas path-based y los tests/importers requieren una revisión arquitectónica dedicada. Tampoco es una frontera contra código local hostil. D1 permanece OPEN hasta convertir el censo en un allowlist probado de imports/callers de producción.
+
+
+## Conflicto de diseño aún abierto en D2 — reutilizar lock primitivo vs conservar locks intactos
+
+El contrato ya establece dos objetivos que no deben resolverse silenciosamente:
+- conservar inicialmente los locks actuales de Continuity/Chronicle porque no son semánticamente idénticos;
+- evitar copiar un tercer algoritmo de lock sin evaluar reutilización.
+
+La comparación de código confirma diferencias relevantes: Continuity reintenta una vez la liberación y conserva un registro local de fallos por ruta; Chronicle no conserva ese registro ni aplica el mismo retry; ambos normalizan resultados y manejan locks stale de forma similar, pero no idéntica. La nueva admisión necesita además alcance de operación completa y propiedad entre procesos.
+
+Opciones que deben compararse antes de D2 cerrado:
+- **A — primitiva de raíz independiente:** deja intactos los stores y minimiza el radio de cambio inicial, pero crea un tercer protocolo/implementación que habrá que mantener.
+- **B — primitiva de directorio compartida con adaptadores de política:** evita duplicación a largo plazo, pero requiere pruebas de caracterización previas y preservar exactamente códigos, retry/quarantine, timeout, resultados de persistencia y semántica stale de ambos stores. No se debe refactorizar a ciegas ni asumir equivalencia.
+
+**Recomendación:** preparar primero una matriz de caracterización de los dos locks actuales y su suite de pruebas, y comparar contra un contrato compartido que permita políticas explícitas. Elegir B solo si las diferencias pueden representarse sin ampliar la abstracción ni cambiar resultados observables; de lo contrario, documentar A como separación deliberada, con owner distinto y pruebas independientes. No implementar ninguna opción hasta cerrar la decisión y su matriz de regresión.
+
+Esto es una tensión de arquitectura real, no una tarea para ocultar mediante duplicación. D2 sigue OPEN.
