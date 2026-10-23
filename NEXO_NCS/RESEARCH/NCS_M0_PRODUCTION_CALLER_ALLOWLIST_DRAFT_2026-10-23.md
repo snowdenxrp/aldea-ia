@@ -124,3 +124,22 @@ La pasada de 95 tests distingue los siguientes mecanismos deliberados de prueba:
 - Otros imports dinámicos de tests: `tests/specialization-audit.test.mjs` carga `src/society.js`; `tests/system-audit.test.mjs` y `tests/visual-detail-audit.test.mjs` cargan `node:fs/promises` para inspección/lectura de archivos. No son vías de apertura de stores Nexo.
 
 El escaneo de producción sigue sin encontrar imports dinámicos, `require`, `eval` o `Function` en scripts o `src/nexo/**`; `src/three-remote.js` es el único import dinámico en los 45 módulos externos de `src/`, y carga Three.js. No se hallaron imports computados de stores Nexo en los módulos de aplicación. Aun así, el test arquitectónico futuro debe distinguir explícitamente `TEST_ONLY` de producción y cubrir cambios nuevos.
+
+
+## 10. Resolver el ciclo de secuencia de D1 antes de implementación
+
+Se detectó una contradicción en la secuencia anterior: exigir que el test arquitectónico exista para cerrar D1, pero prohibir cambios de tests hasta cerrar D1/D2/D3. Recomendación pendiente: separar **D1-DESIGN** de **D1-IMPLEMENTATION**.
+
+- D1-DESIGN: inventario/callers completos para el snapshot, tratamientos aprobables por superficie, allowlist explícito, algoritmo de resolución de imports/reexports y fixtures negativos especificados. Puede cerrarse como puerta de diseño, sin afirmar seguridad implementada.
+- D1-IMPLEMENTATION: después de cerrar D1/D2/D3 de diseño, implementar el test arquitectónico y los cambios mínimos necesarios; no declarar éxito hasta ejecutar pruebas y demostrar que los fixtures negativos fallan como se espera y el grafo permitido pasa.
+
+Propuesta de especificación mínima del test:
+1. Entry points desde `package.json` y los entrypoints directos declarados explícitamente (incluido hijo Chronicle).
+2. Resolver imports estáticos/reexports relativos de forma transitiva; fallar en imports locales no resolubles.
+3. Prohibir que un entrypoint productivo alcance `continuity-service.mjs`, `continuity-store.mjs`, `chronicle-store.mjs` o APIs path-based salvo a través de la API de instancia admitida.
+4. Escanear `import(...)`, `require`, `createRequire`, `eval`, `Function`, y creación de procesos; excepciones explícitas con propietario/razón, actualmente solo `spawnSync` de CLI padre a sesión Chronicle y `import(url)` de `src/three-remote.js` para Three.js.
+5. Clasificar los 45 tests Nexo y workers/harnesses como TEST_ONLY; permitir imports de internals en tests, prohibir edges tests→producción inversos.
+6. Fixtures negativos: nuevo entrypoint en package sin clasificar; import directo y transitivo de store; hijo Chronicle directo con rutas legacy; `simulate` que intenta abrir Continuity; `assistants` que llama owner directamente; import dinámico computado de store; módulo local import no resoluble.
+7. El test debe probar el grafo, no ejecutar efectos de Nexo ni afirmar legitimidad/autoridad.
+
+Hasta acordar este ajuste de secuencia, el allowlist y su especificación son borradores; D1 sigue OPEN.
