@@ -988,3 +988,10 @@ Se registró una matriz con SHA de los entrypoints CLI, child Chronicle, append 
 Decisión propuesta de canonicalización: raíz existente y directorio obligatorio; realpath antes de derivar filenames fijos; aliases por symlink convergen a la misma ruta canónica; rutas legacy independientes se rechazan en modo root; lectura normal no crea stores ni snapshots; lock reservado con estado desconocido/corrupto falla cerrado y nunca se borra automáticamente. Limitaciones explícitas: no se afirma protección contra procesos locales hostiles, TOCTOU, aliases de montaje, hardlinks o filesystem de red.
 
 El buscador de código devuelve cero incluso para símbolos conocidos existentes, por lo que sus resultados negativos no sirven para probar ausencia. D1 sigue OPEN hasta cerrar callers indirectos, scripts de package y procesos hijo. D2/D3 OPEN. Runtime/tests/workflows sin cambios; estado canónico sin cambios.
+
+
+# CHECKPOINT — PACKAGE ENTRYPOINTS Y REPAIR (2026-10-23)
+
+El package manifest expone `nexo` (`node scripts/nexo.mjs`) y `assistants` (`node scripts/assistants.mjs`) como comandos de producción. Su script de test ejecuta una suite serial amplia con pruebas de bootstrap, stores, runtime, entrypoints, Continuity, crash cuts de repair y Open Loops. Estos comandos quedan incluidos en el inventario de entrypoints.
+
+`nexo-runtime-session.mjs` mantiene el gate `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`. Los módulos dedicados de repair conservan rutas capaces de persistir estado del entorno; se clasifican como herramientas internas/bloqueadas, no como operaciones de instancia autorizadas automáticamente. Root admission no autoriza repair. D1/D2/D3 siguen abiertos; sin cambios en runtime ni tests.
