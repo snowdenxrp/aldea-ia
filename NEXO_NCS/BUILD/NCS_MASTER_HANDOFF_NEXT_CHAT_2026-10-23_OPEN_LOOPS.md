@@ -417,3 +417,8 @@ Es recomendación documentada, no decisión cerrada ni implementación. Antes de
 `tests/nexo/continuity-migration.test.mjs` confirma que `openNexoContinuityOwner({ legacyMemory })` puede migrar memoria legacy a la store canónica. Por tanto, `simulate`/`assistants` pueden inicializar o migrar Continuity incidentalmente; D3 debe convertir ese comportamiento en una operación explícita, no en compatibilidad automática invisible.
 
 `scripts/nexo-repair-entrypoint.mjs` es un helper exportado, no un CLI de package. El camino productivo de `assistants` pasa por `scripts/nexo-runtime-session.mjs`, que hoy devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` sin dispatch ni persistencia. Mantener los helpers de repair fuera de la API de instancia y sin permiso de efectos. No confundirlos con los callers productivos `simulate`/`assistants`.
+
+
+## Matriz de errores CLI exactos añadida
+
+El documento de contrato ahora registra errores de argumentos y opciones requeridas para `status`, `mission-status`, `mission-plan`, `mission-draft-preview`, `mission-request-preview` y sesión hija Chronicle. También distingue parse error, `not_found`, root admission y fallo de spawn. Preservar esos contratos o documentar explícitamente la transición al futuro `--root`; el padre Chronicle hoy delega la validación de argumentos al hijo.
