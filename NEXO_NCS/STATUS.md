@@ -1,4 +1,4 @@
-# CHECKPOINT DE VERIFICACIÓN — 2026-10-23 — OPEN LOOPS LINKAGE + EXACT-SHA CI
+# CHECKPOINT DE VERIFICACIÓN — 2026-10-23 — OPEN LOOPS ACCEPTANCE + EXACT-SHA CI
 
 - Código y pruebas combinados: `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a`.
 - Corrección estructural: los registros `prepared` y `reconciled_observed` del diario solo se proyectan si sus campos identifican una misión y paso canónicos de la misma instantánea y la acción coincide con la acción canónica del paso. Campos presentes pero huérfanos o discordantes devuelven `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN`.
@@ -17,7 +17,7 @@
 # HANDOFF NEXT CHAT — 2026-10-23
 
 - Continuidad maestra: [NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md](BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md).
-- Handoff actualizado tras verificar Open Loops: se actualiza junto con este checkpoint para apuntar al SHA de código+pruebas `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a` y su CI exacta.
+- Handoff actualizado tras verificar Open Loops: [commit `1360a4ddbb142034b9b4520013d032dcb5780bde`](https://github.com/snowdenxrp/aldea-ia/commit/1360a4ddbb142034b9b4520013d032dcb5780bde), con el SHA de código+pruebas `820195e0a91c1eb6634bb5f5d9d516253ffd2f2a` y su CI exacta.
 - Próxima acción única: consultar MASTER/CORE y BUILD/DECISIONS y escoger una capacidad interna con un caso de aceptación concreto. La CI exacta de Open Loops ya está verificada; no repetirla sin cambios de implementación/tests.
 - No repetir auditorías cerradas, no reabrir el trust-boundary review sin defecto nuevo, y mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
 
