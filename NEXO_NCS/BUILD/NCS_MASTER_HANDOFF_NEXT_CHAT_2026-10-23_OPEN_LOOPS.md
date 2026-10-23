@@ -177,3 +177,14 @@ Contrato propuesto: una única raíz de configuración confiable por instancia, 
 Pendiente antes de implementar: cerrar precedencia CLI/API/env; política de raíz inexistente; symlink/alias; alcance exacto de sección crítica; protocolo cross-process y orden de locks; reentrancia; códigos de error y release failure; compatibilidad legacy y migración de datos; callsite matrix completa. Ejecutar tests de procesos separados, timeout sin mutación, no-bypass y CI sobre SHA exacto cuando haya autorización de implementación.
 
 **No implementar runtime por ahora.** Heap exacto y cuota global de disco siguen OPEN. Estado canónico sin cambio: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## 11. Inventory sweep follow-up — instance-root design
+
+Updated design document:
+- `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md`
+- Latest inventory update commit `d80993dc77075f24dd6ffe23946b034ef4a85589`, blob `2c3b031ac3cd361fffc672342a34b5d4568432f3`.
+
+Second pass inspected all current `.mjs/.js` modules under `src/nexo/` and all `scripts/nexo*.mjs`. Direct store factory construction was found in application append/query and continuity-service; additional consumers include chronicle effect adapter, continuity owner, owner-backed runtime, repair entrypoint/session, dispatch, settlement and mission verification. These consumers must inherit the operation-level admission; they must not add nested lock acquisition or infer authorization from the root. Repair/dispatch remains under its existing constitutional gate.
+
+The design doc now separates known production entrypoints, indirect store consumers, low-level factories, adapters, and test workers. Do not call the inventory mathematically complete yet: D1 requires a saved caller matrix including reexports/dynamic imports and an automated no-bypass regression. No runtime/tests/workflows changed.
