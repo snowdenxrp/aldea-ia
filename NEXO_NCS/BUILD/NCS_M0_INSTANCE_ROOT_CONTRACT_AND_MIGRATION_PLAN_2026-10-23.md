@@ -820,3 +820,18 @@ Implications:
 5. The direct call to `openNexoContinuityOwner` is a compatibility re-export through `scripts/nexo-continuity.mjs`, which re-exports `src/nexo/core/continuity-service.mjs`. Replacing only the CLI parser will not establish no-bypass coverage.
 
 **D1 remains OPEN.** This is one concrete caller found, not a complete repository-wide proof that all callers have been enumerated.
+
+
+## 2026-10-23 — Lecturas sin lock en las consultas públicas: requisito de frontera superior
+
+La inspección directa de `src/nexo/core/continuity-store.mjs` (blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`) y `src/nexo/core/chronicle-store.mjs` (blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`) confirma que ambos métodos `loadCurrent()` leen el documento y devuelven el snapshot sin adquirir su lock de escritura. Esto es consistente con el diseño actual del store; no se debe reinterpretar como aislamiento de lectura.
+
+`src/nexo/application/continuity-queries.mjs` (blob `e1915e94e53e71d37a37952fead37ba62bdae79a`) llama directamente a `createNexoContinuityStore({ filePath }).loadCurrent()` para status, mission status, plan y previews; `loadNexoOpenLoops` también es una consulta pública exportada. En consecuencia, la admisión de instancia debe estar en una frontera superior que cubra el caso de uso completo y ocurra antes de la primera lectura persistida. Añadir el lock solo a las rutas de escritura dejaría consultas y previews fuera de la frontera.
+
+Consecuencias de diseño:
+- La API de instancia debe ser el único acceso de producción soportado para operaciones sobre la raíz; las fábricas path-based quedan como primitivas internas/tests y no constituyen una frontera de seguridad por sí mismas.
+- No añadir locks recursivos dentro de `loadCurrent()` si el llamador ya posee admisión de raíz. Definir un contexto admitido explícito y pasarlo a helpers evita reentrada y hace visible la precondición.
+- La consulta `loadNexoOpenLoops` no tiene comando CLI dedicado en el router observado, pero sí está en el índice de aplicación; incluirla en la matriz de callers internos/API y decidir si es pública para producción o solo para uso interno.
+- Las locks de Continuity/Chronicle existentes protegen mutaciones concretas; no garantizan por sí mismas exclusión de una operación de instancia de extremo a extremo.
+
+Esto cierra un hecho del diseño de la frontera, no D2: la semántica del root lock, su API y sus interacciones siguen sin aprobarse. No se hicieron cambios de código ni pruebas.
