@@ -835,3 +835,17 @@ Consecuencias de diseño:
 - Las locks de Continuity/Chronicle existentes protegen mutaciones concretas; no garantizan por sí mismas exclusión de una operación de instancia de extremo a extremo.
 
 Esto cierra un hecho del diseño de la frontera, no D2: la semántica del root lock, su API y sus interacciones siguen sin aprobarse. No se hicieron cambios de código ni pruebas.
+
+
+## 2026-10-23 — Compatibilidad observada de los locks actuales de stores
+
+Inspección de las implementaciones de `acquireLock`, `loadCurrent`, `initialize`, `commitIfCurrent` y append en Continuity/Chronicle:
+
+- Los locks de store son directorios `PATH.lock` con `owner.json` que contiene PID y token. La mutación adquiere el lock, vuelve a leer el documento dentro del lock y verifica revisión/identidad antes de escribir.
+- Los dos stores rechazan locks corruptos/desconocidos y locks considerados obsoletos con `*_LOCK_STALE_RECOVERY_REQUIRED`; no intentan borrar automáticamente un lock obsoleto porque el patrón check-then-remove puede eliminar un lock nuevo.
+- Continuity mantiene además un conjunto local de rutas con liberación fallida para bloquear nuevas adquisiciones en el mismo proceso hasta que el lock desaparezca externamente. Chronicle expone fallo de liberación, pero no tiene ese mismo registro local.
+- `loadCurrent()` sigue siendo una lectura sin lock. En Chronicle append hay preflight de ambos stores antes de abrir el owner de Continuity, y las mutaciones de cada store usan sus propios locks más tarde. Por ello el lock de store no cubre el intervalo completo preflight → admisión de misión → ejecución → reconciliación.
+
+**Restricción para D2:** el root lock no debe sustituir ni fusionarse con los locks de store en esta primera etapa. Debe serializar la operación completa de instancia; los locks existentes continúan protegiendo sus escrituras/revisión. La operación de raíz debe adquirir su lock antes del preflight de Chronicle y mantenerlo hasta la salida de negocio y la liberación final, excepto el handoff explícito al proceso hijo. El hijo Chronicle toma el root lock antes de sus lecturas y no debe heredar un lock ya tomado por el padre.
+
+No hay evidencia en esta revisión de que el root lock esté implementado. D2 sigue OPEN.
