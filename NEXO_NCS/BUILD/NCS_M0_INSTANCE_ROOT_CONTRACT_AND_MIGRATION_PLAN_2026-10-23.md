@@ -976,3 +976,15 @@ Para reducir las subdecisiones abiertas, el candidato puede reutilizar los valor
 - Owner record: leer con límite de bytes existente `NEXO_RESOURCE_LIMITS.lockOwnerBytes`; el archivo owner también debe ser regular, no symlink. La ausencia breve de `owner.json` solo se tolera durante creación concurrente; después del presupuesto de creación, UNKNOWN.
 
 Son valores/propuestas derivados de los locks actuales, no una aprobación ni pruebas. Deben confirmarse en tests de tiempo límite, owner ausente/corrupto, PID muerto/vivo, release fallido, lock reemplazado y recuperación externa. D2 sigue OPEN.
+
+
+## Censo de callers externos: cierre parcial de búsqueda estática (2026-10-23)
+
+Se inspeccionó el árbol Git no truncado del snapshot de código `6c5ad80d49bb592f0d6d1f5e6ab161d489731241` (3.019 entradas; 188 archivos JS/MJS/CJS): los 13 scripts bajo `scripts/` y los 45 archivos JS/MJS/CJS de `src/` fuera de `src/nexo/` se revisaron buscando referencias directas a Continuity, Chronicle, owner-backed runtime, stores y API de instancia.
+
+Resultado dentro de ese alcance:
+- Los callers de store/owner encontrados fuera del núcleo Nexo se concentran en `scripts/nexo.mjs`, `scripts/nexo-chronicle-session.mjs`, `scripts/simulate.mjs`, `scripts/assistants.mjs` y el reexport `scripts/nexo-continuity.mjs`.
+- `src/assistants/memory.js` conserva registros Nexo en memoria legacy, pero la revisión no encontró allí apertura directa de stores ni acceso al filesystem de Continuity.
+- Los helpers de repair son módulos importables, pero no son CLIs autónomos; el gate de integración productiva sigue bloqueado.
+
+Este es cierre parcial del censo de fuentes de aplicación, no prueba de que no exista bypass en todo el repositorio: los módulos `src/nexo/**` exponen primitivas path-based y los tests/importers requieren una revisión arquitectónica dedicada. Tampoco es una frontera contra código local hostil. D1 permanece OPEN hasta convertir el censo en un allowlist probado de imports/callers de producción.
