@@ -849,3 +849,14 @@ Inspección de las implementaciones de `acquireLock`, `loadCurrent`, `initialize
 **Restricción para D2:** el root lock no debe sustituir ni fusionarse con los locks de store en esta primera etapa. Debe serializar la operación completa de instancia; los locks existentes continúan protegiendo sus escrituras/revisión. La operación de raíz debe adquirir su lock antes del preflight de Chronicle y mantenerlo hasta la salida de negocio y la liberación final, excepto el handoff explícito al proceso hijo. El hijo Chronicle toma el root lock antes de sus lecturas y no debe heredar un lock ya tomado por el padre.
 
 No hay evidencia en esta revisión de que el root lock esté implementado. D2 sigue OPEN.
+
+
+## 2026-10-23 — Segundo caller de Continuity: `scripts/simulate.mjs`
+
+La inspección directa de `scripts/simulate.mjs` (blob `623d316c7a1efd10cc2f06a3080c9d9f06087596`) encuentra otro caller productivo además de `assistants.mjs`. El comando `simulate` está declarado en `package.json`, importa `openNexoContinuityOwner`, carga el estado del mundo, abre Continuity en la ruta fija `.nexo-continuity.json` con `legacyMemory` y `allowEmptyInitialization`, persiste el estado del mundo y devuelve la revisión de Continuity en su salida. Aunque no despacha una misión, abrir Continuity puede inicializarla o reconciliar datos legacy; por ello no es un lector inocuo para la frontera de instancia.
+
+La ruta de estado del mundo tiene un lock separado implementado localmente en `simulate.mjs`. Ese lock pertenece al archivo de mundo, no a la raíz de Nexo; su política de recuperación de locks obsoletos incluye borrado automático. **No reutilizar esa política como contrato del root lock**, cuya recuperación debe ser explícita y fail-closed.
+
+Implicación: D1 debe clasificar `simulate` igual de explícitamente que `assistants`: (a) excluirlo formalmente de operaciones Nexo y evitar que abra/inicialice Continuity, o (b) integrarlo mediante API de instancia con límites claros entre world state y Nexo. No asumir que el nombre de comando o su ausencia de dispatch lo deja fuera de la superficie de persistencia.
+
+D1 permanece OPEN; este es otro caller confirmado, no un inventario completo.
