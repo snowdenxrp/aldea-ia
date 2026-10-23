@@ -443,7 +443,8 @@ assert.equal(preconditionPersistCalls,0,"owner-prepared precondition failure mus
 assert.equal(preconditionAdapter.hasExecuted("canonical-m3:s1"),false);
 console.log("Nexo: canonical mode precondition block remains single-ledger.");
 
-\n// Bootstrap options and function registries are public inputs: reject accessors
+
+// Bootstrap options and function registries are public inputs: reject accessors
 // through descriptors before copying or invoking any configured capability.
 let adapterOptionGetterCalls = 0;
 const accessorAdapterOptions = {};
