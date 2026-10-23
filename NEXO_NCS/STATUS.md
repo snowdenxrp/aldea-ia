@@ -631,3 +631,16 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 - Regresiones especificadas: no crear archivos ni locks con ambos flags de inicialización; preservar archivos existentes; no llamar stores/owner/admission/handler; respuesta bloqueada con `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `redispatchAuthorized: false`; mantener las consultas de solo lectura.
 - **Runtime no modificado; gate no implementado.** La recomendación es fail-closed, pero no se presume que el usuario haya ratificado un cambio de comportamiento solo por pedir que continúe el trabajo.
 - Estado: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+# CHECKPOINT DE DISEÑO — 2026-10-23 — CHRONICLE GATE TEST MIGRATION PREREQUISITE
+
+- Nueva revisión: [NCS_CHRONICLE_PRECOMMISSIONING_GATE_TEST_MIGRATION_REVIEW_2026-10-23.md](BUILD/NCS_CHRONICLE_PRECOMMISSIONING_GATE_TEST_MIGRATION_REVIEW_2026-10-23.md).
+- Commit de la revisión: `a6c8ff353c7a18c470b225c4d2dcedcc10804a6c`.
+- Lectura de fuentes actuales: la prueba `tests/nexo/chronicle-runtime.test.mjs` mide 100,167 caracteres y contiene 26 referencias textuales a `runNexoChronicleAppend(`; `tests/nexo/entrypoint.test.mjs` espera actualmente una escritura real y resultado `completed` para la ruta CLI.
+- Consecuencia: no basta añadir una prueba de denegación. Antes de aplicar el gate hay que clasificar/migrar pruebas de persistencia, recuperación y replay a sus fronteras inferiores adecuadas, sin introducir bypass de desarrollo ni proveedor de autorización ficticio.
+- Límite de la afirmación: bloquear el wrapper de aplicación no demostraría por sí solo que todas las APIs inferiores de almacén están bloqueadas. Enumerar las superficies mutantes dentro del alcance antes de afirmar prevención global de escrituras.
+- Sin cambios de runtime; gate todavía no implementado; CI de esta revisión documental no confirmado.
+- Estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
