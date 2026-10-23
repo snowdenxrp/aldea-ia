@@ -1178,3 +1178,10 @@ Estado sin cambio: D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; ra
 Se creó [NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md](BUILD/NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md), commit documental `f352f7019b045d663bc8748d5173107827923f05`. Reduce las decisiones abiertas a contratos y criterios verificables: interfaz/precedencia de raíz, bootstrap, symlinks/alias, migración legacy, tratamiento de `simulate` y `assistants`, frontera path-based, alcance/orden del lock, errores de lock, proceso hijo Chronicle, cutover/rollback y límites de garantía.
 
 La matriz separa hechos observados de recomendaciones y decisiones que corresponden al propietario. **No se considera aprobación de ninguna subdecisión**; en particular, separar `D1-DESIGN` de `D1-IMPLEMENTATION` sigue pendiente. No se modificó runtime/tests/workflows ni se ejecutaron tests/CI. D0/D1/D2/D3 siguen OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+### Caracterización estática de locks — 2026-10-23
+
+La matriz [NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md](BUILD/NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md) fue ampliada con la lectura directa de `continuity-store.mjs` y `chronicle-store.mjs`. Confirmado: ambos usan lock por-store, token y fail-closed para estado incierto; no son intercambiables. Continuity registra fallos persistentes de release, reintenta una vez y puede informar `released_after_retry`; Chronicle devuelve fallo tras un intento y no presenta el mismo registro persistente. El test de bootstrap existente es solo vector software, no raíz legítima ni integración hardware.
+
+Esto refuerza la recomendación de no unificar los locks por extracción mecánica y diseñar admisión raíz como contrato separado. Análisis estático únicamente: no se ejecutaron tests/CI ni se modificó runtime/tests/workflows. D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
