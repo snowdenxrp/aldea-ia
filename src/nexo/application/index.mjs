@@ -5,5 +5,5 @@
  * append is the only mutating use case; continuity queries are read-only.
  */
 export { runNexoChronicleAppend } from "./chronicle-append.mjs";
-export { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan, previewNexoMissionDraft } from "./continuity-queries.mjs";
+export { loadNexoContinuityStatus, loadNexoMissionStatus, loadNexoMissionPlan, loadNexoOpenLoops, previewNexoMissionDraft } from "./continuity-queries.mjs";
 export { previewNexoMissionRequest } from "./mission-request-preview.mjs";
