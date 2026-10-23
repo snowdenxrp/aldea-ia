@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — RECONCILIACIÓN DE LÍMITES DE DECISIÓN D0/D1/D2/D3
+
+- Nuevo documento: [NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_BOUNDARY_RECONCILIATION_2026-10-23.md), commit `1c67919dddae59d7772f9beeca9b6d88e89770b6`.
+- Aclaración: “Opción A aceptada como dirección” significa dirección arquitectónica de raíz de instancia, no aprobación de cada detalle ni autorización para implementar. D0/D1/D2/D3 siguen OPEN.
+- Se separan cuatro niveles: L0 dirección; L1 contrato detallado; L2 diseño verificable; L3 implementación + pruebas/CI. Solo L0 está aceptado como dirección; los demás siguen abiertos/no ejecutados.
+- Dependencias recomendadas: D0 configuración/bootstrap/aliases → D1-DESIGN y clasificación → D2 alcance/lock/child/release → D3 migración/rollback → revisión cruzada → autorización explícita de implementación → tests/CI en SHA exacto.
+- Runtime/tests/workflows sin cambios en esta revisión; tests/CI no ejecutados.
+- Estado canónico: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — BRECHA REAL DEL TEST ARQUITECTÓNICO D1
 
 - Nuevo análisis de diseño: [NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md](BUILD/NCS_M0_D1_STATIC_GRAPH_TEST_GAP_AND_IMPLEMENTATION_PLAN_2026-10-23.md), commit `57ae9855c4eba9060a70f7a44dcdb0e2c373f2fe`.
