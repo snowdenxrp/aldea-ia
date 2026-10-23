@@ -471,3 +471,42 @@ Códigos internos propuestos a evaluar: `NEXO_INSTANCE_ROOT_INVALID`, `NEXO_INST
 ### Estado de cierre
 
 Esta sección mejora la precisión del contrato, pero **no cierra D2 ni D1**. Falta cotejar los consumidores que esperan formas concretas de resultado, completar la matriz de callers indirectos con evidencia reproducible y definir pruebas automatizadas de no-bypass. Sin una checkout completa no se declarará un barrido equivalente a `rg` de todo el repositorio. No se cambiaron runtime, tests ni workflows en este checkpoint.
+
+
+## 17. D2 — compatibilidad con resultados existentes y callers indirectos (2026-10-23)
+
+### Resultados existentes observados
+
+Lectura de fuentes de la rama actual; los SHAs exactos se registran abajo. No se ejecutaron tests ni se cambió runtime.
+
+| Superficie | Resultados/contrato observado | Implicación para wrapper de instancia |
+|---|---|---|
+| `continuity-queries.mjs` | Queries devuelven formas de negocio como `loaded`, `not_found` y `blocked`; incluyen `code`, `storeRevision` cuando corresponde y proyecciones acotadas. | No reemplazar `loaded/not_found` por un estado genérico de admisión. Encapsular el resultado de negocio en la capa interna y proyectar la salida pública solo tras liberar el lock con éxito. |
+| `chronicle-append.mjs` | Su `blocked()` incluye `authorization: NOT_EVALUATED`, `dispatchAttempted: false`, `redispatchAuthorized: false`, y puede incluir `phase`, `writeStarted`, `lockRelease`. La superficie pública de Chronicle reconoce `completed`, `blocked`, `conflict`, `unknown`, `observed`, `invalid`. | El wrapper no debe eliminar las marcas de incertidumbre ni colapsar `conflict/unknown` en `blocked` sin preservar el código y los detalles. No debe confundir `admission` con `authorization`. |
+| `continuity-service.mjs` | Servicio puede abrir owner, leer y, bajo flags explícitos/condiciones, inicializar continuidad desde memoria legacy o vacío. | La API de instancia debe gobernar bootstrap; una ausencia de archivo no equivale a una instancia nueva. No mover ni duplicar la política de bootstrap sin pruebas. |
+| `application/index.mjs` | API de aplicación estrecha: append Chronicle mutante y consultas/previews read-only. | La instancia validada debe convertirse en la frontera de composición productiva; factories de store siguen siendo primitivas internas/tests, no una segunda API productiva por rutas arbitrarias. |
+| `chronicle-effect.mjs` | Contrato de adaptador recibe un store explícito y llama a `append/loadCurrent`; la importación por sí sola no activa runtime. | Auditar cada registro/caller de ese adaptador. Pasar contexto de admisión desde la frontera superior; no adquirir lock raíz dentro del adaptador. |
+| `owner-backed-runtime.mjs` | Runtime genérico recibe owner/adapter explícitos y produce estados `blocked/conflict/unknown` con banderas de dispatch, journal y reconciliación. | No interpretar un owner inyectado como admisión raíz o prueba de autoridad. La capa raíz no habilita el runtime ni modifica la semántica de reconciliación. |
+| Repair entrypoint/session/dispatch/settlement/verification | Los helpers leen y/o escriben Continuity directamente y el dispatch accede a un archivo de estado externo. El protocolo documenta que no es transacción cross-store. | Si se integran en producción en el futuro, admisión debe abarcar la operación de extremo a extremo; no prometer atomicidad entre stores/entorno. La integración actual sigue bloqueada. |
+| `nexo-runtime-session.mjs` | Devuelve siempre `blocked / NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted:false`, `dispatchAttempted:false`. | Este gate es invariante de alcance para esta migración. No se debe envolver ni reemplazar por una ruta que llegue al dispatch. |
+
+### Fuentes revisadas en esta pasada
+
+- `src/nexo/application/continuity-queries.mjs` — blob `e1915e94e53e71d37a37952fead37ba62bdae79a`.
+- `src/nexo/application/chronicle-append.mjs` — blob `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`.
+- `src/nexo/core/continuity-service.mjs` — blob `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`.
+- `src/nexo/application/index.mjs` — blob `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3`.
+- `src/nexo/adapters/chronicle-effect.mjs` — blob `6daf742eb0048724557151a728bf807613a854e9`.
+- `src/nexo/core/owner-backed-runtime.mjs` — blob `a7a014489209273ce78d0103afa785728d4c467c`.
+- `scripts/nexo-repair-entrypoint.mjs` — blob `74d0fa92c447034e7454b7b846d584819ac81ffd`.
+- `scripts/nexo-repair-session.mjs` — blob `1ce95a621ed5bb9f473c9d0f15b5ee3f2f1459a5`.
+- `scripts/nexo-repair-dispatch.mjs` — blob `ed45438be7604d3b341cecd5fbcfc69adda2447e`.
+- `scripts/nexo-repair-settlement.mjs` — blob `2f6e91d494b4edb012c2b2db5a077b875c5b0348`.
+- `scripts/nexo-repair-mission-verification.mjs` — blob `6f9c58cac203faa65e23c1a076af4746f5c22324`.
+- `scripts/nexo-runtime-session.mjs` — blob `f67b6fbe1b6f0098ebf23b35055cc668f96df991`.
+
+### Resultado y siguiente frontera
+
+Esta pasada reduce el riesgo de diseñar un wrapper que rompa los estados de negocio existentes, pero no completa la matriz de callers. Todavía falta rastrear todos los call sites de factories, owner y adapters en el árbol completo, incluidos reexports/imports indirectos, y crear una comprobación automatizada de arquitectura/no-bypass. Las búsquedas de código de GitHub en esta sesión no devolvieron coincidencias utilizables; no se interpretan como ausencia de referencias. D1 y D2 siguen ABIERTOS.
+
+Antes de cualquier implementación, la siguiente entrega documental debe ser una matriz reproducible con caller → ruta de entrada → store/owner/adaptador → frontera de admisión propuesta → estado actual (producción, test/primitiva, excluido) → evidencia SHA → riesgo de bypass. No inferir que un helper exportado está habilitado solo por existir. Runtime, tests y workflows siguen sin cambios.
