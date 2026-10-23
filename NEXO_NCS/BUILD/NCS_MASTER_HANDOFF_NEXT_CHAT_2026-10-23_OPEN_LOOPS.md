@@ -220,3 +220,12 @@ El propietario indicó que prefiere que el asistente recomiende la combinación 
 Fuente: [contrato de raíz de instancia y plan verificable](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md).
 
 Próximo trabajo: continuar D1 con evidencia disponible del árbol/archivos del branch, distinguiendo claramente el inventario revisado de una búsqueda local exhaustiva. No declarar D1 cerrado mientras no exista matriz completa reproducible con SHA y prueba automatizada de no-bypass. Runtime, tests y workflows siguen sin cambios. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## 14. D1 follow-up — remote production module sweep
+
+A recursive Git tree fetch of ncs-clean-architecture was not truncated. All 44 current code files under src/nexo/ and scripts/nexo*.mjs were opened and scanned for store factories, owner openers, independent paths, CLI flags, and store operation calls. Findings and exact tree/blob SHAs are recorded in Section 13 of the instance-root contract.
+
+Confirmed entrypoints: scripts/nexo.mjs (Continuity CLI for queries/previews); scripts/nexo-chronicle-session.mjs (separate Continuity/Chronicle paths); chronicle-append.mjs (constructs both stores and opens owner); continuity-queries.mjs (five read-only queries/previews construct stores); continuity-service.mjs (owner open/load/initialize); indirect consumers in repair entrypoint/session/dispatch/settlement/verification, Chronicle effect adapter and owner-backed runtime.
+
+Ten related tests were sampled and show direct factories/per-store locking are extensively used as primitive tests; this does not prove production has no bypass. D1 remains OPEN: no full local checkout rg artifact, no exhaustive scan of all repo files/reexports/dynamic imports, and no automated architecture/no-bypass test. Do not label the caller matrix complete. No runtime/tests/workflows changed. Canonical state unchanged.
