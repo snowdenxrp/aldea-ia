@@ -1339,6 +1339,6 @@ Estado sin cambios: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED
 
 Se creó `NEXO_NCS/BUILD/NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md` (commit `2fdde9d9f7df9a25a9c6bdf01d1e3ad1d1cab1a9`). Define criterios propuestos para inventario de writers/launchers, suspensión de sesiones y relanzamientos, inspección de procesos, huellas de fuente antes/después, cancelación fail-closed y evidencia mínima. Explicita que una captura de procesos y hashes no eliminan por sí solas la carrera de relanzamiento: si no hay control verificable de nuevos lanzamientos, la migración permanece UNKNOWN/BLOCKED.
 
-Se actualizó también el cross-contract checkpoint en commit `97f5f630cf1264418f53b260679ec7f95298f22c`, blob `329b2eeeac372e728dd029974296df7c8b1551ec`, para incorporar la propuesta y corregir el siguiente paso. La propuesta no está aprobada ni ejecutada; no se ha elegido mecanismo para una instalación real.
+Se actualizó también el cross-contract checkpoint en commit `77891a5372ee59ddbeb4f58045c6a21e68e170be`, blob `bd055435e14ae16e38c635c39ee4ced792776b50`, para incorporar la propuesta y corregir el siguiente paso. La propuesta no está aprobada ni ejecutada; no se ha elegido mecanismo para una instalación real.
 
 Estado canónico sin cambios: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
