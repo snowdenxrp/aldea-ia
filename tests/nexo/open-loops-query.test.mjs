@@ -154,6 +154,21 @@ try {
   assert.equal(actionMismatch.status, "blocked");
   assert.equal(actionMismatch.code, "NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN");
 
+  // Unknown journal states must not disappear into an empty successful
+  // inventory, including when there are no missions to reconstruct.
+  const unknownJournalPath = path.join(root, "unknown-journal-continuity.json");
+  const unknownJournalStore = createNexoContinuityStore({ filePath: unknownJournalPath });
+  const unknownJournalSnapshot = {
+    ...empty,
+    effectJournal: [{ status: "future_unrecognized_state" }]
+  };
+  assert.equal((await unknownJournalStore.initialize(unknownJournalSnapshot)).status, "committed");
+  const unknownJournal = await loadNexoOpenLoops(unknownJournalPath);
+  assert.equal(unknownJournal.status, "blocked");
+  assert.equal(unknownJournal.code, "NEXO_OPEN_LOOPS_JOURNAL_STATUS_UNKNOWN");
+  assert.equal(unknownJournal.authorization, "NOT_EVALUATED");
+  assert.equal(unknownJournal.dispatchAttempted, false);
+
   // The projection must fail explicitly rather than silently truncate its
   // inventory when the documented output ceiling is exceeded.
   const capPath = path.join(root, "cap-continuity.json");
