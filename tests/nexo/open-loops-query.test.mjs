@@ -5,6 +5,7 @@ import path from "node:path";
 import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.mjs";
 import { NEXO_CONTINUITY_SCHEMA } from "../../src/nexo/core/continuity-snapshot.mjs";
 import { recordNexoMissionInSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
+import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
 import { loadNexoOpenLoops } from "../../src/nexo/application/index.mjs";
 
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-open-loops-"));
@@ -173,6 +174,15 @@ try {
   const corrupt = await loadNexoOpenLoops(corruptPath);
   assert.equal(corrupt.status, "blocked");
   assert.equal(corrupt.code, "NEXO_CONTINUITY_STORE_INVALID_JSON");
+
+  // An oversized canonical store must preserve the resource-limit failure
+  // instead of becoming an empty inventory or a generic success.
+  const oversizedPath = path.join(root, "oversized-continuity.json");
+  await fs.writeFile(oversizedPath, "", "utf8");
+  await fs.truncate(oversizedPath, NEXO_RESOURCE_LIMITS.continuityDocumentBytes + 1);
+  const oversized = await loadNexoOpenLoops(oversizedPath);
+  assert.equal(oversized.status, "blocked");
+  assert.equal(oversized.code, "NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED");
 
   // An unresolved journal row without stable mission/step/action linkage must
   // not be silently omitted or turned into a fabricated identity.
