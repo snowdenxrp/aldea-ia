@@ -9,7 +9,7 @@
   - [STEP 5 — run 39980113209 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39980113209).
 - Interpretación: los tres workflows verifican el commit de implementación+pruebas citado. La consulta permanece de solo lectura, sin despacho ni reconciliación; esto no prueba autoridad legítima ni habilita efectos protegidos.
 - Revisión de contrato: el enlace debe ser referencial, no solo sintáctico. La consulta conserva la revisión canónica y bloquea si no puede probar la relación misión→paso→acción. Además, un estado de diario no reconocido bloquea incluso si no hay misiones que reconstruir; no puede convertirse en inventario vacío exitoso.
-- Documentación de evidencia actualizada en el contrato Open Loops y en el handoff maestro. Próxima unidad: revisar MASTER/CORE y BUILD/DECISIONS para elegir una capacidad interna concreta con aceptación mínima; no ampliar CLI ni crear otro almacén sin caso de aceptación.
+- Documentación de evidencia actualizada en el contrato Open Loops y en el handoff maestro. Próxima unidad: elegir una capacidad interna con aceptación mínima desde MASTER/CORE y BUILD/DECISIONS. Antes de añadir superficie Chronicle de lectura/escritura, reconciliar el alcance A aceptado (persistencia interna bajo contratos existentes, no autoridad) con la propuesta separada de fail-closed precommissioning, que no es decisión aprobada. No cambiar runtime por inferencia.
 - Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 ---
@@ -17,7 +17,7 @@
 # HANDOFF NEXT CHAT — 2026-10-23
 
 - Continuidad maestra: [NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md](BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md).
-- Handoff actualizado tras verificar Open Loops: [commit `62b007ae7614cec48e89dc07e91cc5d57f76cc2f`](https://github.com/snowdenxrp/aldea-ia/commit/62b007ae7614cec48e89dc07e91cc5d57f76cc2f), con el SHA de código+pruebas `962d1a327683b412c401f323514d401e7e8ec8f1` y su CI exacta.
+- Handoff actualizado tras verificar Open Loops: [commit `bda1cac258464db61583ea7595844dcce976d6eb`](https://github.com/snowdenxrp/aldea-ia/commit/bda1cac258464db61583ea7595844dcce976d6eb), con el SHA de código+pruebas `962d1a327683b412c401f323514d401e7e8ec8f1` y su CI exacta.
 - Próxima acción única: consultar MASTER/CORE y BUILD/DECISIONS y escoger una capacidad interna con un caso de aceptación concreto. La CI exacta de Open Loops ya está verificada; no repetirla sin cambios de implementación/tests.
 - No repetir auditorías cerradas, no reabrir el trust-boundary review sin defecto nuevo, y mantener M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz `PENDING/UNKNOWN`, efectos protegidos `STOP`.
 
