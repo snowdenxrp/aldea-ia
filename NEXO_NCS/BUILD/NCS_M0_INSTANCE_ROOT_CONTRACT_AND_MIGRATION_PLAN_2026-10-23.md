@@ -1031,3 +1031,34 @@ Para evaluar una primitiva compartida, el plan mínimo es:
 4. Solo entonces decidir si compartir el mecanismo sin cambiar contratos; si la abstracción requiere demasiados flags o debilita la claridad, mantener una primitiva de raíz separada y justificar explícitamente la duplicación.
 
 La existencia de tests robustos de stores no equivale a una prueba de root admission. D2 sigue OPEN.
+
+
+## Censo de referencias Nexo en el código de aplicación — ampliación interna (2026-10-23)
+
+### Alcance comprobado
+
+Se completó la pasada estática de los 34 módulos bajo `src/nexo/`, complementando la revisión ya documentada de los 13 scripts y los 45 módulos JS/MJS/CJS de `src/` fuera de `src/nexo/`. El árbol actual conserva 3.019 entradas y no está truncado. Este es un censo de código de aplicación/runtime y referencias estáticas; no afirma que los 188 archivos JS/MJS/CJS completos (incluidos todos los tests, tooling y fixtures) hayan sido auditados como grafo de seguridad.
+
+### Ocho categorías de referencias y resultados
+
+1. **CLI principal y parser:** `scripts/nexo.mjs` acepta comandos con rutas legacy; todavía no hay `--root` ni admisión de instancia.
+2. **Proceso hijo / CLI directo:** `scripts/nexo-chronicle-session.mjs` es invocable directamente y acepta `--continuity`/`--chronicle`; no puede depender del padre para protegerse.
+3. **API de aplicación path-based:** `src/nexo/application/chronicle-append.mjs` recibe `continuityPath`/`chroniclePath` y construye los stores; `continuity-queries.mjs` recibe `continuityPath` y abre directamente el store para status, mission status, plan, previews y open loops; `mission-request-preview.mjs` delega a la consulta path-based; `application/index.mjs` reexporta estas funciones.
+4. **Servicios y primitivas filesystem:** `continuity-service.mjs` expone `openNexoContinuityOwner({ filePath, ... })`; `continuity-store.mjs` y `chronicle-store.mjs` aceptan rutas y realizan lecturas/escrituras/locks. `resource-limits.mjs` expone lectura limitada por ruta. Son primitivas internas, no una frontera de instancia.
+5. **Owner/runtime y modelo en memoria:** `continuity-owner.mjs`, `owner-backed-runtime.mjs`, `continuity-operations.mjs`, `continuity-snapshot.mjs`, contratos, validadores, reconciliación y clasificadores trabajan sobre objetos/snapshots/owners; no se identificó en ellos una segunda apertura directa de store distinta de los puntos anteriores.
+6. **Adaptadores y efectos:** los adaptadores Chronicle/observación, commit persistido, reparación observada, `effect-adapter.js`, `simulation-adapter.js` y `protected-transition.mjs` forman rutas de evidencia/efecto, pero no son por sí mismos una API alternativa de apertura de Continuity/Chronicle por ruta. La presencia de una ruta de efecto no constituye autorización legítima.
+7. **Memoria legacy y comandos compuestos externos:** `src/assistants/memory.js` conserva `memory.nexo` (misiones, intentos, ejecuciones, `doNotRepeat`, journal) como estructura en memoria; no se encontró apertura directa de stores allí. En cambio, `scripts/assistants.mjs` y `scripts/simulate.mjs` sí abren Continuity directamente y pueden inicializar/migrar mediante `legacyMemory`; son callers externos confirmados.
+8. **Pueblo/aldea, mundo y vendor visual:** los módulos `src/village*.js`, `src/world.js`, `src/simulation.js`, `src/main.js` y `src/main-stable.js` no muestran acceso directo a stores Nexo ni imports de la API Nexo. Los nombres de guardado `lumina-world-v*` pertenecen al estado visual/mundo local. `src/three.core.js` (1.403.455 bytes) y `src/three.module.js` (603.113 bytes) son vendor Three.js; coincidencias léxicas como `transmission` no son referencias a la misión/Chronicle de Nexo. El fetch de contenido de `three.core.js` no devolvió texto, pero el árbol confirma que el blob existe y tiene tamaño no nulo: no clasificarlo como archivo faltante.
+
+### Resultado del censo
+
+Los puntos de apertura directa de stores/owner localizados en código de aplicación son:
+- `scripts/nexo.mjs` y el hijo `scripts/nexo-chronicle-session.mjs`;
+- `scripts/assistants.mjs` y `scripts/simulate.mjs`;
+- reexport legacy `scripts/nexo-continuity.mjs`;
+- funciones path-based de `src/nexo/application/**`;
+- servicio/fábricas path-based de `src/nexo/core/continuity-service.mjs`, `continuity-store.mjs` y `chronicle-store.mjs`.
+
+Esto delimita los puntos conocidos para cerrar la arquitectura, pero no demuestra todavía no-bypass: los imports JavaScript son transitivos y las primitivas siguen siendo importables. La prueba de cierre D1 deberá comparar el grafo de imports/callers de producción contra un allowlist explícito y fallar ante nuevos accesos path-based. Mantener separado el inventario de código productivo, los tests que importan primitivas y los helpers internos de reparación.
+
+**Estado:** censo de código de aplicación ampliado; D1 OPEN, D2 OPEN, D3 OPEN. No se modificó runtime/tests/workflows y no se ejecutaron pruebas.
