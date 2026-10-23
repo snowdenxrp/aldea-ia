@@ -1976,4 +1976,78 @@ assert.equal(lockReleaseAccessorResult.phase, "lock_acquisition");
 assert.equal(lockReleaseAccessorResult.writeStarted, false);
 assert.equal(Object.hasOwn(lockReleaseAccessorResult, "lockRelease"), false);
 
+// The exported owner-backed runtime must not spread caller-owned options or
+// access injected capability methods through ordinary property reads.
+let runtimeInputGetterCalls = 0;
+const accessorRuntimeOptions = {};
+Object.defineProperty(accessorRuntimeOptions, "missionId", {
+  enumerable: true,
+  get() {
+    runtimeInputGetterCalls += 1;
+    throw new Error("missionId getter must not execute");
+  }
+});
+const accessorRuntimeResult = await executeNexoStepWithContinuityOwner(accessorRuntimeOptions);
+assert.equal(runtimeInputGetterCalls, 0);
+assert.equal(accessorRuntimeResult.status, "invalid");
+assert.equal(accessorRuntimeResult.code, "NEXO_CANONICAL_RUNTIME_CONTEXT_INVALID");
+assert.equal(accessorRuntimeResult.dispatchAttempted, false);
+assert.equal(accessorRuntimeResult.redispatchAuthorized, false);
+
+let ownerMethodGetterCalls = 0;
+let ownerMethodCalls = 0;
+const accessorRuntimeOwner = {};
+Object.defineProperty(accessorRuntimeOwner, "loadCurrent", {
+  enumerable: true,
+  get() {
+    ownerMethodGetterCalls += 1;
+    throw new Error("loadCurrent getter must not execute");
+  }
+});
+const validRuntimeAdapter = {
+  executePrepared: async () => ({ status: "completed" }),
+  supports: () => true,
+  supportsReconciliation: () => true
+};
+const accessorOwnerRuntimeResult = await executeNexoStepWithContinuityOwner({
+  missionId: "accessor-owner",
+  stepId: "step-1",
+  owner: accessorRuntimeOwner,
+  adapter: validRuntimeAdapter
+});
+assert.equal(ownerMethodGetterCalls, 0);
+assert.equal(ownerMethodCalls, 0);
+assert.equal(accessorOwnerRuntimeResult.status, "invalid");
+assert.equal(accessorOwnerRuntimeResult.dispatchAttempted, false);
+
+const runtimeOwnerNoCalls = {
+  loadCurrent: async () => { ownerMethodCalls += 1; return { storeRevision: 0, snapshot: { missions: [], effectJournal: [] } }; },
+  recordPrepared: async () => { ownerMethodCalls += 1; return { status: "committed", storeRevision: 1 }; },
+  recordExecutionLineage: async () => { ownerMethodCalls += 1; return { status: "committed", storeRevision: 2 }; },
+  reconcilePrepared: async () => { ownerMethodCalls += 1; return { status: "observed" }; },
+  supportsReconciliation: () => true
+};
+let adapterMethodGetterCalls = 0;
+const accessorRuntimeAdapter = {
+  executePrepared: async () => { throw new Error("dispatch must not occur"); },
+  supportsReconciliation: () => true
+};
+Object.defineProperty(accessorRuntimeAdapter, "supports", {
+  enumerable: true,
+  get() {
+    adapterMethodGetterCalls += 1;
+    throw new Error("supports getter must not execute");
+  }
+});
+const accessorAdapterRuntimeResult = await executeNexoStepWithContinuityOwner({
+  missionId: "accessor-adapter",
+  stepId: "step-1",
+  owner: runtimeOwnerNoCalls,
+  adapter: accessorRuntimeAdapter
+});
+assert.equal(adapterMethodGetterCalls, 0);
+assert.equal(ownerMethodCalls, 0, "invalid adapter capability must be rejected before owner calls");
+assert.equal(accessorAdapterRuntimeResult.status, "invalid");
+assert.equal(accessorAdapterRuntimeResult.dispatchAttempted, false);
+
 console.log("Nexo Chronicle owner-backed runtime tests passed");
