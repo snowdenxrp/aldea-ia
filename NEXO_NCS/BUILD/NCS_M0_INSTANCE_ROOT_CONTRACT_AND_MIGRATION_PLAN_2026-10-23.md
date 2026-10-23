@@ -915,3 +915,23 @@ Requisito no-bypass para D1/D3:
 - La prueba negativa debe invocar el script hijo directamente con rutas legacy y verificar bloqueo sin lectura, creación ni escritura.
 
 Este hallazgo amplía la lista de entrypoints. D1/D3 permanecen OPEN.
+
+
+## Matriz de fronteras de producción y tratamiento propuesto
+
+| Superficie observada | Acceso actual | Tratamiento requerido para no-bypass |
+|---|---|---|
+| `npm run nexo` → `scripts/nexo.mjs` | CLI principal con rutas legacy; consultas en proceso padre | Convertir a CLI de instancia: raíz explícita, resolución interna y admisión antes de lecturas |
+| `scripts/nexo-chronicle-session.mjs` | Puede ejecutarse directamente y aceptar rutas legacy | Exigir raíz y adquirir lock en el hijo; nunca depender del padre como frontera |
+| `npm run assistants` → `scripts/assistants.mjs` | Abre Continuity directamente y registra misión | Reemplazar acceso directo por API de instancia; escritura condicional por revisión; memoria/world state fuera de raíz |
+| `npm run simulate` → `scripts/simulate.mjs` | Abre Continuity con `legacyMemory` y puede inicializar/migrar | Recomendación: desacoplar Continuity de la simulación; bootstrap/migración solo por operación Nexo explícita |
+| `src/nexo/application/index.mjs` | Exporta funciones path-based, incluido append | Cambiar a superficie orientada a instancia; evitar que consumidores públicos entreguen paths de stores |
+| `scripts/nexo-continuity.mjs` | Reexport de `openNexoContinuityOwner` | Eliminar de callers productivos tras migración; conservar solo si se define explícitamente como adaptador interno/tests |
+| Fábricas `createNexoContinuityStore` / `createNexoChronicleStore` | Módulos internos importables que aceptan rutas | No son frontera de seguridad. Mantener como primitivas internas/tests y añadir prueba arquitectónica de imports/callers productivos |
+| Helpers de repair | Funciones importables; no CLI actual; gate productivo devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` | Fuera de la API de instancia productiva; no inferir autorización desde root lock |
+
+**Límite de amenaza:** este diseño define no-bypass dentro de las superficies de producción soportadas y del código del repositorio. No convierte módulos JavaScript importables ni permisos del sistema de archivos en una frontera contra código local hostil que pueda editar/ejecutar el proyecto. Si ese threat model se vuelve requisito, necesitará aislamiento del proceso/permisos además de guardas de arquitectura.
+
+### Condición verificable de cierre D1
+
+D1 no se cierra solo porque exista una lista. Requiere: (a) cada superficie tiene un tratamiento aprobado; (b) el grafo de callers de producción queda enumerado; (c) las rutas path-based quedan fuera de la API de producción; (d) pruebas de arquitectura verifican que ningún entrypoint productivo alcanza stores sin instancia admitida; (e) las pruebas incluyen invocación directa del hijo Chronicle y los flujos legacy `simulate`/`assistants`. Hasta entonces D1 = OPEN.
