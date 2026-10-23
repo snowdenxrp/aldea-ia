@@ -1094,3 +1094,8 @@ Snapshot de árbol no truncado: `6c5ad80d49bb592f0d6d1f5e6ab161d489731241` (3.01
 ### D2: decisión de lock primitivo todavía abierta
 
 Se identificó una tensión explícita: conservar los locks actuales porque no son equivalentes versus evitar una tercera implementación duplicada. La recomendación es preparar caracterización/regresión de ambos y comparar una primitiva compartida con adaptadores; no refactorizar ni duplicar sin decisión explícita. D2 sigue OPEN.
+
+
+### Caracterización comparativa de locks de stores registrada
+
+Se documentó una matriz basada en `continuity-store.test.mjs` y `chronicle-store.test.mjs`: esquema owner distinto, stale/corrupt fail-closed, timeout estructurado, release retry/quarantine diferente y lecturas sin lock. Antes de elegir primitiva compartida, caracterizar resultados exactos y bytes persistidos. D2 sigue OPEN.
