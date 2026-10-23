@@ -689,7 +689,7 @@ La CLI puede efectuar una escritura local de Chronicle; no debe afirmarse que to
 
 ## CI VERIFICADO — RECONCILIACIÓN OPTION A — 2026-10-23
 
-- Workflow determinista: [run 39897980663](https://github.com/snowdenxrp/aldea-ia/actions/runs/39897980663), SHA evaluado `7a355915d026525d0d94efe03fcde1a5673f12f3), estado `completed/success`.
+- Workflow determinista: [run 39897980663](https://github.com/snowdenxrp/aldea-ia/actions/runs/39897980663), SHA evaluado `7a355915d026525d0d94efe03fcde1a5673f12f3`, estado `completed/success`.
 - Job: [tests — 120232750270](https://github.com/snowdenxrp/aldea-ia/actions/runs/39897980663/job/120232750270), `completed/success`.
 - Log del job descargado y revisado: cadena de tests ejecutada sin fallo; `Nexo independent entrypoint: unsupported commands fail closed; Chronicle delegates without Lúmina or content leakage`; `Nexo Chronicle owner-backed runtime tests passed`; `Nexo bounded temporary cleanup regression passed`.
 - Alcance del resultado: confirma la suite en el SHA citado; no demuestra raíz legítima, autorización constitucional, aislamiento frente a procesos locales hostiles ni autorización de efectos protegidos. El run prueba el commit documental de reconciliación, no un cambio de runtime.
