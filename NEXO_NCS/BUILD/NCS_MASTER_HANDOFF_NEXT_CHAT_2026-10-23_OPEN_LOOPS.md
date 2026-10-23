@@ -101,7 +101,7 @@ This verifies the read-only Open Loops implementation+test SHA; it does not veri
 
 Current analysis:
 - `NEXO_NCS/BUILD/NCS_M0_AGGREGATE_RESOURCE_BOUND_ANALYSIS_2026-10-22.md`, now corrected against the current HEAD.
-- Analysis documentation commit: `31bff07ea76ddd86713c642b3f5ae25570e3ae57`.
+- Analysis documentation commits: `31bff07ea76ddd86713c642b3f5ae25570e3ae57` and `e2208578bde2efd1d39aacaf70ba314411885113`.
 - Current code blobs inspected:
   - `src/nexo/core/chronicle-store.mjs`: `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`
   - `src/nexo/core/continuity-store.mjs`: `9ffd28930abdbe29f5b041711cc29b74dc99fbae`
@@ -116,7 +116,9 @@ What is proved vs open:
 - A successful scan/cleanup does not prove a total disk quota: legacy residues, unrelated files/logs, and directory contents beyond the scan threshold remain outside a global budget. If the scan exceeds the configured bound, the store fails closed rather than performing a partial cleanup.
 - Heap is still not bounded by the 32 MiB Chronicle and 16 MiB Continuity serialized caps. Locks are per store, not for the full Nexo operation; the standalone Chronicle CLI and public application/store APIs do not establish a global single-operation gate. Multiple processes can overlap. Do not invent a V8 heap multiplier.
 
-**Next single task:** trace every actual public/application entrypoint that can touch Chronicle or Continuity, then decide whether M0 requires enforced instance-wide serialization or only explicitly limited local single-user usage. Do not implement a global lock until a common instance root/path contract and all participating entrypoints are identified. Documentation saying “single operation” is not enforcement. If no safe global boundary exists under current contracts, keep aggregate heap and total disk OPEN and record the exact limitation.
+**Entrypoint tracing is now complete.** The application accepts independent `continuityPath` and `chroniclePath`; CLI dispatch creates a child process; read-only queries, continuity-owner APIs, and store factories can enter outside one mutation workflow. Per-store locks do not provide an instance-wide lock, and deriving one from only one path would be bypassable.
+
+**Next single task:** decide the instance-root contract before runtime changes: (A) introduce one canonical Nexo instance root that owns both store paths and a common operation lock, migrating all entrypoints coherently; or (B) preserve independent-path APIs and explicitly leave aggregate concurrency/heap without a strict guarantee. Do not implement a partial global lock or silently change CLI arguments. Total disk also remains OPEN because legacy and unrelated files are outside a strict global quota.
 
 Canonical state unchanged: M0 `INCOMPLETO`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
 
