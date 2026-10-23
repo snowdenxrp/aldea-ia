@@ -2,11 +2,11 @@
 
 Fecha: 2026-10-23  
 Rama: `ncs-clean-architecture`  
-Estado: **PROPUESTA TÉCNICA — NO ACEPTADA POR EL PROPIETARIO; NO IMPLEMENTAR AÚN**
+Estado: **OPCIÓN A ACEPTADA COMO DIRECCIÓN DE DISEÑO; SUBDECISIONES ABIERTAS; NO IMPLEMENTAR RUNTIME AÚN**
 
 ## 1. Pregunta que necesita decisión
 
-¿Debe una instancia local de Nexo tener una raíz de configuración común que sea propietaria de Chronicle y Continuity y que permita imponer una frontera de admisión de operaciones compartida, o deben mantenerse las APIs actuales que reciben rutas independientes y dejar explícitamente sin garantía la concurrencia agregada?
+Decisión del propietario: se acepta Opción A como dirección de diseño. La raíz común y la frontera de admisión deben concretarse en el contrato y plan documental antes de autorizar cambios de runtime. Esta aceptación no cierra subdecisiones ni constituye autorización de implementación.
 
 Esta es una decisión de contrato y de superficie pública. No debe resolverse con un lock aislado derivado de una ruta arbitraria.
 
@@ -73,7 +73,7 @@ Si el requisito de producto es una instancia local de Nexo con concurrencia acot
 
 Si el propietario no acepta cambiar el contrato de configuración en M0, elegir Opción B y dejar el presupuesto agregado OPEN es más correcto que fingir que el modo serial ya está impuesto.
 
-**No aceptar Opción A solo porque sea la recomendación técnica.** Hace falta decisión explícita sobre el cambio de contrato antes de tocar runtime.
+La dirección Opción A ya fue aceptada explícitamente por el propietario. La aceptación no sustituye el cierre de subdecisiones, el inventario completo de callers ni la autorización separada para implementar runtime. No tocar runtime hasta cerrar el diseño.
 
 ## 5. Separación de garantías
 
@@ -91,3 +91,8 @@ Autorización: `NOT_EVALUATED`
 Raíz legítima: `PENDING/UNKNOWN`  
 Efectos protegidos: `STOP`
 
+
+
+## 7. Estado tras la decisión del propietario (2026-10-23)
+
+Opción A está aceptada como dirección de diseño. El contrato detallado y el plan verificable están en [NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md](NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md). La propuesta original ya no debe leerse como una pregunta binaria aún sin respuesta, pero las subdecisiones de D0 y el inventario de callsites siguen abiertas. Runtime, tests y workflows no fueron modificados. No declarar la garantía de instancia hasta completar migración y CI en SHA exacto.
