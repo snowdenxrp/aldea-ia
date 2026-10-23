@@ -1,3 +1,15 @@
+## 0. Latest continuation checkpoint — D0 ID crosswalk (2026-10-23)
+
+Updated D0 ledger commit `bfec45d8fd2524a8f3739846729d241e70013b39`: added mapping from ledger IDs `D0-01..11` to matrix IDs `D0-C1..C4`. This avoids parallel decision taxonomies being mistaken for new or closed decisions. STATUS update commit: `d88adb17df5ce6e65fe2976ccfdff67c6438ace9`.
+
+The D1-S0 sequence-gate analysis remains at commit `e375bf9e789ce40676d682a6b3ca9eae62063057`. Recommendation: split D1-DESIGN from D1-IMPLEMENTATION, but owner acceptance is not recorded; no implementation permission follows from the recommendation.
+
+Next: continue with targeted contract reconciliation and dependency closure. Preserve the unknown external-caller classification unless exact evidence resolves it. No full census rerun absent changed source snapshot. Do not modify runtime/tests/workflows before the separate design and implementation gates.
+
+No runtime/tests/workflows/CLI/stores changed; no tests/CI executed. Canonical state: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+---
+
 ## 0. Latest continuation checkpoint — D1-S0 sequence gate analysis (2026-10-23)
 
 Created [NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md](NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md), commit `e375bf9e789ce40676d682a6b3ca9eae62063057`. STATUS checkpoint update: `5975439b32fa39e6c3e149ee8992461870b5ba6a`.
