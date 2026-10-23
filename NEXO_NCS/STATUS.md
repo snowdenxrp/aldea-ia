@@ -754,3 +754,13 @@ Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítim
 - Corrección de evidencia: la nota anterior decía que CI para el push no estaba confirmado porque el wrapper de runs por commit solo expone runs disparados por PR. La consulta directa de Actions por `head_sha` sí encontró el run de push. El PASS corresponde al SHA de pruebas `53bd1a84...`; no demuestra autoridad raíz ni efectos protegidos.
 - El commit posterior de STATUS `bef7bf1018fdff5eaf33f43177ea739279dcfd93` tiene su propio run [39899486462](https://github.com/snowdenxrp/aldea-ia/actions/runs/39899486462), `completed/success`; su job fue revisado y la suite terminó sin fallo.
 - Sin cambio de runtime ni de estado constitucional: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Cierre de verificación CI del checkpoint documental — 2026-10-23
+
+- El commit de corrección documental `1323f00933daa31a9c456082e08057a4e55a761d` ya terminó su propia ejecución: [workflow 39899715152](https://github.com/snowdenxrp/aldea-ia/actions/runs/39899715152), `completed/success`; job `tests` / `120238263459`, con pasos `Run tests` y `Bounded temporary cleanup regression` en `success`.
+- Se inspeccionaron los pasos y el log del job. Esto confirma la suite CI configurada para ese commit exacto; no convierte los resultados de pruebas en prueba de autoridad constitucional o de una frontera universal de efectos.
+- Relectura de fuente actual: `src/nexo/core/mission-admission-contract.mjs` blob `d4ddd88c6c59827e944f8811d00e52cea336f0c1`; `src/nexo/application/mission-request-preview.mjs` blob `4e317b646d0c7b7403acfb63732dec8c3fe7778b`; `tests/nexo/mission-request-preview.test.mjs` blob `74475371c4b50291535822b55212f1c5989afdbf`.
+- La revisión no encontró contraejemplo demostrado que justifique modificar el runtime de admisión. Se mantienen los límites existentes y las limitaciones explícitas ya registradas en `NCS_M0_E_MISSION_PREVIEW_ADMISSION_RECONCILIATION_2026-10-23.md`; no se reabre la investigación cerrada sobre 4 MiB ni se interpreta el preview como ejecución.
+- Próxima frontera de trabajo: usar el inventario M0-E existente para identificar un punto de enforcement concreto con claim, procedencia, vigencia/revocación y sink identificados. No repetir el mapa de rutas ni aplicar un bloqueo global a persistencia Chronicle.
+- Estado canónico: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
