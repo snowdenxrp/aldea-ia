@@ -913,3 +913,10 @@ Revisados los stores actuales: Chronicle y Continuity duplican locks per-store p
 Recomendación registrada en sección 14 del contrato de raíz: añadir una capa exclusiva de admisión por raíz canónica, mantener locks per-store inicialmente, orden fijo raíz→store, adquisición en una única frontera, sin reentrada, sin recuperación automática de stale locks y sin atribuir autoridad al lock. Códigos propuestos incluyen NEXO_INSTANCE_LOCK_STATE_UNKNOWN, NEXO_INSTANCE_LOCK_STALE_RECOVERY_REQUIRED y NEXO_INSTANCE_LOCK_ACQUISITION_TIMEOUT. No son todavía API pública definitiva.
 
 D2 sigue ABIERTO hasta documentar grafo de llamadas repair/runtime, decidir el único dueño del lock en el flujo Chronicle padre/hijo y definir pruebas de release incierto/no-bypass. Runtime, tests y workflows SIN CAMBIOS. Estado canónico: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+# CHECKPOINT — ENTRYPOINTS Y DUEÑO DE ADMISIÓN (2026-10-23)
+
+Se documentó el call graph actual y la frontera recomendada por entrypoint en sección 15 del contrato. Decisión de diseño recomendada: en Chronicle CLI, el proceso que ejecuta runNexoChronicleAppend (el child actual) es el único dueño del lock raíz; no adquirirlo también en un padre ni transportar deadlines monotónicos absolutos por IPC. Para consultas/previews, el comando se envuelve en la API de instancia; helpers internos reciben contexto admitido. Las funciones de reparación mantienen acceso a stores, pero la integración runtime está actualmente bloqueada por NEXO_M0_OPTION_A_EFFECT_EXCLUDED; no reactivarla.
+
+D2 sigue ABIERTO hasta completar matriz de callers indirectos y pruebas de lock/release/no-bypass. No se ha implementado runtime. Estado canónico sin cambios: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
