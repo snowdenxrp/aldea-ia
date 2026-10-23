@@ -17,3 +17,9 @@ No repetir censo de callers salvo cambio verificable de fuente. No modificar run
 
 ## Estado canónico
 M0 INCOMPLETO; D0/D1/D2/D3 OPEN; runtime C / host D NOT DETERMINED; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. No tests/CI ejecutados.
+
+
+## Revisión adicional recuperada
+Se revisaron conversaciones anteriores, el handoff maestro disponible, el perfil D3, el gate D0-C2 y la matriz D2. No aparece una decisión de que POCO X7 Pro/M1 sea el runtime C de Continuity/Chronicle ni una selección explícita de host/operador D. Interpretar como RUNTIME_TARGET = NOT_DETERMINED (sin selección documentada), no como prueba de que ningún entorno exista. No volver a preguntar al usuario que reconstruya la investigación ni repetir el censo de callers.
+
+También se detectó una ambigüedad documental: la matriz D2 usa ROOT_READY para la raíz existente y validada, antes de adquirir lock/validar stores; el gate D0-C2 parece usarlo para la instancia completa lista para operar. Checkpoint actualizado con la ambigüedad, commit 88b2ac292b916c5b7107cf75147274fb7cff6154, blob d1b2837a90d67e1695c1a8b41cc368faa1d6deb9. Resolver semántica documental antes de implementar; no renombrar estados ni añadir persistencia por inferencia.
