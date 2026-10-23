@@ -1,3 +1,19 @@
+# CHECKPOINT DE VERIFICACIÓN — 2026-10-23 — OPEN LOOPS LINKAGE + EXACT-SHA CI
+
+- Código y pruebas combinados: `443014e2309a5ff8d487f1b3b56f842e286fb792`.
+- Corrección estructural: los registros `prepared` y `reconciled_observed` del diario solo se proyectan si sus campos identifican una misión y paso canónicos de la misma instantánea y la acción coincide con la acción canónica del paso. Campos presentes pero huérfanos o discordantes devuelven `NEXO_OPEN_LOOPS_JOURNAL_LINKAGE_UNKNOWN`.
+- Regresiones añadidas: enlace sin campos; IDs con formato pero sin misión/paso canónico; acción discordante.
+- CI sobre el SHA exacto:
+  - [Persistencia determinista / `npm test` — run 39979056812 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979056812), job `120501276361` — `tests` — SUCCESS.
+  - [STEP 4 — run 39979056795 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979056795).
+  - [STEP 5 — run 39979057695 — SUCCESS](https://github.com/snowdenxrp/aldea-ia/actions/runs/39979057695).
+- Interpretación: los tres workflows verifican el commit de implementación+pruebas citado. La consulta permanece de solo lectura, sin despacho ni reconciliación; esto no prueba autoridad legítima ni habilita efectos protegidos.
+- Revisión de contrato: el enlace debe ser referencial, no solo sintáctico. La consulta conserva la revisión canónica y bloquea si no puede probar la relación misión→paso→acción.
+- Siguiente: cerrar el registro documental exacto de esta evidencia y revisar el próximo trabajo interno contra MASTER/CORE, sin ampliar CLI ni crear otro almacén sin caso de aceptación.
+- Estado constitucional sin cambio: M0 `INCOMPLETO`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # HANDOFF NEXT CHAT — 2026-10-23
 
 - Continuidad maestra guardada en [NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md](BUILD/NCS_MASTER_HANDOFF_NEXT_CHAT_2026-10-23_OPEN_LOOPS.md).
