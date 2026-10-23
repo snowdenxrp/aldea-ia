@@ -309,3 +309,8 @@ The root contract now specifies a candidate instance context: one validated expl
 \`scripts/assistants.mjs\` is explicitly classified as a composite Nexo+Lúmina integration. World-state and Lúmina learning memory stay outside the Nexo root for this phase; only its Continuity sub-operation may be migrated behind the instance API. No cross-file atomicity is claimed. \`NEXO_CONTINUITY_PATH\` must not act as a production override in root-managed mode. Repair remains blocked by \`NEXO_M0_OPTION_A_EFFECT_EXCLUDED\`.
 
 The contract adds migration gates for inventory, API, lock behavior, no-bypass, behavioral concurrency, dry-run/backup/cutover, authority safety and CI. These are design proposals only. D1/D2/D3 remain OPEN; runtime/tests/workflows/data stores unchanged; canonical status unchanged. Continue by closing exact source callers and the remaining lock/canonicalization decisions, not by implementing prematurely.
+
+
+## 24. Source-level lock constraints confirmed
+
+Both store loadCurrent() methods read and clone persisted state without per-store lock acquisition; opening the Continuity owner may read, initialize if explicitly allowed, and reread. Root admission must wrap the whole operation before the first read, including read-only queries. Preserve existing per-store lock implementations and their release behavior in the first root layer. performance.now() deadlines are process-local; the Chronicle child must create its own deadline from a duration. Normal reads must not silently initialize missing stores or project legacy memory. Repair remains blocked by NEXO_M0_OPTION_A_EFFECT_EXCLUDED. Required tests are recorded in Section 22 of the root contract. D1/D2/D3 remain OPEN; no runtime, tests or workflows changed.
