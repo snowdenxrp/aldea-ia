@@ -69,3 +69,22 @@ Se intentó crear un documento separado con la propuesta del contrato de raíz; 
 **Criterio:** D0-C1..C4 aceptadas establecen política general, pero no resuelven todos estos detalles. D0 técnico y D1-DESIGN siguen OPEN. Esto no autoriza implementación.
 
 La creación del documento separado fue bloqueada; este addendum es el registro persistente disponible. No hubo cambios en runtime/tests/workflows ni ejecución de tests/CI. Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## Addendum: reconciliation with existing root contract (2026-10-24)
+
+Correction to the previous addendum: the existing root contract DOES contain a candidate layout; “not selected” meant not finalized as a technical decision, not that no proposal exists.
+
+Existing candidate layout in `NEXO_NCS/BUILD/NCS_M0_INSTANCE_ROOT_CONTRACT_AND_MIGRATION_PLAN_2026-10-23.md` (blob `bac9493af98c3f86001e323dab153bdee78b5f31`):
+- `<root>/continuity.json`: canonical Continuity store.
+- `<root>/chronicle.json`: canonical Chronicle store.
+- `<root>/.nexo-instance.lock/`: candidate shared-admission directory with `owner.json`; explicitly a D2 candidate, not implemented.
+- Existing per-store temporary and lock naming/protocols remain unchanged in this phase.
+
+The contract says not to add a data subdirectory, manifest, bootstrap marker, or persistent config file without proving it necessary. The shared-lock name is illustrative and does not authorize a second lock system.
+
+The root contract already proposes operation-wide cross-process admission before protected snapshots are loaded, release in finally, UNKNOWN/blocked on acquisition/ownership/release uncertainty, preservation of current per-store lock order, and no production query/preview bypass. Low-level store factories may remain for tests/internal composition, while production enters through an instance/admission boundary.
+
+Next work is reconciliation, not reinvention: distinguish accepted D0-C1..C4 policy from still-open technical details; close bootstrap/partial-store semantics; settle parent/child admission and lock ownership; align query/preview scope with D2 snapshot/resource guarantees; map all production entrypoints to future architecture tests. No implementation or tests authorized.
+
+No runtime/tests/workflows changed; no tests/CI run. D0 technical/evidence OPEN; D1-DESIGN OPEN; D2/D3 OPEN; M0 INCOMPLETO; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
