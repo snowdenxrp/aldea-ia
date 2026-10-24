@@ -169,3 +169,25 @@ Enlaces directos de continuidad:
 - [Reconciliación ROOT_READY](NCS_M0_D2_ROOT_READY_SEMANTICS_RECONCILIATION_2026-10-23.md)
 
 Estado canónico sin cambios: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Sin cambios en runtime/tests/workflows; tests/CI no ejecutados.
+
+
+## Inventario de evidencia de tests D2 — revisión estática, sin ejecución (2026-10-23)
+
+Se localizaron pruebas existentes en la rama; por tanto, el siguiente paso no es crear desde cero pruebas genéricas de locks.
+
+### Continuity Store
+- Test file: `tests/nexo/continuity-store.test.mjs`, blob `c3af56077b94c8d641979e0853de7f70fa45d82f`.
+- Ya caracteriza: owner inválido/ilegible preservado como UNKNOWN; lock stale falla cerrado; un proceso competidor espera mientras existe un lock y reanuda tras retirada explícita; fallo transitorio de release y segundo intento; fallo persistente conserva `persistenceStatus: committed` y bloquea handoff; quarantine en memoria bloquea nuevas operaciones del mismo proceso tras fallo persistente.
+- No demuestra la carrera adversarial central: sustitución del directorio entre comprobación del token y `rm(lockPath)`, ni que el segundo `rm` no retire un lock nuevo. La prueba de retry actual cubre fallo transitorio de limpieza, no reemplazo concurrente del lock.
+
+### Chronicle Store
+- Test file: `tests/nexo/chronicle-store.test.mjs`, blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`.
+- Ya caracteriza: append concurrente entre procesos, lock stale fail-closed, token distinto al liberar (no-owned) bloquea handoff sin borrar el lock ajeno, fallo de cleanup conserva commit confirmado y bloquea handoff, y respuesta perdida tras rename puede reconstruirse leyendo el envelope persistido.
+- No demuestra la carrera de sustitución entre lectura/validación del owner y retirada del path. La implementación Chronicle no tiene el segundo intento de retirada que sí existe en Continuity, por lo que no se debe trasladar automáticamente el mismo comportamiento de una a otra.
+
+### Límite de la evidencia
+Este inventario es inspección estática de archivos en GitHub, no una afirmación de que estos tests pasaron en CI ahora. No se ejecutaron tests/CI en esta revisión. El hueco residual ya está delimitado en la matriz D2 y en el documento de cuarentena: la prueba adversarial de reemplazo durante la liberación, incluyendo el segundo intento de Continuity, y la coordinación segura de recuperación/re-admisión mientras un actor anterior podría seguir vivo.
+
+**Siguiente acción recomendada:** antes de editar runtime o añadir tests, verificar si existe un run de CI reciente asociado al HEAD que incluya ambos archivos y examinar su resultado/artifacts. Si no existe evidencia directa, mantener resultado `PENDING/UNKNOWN`; después, preparar únicamente el test adversarial mínimo requerido por la matriz, sujeto a autorización de implementación. No rehacer las pruebas existentes ni declarar cerrado D2.
+
+Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Sin cambios en runtime/tests/workflows; CI no ejecutado en esta revisión.
