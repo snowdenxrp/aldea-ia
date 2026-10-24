@@ -245,3 +245,20 @@ Caso adicional requerido por la matriz, separado de A/B: provocar que `mkdir(loc
 No elige entre recuperación externa offline con quiescencia demostrada y un mecanismo de retirada ligado a la identidad del objeto verificado. No afirma resistencia a procesos locales hostiles ni a cualquier filesystem. No autoriza modificar runtime/tests/workflows. Primero se requiere autorización explícita de implementación y, si el mecanismo necesita una decisión de diseño de propietario, registrar esa decisión antes del cambio.
 
 **Próxima acción segura:** revisión documental de que A/B/C no contradicen los contratos existentes; después esperar autorización antes de editar tests o runtime. Estado canónico sin cambios.
+
+
+## Revisión documental de consistencia — matriz D2 y bootstrap parcial (2026-10-24)
+
+Se contrastó el contrato de pruebas A/B/C de este handoff con estos documentos vigentes de la misma rama:
+
+- Matriz de estados/transiciones D2, blob `bfa38a057033acf880afe331a47bb383e82e9a97`.
+- Alcance de cuarentena por release incierto, blob `2bdfb593c04bd52ecdeb052934525eba006f6c16`.
+- Frontera de recuperación de bootstrap parcial, blob `ff80a1c66b252db1fd1cabdd6a9e32b0ed8d838e`.
+- Reconciliación semántica de `ROOT_READY`, blob `36bc58655a12e9681fa52a4660dc3971e8467336`.
+- Checkpoint contractual cruzado, blob `824050fc2827bf678514a7acdfe1921f2f2ffe48`.
+
+**Resultado:** no se encontró contradicción material entre los casos propuestos y las reglas documentales vigentes. A/B ejercitan la exigencia de no retirar una instancia distinta del lock; C ejercita la regla de que el creador no puede limpiar por inferencia un path que quizá ya no sea suyo. La separación entre resultado de persistencia, release y nueva admisión se conserva. La frontera de bootstrap también sigue separando detección, autorización explícita, integridad de datos y autoridad constitucional.
+
+**Límites que siguen abiertos:** esta consistencia editorial no selecciona la política de release/recovery, no prueba quiescencia de actores vivos, no resuelve el primer bootstrap ni el alcance de admisión de snapshots, y no autoriza mutaciones. `ROOT_READY` continúa limitado a la raíz validada, no a la instancia completa ni a la autoridad. La recuperación parcial sigue `UNKNOWN/BLOCKED` sin protocolo aprobado.
+
+No se editaron esos documentos de contrato ni se cambió runtime/tests/workflows. El único cambio de esta fase es este handoff. No se declara cerrado D2 ni M0.
