@@ -1,3 +1,16 @@
+# ADDENDUM PRIORITARIO — 2026-10-24 — D1-S0 ACEPTADA
+
+El propietario aceptó expresamente la Opción 1 de D1-S0: separar el cierre de diseño (`D1-DESIGN`) de la prueba de implementación (`D1-IMPLEMENTATION`). Confirmó que esa era la intención.
+
+- Análisis de secuencia actualizado: [NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md](NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md), blob `28ae19953fa5fa8630eabe4f66b8422c16680336`, commit `1d6377d450e9034d2225b6d26ab6917c5927abeb`.
+- Índice de decisiones actualizado: [NCS_M0_OWNER_DECISIONS_VS_EVIDENCE_GATES_2026-10-24.md](NCS_M0_OWNER_DECISIONS_VS_EVIDENCE_GATES_2026-10-24.md), blob `c2b88297e0ff2eee1bdd7a097193915abde56245`, commit `85f85da6cecfbc1898c743fdc0501a3170a09487`.
+- Alcance exacto: queda resuelta solo la regla de secuencia. `D1-DESIGN` sigue OPEN hasta que se acrediten sus criterios. `D1-IMPLEMENTATION` no está autorizada; la aceptación no permite modificar tests/runtime/workflows ni ejecutar CI.
+- No inferir que el test arquitectónico existe o pasó. No repetir el censo de callers sin cambio de snapshot; continuar con artefactos existentes y resolver solo UNKNOWN relevantes para D1-DESIGN.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Esta actualización es documental; no se ejecutaron tests ni CI.
+
+---
+
 # ADDENDUM DE CONTINUIDAD — 2026-10-24 — ACEPTACIÓN DE LA LÍNEA DE META M0
 
 **Actualización prioritaria:** el propietario aceptó la línea de meta de M0 como base de trabajo. La aceptación no equivale a autorización de implementación.
