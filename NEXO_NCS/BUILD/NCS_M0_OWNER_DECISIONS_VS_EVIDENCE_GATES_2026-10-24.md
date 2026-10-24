@@ -56,3 +56,16 @@ El propietario aceptó la separación entre diseño y prueba de implementación.
 - D1-DESIGN sigue OPEN hasta que los artefactos de diseño requeridos se revisen contra un snapshot exacto y las aristas no resueltas se mantengan UNKNOWN/BLOCKED o se resuelvan con evidencia.
 - D1-IMPLEMENTATION sigue NOT_STARTED / no autorizada. La implementación de tests, runtime o workflows requiere autorización explícita independiente.
 - No se ejecutaron tests ni CI para registrar esta decisión. No cambia el estado canónico: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## 7. Registro de decisión del propietario — paquete D0 (2026-10-24)
+
+El propietario aceptó D0-C1…D0-C4 como un contrato de diseño coherente para M0:
+
+- D0-C1: un único `--root <directorio>` explícito por operación, sin override por variable de entorno ni fallback a rutas legacy en la primera versión.
+- D0-C2: la operación normal exige raíz existente y válida; bootstrap separado y explícito. La operación normal no crea ni repara raíz o stores.
+- D0-C3: canonicalizar la raíz existente antes de derivar rutas; definir política para symlinks, nombres reservados y colisiones; bloquear estados ambiguos. No prometer defensa general contra carreras de filesystem hostil.
+- D0-C4: sin migración automática, doble escritura ni fusión heurística. Migración y cutover quedan fuera de M0 operativo hasta identificar y verificar el entorno objetivo.
+- `assistants.mjs` y `simulate.mjs` no deben entrar en la ruta ordinaria hasta definir y verificar su consistencia con la frontera de instancia. Excluir la migración no autoriza bypass; consumidores externos no demostrados siguen `UNKNOWN`.
+
+La aceptación fija política, no implementación. El gate técnico D0 sigue abierto hasta que exista evidencia verificable. No se modificaron runtime/tests/workflows y no se ejecutó CI. D1-DESIGN, D2, D3 y recursos siguen abiertos; autorización de implementación `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
