@@ -86,3 +86,16 @@ The matrix also contains `D1-C1..C3`, `D2-C1..C4`, and `D3-C1..C2`. These are de
 ### Sequencing implication
 
 Resolve the matrix-level decision `D1-S0` (see [D1-S0 sequence gate analysis](NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md)) before changing any gate criteria. The recommended split of design versus implementation remains **not owner-approved**. This crosswalk changes no status and grants no implementation authorization.
+
+
+## 7. Registro de decisión del propietario — D0-C1…D0-C4 (2026-10-24)
+
+**Decisión aceptada como contrato de diseño para M0; evidencia de cierre pendiente.**
+
+1. **Interfaz:** un solo `--root <directorio>` explícito por operación. Sin variable de entorno ni fallback a rutas legacy en la primera versión. La propagación al proceso hijo y los errores de configuración requieren evidencia antes de implementación.
+2. **Bootstrap:** la operación normal exige raíz existente y válida; bootstrap es separado y explícito. La operación normal no crea ni repara raíz o stores.
+3. **Alias y layout:** canonicalizar la raíz existente antes de derivar rutas; definir symlinks, nombres reservados y colisiones; bloquear estados ambiguos. No afirmar protección general frente a carreras de filesystem hostil.
+4. **Legacy:** no migrar automáticamente, no doble-escribir y no fusionar heurísticamente. La migración/cutover queda fuera de M0 operativo hasta que el entorno objetivo sea identificado y verificable; el proceso futuro requiere inventario, copia verificada, cutover explícito y rollback.
+5. **Callers:** `assistants.mjs` y `simulate.mjs` quedan fuera de la ruta ordinaria hasta definir y verificar consistencia con la frontera de instancia. La exclusión de migración no permite bypass. Consumidores externos desconocidos continúan `UNKNOWN`.
+
+La decisión no cierra el gate técnico D0: permanecen pendientes la política detallada de rutas, pruebas de no-mutación, el grafo D1 y las dependencias D2/D3. No cambia runtime/tests/workflows, no autoriza implementación y no demuestra CI. Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
