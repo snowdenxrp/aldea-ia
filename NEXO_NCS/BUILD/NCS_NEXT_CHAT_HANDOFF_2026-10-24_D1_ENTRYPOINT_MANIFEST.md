@@ -48,3 +48,24 @@ También se verificó que los workflows tienen filtros de rutas explícitos y ej
 Siguiente paso recomendado: completar el diseño de cómo una raíz única se traduce a rutas de stores, cómo se separa bootstrap de operación normal, cómo consultas/previews participan en la admisión, y cómo el hijo Chronicle valida el contexto sin doble bloqueo. Mantener UNKNOWN/BLOCKED para consumidores no inspeccionados. No tocar runtime/tests/workflows ni ejecutar CI; la implementación sigue sin autorización explícita.
 
 Estado canónico sin cambios: M0 `INCOMPLETO`; D0 técnico/evidencia `OPEN`; D1-DESIGN `OPEN`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## ADDENDUM — contrato de instancia propuesto, no aceptado — 2026-10-24
+
+Se intentó crear un documento separado con la propuesta del contrato de raíz; la operación fue bloqueada por los controles de la herramienta, así que no se afirma que ese archivo exista. Para conservar el trabajo, este resumen queda aquí.
+
+**Propuesta técnica para revisión, no decisión del propietario:**
+1. Cada CLI/API público recibe una sola raíz explícita; no recibe rutas arbitrarias de Continuity y Chronicle.
+2. Operación normal exige directorio existente y estado válido; no inicializa, repara, migra ni elige rutas heredadas.
+3. Canonicalizar la raíz según una política explícita de symlinks antes de derivar rutas de stores y locks.
+4. Las lecturas y escrituras públicas usan la misma admisión y derivación de rutas. D2 debe definir la vida útil/alcance del snapshot antes de prometer un límite de memoria por instancia.
+5. El hijo Chronicle valida la raíz cuando se ejecuta directamente; la invocación padre/hijo debe definir quién posee cada lock y evitar doble adquisición. Un booleano enviado por el caller no demuestra por sí solo que hubo admisión.
+6. Bootstrap debe ser una operación separada, con precondiciones y comportamiento explícito ante inicialización parcial; operación normal no crea ni repara almacenes.
+7. Las fábricas de bajo nivel pueden seguir siendo primitivas internas/de test, pero cada caller de producción debe clasificarse y las pruebas arquitectónicas deben detectar bypasses.
+8. La cobertura de arquitectura debe incluir importaciones estáticas/dinámicas, `require`, loaders calculados, acceso a factories/owners, destinos de procesos hijos y filtros/comandos de workflows.
+
+**Decisiones pendientes:** mapping y nombres exactos de los stores; si cada operación necesita ambos stores; política de symlinks/nombres reservados/colisiones; validez de raíz vacía; semántica de bootstrap parcial; coordinación de lock padre/hijo; alcance de queries/previews; límite público/API frente a primitivas internas; consumidores externos y wrappers de compatibilidad. No inventar nombres de archivos ni inferir que consumidores externos no existen.
+
+**Criterio:** D0-C1..C4 aceptadas establecen política general, pero no resuelven todos estos detalles. D0 técnico y D1-DESIGN siguen OPEN. Esto no autoriza implementación.
+
+La creación del documento separado fue bloqueada; este addendum es el registro persistente disponible. No hubo cambios en runtime/tests/workflows ni ejecución de tests/CI. Estado: M0 INCOMPLETO; autorización NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
