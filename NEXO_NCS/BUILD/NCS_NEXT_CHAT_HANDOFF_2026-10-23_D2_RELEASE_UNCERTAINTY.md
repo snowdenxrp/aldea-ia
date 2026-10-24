@@ -1,3 +1,20 @@
+# ADDENDUM DE CONTINUIDAD — 2026-10-24 — LÍNEA DE META M0
+
+**Este addendum es posterior al contenido histórico del handoff.** Lee primero `NEXO_NCS/STATUS.md`, cuyo primer checkpoint apunta a esta actualización y a la propuesta de aceptación M0.
+
+- Propuesta nueva: [NCS M0 — línea de meta y criterios de aceptación](NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), blob verificado `34fec2a2679964bd6741d965109def7fb533de3c`.
+- `STATUS.md` actualizado con el checkpoint del 2026-10-24; blob verificado `bc7d269fb87c49e2cf141d082df4142173ab05ba`.
+- Commit que creó la propuesta: `177c4b20041d9e39882a741aacbac82a014b2f42`.
+- Commit que registró el checkpoint en STATUS: `6b3a101798076ea9bac03e46ffb2e1cfdb50214c`.
+- La propuesta distingue `M0_BUILD_COMPLETE` de `PROTECTED_EFFECTS_AUTHORIZED`; el segundo no se deriva del primero. Es propuesta documental pendiente de aceptación del propietario, no cambio normativo ni autorización de runtime.
+- No se modificaron runtime/tests/workflows; no se ejecutaron tests ni CI para esta actualización documental.
+- Revisión cruzada: la matriz de estados D2, la frontera D0-C2/D2 y las opciones de release incierto ya cubren los invariantes compartidos. No se encontró contradicción material que justifique otra matriz. Las brechas operacionales permanecen: primer bootstrap concurrente, release/owner replacement y evidencia real de quiescencia/entorno.
+- Próximo paso: seguir la propuesta de línea de meta para identificar qué decisiones son estrictamente necesarias para el alcance de M0, reutilizando los ledgers existentes. No reabrir censo de callers ni volver a auditar pruebas ya caracterizadas sin cambio de fuente.
+- No implementar tests/runtime/workflows sin aceptación del diseño aplicable y autorización separada. “Continúa sin límites” no cambia ese gate.
+- Estado canónico: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # NCS — HANDOFF PARA NUEVO CHAT — 2026-10-23
 ## Punto exacto de continuidad tras revisión D2
 
