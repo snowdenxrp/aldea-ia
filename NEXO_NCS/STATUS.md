@@ -1,22 +1,12 @@
-# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — LÍNEA DE META M0 ACEPTADA COMO BASE
+# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — D1-S0 ACEPTADA
 
-- El propietario aceptó la línea de meta de M0 como base de trabajo; registro en [NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md](BUILD/NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), blob `e37a98ecfe1dcdccfef3cb0c5c98e0f2cb7d1287`, commit `ff286d632f06ca123bbe65f6b39327f3437ebebd`.
-- Handoff prioritario: [NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md), blob `294b09e5670070c820fa3b94f3f30e59b23afdb5`, commit `4530131c6a16f72f924d51c8b8fdb9da6839b262`.
-- Alcance aceptado: separar cierre verificable de M0 de la autorización de efectos protegidos; evitar repetir auditorías; mantener la migración/cutover legacy fuera del alcance operativo de M0 hasta que exista un entorno objetivo identificado y verificable. D3 sigue abierto y la quiescencia no está demostrada.
-- La aceptación no aprueba automáticamente decisiones individuales D0/D1/D2 ni autoriza cambios en runtime/tests/workflows.
-- Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
-- Los cambios de este checkpoint son documentales; no se ejecutaron tests ni CI para ellos.
+- El propietario aceptó separar `D1-DESIGN` de `D1-IMPLEMENTATION`; esto resuelve únicamente la secuencia, no cierra el diseño ni autoriza implementación.
+- Registro: [análisis D1-S0](BUILD/NCS_M0_D1_S0_SEQUENCE_GATE_ANALYSIS_2026-10-23.md), blob `28ae19953fa5fa8630eabe4f66b8422c16680336`; [índice de decisiones](BUILD/NCS_M0_OWNER_DECISIONS_VS_EVIDENCE_GATES_2026-10-24.md), blob `c2b88297e0ff2eee1bdd7a097193915abde56245`.
+- Handoff prioritario actualizado: [NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md), blob `a2d5db0307f9fefe23be77d6d0de1e33689b695e`, commit `7f704e284dbb340ea108cc179a4f9b3d1fa778e0`.
+- Siguiente trabajo: revisar los artefactos ya existentes de D1-DESIGN de forma dirigida contra sus criterios; no repetir el censo completo ni declarar PASS sin evidencia. Registrar UNKNOWN/BLOCKED cuando una arista siga sin resolver.
+- D1-IMPLEMENTATION permanece sin autorización. No se modificaron runtime/tests/workflows ni se ejecutó CI.
+- Estado canónico: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
-
-# CHECKPOINT DE CONTINUIDAD — 2026-10-23 — POLÍTICA DE RUTAS RESERVADAS
-
-- Documento nuevo: [NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md](BUILD/NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md), commit 7a2f2dd0fbaec192de3a134da5b27e188b207fc7.
-- Hallazgo: canonicalizar la raíz no basta para asegurar que los nombres reservados de Continuity/Chronicle/lock no sean symlinks o tipos de filesystem inesperados. La matriz define casos y pruebas negativas futuras; rechazo de symlinks sigue como propuesta, no decisión aceptada.
-- Cross-contract checkpoint actualizado en commit 292d19c7b87d13748a00e31b45c1110ef57e283f.
-- Sin cambios de runtime/tests/workflows; tests/CI no ejecutados.
-- Estado canónico: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
-
----
 
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — MAPA DE DEPENDENCIAS D0/D1/D2/D3
 
