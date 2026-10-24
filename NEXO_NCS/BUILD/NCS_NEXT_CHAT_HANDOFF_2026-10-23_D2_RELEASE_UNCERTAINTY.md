@@ -311,3 +311,27 @@ No se considera suficiente volver a leer el token, añadir un retry, renombrar a
 CI verificada para el handoff anterior: run `40048019051`, SHA `8a5a74a2000e8266b223764d5122ffd0b7713747`, job `tests` success. Esta evidencia cubre el workflow existente, no el documento nuevo ni pruebas adversariales aún no implementadas: https://github.com/snowdenxrp/aldea-ia/actions/runs/40048019051
 
 Estado canónico sin cambios; no se modificó runtime/tests/workflows. Siguiente paso: verificar CI del nuevo HEAD y conservar el contrato de re-admisión como decisión abierta hasta que se elija la garantía y el mecanismo demostrable.
+
+
+## Verificación de cobertura estática de D2 — 2026-10-24
+
+Se volvió a inspeccionar el código y los tests actuales (solo lectura, sin cambios):
+
+- `src/nexo/core/continuity-store.mjs`, blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`: release valida `owner.json` y después hace `rm(lockPath)`; si falla, repite `rm(lockPath)` una segunda vez sin volver a demostrar identidad. Si falla la escritura de `owner.json`, la compensación también borra por ruta.
+- `src/nexo/core/chronicle-store.mjs`, blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`: release valida owner y luego borra por ruta; no reintenta release fallido. La compensación por fallo al escribir owner borra por ruta.
+- `tests/nexo/continuity-store.test.mjs`, blob `c3af56077b94c8d641979e0853de7f70fa45d82f`, 995 líneas: ya cubre fallo transitorio/persistente de limpieza, estado de persistencia separado, bloqueo tras fallo persistente, owner inválido, stale-lock fail-closed y competencia cross-process. No se encontró una intercalación determinista que sustituya A por B entre la validación y la retirada, ni entre el primer y segundo `rm`.
+- `tests/nexo/chronicle-store.test.mjs`, blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`, 722 líneas: ya cubre fallo persistente de release y preservación del hecho de commit. No se encontró una intercalación determinista de sustitución A→B entre validación y retirada.
+- En ambos tests ya se inyecta `fsModule`; los casos existentes de owner-write failure solo verifican que el lock no quede presente, no que la compensación preserve un lock B que haya reemplazado al A creado originalmente.
+
+### Siguiente unidad de trabajo (solo después de autorización explícita de tests/implementación)
+
+1. Añadir pruebas deterministas con el adaptador de filesystem existente: sustitución A→B antes del primer borrado, sustitución A→B tras el primer error antes del segundo borrado en Continuity, y sustitución durante la compensación de fallo de owner en ambos stores.
+2. Cada prueba debe verificar por separado: B sigue presente e intacto; release no se informa como limpio; resultado de persistencia/operación permanece explícito; admisión posterior queda bloqueada cuando el contrato lo exige.
+3. No usar sleeps para fabricar la carrera, no añadir estado persistente/sidecar/IDs/colas/retries de negocio, y no convertir un test verde en prueba de defensa contra actores locales hostiles o todos los filesystems.
+4. Antes de modificar implementación, cerrar el modelo de garantía D2: A (quiescencia externa), B (primitiva ligada a identidad demostrada) o C (bloqueo hasta intervención), junto con la condición de re-admisión. El análisis de opciones no escoge por el propietario.
+
+### CI de HEAD comprobada
+
+Run `40048171571`, commit `9389461c29712a2690d103183d4f0af993e925d5`: `completed/success`; jobs `Run tests` y `Bounded temporary cleanup regression` success. https://github.com/snowdenxrp/aldea-ia/actions/runs/40048171571
+
+Esta inspección añade precisión al plan de pruebas; no constituye test nuevo ni cambio de runtime. Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
