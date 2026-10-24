@@ -1,6 +1,7 @@
 # CHECKPOINT DE CONTINUIDAD — 2026-10-24 — PROPUESTA DE LÍNEA DE META M0
 
 - Nueva propuesta: [NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md](BUILD/NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), commit `177c4b20041d9e39882a741aacbac82a014b2f42`.
+- Handoff actualizado: [NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md), commit `d874892059016751548f5e9cfd62a2beb7b59975`, blob verificado `16920fa33b5928a24e6fa2776edbca5ddc19d6a9`.
 - Propósito: separar cierre verificable de M0 (núcleo/prototipo no autoritativo) de commissioning y autorización de efectos protegidos.
 - La propuesta define criterios de alcance/contratos, no-bypass, bootstrap/recuperación, pruebas adversariales, recursos, CI en SHA exacto y evidencia reproducible.
 - **No aceptada todavía por el propietario**; no cambia contratos normativos ni estado canónico y no autoriza runtime/tests/workflows. Se reutilizan las matrices existentes; no se repitió el censo de callers.
