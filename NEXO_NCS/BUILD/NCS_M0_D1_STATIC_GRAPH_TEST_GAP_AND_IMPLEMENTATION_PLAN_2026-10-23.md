@@ -118,3 +118,14 @@ No se debe escribir ni ejecutar el test de cierre hasta resolver esa secuencia y
 - Efectos protegidos: `STOP`.
 
 La futura prueba será una barrera arquitectónica estática y de fixtures, no una prueba formal de seguridad, de autoridad constitucional ni de ausencia de toda ejecución indirecta posible.
+
+
+## Actualización de secuencia y política D0 (2026-10-24)
+
+El propietario aceptó D1-S0: separar D1-DESIGN de D1-IMPLEMENTATION. También aceptó D0-C1…D0-C4 como contrato de diseño para M0. Las menciones anteriores a estas decisiones como “pendientes de aprobación” se conservan como registro histórico, pero ya no describen el estado vigente.
+
+La revisión actual sigue sin acreditar una prueba de grafo completa. El test actual de `entrypoint.test.mjs` es una guarda parcial basada en regex para imports/reexports estáticos; no demuestra el manifiesto completo de entrypoints, cargas dinámicas/calculadas, rutas path-based a factories/owners, ni aristas de proceso. La aceptación D0 proporciona política para definir el manifiesto y sus reglas, no evidencia de que se hayan aplicado.
+
+Siguiente cierre documental D1-DESIGN: producir un manifiesto reproducible con procedencia por entrada (package scripts, workflow commands, direct-execution guards y child-process targets), clasificar cada entrada y acceso sensible, documentar resolución de cada arista y dejar `UNKNOWN/BLOCKED` donde el destino no se resuelva. Revisar el artefacto contra la política D0 aceptada y el snapshot exacto. No codificar ni ejecutar el test arquitectónico hasta el gate separado de implementación.
+
+Estado: D1-DESIGN `OPEN`; D1-IMPLEMENTATION no autorizada; sin cambios runtime/tests/workflows; CI no ejecutado. M0 `INCOMPLETO`; D0/D1/D2/D3 siguen abiertos como gates de evidencia/diseño; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
