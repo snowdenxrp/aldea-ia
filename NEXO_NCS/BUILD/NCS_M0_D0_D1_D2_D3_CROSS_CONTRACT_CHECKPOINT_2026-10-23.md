@@ -303,3 +303,14 @@ La revisión dirigida de la matriz D2 hizo explícito un requisito pendiente: la
 El addendum especifica pruebas candidatas para reemplazo entre intentos de retirada, fallo de owner, persistencia confirmada/ambigua y recuperación posterior. Son requisitos, no pruebas realizadas. No cambia contrato normativo ni selecciona una política por el propietario.
 
 No se modificaron runtime/tests/workflows; no se ejecutaron tests ni CI. Estado canónico intacto: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+## Follow-up: frontera de recuperación de bootstrap parcial (2026-10-23)
+
+Nuevo documento de gap contractual: [NCS_M0_D0_C2_D2_PARTIAL_BOOTSTRAP_RECOVERY_BOUNDARY_2026-10-23.md](NCS_M0_D0_C2_D2_PARTIAL_BOOTSTRAP_RECOVERY_BOUNDARY_2026-10-23.md), creación commit `8d7919017c8f36412f5277ebae87852d832000af`.
+
+La matriz D2 exige recuperación explícita de `BOOTSTRAP_PARTIAL`, pero el análisis de opciones D0-C2 deja pendiente quién puede autorizarla y qué alcance de mutación está permitido. El nuevo documento distingue el disparador explícito de la autorización real, la preservación/integridad de datos y la autoridad constitucional. Una recuperación técnica no legitima la raíz ni habilita efectos protegidos; ausencia/corrupción/ambigüedad no prueba que la instancia sea nueva.
+
+Se especifican precondiciones y pruebas candidatas para crash durante recuperación, stores ausentes/corruptos, datos contradictorios y concurrencia. No se selecciona mecanismo ni actor por el propietario.
+
+No se modificaron runtime/tests/workflows; no se ejecutaron tests ni CI. Estado canónico intacto: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
