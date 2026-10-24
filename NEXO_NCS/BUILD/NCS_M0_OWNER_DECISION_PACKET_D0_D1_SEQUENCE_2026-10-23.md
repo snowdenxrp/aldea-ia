@@ -2,7 +2,7 @@
 
 Fecha: 2026-10-23  
 Rama: `ncs-clean-architecture`  
-Estado: **PAQUETE PARA DECISIÓN — PROPUESTAS NO ACEPTADAS — SIN AUTORIZACIÓN DE IMPLEMENTACIÓN**
+Estado: **D0-C1…D0-C4 ACEPTADAS COMO CONTRATO DE DISEÑO POR EL PROPIETARIO (2026-10-24) — SIN AUTORIZACIÓN DE IMPLEMENTACIÓN**
 
 ## 1. Propósito
 
@@ -28,7 +28,7 @@ Fuentes de referencia:
 
 ## 3. Decisiones propuestas — D0
 
-Todas las filas son **recomendaciones pendientes**, no valores aceptados.
+Las filas D0-C1…D0-C4 quedaron **aceptadas como contrato de diseño** por el propietario el 2026-10-24. La aceptación no es prueba de implementación ni cierra los gates de evidencia.
 
 | ID | Recomendación coherente | Alternativa real | Riesgo si queda ambiguo | Evidencia de cierre |
 |---|---|---|---|---|
@@ -80,13 +80,13 @@ Esto resuelve el ciclo lógico “D1 exige test ejecutado” frente a “no modi
 6. Solicitar autorización de implementación separada y delimitada.
 7. Implementar y probar; ligar logs, jobs y resultados al SHA exacto de código + tests.
 
-No se debe inferir aceptación de ninguna fila por la instrucción general de continuar.
+La aceptación expresa del propietario registrada en el addendum de 2026-10-24 aplica únicamente a D0-C1…D0-C4 como paquete coherente. No se debe inferir autorización de implementación ni cierre de gates de evidencia.
 
 ## 7. Estado canónico
 
 - M0: `INCOMPLETO`
 - D0/D1/D2/D3: `OPEN`
-- D1-S0: recomendación de separación, **no aceptada aún**
+- D1-S0: separación D1-DESIGN/D1-IMPLEMENTATION **aceptada 2026-10-24**
 - Autorización de implementación: `NOT_EVALUATED`
 - Raíz legítima: `PENDING/UNKNOWN`
 - Efectos protegidos: `STOP`
@@ -96,3 +96,16 @@ No se debe inferir aceptación de ninguna fila por la instrucción general de co
 ## 8. Instrucción de continuidad
 
 Continuar desde este paquete, los ledgers existentes y el snapshot de rama citado. No repetir el censo ya documentado salvo cambio de fuente. No convertir recomendaciones en decisiones del propietario. Siguiente trabajo técnico sin decisión del propietario: reconciliar contratos D2/D3 con las propuestas de D0 y enumerar contradicciones/condiciones de cierre, sin implementar.
+
+
+## 9. Registro de decisión del propietario — D0-C1…D0-C4 (2026-10-24)
+
+El propietario aceptó la recomendación integrada como contrato de diseño para M0, con estos límites:
+
+- **D0-C1:** un único `--root <directorio>` explícito por operación; sin override por variable de entorno ni fallback a rutas legacy en la primera versión. La propagación al proceso hijo debe quedar definida y probada antes de implementación.
+- **D0-C2:** la operación normal exige raíz existente y válida; bootstrap separado, explícito y preservador. Operación normal no crea ni repara raíz/store.
+- **D0-C3:** canonicalizar raíz existente antes de derivar rutas; definir política para symlinks, nombres reservados y colisiones; bloquear estados ambiguos. No prometer defensa general contra carreras de filesystem hostil.
+- **D0-C4:** sin migración automática, doble escritura ni fusión heurística. Migración/cutover operativo queda fuera de M0 hasta identificar y verificar el entorno objetivo; inventario, copia/verificación, cutover y rollback requerirán su propio gate.
+- **Callers:** `assistants.mjs` y `simulate.mjs` no se consideran admitidos en la ruta ordinaria hasta que su consistencia y su relación con la frontera de instancia estén definidas y verificadas. La exclusión de migración no autoriza bypass. Consumidores externos no demostrados permanecen `UNKNOWN`.
+
+Esta aceptación cierra la **decisión de política de diseño D0**, no D0 como gate técnico: la evidencia de cierre sigue pendiente. No modifica runtime/tests/workflows, no autoriza escribir tests ni ejecutar cambios de implementación, no declara CI verde y no altera la autoridad constitucional. Estado canónico: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN` como gates de evidencia/diseño; implementación `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
