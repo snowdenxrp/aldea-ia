@@ -1,7 +1,7 @@
 # NCS M0 — línea de meta y criterios de aceptación
 
 Fecha: 2026-10-24  
-Estado: **PROPUESTA DE CIERRE VERIFICABLE — PENDIENTE DE ACEPTACIÓN DEL PROPIETARIO — SIN AUTORIZACIÓN DE IMPLEMENTACIÓN**
+Estado: **BASE DE CIERRE ACEPTADA POR EL PROPIETARIO — SIN AUTORIZACIÓN DE IMPLEMENTACIÓN**
 
 ## 1. Propósito
 
@@ -126,3 +126,15 @@ Esta sección enlaza criterios con evidencia documental existente para evitar re
 - **Excluido**: el propietario acepta que una capacidad no forma parte del alcance M0, con la limitación correspondiente expresada.
 
 No intercambiar estas etiquetas. Si la evidencia no permite distinguirlas, conservar `UNKNOWN/PENDING`.
+
+
+## 9. Aceptación del propietario — 2026-10-24
+
+El propietario aceptó expresamente esta línea de meta como base de trabajo, indicando que esa era la intención original. La aceptación cubre:
+
+- Mantener separadas la finalización verificable de M0 y la autorización de efectos protegidos.
+- No declarar M0 completo por documentación, por una ejecución de CI de otro SHA ni por pruebas que todavía no existan o no se hayan ejecutado.
+- Evitar auditorías repetidas; reutilizar los registros existentes y avanzar solo sobre brechas y decisiones que sigan abiertas.
+- Mantener la migración/cutover legacy fuera del alcance operativo de M0 mientras no exista un entorno objetivo identificado y verificable. Esto es una exclusión de alcance de M0 por ahora, no una decisión de migración ni evidencia de quiescencia; D3 permanece abierto para una fase posterior.
+
+Esta aceptación **no** acepta automáticamente las recomendaciones individuales D0/D1/D2, no congela contratos técnicos que siguen pendientes y no autoriza modificar runtime, tests o workflows. La autorización separada para implementar sigue pendiente. El estado canónico de seguridad no cambia: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
