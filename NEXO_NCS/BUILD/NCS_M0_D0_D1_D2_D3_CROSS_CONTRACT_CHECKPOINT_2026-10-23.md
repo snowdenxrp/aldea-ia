@@ -292,3 +292,14 @@ Documento nuevo: NCS_M0_D2_INITIALIZATION_SEMANTICS_VS_TRIGGER_RECONCILIATION_20
 El contrato de raíz pide preservar la semántica de inicialización, pero también señala que algunos callers legacy pueden disparar bootstrap/migración implícitos y recomienda eliminarlos como side effect incidental. Reconciliación propuesta: preservar las reglas de datos y precedencia una vez que una migración explícita es autorizada; no asumir que deba preservarse el disparador implícito. Lectura/preview no deben crear ni migrar stores por accidente. Es precisión de diseño, no cambio de runtime ni autorización.
 
 El documento ROOT_READY anterior permanece propuesta editorial no aprobada. Runtime/tests/workflows sin cambios; tests/CI no ejecutados. Estado canónico sin cambios.
+
+
+## Follow-up: alcance de cuarentena tras release incierto (2026-10-23)
+
+Nuevo addendum documental: [NCS_M0_D2_RELEASE_UNCERTAINTY_QUARANTINE_SCOPE_2026-10-23.md](NCS_M0_D2_RELEASE_UNCERTAINTY_QUARANTINE_SCOPE_2026-10-23.md), creación commit `14a405c5c106921600878e4f908a00f6ffe805e2`.
+
+La revisión dirigida de la matriz D2 hizo explícito un requisito pendiente: la cuarentena tras `release_uncertain` debe especificar su alcance y coordinarse con cualquier actor que aún pueda reintentar limpieza. La variable local de un proceso no coordina por sí sola otros procesos; tampoco se debe añadir automáticamente un marcador persistente o lock externo. Antes de cerrar D2 hay que definir qué evidencia permite nueva admisión y demostrar que reintentos/limpieza no pueden retirar un lock reemplazado. Se mantiene separada la persistencia del negocio, la liberación y la admisión posterior.
+
+El addendum especifica pruebas candidatas para reemplazo entre intentos de retirada, fallo de owner, persistencia confirmada/ambigua y recuperación posterior. Son requisitos, no pruebas realizadas. No cambia contrato normativo ni selecciona una política por el propietario.
+
+No se modificaron runtime/tests/workflows; no se ejecutaron tests ni CI. Estado canónico intacto: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
