@@ -281,3 +281,17 @@ Reglas seguras reafirmadas:
 Próximo paso: mantener el trabajo documental acotado y preparar la tabla final de decisiones propietarias vs evidencia técnica pendiente. No editar runtime/tests/workflows hasta que se registre autorización separada; no repetir el censo de callers ni auditorías ya documentadas.
 
 Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Índice de cierre — decisiones del propietario frente a evidencia — 2026-10-24
+
+Nuevo índice guardado: [NCS_M0_OWNER_DECISIONS_VS_EVIDENCE_GATES_2026-10-24.md](NCS_M0_OWNER_DECISIONS_VS_EVIDENCE_GATES_2026-10-24.md). Commit de creación `1e4b6a95bb9af74c299d27010c390820077469f1`.
+
+El índice separa:
+- decisiones reservadas: D1-S0, D0-C1…C4, D2-C1…C4 y D3-C1/C2;
+- evidencia técnica posterior: grafo D1, carreras/release y admisión cross-process D2, fixtures de rutas D0-C3, recuperación parcial D0-C2, quiescencia/cutover D3 y presupuesto agregado de recursos;
+- invariantes no-go que ninguna decisión o prueba técnica habilita por sí sola.
+
+No se cambió runtime/tests/workflows. El índice no acepta las recomendaciones, no cierra gates y no autoriza implementación. La nueva CI disparada por cambios documentales debe verificarse antes de registrar su resultado.
+
+Siguiente paso: verificar CI del HEAD más reciente y continuar desde las decisiones/gates ya enumerados; no reabrir censo de callers ni auditorías ya documentadas.
