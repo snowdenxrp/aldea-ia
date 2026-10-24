@@ -191,3 +191,18 @@ Este inventario es inspección estática de archivos en GitHub, no una afirmaci�
 **Siguiente acción recomendada:** antes de editar runtime o añadir tests, verificar si existe un run de CI reciente asociado al HEAD que incluya ambos archivos y examinar su resultado/artifacts. Si no existe evidencia directa, mantener resultado `PENDING/UNKNOWN`; después, preparar únicamente el test adversarial mínimo requerido por la matriz, sujeto a autorización de implementación. No rehacer las pruebas existentes ni declarar cerrado D2.
 
 Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Sin cambios en runtime/tests/workflows; CI no ejecutado en esta revisión.
+
+
+## Addendum de continuidad — CI automático sobre HEAD (2026-10-24T00:56Z)
+
+Tras el commit documental `cca6b5fe664ee5c6b9585d785cb7c0c6d3bc8678`, GitHub Actions ejecutó automáticamente el workflow `.github/workflows/nexo-deterministic-tests.yml`.
+
+- Run: [40047404511](https://github.com/snowdenxrp/aldea-ia/actions/runs/40047404511), evento `push`, branch `ncs-clean-architecture`, `head_sha=cca6b5fe664ee5c6b9585d785cb7c0c6d3bc8678`.
+- Job `tests`: `success`; pasos `Install`, `Run tests` (`npm test`) y `Bounded temporary cleanup regression` finalizaron `success`.
+- El workflow en el mismo HEAD tiene blob SHA `3ebd313baecccaa42d89c995dfe8cdbd7f95400a`; ejecuta `npm test` y luego `node tests/nexo/temporary-cleanup-bounds.test.mjs`.
+- El diff del commit de HEAD solo modificó este handoff; no cambió runtime, tests ni workflow. Por eso el run acredita la suite ejecutada sobre ese HEAD y los archivos fuente/tests que contiene, pero **no** demuestra que la prueba adversarial pendiente de sustitución del lock exista o haya sido cubierta. Los gaps de intercalación documentados arriba siguen abiertos.
+- Esta evidencia es CI automático real y posterior al inventario estático. No significa que el asistente ejecutara tests localmente, ni valida las decisiones D0-D3, la raíz legítima o efectos protegidos.
+
+**Próximo paso acotado:** conservar la evidencia del run; comprobar solo si los tests actuales incluyen ya una intercalación determinista que reemplace el lock entre validación y retirada (incluido el segundo intento de Continuity). Si no está, describir el caso mínimo y sus criterios de aceptación; no editar runtime/tests sin decisión y autorización separadas.
+
+Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
