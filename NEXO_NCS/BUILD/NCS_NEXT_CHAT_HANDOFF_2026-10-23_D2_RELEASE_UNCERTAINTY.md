@@ -295,3 +295,19 @@ El índice separa:
 No se cambió runtime/tests/workflows. El índice no acepta las recomendaciones, no cierra gates y no autoriza implementación. La nueva CI disparada por cambios documentales debe verificarse antes de registrar su resultado.
 
 Siguiente paso: verificar CI del HEAD más reciente y continuar desde las decisiones/gates ya enumerados; no reabrir censo de callers ni auditorías ya documentadas.
+
+
+## Opciones D2 para release incierto — 2026-10-24
+
+Nuevo análisis verificado: [NCS_M0_D2_RELEASE_RECOVERY_OPTIONS_2026-10-24.md](NCS_M0_D2_RELEASE_RECOVERY_OPTIONS_2026-10-24.md), blob `7997d6bffb5a966b85ec0c75663cff29e51fd54c`.
+
+Se comparan tres familias sin elegir por el propietario:
+- A: recuperación externa con quiescencia demostrada;
+- B: retirada ligada a identidad del objeto, solo si la primitiva concreta puede probar esa garantía;
+- C: bloqueo fail-closed hasta intervención explícita, con reconocimiento del riesgo de bloqueo permanente.
+
+No se considera suficiente volver a leer el token, añadir un retry, renombrar a cuarentena o comprobar identidad antes de una operación por path si la ventana TOCTOU permanece. A/C requieren actor/entorno autorizado y evidencia de quiescencia; B requiere protocolo de carreras y crash points ligado a una primitiva de filesystem concreta. No se añade marker/sidecar ni estado persistente por inferencia.
+
+CI verificada para el handoff anterior: run `40048019051`, SHA `8a5a74a2000e8266b223764d5122ffd0b7713747`, job `tests` success. Esta evidencia cubre el workflow existente, no el documento nuevo ni pruebas adversariales aún no implementadas: https://github.com/snowdenxrp/aldea-ia/actions/runs/40048019051
+
+Estado canónico sin cambios; no se modificó runtime/tests/workflows. Siguiente paso: verificar CI del nuevo HEAD y conservar el contrato de re-admisión como decisión abierta hasta que se elija la garantía y el mecanismo demostrable.
