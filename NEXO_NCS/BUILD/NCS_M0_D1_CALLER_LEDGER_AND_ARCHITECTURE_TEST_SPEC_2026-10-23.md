@@ -112,3 +112,18 @@ No runtime, test, or workflow source was modified in this review. No tests or CI
 ## 7. Constitutional status
 
 M0 INCOMPLETO; D1/D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP. Runtime/tests/workflows unchanged; tests/CI not run in this review.
+
+
+## Actualización de decisiones D0 y secuencia (2026-10-24)
+
+El propietario aceptó D0-C1…D0-C4 como contrato de diseño para M0 y aceptó previamente D1-S0, separar D1-DESIGN de D1-IMPLEMENTATION. Esto reemplaza el lenguaje histórico de recomendación pendiente únicamente para esas decisiones; no convierte el ledger en prueba ejecutada ni autoriza implementación.
+
+La política aceptada exige `--root` explícito único sin env/fallback legacy en la primera versión; operación normal con raíz existente y bootstrap separado; canonicalización y bloqueo de estados ambiguos sin promesa contra carreras hostiles; migración/cutover fuera del M0 operativo hasta verificar el entorno objetivo, sin migración automática, doble escritura ni merge heurístico. `assistants.mjs` y `simulate.mjs` deben permanecer fuera de la ruta ordinaria hasta definir y verificar consistencia con la frontera de instancia. Consumidores externos desconocidos continúan `UNKNOWN`.
+
+### Revisión dirigida de D1-DESIGN — resultado actual
+
+- **Todavía no hay manifiesto reproducible de entrypoints cerrado:** el ledger enumera superficies observadas, pero no acredita una salida de máquina reproducible que cruce `package.json`, workflows, guards ejecutables y destinos de procesos hijos.
+- **La cobertura de grafo sigue especificada, no demostrada:** la prueba existente de `entrypoint.test.mjs` usa extracción regex de imports/reexports estáticos y no acredita cobertura de `import()`, `require()`, cargas calculadas, accesos a factories/owners, ni aristas de proceso.
+- **Clasificación no cerrada:** los callers identificados tienen propuesta/estado abierto; toda arista no resuelta debe seguir `UNKNOWN/BLOCKED`. El escaneo de wrapper con dos callers internos no prueba ausencia de consumidores externos.
+- **Consistencia D0→D1:** la política de raíz ahora está decidida; falta traducirla a una allowlist/manifiesto de entrypoints y condiciones verificables, sin implementar el test todavía.
+- **Estado:** D1-DESIGN `OPEN`; D1-IMPLEMENTATION no autorizada/no iniciada; runtime/tests/workflows sin cambios por esta actualización; no se ejecutó CI. Estado canónico M0 `INCOMPLETO`; D0/D1/D2/D3 gates abiertos; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
