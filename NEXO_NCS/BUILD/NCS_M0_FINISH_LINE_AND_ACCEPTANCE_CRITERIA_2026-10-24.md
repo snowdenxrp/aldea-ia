@@ -96,3 +96,33 @@ M0 permanece INCOMPLETO si ocurre cualquiera de las siguientes condiciones:
 M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización de implementación `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 Este documento es una propuesta para hacer explícita la línea de meta. Su presencia en GitHub no significa que el propietario haya aceptado sus criterios.
+
+## 8. Trazabilidad con los registros existentes y preparación actual
+
+Esta sección enlaza criterios con evidencia documental existente para evitar repetir auditorías. No transforma documentación en test ejecutado ni decide el alcance por el propietario.
+
+| Grupo de criterios | Registro existente que se reutiliza | Estado de preparación al 2026-10-24 | Próxima acción mínima |
+|---|---|---|---|
+| A. Alcance, contratos y decisiones D0-D3 | `NCS_M0_D0_D2_D3_DESIGN_DECISION_MATRIX_2026-10-23.md`; `NCS_M0_OWNER_DECISIONS_VS_EVIDENCE_GATES_2026-10-24.md` | Matriz y recomendaciones existen; varias decisiones del propietario siguen pendientes. | Aceptar/modificar/rechazar la secuencia D1-S0 y decidir el conjunto D0-C1…C4 necesario para el alcance seleccionado. |
+| B. No-bypass, callers y frontera de autoridad | Censo de referencias y allowlist draft enlazados desde la matriz; registro de gates D1-DESIGN | Fuentes previamente censadas; el grafo transitivo y la prueba arquitectónica no pueden darse por cerrados solo con el censo. | Reutilizar snapshot/censo existentes; identificar solo edges que estén realmente sin resolver o hayan cambiado. No repetir el censo completo sin cambio de fuente. |
+| C. Bootstrap y recuperación | `NCS_M0_D0_C2_BOOTSTRAP_PROTOCOL_OPTIONS_2026-10-23.md`; `NCS_M0_D2_RELEASE_RECOVERY_OPTIONS_2026-10-24.md`; matriz de transiciones D2 y frontera compartida D0-C2/D2 | Opciones y contratos de fallo cerrado documentados; no hay opción aprobada ni pruebas adversariales A→B ejecutadas. | Resolver política de bootstrap/recovery y release/re-admisión como decisiones separadas pero coordinadas; luego autorizar pruebas. |
+| C. Quiescencia y cutover legacy | `NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md` | Protocolo de evidencia definido; entorno/operador real no identificado ni quiescencia demostrada. | Determinar si cutover/migración legacy entra en el alcance inicial. Si sí, identificar entorno y probar control de launchers/writers; si no, documentar exclusión y capacidad no disponible. |
+| D. Presupuesto de recursos e integridad | Handoff de presupuesto de recursos y tests de límites existentes | Límites previamente registrados; no inferir que cubren automáticamente cuota agregada de heap/disco. | Conservar pruebas y límites ya verificados; abrir solo la brecha de cuota agregada si el alcance exige esa garantía. |
+| E. SHA, jobs y aceptación final | STATUS, handoff vigente y runs CI asociados a commits anteriores | Hay CI verde para commits anteriores, pero no para nuevas pruebas aún no escritas. | Al cambiar código/tests, verificar CI sobre el SHA exacto; una actualización solo documental no acredita comportamiento runtime. |
+
+### 8.1 Orden de trabajo sin bucle de auditoría
+
+1. No repetir el inventario de callers, las caracterizaciones de locks ni las pruebas de recursos que ya estén respaldadas por el snapshot vigente.
+2. Resolver primero las decisiones de secuencia y alcance que bloquean el diseño. Si una decisión no afecta al alcance aceptado, marcarla explícitamente como diferida/excluida con riesgo y capacidad afectada; no fingir que quedó resuelta.
+3. Una vez congelado el contrato, convertir cada gate de evidencia aplicable en un test/fixture concreto y trazable. No escribir tests antes de la autorización separada exigida por el proceso actual.
+4. Ejecutar las pruebas solo tras esa autorización; ligar los resultados a código + tests + SHA. Documentos, recomendaciones y CI de commits anteriores no sustituyen el resultado.
+
+### 8.2 Interpretación de estado
+
+- **Documentado**: existe una especificación o recomendación consultable.
+- **Decidido**: existe aceptación explícita del propietario; una recomendación no cuenta.
+- **Implementado**: el cambio existe en el código del SHA citado.
+- **Verificado**: el test pertinente se ejecutó y el resultado está ligado a ese SHA.
+- **Excluido**: el propietario acepta que una capacidad no forma parte del alcance M0, con la limitación correspondiente expresada.
+
+No intercambiar estas etiquetas. Si la evidencia no permite distinguirlas, conservar `UNKNOWN/PENDING`.
