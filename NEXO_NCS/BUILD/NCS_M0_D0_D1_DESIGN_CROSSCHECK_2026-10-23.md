@@ -50,3 +50,12 @@ The current branch versions were fetched and compared at this checkpoint:
 Next step is not another source census. It is to resolve the remaining D0 owner decisions and the D1-S0 sequencing gate, then finalize D2 and D3 contracts against this exact evidence set. Any implementation remains a separate explicit authorization gate.
 
 Canonical state: M0 `INCOMPLETO`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+
+## Reevaluación tras aceptación del propietario (2026-10-24)
+
+El propietario aceptó D0-C1…D0-C4 como contrato de diseño y D1-S0 como separación de gates. La conclusión histórica de que la política D0 y la secuencia D1-S0 estaban pendientes queda supersedida por esta decisión. El resultado de consistencia textual no se convierte en cierre de diseño ni evidencia operacional.
+
+La política D0 aceptada y los artefactos D1 continúan coherentes en el nivel conceptual. Las brechas que quedan son de demostración: manifiesto reproducible de entrypoints aún no cerrado; grafo transitivo y aristas de procesos/cargas dinámicas aún no probados; `assistants`/`simulate` todavía no están bloqueados en runtime; el hijo Chronicle aún necesita una política y prueba de admisión independiente; consultas/previews requieren decisión D2 sobre alcance de snapshot; D3 continúa sin entorno objetivo verificado.
+
+Resultado dirigido: no se encontró contradicción documental nueva que requiera cambiar la política aceptada. D1-DESIGN sigue `OPEN`; D2 y D3 `OPEN`; no se implementó ni ejecutó el test de grafo. Sin cambios runtime/tests/workflows; no CI. Estado canónico M0 `INCOMPLETO`, autorización `NOT_EVALUATED`, raíz legítima `PENDING/UNKNOWN`, efectos protegidos `STOP`.
