@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — PROPUESTA DE LÍNEA DE META M0
+
+- Nueva propuesta: [NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md](BUILD/NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), commit `177c4b20041d9e39882a741aacbac82a014b2f42`.
+- Propósito: separar cierre verificable de M0 (núcleo/prototipo no autoritativo) de commissioning y autorización de efectos protegidos.
+- La propuesta define criterios de alcance/contratos, no-bypass, bootstrap/recuperación, pruebas adversariales, recursos, CI en SHA exacto y evidencia reproducible.
+- **No aceptada todavía por el propietario**; no cambia contratos normativos ni estado canónico y no autoriza runtime/tests/workflows. Se reutilizan las matrices existentes; no se repitió el censo de callers.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — POLÍTICA DE RUTAS RESERVADAS
 
 - Documento nuevo: [NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md](BUILD/NCS_M0_D0_D3_RESERVED_PATH_AND_SYMLINK_POLICY_MATRIX_2026-10-23.md), commit 7a2f2dd0fbaec192de3a134da5b27e188b207fc7.
