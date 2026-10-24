@@ -147,3 +147,25 @@ Estos runs acreditan únicamente ese código/SHA y esos jobs. No prueban decisio
 M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 No afirmar que el trabajo está implementado cuando solo es documento; no afirmar que el test pasó si no se ejecutó; no interpretar falta de evidencia como ausencia del sistema. Mantener UNKNOWN-STOP.
+
+## Continuidad adicional verificada — contraste estático con fuentes (2026-10-23)
+
+Se contrastaron los contratos D2 ya existentes contra las fuentes actuales de la rama; no se repitió el censo de callers ni se ejecutó runtime/tests/CI.
+
+- `src/nexo/core/continuity-store.mjs`: blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`.
+- `src/nexo/core/chronicle-store.mjs`: blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`.
+- `NCS_M0_D2_INSTANCE_ADMISSION_STATE_TRANSITION_MATRIX_2026-10-23.md`: blob `bfa38a057033acf880afe331a47bb383e82e9a97`.
+- `NCS_M0_D2_RELEASE_UNCERTAINTY_QUARANTINE_SCOPE_2026-10-23.md`: blob `2bdfb593c04bd52ecdeb052934525eba006f6c16`.
+- `NCS_M0_D0_C2_D2_PARTIAL_BOOTSTRAP_RECOVERY_BOUNDARY_2026-10-23.md`: blob `ff80a1c66b252db1fd1cabdd6a9e32b0ed8d838e`.
+- `NCS_M0_D2_ROOT_READY_SEMANTICS_RECONCILIATION_2026-10-23.md`: blob `36bc58655a12e9681fa52a4660dc3971e8467336`.
+
+Resultado: las fuentes confirman el patrón ya documentado de verificación de token seguida de retirada por ruta; Continuity conserva además un segundo intento de `rm(lockPath)`, mientras Chronicle devuelve fallo tras un intento. La cuarentena `lockReleaseFailures` de Continuity es un `Set` en memoria del proceso y no constituye coordinación entre procesos. La limpieza del owner tras fallo de escritura también retira por ruta. Estos son riesgos de diseño ya registrados en D2, no evidencia de incidente ni hallazgo que justifique abrir otro documento equivalente.
+
+Siguiente avance permitido sin decisión del propietario: comprobar si existe evidencia de pruebas deterministas/cross-process para las intercalaciones ya especificadas y verificar el estado del SHA actual; no reescribir las matrices ni crear tests/código hasta autorización explícita. Si no hay evidencia disponible, registrar PENDING/UNKNOWN y mantener D2 OPEN.
+
+Enlaces directos de continuidad:
+- [Frontera de recuperación de bootstrap parcial](NCS_M0_D0_C2_D2_PARTIAL_BOOTSTRAP_RECOVERY_BOUNDARY_2026-10-23.md)
+- [Gate D0-C2 y entorno](NCS_M0_D0_C2_DECISION_READINESS_AND_ENVIRONMENT_GATE_2026-10-23.md)
+- [Reconciliación ROOT_READY](NCS_M0_D2_ROOT_READY_SEMANTICS_RECONCILIATION_2026-10-23.md)
+
+Estado canónico sin cambios: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP. Sin cambios en runtime/tests/workflows; tests/CI no ejecutados.
