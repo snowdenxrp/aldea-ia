@@ -206,3 +206,42 @@ Tras el commit documental `cca6b5fe664ee5c6b9585d785cb7c0c6d3bc8678`, GitHub Act
 **Inspección estática completada después del run:** se releen los archivos de tests actuales: Continuity blob `c3af56077b94c8d641979e0853de7f70fa45d82f` (47,481 caracteres) y Chronicle blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26` (35,835 caracteres). Sus casos de release existentes inyectan fallo de `rm`, token no propio, persistencia/rename y cleanup; no se encontró una intercalación que sustituya el directorio lock entre validación del owner/token y la retirada por path, ni la variante en el segundo intento de Continuity. Esto confirma el gap de cobertura por inspección estática, no un fallo de ejecución. No se editaron tests ni runtime. El próximo paso es preparar únicamente el contrato mínimo del test adversarial y sus criterios de aceptación, sujeto a autorización separada.
 
 Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Contrato mínimo propuesto — pruebas adversariales de identidad del lock (2026-10-24)
+
+**Estado: especificación de prueba solamente; no autorizada su implementación.** Esta sección convierte el gap ya registrado en criterios falsables sin seleccionar aún un mecanismo de producción para retirar locks.
+
+### A. Continuity — reemplazo entre el primer fallo de retirada y el retry
+
+1. Crear un store temporal y ejecutar una operación normal para que el release use un lock propio A con token A.
+2. En el adaptador `fsModule.rm` de la prueba, interceptar la primera llamada dirigida exactamente al path del lock: mover el directorio A fuera del path, crear en ese path un directorio B y escribir `owner.json` con token B; entonces lanzar un error de cleanup simulado sin eliminar B.
+3. Dejar que el código actual continúe al segundo intento. Registrar cada llamada de retirada sin hacer afirmaciones sobre el resultado por adelantado.
+4. Aceptación: B sigue existiendo después de la operación; su `owner.json` conserva token B; la operación no declara una liberación limpia del lock A. El resultado de persistencia se conserva por separado y no provoca reejecución de negocio.
+5. El test debe fallar contra una implementación que haga un segundo `rm(lockPath)` ciego sobre la ruta reemplazada. No usar sleeps como sincronización; el adaptador es la barrera determinista.
+
+### B. Chronicle — reemplazo después de validar token y antes de la retirada
+
+1. Crear e inicializar Chronicle, y preparar una operación que llegue al release del lock A.
+2. El adaptador de `rm` intercepta la retirada del lock: sustituye determinísticamente el path por B con token distinto antes de delegar cualquier eliminación por path.
+3. Aceptación: la operación nunca elimina B ni informa que liberó A. Si la implementación no puede probar la identidad de la instancia a retirar bajo el modelo elegido, el resultado debe ser release no confirmado y el test debe fallar si B desaparece.
+4. No copiar la lógica de retry de Continuity: Chronicle no tiene el mismo segundo intento.
+
+### C. Continuity y Chronicle — limpieza tras fallo de escritura de owner
+
+Caso adicional requerido por la matriz, separado de A/B: provocar que `mkdir(lockPath)` tenga éxito, hacer fallar la escritura de `owner.json` y reemplazar el path antes de la limpieza compensatoria. Aceptación: la limpieza no elimina el reemplazo B y el resultado no permite entrar en sección crítica. Esta ruta no debe confundirse con release normal: el owner pudo no haberse escrito y el proceso todavía no demostró ownership mediante token.
+
+### D. Invariantes transversales de cada caso
+
+- Afirmar por separado: identidad y supervivencia de B; resultado de persistencia; resultado de release; posibilidad de nueva admisión.
+- No exigir un nuevo estado persistente, sidecar, lock hermano, ID, cola ni wrapper transaccional como parte del test.
+- No simular que la cuarentena local coordina otros procesos. Un test de proceso competidor/recovery es otra prueba y necesita su propio contrato.
+- Mantener separados los resultados `committed`/fallido/`unknown` de persistencia y `released`/`not_owned`/`failed` de release. Un resultado de negocio ya persistido o ambiguo nunca se repite automáticamente por un problema de release.
+- Los tests son deterministas, sin depender de tiempos arbitrarios, y limpian sus artefactos temporales únicamente después de que las aserciones hayan observado la supervivencia del lock B.
+- La prueba debe ejecutarse contra el SHA exacto que la contiene y el resultado de CI debe inspeccionarse por separado. Un test que pase no cierra por sí solo la política D2 de re-admisión/recovery.
+
+### E. Qué no decide esta especificación
+
+No elige entre recuperación externa offline con quiescencia demostrada y un mecanismo de retirada ligado a la identidad del objeto verificado. No afirma resistencia a procesos locales hostiles ni a cualquier filesystem. No autoriza modificar runtime/tests/workflows. Primero se requiere autorización explícita de implementación y, si el mecanismo necesita una decisión de diseño de propietario, registrar esa decisión antes del cambio.
+
+**Próxima acción segura:** revisión documental de que A/B/C no contradicen los contratos existentes; después esperar autorización antes de editar tests o runtime. Estado canónico sin cambios.
