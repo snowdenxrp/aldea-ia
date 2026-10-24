@@ -335,3 +335,16 @@ Se volvió a inspeccionar el código y los tests actuales (solo lectura, sin cam
 Run `40048171571`, commit `9389461c29712a2690d103183d4f0af993e925d5`: `completed/success`; jobs `Run tests` y `Bounded temporary cleanup regression` success. https://github.com/snowdenxrp/aldea-ia/actions/runs/40048171571
 
 Esta inspección añade precisión al plan de pruebas; no constituye test nuevo ni cambio de runtime. Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## CI confirmado tras la actualización del handoff — 2026-10-24
+
+La ejecución que estaba en curso al guardar la revisión anterior ya terminó:
+
+- Run: `40048387391`
+- Commit exacto: `cb795f91de1e3d5a441dbc3fbf5ca1c919325072`
+- Resultado: `completed / success`
+- Jobs: `tests`, incluidos `Run tests` y `Bounded temporary cleanup regression`.
+- URL: https://github.com/snowdenxrp/aldea-ia/actions/runs/40048387391
+
+Esto confirma CI del SHA documental citado; no ejecuta las pruebas A→B propuestas, que aún no existen. La inspección estática de cobertura registrada arriba sigue siendo análisis, no test nuevo. No se cambió runtime/tests/workflows. El próximo cambio documental, si se hace, generará otro SHA y requerirá su propia verificación; no inferir CI verde para un SHA posterior.
