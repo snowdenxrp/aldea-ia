@@ -3,6 +3,7 @@
 **Este addendum es posterior al contenido histórico del handoff.** Lee primero `NEXO_NCS/STATUS.md`, cuyo primer checkpoint apunta a esta actualización y a la propuesta de aceptación M0.
 
 - Propuesta nueva: [NCS M0 — línea de meta y criterios de aceptación](NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), blob verificado `34fec2a2679964bd6741d965109def7fb533de3c`.
+- La propuesta fue ampliada con la sección 8 de trazabilidad a registros existentes y orden de trabajo sin auditorías repetidas; blob vigente `9641293b578be088de734dc917345695fa8e70a9`, commit de actualización `96be5dbf9f6e1d93a2d37174605208c5f4755e38`. La referencia anterior es histórica, no el blob actual.
 - `STATUS.md` actualizado con el checkpoint del 2026-10-24; blob verificado `bc7d269fb87c49e2cf141d082df4142173ab05ba`.
 - Commit que creó la propuesta: `177c4b20041d9e39882a741aacbac82a014b2f42`.
 - Commit que registró el checkpoint en STATUS: `6b3a101798076ea9bac03e46ffb2e1cfdb50214c`.
