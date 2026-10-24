@@ -1,7 +1,7 @@
 # NCS M0 — tabla de cierre: decisiones del propietario vs gates de evidencia
 Fecha: 2026-10-24
 Rama: `ncs-clean-architecture`
-Estado: **ÍNDICE DE DECISIONES PENDIENTES — NO ACEPTA OPCIONES — SIN IMPLEMENTACIÓN**
+Estado: **ÍNDICE DE DECISIONES Y EVIDENCIA — D1-S0 ACEPTADA; DEMÁS DECISIONES SEGÚN LEDGER — SIN IMPLEMENTACIÓN**
 
 ## 1. Regla de lectura
 
@@ -11,7 +11,7 @@ Esta tabla consolida paquetes de decisión existentes; no reabre el censo de cal
 
 | ID | Decisión requerida | Recomendación registrada (no aceptada) | Qué no debe inferirse |
 |---|---|---|---|
-| D1-S0 | Secuencia diseño/implementación de D1 | Separar D1-DESIGN de D1-IMPLEMENTATION; codificar/ejecutar tests después de congelar diseño y con autorización separada. | No autoriza escribir el test arquitectónico todavía. |
+| D1-S0 | Secuencia diseño/implementación de D1 | **ACEPTADA 2026-10-24:** separar D1-DESIGN de D1-IMPLEMENTATION; codificar/ejecutar tests después de congelar diseño y con autorización separada. | La decisión de secuencia no cierra D1-DESIGN ni autoriza escribir el test arquitectónico. |
 | D0-C1 | Interfaz única para raíz de instancia | `--root` explícito; sin fallback de env/rutas legacy en primera versión. | No está aprobado el contrato de argumentos ni la propagación al hijo. |
 | D0-C2 | Primer bootstrap y recuperación de `BOOTSTRAP_PARTIAL` | Operación normal no crea ni repara; bootstrap separado, explícito y preservador. | “Explícito” no demuestra actor autorizado, integridad o estado recuperable. |
 | D0-C3 | Alias, canonicalización, symlinks y tipos reservados | Resolver raíz existente y definir caso por caso; bloquear ambigüedad. | No está aprobada la prohibición universal de symlinks. |
@@ -47,3 +47,12 @@ Esta tabla consolida paquetes de decisión existentes; no reabre el censo de cal
 ## 5. Estado canónico
 
 M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Este índice no modifica runtime/tests/workflows ni autoriza efectos.
+
+
+## 6. Registro de decisión aceptada — D1-S0 (2026-10-24)
+
+El propietario aceptó la separación entre diseño y prueba de implementación. Esto resuelve el ciclo lógico de secuencia, pero no cierra los gates de evidencia:
+
+- D1-DESIGN sigue OPEN hasta que los artefactos de diseño requeridos se revisen contra un snapshot exacto y las aristas no resueltas se mantengan UNKNOWN/BLOCKED o se resuelvan con evidencia.
+- D1-IMPLEMENTATION sigue NOT_STARTED / no autorizada. La implementación de tests, runtime o workflows requiere autorización explícita independiente.
+- No se ejecutaron tests ni CI para registrar esta decisión. No cambia el estado canónico: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
