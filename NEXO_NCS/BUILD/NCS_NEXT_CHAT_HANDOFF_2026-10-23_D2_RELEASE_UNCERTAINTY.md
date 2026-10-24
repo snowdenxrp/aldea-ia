@@ -262,3 +262,22 @@ Se contrastó el contrato de pruebas A/B/C de este handoff con estos documentos 
 **Límites que siguen abiertos:** esta consistencia editorial no selecciona la política de release/recovery, no prueba quiescencia de actores vivos, no resuelve el primer bootstrap ni el alcance de admisión de snapshots, y no autoriza mutaciones. `ROOT_READY` continúa limitado a la raíz validada, no a la instancia completa ni a la autoridad. La recuperación parcial sigue `UNKNOWN/BLOCKED` sin protocolo aprobado.
 
 No se editaron esos documentos de contrato ni se cambió runtime/tests/workflows. El único cambio de esta fase es este handoff. No se declara cerrado D2 ni M0.
+
+
+## Re-admisión tras release incierto y gates de decisión — 2026-10-24
+
+Nuevo análisis documental verificado: [NCS_M0_D2_READMISSION_AND_OWNER_DECISION_GATES_2026-10-24.md](NCS_M0_D2_READMISSION_AND_OWNER_DECISION_GATES_2026-10-24.md), blob `10307ef246ba7ed5c8c0eba5def82b9b413856ef`.
+
+CI del HEAD de este handoff anterior ya finalizó: run `40047742391`, SHA `e54f46eb834d69b518d46061398a5bf50160ab28`, job `tests` success, incluidos `Run tests` y `Bounded temporary cleanup regression`. Esto es CI de pruebas existentes; no incluye el contrato adversarial de reemplazo A/B/C, que sigue especificado pero no implementado ni ejecutado. https://github.com/snowdenxrp/aldea-ia/actions/runs/40047742391
+
+Reglas seguras reafirmadas:
+- `LOCK_RELEASE_UNCERTAIN` no permite reintentar negocio ni declarar éxito limpio.
+- Persistencia, release y nueva admisión son resultados separados.
+- La ausencia del path no demuestra que un actor previo no pueda volver a actuar.
+- Cuarentena local no coordina otros procesos; no se añade un marker/lock hermano/estado persistente por inferencia.
+- `BOOTSTRAP_PARTIAL` sigue `UNKNOWN/BLOCKED`; recuperación explícita no prueba autorización, integridad ni legitimidad constitucional.
+- D0-C1/C2/C3/C4, D1-S0, los detalles del contrato D2 y el entorno/control operacional D3 siguen siendo decisiones/gates abiertos. Las pruebas técnicas futuras no sustituyen las decisiones del propietario.
+
+Próximo paso: mantener el trabajo documental acotado y preparar la tabla final de decisiones propietarias vs evidencia técnica pendiente. No editar runtime/tests/workflows hasta que se registre autorización separada; no repetir el censo de callers ni auditorías ya documentadas.
+
+Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
