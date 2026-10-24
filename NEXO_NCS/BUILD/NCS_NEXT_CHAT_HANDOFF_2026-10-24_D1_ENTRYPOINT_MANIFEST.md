@@ -126,3 +126,15 @@ Re-read and cross-checked the current D0 decision ledger, owner decision/evidenc
 5. Only after a separate explicit implementation authorization: write adversarial architecture tests, update relevant workflow filters, run tests/CI, and bind results to the exact resulting commit SHA.
 
 No runtime/tests/workflows changed and no tests/CI run in this pass. The handoff itself is the only file targeted for documentation continuity; `STATUS.md` was not updated. Canonical state remains M0 `INCOMPLETO`; D0 technical/evidence OPEN; D1-DESIGN OPEN; D2/D3 OPEN; implementation authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+
+## Addendum 5 — stale status labels found in owner decision matrix (2026-10-24)
+
+A cross-artifact consistency check found a documentation mismatch in `NCS_M0_OWNER_DECISIONS_VS_EVIDENCE_GATES_2026-10-24.md` (blob `4ec21c6dffe53e13b19144d926836b23589a80c5`):
+- Its section 2 rows for D0-C1…D0-C4 still use “decision required / recommendation not accepted” wording.
+- The same file’s section 7 explicitly records D0-C1…D0-C4 as accepted owner policy on 2026-10-24.
+- The D1 entrypoint manifest and this handoff also reflect that accepted policy, while retaining implementation/evidence gates as OPEN.
+
+Interpretation: the policy acceptance is recorded; detailed interface compatibility, bootstrap/recovery semantics, concrete path/symlink cases, and environment-specific migration evidence remain open. The stale section-2 labels must not be used to revert the accepted policy, nor should acceptance be misread as implementation approval.
+
+Attempted a documentation-only row reconciliation of the matrix, but the repository write was blocked by tool security controls. No claim that the matrix was changed. The verified handoff is the continuity record for this discrepancy until the matrix can be updated through an authorized write path. No runtime/tests/workflows changed; no tests/CI run.
