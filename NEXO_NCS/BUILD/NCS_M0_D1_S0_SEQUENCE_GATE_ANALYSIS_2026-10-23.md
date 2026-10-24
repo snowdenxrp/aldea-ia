@@ -2,7 +2,7 @@
 
 Date: 2026-10-23  
 Branch: `ncs-clean-architecture`  
-Status: **DECISION ANALYSIS — OWNER DECISION NOT RECORDED; NO IMPLEMENTATION AUTHORIZATION**
+Status: **OPTION 1 ACCEPTED BY OWNER — SEQUENCING DECISION ONLY; NO IMPLEMENTATION AUTHORIZATION**
 
 ## 1. Why this gate exists
 
@@ -47,7 +47,7 @@ Not recommended. This would blur a specified graph with an executed graph test a
 
 ## 3. Recommendation
 
-Adopt Option 1 as the process model, **subject to explicit owner confirmation**. It is the cleanest way to retain both constraints: no runtime/test changes before contracts are designed, and no security claim until executable proof exists.
+Adopt Option 1 as the process model. **Owner acceptance recorded 2026-10-24.** It is the cleanest way to retain both constraints: no runtime/test changes before contracts are designed, and no security claim until executable proof exists.
 
 Recommended status vocabulary:
 
@@ -85,11 +85,25 @@ Do not rerun the full source census without a changed source snapshot. Resolve t
 
 ## 6. Decision record
 
-- Option 1: **RECOMMENDED; NOT YET ACCEPTED BY OWNER**.
+- Option 1: **ACCEPTED BY OWNER on 2026-10-24 as the sequencing model only**.
 - Option 2: available only if the owner explicitly changes the sequence constraint.
 - Option 3: rejected as an evidence discipline because it conflates design with proof.
 - Runtime/tests/workflows/CLI/stores: unchanged in this review.
+- The owner explicitly approved the distinction between D1-DESIGN and D1-IMPLEMENTATION. This does not authorize implementation, test changes, runtime changes, workflow changes, or CI runs.
 - Tests/CI: not executed.
 - Implementation authorization: `NOT_EVALUATED`.
 
 Canonical state remains M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+
+## 7. Decision record — owner acceptance — 2026-10-24
+
+The owner explicitly accepted Option 1: separate `D1-DESIGN` from `D1-IMPLEMENTATION`, confirming this was the intended approach.
+
+Scope of the accepted decision:
+- `D1-DESIGN` may be evaluated and closed only against the documented design criteria and exact source snapshot; no claim that an executable architecture test has passed is implied.
+- `D1-IMPLEMENTATION` remains pending until a separate, explicit implementation authorization exists, the approved tests/code are changed, tests are executed, and CI evidence is bound to the exact combined code+test SHA.
+- This acceptance resolves the D1-S0 sequencing question only. It does not accept the individual D0/D2/D3 recommendations, close D1-DESIGN, authorize any source/test/workflow change, or alter the canonical safety state.
+- Canonical state remains M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN` (with the sequencing decision recorded, but D1 design and implementation gates still open); implementation authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
+
+This update is documentation-only. No tests or CI were run.
