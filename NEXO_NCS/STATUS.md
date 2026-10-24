@@ -1,13 +1,12 @@
-# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — PROPUESTA DE LÍNEA DE META M0
+# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — LÍNEA DE META M0 ACEPTADA COMO BASE
 
-- Propuesta vigente: [NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md](BUILD/NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), blob `9641293b578be088de734dc917345695fa8e70a9`, actualización `96be5dbf9f6e1d93a2d37174605208c5f4755e38`; incluye trazabilidad y secuencia sin repetir auditorías.
-- Handoff vigente: [NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md), blob `1ea3c9926721c00056b069c36132827a55c8bee0`, commit de actualización `1b4e72b2741d697c07bcc6ec9c6af7622777ca90`.
-- Propósito: separar cierre verificable de M0 (núcleo/prototipo no autoritativo) de commissioning y autorización de efectos protegidos.
-- La propuesta define criterios de alcance/contratos, no-bypass, bootstrap/recuperación, pruebas adversariales, recursos, CI en SHA exacto y evidencia reproducible.
-- **No aceptada todavía por el propietario**; no cambia contratos normativos ni estado canónico y no autoriza runtime/tests/workflows. Se reutilizan las matrices existentes; no se repitió el censo de callers.
+- El propietario aceptó la línea de meta de M0 como base de trabajo; registro en [NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md](BUILD/NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), blob `e37a98ecfe1dcdccfef3cb0c5c98e0f2cb7d1287`, commit `ff286d632f06ca123bbe65f6b39327f3437ebebd`.
+- Handoff prioritario: [NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-23_D2_RELEASE_UNCERTAINTY.md), blob `294b09e5670070c820fa3b94f3f30e59b23afdb5`, commit `4530131c6a16f72f924d51c8b8fdb9da6839b262`.
+- Alcance aceptado: separar cierre verificable de M0 de la autorización de efectos protegidos; evitar repetir auditorías; mantener la migración/cutover legacy fuera del alcance operativo de M0 hasta que exista un entorno objetivo identificado y verificable. D3 sigue abierto y la quiescencia no está demostrada.
+- La aceptación no aprueba automáticamente decisiones individuales D0/D1/D2 ni autoriza cambios en runtime/tests/workflows.
 - Estado canónico sin cambios: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Los cambios de este checkpoint son documentales; no se ejecutaron tests ni CI para ellos.
 
----
 
 # CHECKPOINT DE CONTINUIDAD — 2026-10-23 — POLÍTICA DE RUTAS RESERVADAS
 
