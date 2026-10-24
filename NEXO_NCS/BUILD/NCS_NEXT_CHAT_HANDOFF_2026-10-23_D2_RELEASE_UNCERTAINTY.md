@@ -1,3 +1,17 @@
+# ADDENDUM DE CONTINUIDAD — 2026-10-24 — ACEPTACIÓN DE LA LÍNEA DE META M0
+
+**Actualización prioritaria:** el propietario aceptó la línea de meta de M0 como base de trabajo. La aceptación no equivale a autorización de implementación.
+
+- Criterios aceptados como base: [NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md](NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md), blob `e37a98ecfe1dcdccfef3cb0c5c98e0f2cb7d1287`, commit `ff286d632f06ca123bbe65f6b39327f3437ebebd`.
+- La finalización de M0 y la autorización de efectos protegidos siguen siendo gates independientes.
+- La migración/cutover legacy queda fuera del alcance operativo de M0 hasta que exista un entorno objetivo identificado y verificable. No se considera resuelto D3 ni demostrada la quiescencia.
+- Las decisiones técnicas individuales D0/D1/D2 continúan pendientes donde así lo indiquen sus ledgers. No asumir aceptación de recomendaciones por aceptar la línea de meta.
+- No repetir auditorías ya documentadas. Reutilizar matrices y evidencia existente; avanzar solo en las decisiones/gates abiertos.
+- Canonical: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- No se modificó runtime/tests/workflows y no se ejecutó CI para esta actualización documental.
+
+---
+
 # ADDENDUM DE CONTINUIDAD — 2026-10-24 — LÍNEA DE META M0
 
 **Este addendum es posterior al contenido histórico del handoff.** Lee primero `NEXO_NCS/STATUS.md`, cuyo primer checkpoint apunta a esta actualización y a la propuesta de aceptación M0.
