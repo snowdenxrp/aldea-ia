@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — ALCANZABILIDAD DE REPARACIÓN Y TRANSICIÓN PROTEGIDA
+
+- Informe: [NCS_M0_REPAIR_AND_PROTECTED_TRANSITION_REACHABILITY_2026-10-24.md](BUILD/NCS_M0_REPAIR_AND_PROTECTED_TRANSITION_REACHABILITY_2026-10-24.md), commit `03b929e76e32018620b0c6a98c7bc467891bad1b`, blob releído `05db78a2df51947a5287c20f31f9e687bdc0e485`.
+- Snapshot fuente: `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`.
+- La ruta conocida de `assistants --nexo-repair-once` está bloqueada por Option A en `runNexoRuntimeRepairSession()`; las APIs inferiores siguen exportadas y se usan directamente en pruebas. No se afirma inaccesibilidad global.
+- `executeProtectedTransition()` usa authorityGate inyectado y luego `conditionalCommit.commit`; `effectBoundary.prepare` existe como puerto, pero no se invoca en el cuerpo inspeccionado antes del commit. No se ha demostrado startup→root legítimo→efecto protegido conectado.
+- Siguiente paso: revisar el contrato de acceptance/linea de meta M0 y decidir qué pruebas de composición serían necesarias, sin ejecutar tests/CI ni cambiar runtime.
+- Gates: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — RECONCILIACIÓN Y CRASH RECOVERY
 
 - Informe nuevo: [NCS_M0_RECONCILIATION_CRASH_RECOVERY_MAP_2026-10-24.md](BUILD/NCS_M0_RECONCILIATION_CRASH_RECOVERY_MAP_2026-10-24.md), commit `59453bf5c454eb28e2d09026bf1082f9819ba5b6`, blob releído `45924c184848269272ce04947741512b0aaaa867`.
