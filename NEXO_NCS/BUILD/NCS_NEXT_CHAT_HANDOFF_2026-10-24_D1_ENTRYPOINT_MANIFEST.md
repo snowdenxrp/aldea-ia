@@ -173,3 +173,17 @@ Siguiente trabajo recomendado: cerrar D1-DESIGN únicamente contra las aristas U
 ### Exact next task
 
 Continue the bounded, source-based caller ledger from this exact HEAD. Resolve, without rerunning the historical broad census, all repository references to `runNexoRepairSession`, `runNexoRepairOnce`, `dispatchPreparedRepair`, `openNexoContinuityOwner`, `createNexoContinuityStore`, and `createNexoChronicleStore`; include test-only callers separately. GitHub code search did not return usable matches in this pass, so do not treat that search as negative evidence. If the connector cannot retrieve a reproducible repository-wide caller set, leave caller reachability UNKNOWN/BLOCKED rather than infer absence. Do not modify runtime/tests/workflows or run CI before D1/D2 design gates and separate implementation authorization.
+
+
+## ADDENDUM — targeted caller sweep checkpoint (2026-10-25)
+
+- Current branch HEAD at checkpoint: `6128c69387d7eeae44438efac38432d8bf3d684e`.
+- The D1 manifest was updated and read back successfully in commit `6128c69387d7eeae44438efac38432d8bf3d684e`, blob `90311f71c8293d808a3d247164faf42bd55dae7a`.
+- The addendum separates observed production-source references from sampled test-only references for owner/store APIs and repair APIs. It explicitly records that this is not a full AST call graph and does not close external, dynamic, or indirect callers.
+- Confirmed route distinction: `nexo-runtime-session.mjs` blocks its wrapper under Option A; repair session/entrypoint/dispatch modules remain callable exports, and complete production reachability is not established. The wrapper block is not a global no-bypass proof.
+- The recursive tree at the prior checkpoint had 3,056 entries and 188 JS-family files, `truncated=false`. This current commit is documentation-only; source blob SHAs remain unchanged.
+- No runtime/tests/workflows changed; no tests or CI ran. M0 remains INCOMPLETO; D1-DESIGN OPEN; D1-IMPLEMENTATION unauthorized; D2/D3 OPEN; authorization NOT_EVALUATED; root PENDING/UNKNOWN; protected effects STOP.
+
+### Next exact task
+
+Do not repeat the 2,982-entry historical census or claim code-search returned no callers. The next useful step is a reproducible caller-resolution method against this exact HEAD (local checkout/AST resolver or equivalent source enumeration), separating production entrypoints, internal API callers, tests, and explicit exceptions. If the available connector cannot provide a complete caller set, preserve `UNKNOWN/BLOCKED` and document the limitation; do not infer absence. Only after D1 design closes should D2 freeze snapshot admission, child ownership/deadlock, and uncertain release behavior. No implementation until separate explicit authorization.
