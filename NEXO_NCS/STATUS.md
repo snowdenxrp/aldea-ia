@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — CONSUMIDORES DE REPARACIÓN Y BARRIDO SRC D1
+
+- Nuevo documento: [NCS_M0_D1_REPAIR_TEST_CONSUMERS_AND_SRC_SCAN_2026-10-24.md](BUILD/NCS_M0_D1_REPAIR_TEST_CONSUMERS_AND_SRC_SCAN_2026-10-24.md), commit `fce3dce5703e609f0b992faa21b0b0816c0ef335`, blob verificado `0b5f791ad1d7cdfcdb814eb1cac3436139002790`.
+- Mismo snapshot fuente: `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`.
+- Resultado: pruebas de reparación importan y llaman APIs inferiores directamente; en módulos `src/nexo/**` inspeccionados no se halló referencia textual directa a esas APIs de reparación. Esto es evidencia estática acotada, no ejecución ni prueba de inalcanzabilidad global.
+- Cobertura restante: completar resto de `src/**`, tests indirectos, reexports/imports dinámicos y entrypoints/workflows. Consumidores externos siguen desconocidos.
+- Sin ejecución, tests/CI ni cambios de runtime/workflows/estado Lúmina.
+- Estado canónico: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — GRAFO PARCIAL DE LLAMADORES DE REPARACIÓN D1
 
 - Se creó y releyó [NCS_M0_D1_REPAIR_CALLER_GRAPH_PARTIAL_2026-10-24.md](BUILD/NCS_M0_D1_REPAIR_CALLER_GRAPH_PARTIAL_2026-10-24.md), commit `852153dbee659f81a782af7c97443589dbca3efb`, blob `354b01357f11252da8dc1f38f04de9d0b782c79e`.
