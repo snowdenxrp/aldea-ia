@@ -1,3 +1,15 @@
+# ACTUALIZACIÓN DE PRODUCTO — AVATAR ANDROID PROACTIVO (2026-10-25)
+
+- Especificación de producto creada y verificada: [NEXO_ANDROID_PROACTIVE_AVATAR_PRODUCT_SPEC_2026-10-25.md](BUILD/NEXO_ANDROID_PROACTIVE_AVATAR_PRODUCT_SPEC_2026-10-25.md), commit `b9d9a527d890e0e9ee6c3ef023c53d9e306e48ff`, blob `258e62ee37056d645cdf00aa1c162ed74d17c289`.
+- Diseño acordado: avatar animado flotante sobre otras apps; panel interactivo; frase de activación “Nexo” a evaluar localmente; iniciativa proactiva con tareas, notificaciones, calendario autorizado, señales operativas de Nexo y contexto adicional solo con permiso explícito.
+- El propietario permite considerar, si se demuestra necesario, modificaciones del dispositivo/sistema o desbloqueo de bootloader; esto NO autoriza a ejecutarlos ahora ni a borrar datos/root/flashear. Evaluar alternativas, riesgos y recuperación y obtener confirmación específica antes de cualquier paso irreversible.
+- POCO X7 Pro / Android 16 es destino inicial; PC futura es objetivo de portabilidad, todavía sin entorno definido. Capacidades Android deben validarse en dispositivo real.
+- Handoff actualizado: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md).
+- Este cambio es documental. No runtime/tests/workflows modificados; no tests/CI. Diseño no equivale a implementación.
+- En siguiente chat: leer STATUS → MASTER → CORE → handoff vigente → especificación de producto; no repetir investigación cerrada ni mezclar la especificación de producto con gates NCS M0.
+
+---
+
 # ACTUALIZACIÓN MÁS RECIENTE — PLATAFORMA INICIAL Y PORTABILIDAD (2026-10-25)
 
 - El propietario confirma POCO X7 Pro/Android como primer entorno del prototipo y compatibilidad futura con PC como objetivo de diseño; espera disponer de una PC al ensamblar Nexo.
