@@ -149,3 +149,27 @@ La pregunta anterior “¿la raíz se ejecutará en el POCO o el POCO será solo
 ### Siguiente paso acotado
 
 No continuar con inventario genérico de todos los daemons Android. El siguiente paso documental es comparar el contrato de raíz/ROOT_READY con el CLI existente y registrar exactamente qué frontera falta: una raíz canónica explícita, la relación entre las dos rutas de store, y el actor autorizado que invoca el bootstrap. No proponer wrapper ni código nuevo sin autorización de implementación. La opción A permanece `UNKNOWN/BLOCKED`; B/C/D no seleccionadas. Sin tests/CI ni cambios de runtime/dispositivo.
+
+
+## 12. Contraste explícito del contrato `ROOT_READY` con el CLI existente
+
+Fuentes de contrato contrastadas:
+- `NCS_M0_D2_BOOTSTRAP_PARTIAL_AND_RECOVERY_CONTRACT_GAP_REVIEW_2026-10-25.md`, blob `e184a52033e265021ee66d6b020fecab6024ed2a`.
+- `NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md`, blob `aa9daecccad1aeed39651b19d1a07d1dc051631c`.
+- Entry point y stores identificados en §11 de este informe.
+
+### Diferencias observables
+
+| Requisito del contrato | CLI/fuente existente | Evaluación |
+|---|---|---|
+| Una raíz canónica y transición explícita a `ROOT_READY` | El CLI recibe rutas separadas `--continuity` y `--chronicle`; no se encontró una salida/estado de raíz única `ROOT_READY` en los entrypoints inspeccionados. | No demostrado |
+| Inicialización coherente de todas las stores | Flags independientes `--initialize-continuity` y `--initialize-chronicle`; el test documenta que la primera puede persistir y la segunda fallar. | Bootstrap parcial posible; no hay contrato atómico conjunto demostrado |
+| Autoridad del invocador y entorno de lanzamiento | El CLI puede invocarse como proceso Node; no hay evidencia de un launcher/supervisor real para el POCO ni de un invocador de bootstrap autorizado. | `UNKNOWN` |
+| Quiescencia sostenida durante bootstrap | No forma parte de la evidencia estática de la Activity M1 ni queda probada por la invocación del CLI. | `UNKNOWN/BLOCKED` |
+| Identidad/alcance de paths | Los stores declaran que `filePath` es configuración de confianza, no frontera de sandbox, y no reclaman resistencia a symlink/path attacks. | Requiere un contrato de rutas/entorno; no asumir aislamiento por path |
+
+### Conclusión técnica
+
+El bloqueo inmediato no es “Android tiene demasiados daemons” en abstracto. La brecha más temprana es que el repo no demuestra que el bootstrap de stores del CLI sea el bootstrap de una raíz canónica que el sistema operativo del POCO vaya a ejecutar. Antes de medir quiescencia para A, el diseño debe definir esa relación y el actor de invocación.
+
+No crear un wrapper para ocultar esta brecha ni introducir flags/markers nuevos por inferencia. P-01/P-05 siguen pendientes; opción A `UNKNOWN/BLOCKED`; B/C/D sin seleccionar. La tabla es comparación documental, no prueba de ejecución.
