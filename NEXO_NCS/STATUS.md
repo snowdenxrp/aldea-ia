@@ -1,3 +1,14 @@
+# PUERTA CANÓNICA DE CONTINUIDAD — «CONTINÚA» (2026-10-25)
+
+- **Entrada obligatoria para todas las IA:** este archivo `NEXO_NCS/STATUS.md`. Después seguir `MASTER → CORE → handoff vigente → BUILD/tarea activa`; consultar `NEXO_NCS/AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md` para coordinación y encargos a ChatGPT/Claude/Gemini.
+- **Si el propietario dice «continúa»:** no pedirle que repita el contexto. Leer este STATUS, verificar HEAD de `ncs-clean-architecture`, seguir el handoff más reciente y ejecutar el siguiente paso útil autorizado. Confirmar SHA/rutas usadas; no asumir que otra IA trabajó sin leer su respuesta.
+- **Instrucciones permanentes para Gemini:** [protocolo de equipo IA y continuidad](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md), sección “Instrucción permanente para Gemini — continuidad por «continúa»”.
+- **Checkpoint actual:** reconciliación de predicados externos de bootstrap registrada en [informe de reconciliación](BUILD/NCS_M0_BOOTSTRAP_EXTERNAL_RESPONSE_RECONCILIATION_2026-10-25.md). Se detectó que las etiquetas B/C/D de la respuesta externa no coinciden con la matriz canónica. No se ha seleccionado A/B/C/D.
+- **Siguiente paso:** evaluar la viabilidad operacional de la opción A canónica (bootstrap offline con quiescencia externa demostrable), sin seleccionarla todavía; determinar qué evidencia real puede producir el entorno inicial para demostrar control sostenido de escritores/launchers. Si es desconocido, mantener `UNKNOWN/BLOCKED`.
+- **Límites:** «continúa» no autoriza cambios de runtime, tests/CI, modificación del dispositivo, bootloader, borrado/flasheo ni efectos protegidos. No repetir auditorías cerradas; distinguir hechos, inferencias, propuestas e implementación verificada.
+
+---
+
 # ACTUALIZACIÓN DE PRODUCTO — AVATAR ANDROID PROACTIVO (2026-10-25)
 
 - Especificación de producto creada y verificada: [NEXO_ANDROID_PROACTIVE_AVATAR_PRODUCT_SPEC_2026-10-25.md](BUILD/NEXO_ANDROID_PROACTIVE_AVATAR_PRODUCT_SPEC_2026-10-25.md), commit `b9d9a527d890e0e9ee6c3ef023c53d9e306e48ff`, blob `258e62ee37056d645cdf00aa1c162ed74d17c289`.
