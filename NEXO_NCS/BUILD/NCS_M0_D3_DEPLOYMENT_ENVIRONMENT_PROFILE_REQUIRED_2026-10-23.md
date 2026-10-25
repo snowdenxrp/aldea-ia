@@ -79,6 +79,20 @@ No incluir contraseñas, tokens, claves privadas, identificadores de cuenta, con
 
 Mientras el perfil no esté disponible, sí puede continuarse la revisión de consistencia de contratos, la definición de estados `UNKNOWN/BLOCKED`, los criterios de abort y el plan de evidencia. No debe escogerse ni declararse implementado un mecanismo operacional concreto, ni fingirse una prueba real de migración.
 
+## 5A. Intake mínimo escalonado para P-01 — revisión 2026-10-25
+
+No pedir de entrada los seis bloques E1–E6 completos ni secretos. Para decidir qué alternativa merece evaluación, recoger primero solo estos datos:
+
+1. **Destino inicial concreto (E1):** ¿Nexo se ejecutará inicialmente en el POCO/Android, en una PC/servidor, en un contenedor o en otro entorno? Indicar sistema/versión y si es desarrollo, prueba o instalación real.
+2. **Modo real de lanzamiento (E1/E3):** ¿se iniciará manualmente o habrá servicio, supervisor, tarea programada, app residente, proceso padre/hijo u otro relanzador? Nombrar únicamente los que se conocen; lo demás queda desconocido.
+3. **Capacidad de control (E2):** ¿quién puede detener todos los procesos que escriben o lanzan escritores, e impedir su reinicio durante la intervención? No basta con poder cerrar la app si el sistema puede relanzarla.
+4. **Prueba disponible (E2/E5/E6):** ¿qué evidencia puede obtenerse en ese entorno para verificar que los escritores y relanzadores están detenidos y siguen impedidos durante toda la operación? Si no se sabe, responder “no sé”; no inferir que la ausencia de procesos observados demuestra quiescencia.
+5. **Almacenamiento (E4), solo después de identificar destino y lanzamiento:** ¿qué tipo de almacenamiento contendrá la raíz y si hay volúmenes compartidos, sincronización, enlaces/aliases o procesos externos que puedan escribir? No compartir rutas privadas ni credenciales; una descripción basta en esta fase.
+
+**Regla de decisión:** con los puntos 1–4 se puede evaluar si la opción A merece diseñarse, pero no aprobarla ni ejecutar una instalación. Si no se puede confirmar el entorno o la capacidad de control, mantener P-01 y P-05 en `UNKNOWN/BLOCKED`. Solo si A no es viable y el entorno de almacenamiento está identificado, evaluar B con sus garantías reales. No seleccionar C/D sin una necesidad concreta demostrada.
+
+Los datos 1–4 son el mínimo para el siguiente intercambio; E4–E6 completos se piden únicamente si el destino lo requiere. No hace falta responder sobre el entorno futuro de producción si la primera instalación prevista es solo un prototipo local: debe decirse explícitamente qué alcance se está describiendo.
+
 ## 6. Estado
 
 - Perfil del entorno real: **NO SUMINISTRADO / NO DETERMINADO EN ESTA REVISIÓN**.
