@@ -1553,3 +1553,12 @@ Documento nuevo: `NEXO_NCS/BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIR
 Cross-contract checkpoint actualizado en commit `c2bdf8c047c8824116d3faafef2f14687308ca21`, blob `65dc79f8fd40d6183d4975578a9508ad51125352`. El entorno objetivo sigue sin determinarse; no hay procedimiento operacional ejecutado ni evidencia de migración.
 
 Estado canónico: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos STOP. Runtime/tests/workflows sin cambios; tests/CI no ejecutados.
+
+## Actualización de continuidad — paquete de decisiones del propietario (2026-10-25)
+
+- Handoff más reciente verificado: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), commit `e474f01e6e245371ddddb6de93b166bde146ff8d`, blob `1a00aa3f12bbbb6fd051179795a4a6e31160e5e6`.
+- Paquete compacto de decisiones P-01…P-05: [NCS_M0_OWNER_DECISION_PACKET_P01_P02_P03_P04_P05_2026-10-25.md](BUILD/NCS_M0_OWNER_DECISION_PACKET_P01_P02_P03_P04_P05_2026-10-25.md), commit `8bf65b568b88ca805c1592ae9490bb3adff0f624`, blob verificado `ebbc087da258e3c3cf36192ae876ff3876e873d8`.
+- Documentos complementarios recientes que quedan en BUILD y no deben duplicarse: [grafo de dependencias D2](BUILD/NCS_M0_D2_CLOSURE_DEPENDENCY_GRAPH_2026-10-25.md), [matriz de evidencia de aceptación M0](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_EVIDENCE_STATUS_2026-10-25.md), [especificación P-03/P-04](BUILD/NCS_M0_D2_P03_P04_ADMISSION_SCOPE_AND_LOCK_OWNERSHIP_SPEC_2026-10-25.md), [especificación P-05](BUILD/NCS_M0_D2_P05_RELEASE_UNCERTAINTY_AND_READMISSION_EVIDENCE_SPEC_2026-10-25.md) y [matriz de opciones de bootstrap](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md).
+- Próximo trabajo: seguir el paquete de decisiones; primero P-01 (capacidad real de exigir bootstrap manual/offline y demostrar quiescencia), sin inferir respuesta. Si el entorno o la quiescencia son desconocidos, mantener `UNKNOWN/BLOCKED`; no elegir B/C/D por descarte. Después resolver P-02→P-03→P-04→P-05 según dependencias.
+- No repetir el barrido de 188 archivos ni auditorías generales. No implementar ni ejecutar tests/CI sin autorización explícita separada.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Solo documentación; no runtime/tests/workflows ni pruebas/CI.
