@@ -238,3 +238,12 @@ Se comparó el contrato D2 de bootstrap parcial/recuperación con los entrypoint
 - No existe evidencia de que el CLI esté integrado en la app Android M1 o desplegado en el POCO.
 
 Siguiente paso documental: precisar la relación entre raíz canónica, stores e invocador autorizado antes de definir la evidencia de quiescencia. No crear wrappers, flags, marcadores ni otros mecanismos por inferencia. Mantener P-01/P-05 pendientes y los gates intactos; no tests/CI, runtime ni dispositivo.
+
+
+### Precedencia del contrato de raíz — no reabrir el principio ratificado
+
+La revisión de `NCS_M0_D0_D1_ROOT_CONTRACT_RECONCILIATION_2026-10-25.md` y `NCS_M0_D2_P03_P04_ADMISSION_SCOPE_AND_LOCK_OWNERSHIP_SPEC_2026-10-25.md` confirma que ya está ratificado como diseño: raíz explícita única `--root <directory>`, sin fallback ambiental/legacy, bootstrap separado y explícito, canonicalización antes de derivar rutas y admisión antes de leer stores dentro del alcance.
+
+La brecha actual es de implementación y evidencia: el CLI inspeccionado aún acepta `--continuity`/`--chronicle`, no demuestra el contrato `--root`, y no expone transición verificada a `ROOT_READY`. Siguen abiertos los flags exactos de bootstrap, compatibilidad/rechazo de rutas legacy, layout, alias/symlink, propiedad de admisión y cobertura de callers. No volver a preguntar si debe existir raíz explícita; mapear la decisión ratificada contra fuentes y callers.
+
+Siguiente paso: tabla documental de conformidad O-01…O-04/O-08 frente al CLI y P-01/P-03/P-04/P-05. Sin cambios de runtime/tests/CI, sin implementación, sin seleccionar A/B/C/D.
