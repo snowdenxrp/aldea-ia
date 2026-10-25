@@ -226,3 +226,15 @@ Lectura estática adicional:
 **Implicación:** no atribuir al launcher Android la responsabilidad de quiescencia de las stores. Para el CLI, el lanzamiento manual es solo un candidato conceptual; el despliegue real, los writers/launchers relevantes y la capacidad de impedir relanzamientos siguen sin evidencia. Opción A permanece `UNKNOWN/BLOCKED`; B/C/D no seleccionadas.
 
 Siguiente tarea: contrastar el contrato de raíz/`ROOT_READY` con las dos inicializaciones independientes del CLI y delimitar el hueco de diseño (raíz canónica, relación de stores, invocador autorizado). Documental solamente; no tests/CI, runtime ni dispositivo.
+
+
+### Contraste del contrato `ROOT_READY` con el CLI (2026-10-25)
+
+Se comparó el contrato D2 de bootstrap parcial/recuperación con los entrypoints existentes:
+- El CLI permite inicializar Continuity y Chronicle mediante flags separados y rutas explícitas.
+- El test de entrypoint incluye un caso en que Continuity queda inicializada y Chronicle falla; por tanto, no asumir que el bootstrap de ambas stores es atómico.
+- No se identificó en los entrypoints inspeccionados un contrato de raíz única que emita `ROOT_READY`.
+- Los stores tratan `filePath` como configuración de confianza, no como frontera de sandbox, y no reclaman resistencia a ataques de symlink/path.
+- No existe evidencia de que el CLI esté integrado en la app Android M1 o desplegado en el POCO.
+
+Siguiente paso documental: precisar la relación entre raíz canónica, stores e invocador autorizado antes de definir la evidencia de quiescencia. No crear wrappers, flags, marcadores ni otros mecanismos por inferencia. Mantener P-01/P-05 pendientes y los gates intactos; no tests/CI, runtime ni dispositivo.
