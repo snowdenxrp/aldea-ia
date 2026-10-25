@@ -59,3 +59,28 @@ Estado canónico:
 - Efectos protegidos: `STOP`
 
 Siguiente paso: reconciliar estas clasificaciones con el manifiesto D1 y el registro de decisiones; continuar únicamente con superficies y aristas pendientes, y solicitar ratificación del propietario solo cuando haya una decisión de diseño concreta que no esté ya resuelta. No repetir auditorías cerradas ni presentar diseño como implementación verificada.
+
+
+## Addendum — segunda revisión independiente de Gemini (2026-10-25)
+
+### Dictamen de reconciliación
+
+La segunda respuesta de Gemini coincide sustancialmente con este registro y no aporta evidencia de runtime nueva ni identifica un caller concreto adicional. Se registra como corroboración documental, no como cierre D1.
+
+**Convergencias confirmadas**
+- Los entrypoints `scripts/assistants.mjs` y `scripts/simulate.mjs` requieren un corte de responsabilidades que conserve la persistencia propia de Lúmina y retire del flujo ordinario las operaciones Nexo.
+- `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs` son fronteras de ejecución distintas; la ejecución directa del hijo impide confiar únicamente en la admisión del padre.
+- Los módulos de aplicación/core y sus exports no quedan protegidos por restringir solo la CLI. La clasificación de cada API debe basarse en callers y contratos demostrables.
+- Las consultas y previews no pueden recibir una excepción por ser de solo lectura dentro del alcance de admisión ratificado.
+- La definición documental no equivale a enforcement de runtime.
+
+**Precisión necesaria**
+Gemini recomienda la alternativa lógica de interfaces/guards como la menos invasiva, pero esa recomendación no es una decisión del propietario. Tampoco prueba que un token/contexto de admisión sea suficiente: debe demostrarse qué lo crea, cómo se liga a la raíz canónica, qué entrypoints lo exigen y qué rutas no pueden omitirlo. La propuesta de «prohibir normativamente» importaciones no constituye por sí sola una restricción técnica.
+
+La revisión no identifica nuevas funciones/callers con ruta y línea verificables; por tanto, no se amplía la cobertura de alcanzabilidad. Las incógnitas dinámicas, computadas y externas siguen `UNKNOWN/BLOCKED`.
+
+### Criterio de continuación actualizado
+
+No pedir otra revisión general a Gemini todavía. El trabajo siguiente debe aportar evidencia fuente específica que falte: contrato de argumentos exacto de padre/hijo y clasificación de callers de las fábricas/owner en el snapshot de rama. Si la búsqueda no permite resolver una arista, registrar el bloqueo concreto sin declarar grafo cerrado. No cambiar runtime/tests/workflows ni seleccionar A/B/C sin autorización/ratificación del propietario.
+
+Estado canónico sin cambios; sin implementación ni tests/CI en esta revisión.
