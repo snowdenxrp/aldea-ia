@@ -71,3 +71,12 @@ Hasta recibir ratificación explícita, este documento es solo una recomendació
 5. Si el propietario ratifica el alcance de prueba, redactar primero el perfil y los criterios de evidencia; esperar autorización separada antes de tests/CI/runtime/dispositivo.
 6. Si no hay ratificación, conservar `UNKNOWN/BLOCKED` y `STOP`.
 
+
+
+## Addendum — resultado de la decisión del propietario (2026-10-25)
+
+Este documento fue escrito originalmente como propuesta no ratificada. Después, el propietario ratificó explícitamente **solo el diseño documental de validación controlada**. La ratificación autoritativa está en [NCS_M0_OWNER_RATIFICATION_CONTROLLED_VALIDATION_DOCUMENTARY_ONLY_2026-10-25.md](NCS_M0_OWNER_RATIFICATION_CONTROLLED_VALIDATION_DOCUMENTARY_ONLY_2026-10-25.md).
+
+Por tanto, las instrucciones de las secciones anteriores que dicen esperar ratificación quedan superadas únicamente respecto a preparar el perfil documental y la matriz claim/evidencia. Las prohibiciones siguen vigentes: no ejecutar tests/CI; no cambiar runtime/tests/workflows; no instalar ni modificar dispositivo/bootloader; no usar claves o datos productivos; no seleccionar A/B/C/D por inferencia; no habilitar `ROOT_READY` ni efectos protegidos. Cualquier ejecución o implementación requiere autorización separada, específica y explícita.
+
+Los gates M0 no cambian: `INCOMPLETO`, diseño `OPEN`, implementación `NO AUTORIZADA`, autorización `NOT_EVALUATED`, raíz legítima `PENDING/UNKNOWN`, efectos protegidos `STOP`.
