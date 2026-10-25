@@ -168,3 +168,19 @@ La exclusión de repair O-07 no ratifica la Alternativa A de refactor de Gemini;
 Puertas D1: root/mapping determinista; precondición de admisión por entrypoint/API; contrato padre/hijo Chronicle con validación independiente y rechazo antes de I/O; admisión de queries/previews; estado propietario y dependencias prohibidas Nexo/Lúmina; clasificación explícita de edges desconocidos y decisiones pendientes.
 
 Estado: D1-DESIGN `OPEN`; implementación `NO AUTORIZADA`; M0 `INCOMPLETO`. Sin cambios de runtime/tests/workflows y sin tests/CI ejecutados.
+
+
+## Addendum — revisión Claude: límites de snapshot, “Next step” y caller grep (2026-10-25)
+
+La revisión independiente de Claude confirma que el test `tests/nexo/entrypoint.test.mjs` solo sigue import/re-export literales desde dos CLIs y no sigue `spawnSync` ni `import(`. No debe describirse como cierre del grafo transitivo.
+
+El informe de Claude comunica una búsqueda `git grep` sobre 188 archivos JS-family trackeados y reporta un `import(` en `src/three-remote.js:18`, además del proceso hijo Chronicle invocado desde el CLI. El informe compartido no contiene el comando literal completo ni el SHA completo del árbol sobre el que se ejecutó. Hasta que esos datos se registren, la búsqueda queda como **evidencia comunicada, no reproducible en este manifiesto**. No repetir el barrido completo por rutina; solicitar/recuperar únicamente el comando y SHA faltantes si van a usarse para reclasificar edges. No-JS, consumidores externos y aristas dinámicas/computadas no resueltas permanecen `UNKNOWN/BLOCKED`.
+
+### Next step actualizado
+1. Resolver los defectos documentales de identificadores P históricos y la taxonomía A–E/G1–G5.
+2. Congelar la redacción normativa D1 del invariante de admisión previa a lectura persistente, sin adelantar la sección crítica de D2.
+3. Especificar una gramática Chronicle/root v0 claramente marcada como propuesta hasta las confirmaciones del propietario.
+4. Completar el ledger de estado propietario Nexo/Lúmina y la condición de salida de las excepciones `assistants.mjs`/`simulate.mjs`.
+5. Mantener cada edge no resuelto ligado a la afirmación que bloquea; no afirmar cierre global por búsqueda textual.
+
+Esta actualización documental no implementa `--root`, no cambia runtime/tests/workflows, no ejecuta CI, no elige A/B/C y no cierra D1. Estado: D1-DESIGN OPEN; M0 INCOMPLETO; implementación NO AUTORIZADA; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
