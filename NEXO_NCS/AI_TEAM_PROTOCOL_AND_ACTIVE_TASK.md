@@ -156,3 +156,13 @@ Registrar únicamente criterios ausentes o ambiguos. No repetir el barrido de 18
 
 ### Gates sin cambio
 M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Red-team externo P-01…P-05 — reconciliación de etiquetas (2026-10-25)
+
+- Documento de contraste creado: `NEXO_NCS/BUILD/NCS_M0_RED_TEAM_P01_P05_EXTERNAL_CLAIM_RECONCILIATION_2026-10-25.md`, commit `eef01f9bf76ff5442c3813544fea3a24d4eccf82`.
+- Se verificó una discrepancia de taxonomía importante: el texto red-team externo llama P-02 a promoción transaccional, P-03 a IPC/épocas, P-04 a rollback/snapshot y P-05 a shutdown/ACK global; los artefactos NCS actuales usan P-02/D1 para separación Nexo–Lúmina, P-03 para alcance de admisión, P-04 para ownership de admisión/locks y P-05 para release incierto/readmisión.
+- La transición `BOOTSTRAP_PARTIAL → ROOT_READY` sigue abierta en el gap review D2; no se ratifica como mecanismo una barrera idempotente, epoch, snapshot criptográfico, rollback automático, PANIC/HALT global ni ACK síncrono global.
+- El informe externo queda clasificado como red-team conceptual, no auditoría verificada del código ni evidencia de vulnerabilidad. Sus preguntas útiles se han conservado sin importar sus mecanismos como requisitos.
+- Siguiente paso: continuar el análisis documental desde las definiciones canónicas y cerrar únicamente discrepancias contractuales demostrables; mantener UNKNOWN para IPC/daemons/canales y shutdown global mientras no exista evidencia del entorno o del repositorio.
+- Gates sin cambio: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
