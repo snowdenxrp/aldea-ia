@@ -50,3 +50,25 @@ Estas son aserciones presentes en el código de prueba, no resultados de una eje
 
 Inspección estática únicamente; pruebas no ejecutadas; runtime/tests/workflows/estado Lúmina sin cambios.
 M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## 4.1 Aclaración de caller: servicio fail-closed no equivale a migración explícita para el operador
+
+La inspección posterior de `scripts/simulate.mjs` (blob `623d316c7a1efd10cc2f06a3080c0d9f06087596`) precisa un límite importante de la conclusión anterior:
+
+- En `main()`, la ruta ordinaria del simulador calcula si existe `world-state.json`, carga el estado y llama directamente a `openNexoContinuityOwner()`.
+- Esa llamada transmite automáticamente `legacyMemory: state.nexoMemory ?? null` y configura `allowEmptyInitialization: !stateExists`.
+- Por ello, la regla interna de `continuity-service.mjs` —importar legado solo cuando falta el store Nexo independiente— es condicional y fail-closed frente a ciertos estados, pero el caller actual puede activar esa importación como efecto colateral de una ejecución ordinaria de simulación si el estado cargado contiene memoria heredada.
+- Si el archivo del mundo no existe, el mismo caller permite inicialización vacía de Continuity. La inspección estática no demuestra que esa ruta esté autorizada como bootstrap de Nexo, ni que la ausencia del archivo de Lúmina pruebe por sí sola la ausencia de todo estado Nexo anterior.
+- `persistState()` omite `nexoMemory` del payload canónico de Lúmina. Esto es coherente con el contrato de separación y las aserciones existentes; no debe revertirse para conservar una copia operativa de Nexo.
+
+### Garantías que faltan en el contrato de caller
+
+1. La operación ordinaria de simulación/Lúmina no abre Continuity, no migra legado y no inicializa un store Nexo.
+2. La migración de memoria heredada y el bootstrap vacío tienen entrypoints explícitos separados, con aprobación y criterios propios; no se activan por el mero hecho de ejecutar la simulación.
+3. La decisión entre “no existe estado previo” y “estado previo desconocido” se basa en el inventario de estado Nexo relevante, no únicamente en la existencia de `world-state.json`.
+4. Los fallos, ausencia o corrupción del store Nexo no alteran ni impiden la persistencia legítima de Lúmina, salvo que un contrato de integración separado y autorizado defina expresamente otra conducta.
+5. Los criterios de aceptación prueban ambos lados de la frontera: la persistencia de Lúmina sigue funcionando y la ruta ordinaria de Lúmina no produce efectos persistentes Nexo. Un test de separación del payload por sí solo no prueba ausencia de side effects en el caller.
+
+Esto es una discrepancia de diseño/caller frente al objetivo D1, no evidencia de pérdida de datos ni una vulnerabilidad demostrada. No se propone cambiar código todavía. Deben mantenerse separados el contrato interno de migración, la clasificación del caller y la política de bootstrap/recuperación D2; no se infiere que el diseño de recuperación haya sido ratificado.
+
