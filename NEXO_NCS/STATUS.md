@@ -1612,3 +1612,20 @@ Estado canónico: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; 
 Se añadió `BUILD/NCS_M0_OWNER_DECISION_PROPOSAL_CONTROLLED_TEST_SCOPE_2026-10-25.md`, commit `278db1e6e7bd789d59c7e5facf8ab82929f73977`. Recomendación de ChatGPT: separar la validación de desarrollo de M0 del despliegue inicial en POCO, sin rebajar el contrato de raíz ni interpretar pruebas locales como evidencia del dispositivo. Es propuesta no vinculante, no directiva del propietario y no cambia el estado canónico.
 
 No se eligió A/B/C/D ni se autorizó implementación o ejecución. Gates sin cambio: M0 `INCOMPLETO`; diseño `OPEN`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Sin cambios de runtime/tests/CI/dispositivo; tests/CI no ejecutados.
+
+
+### Ratificación del propietario — validación controlada, solo diseño documental (2026-10-25)
+
+El propietario ratificó explícitamente: “Ratifico el alcance de validación controlada solo para diseño documental. No autorizo todavía ejecución de tests/CI, cambios de runtime, instalación ni modificaciones del dispositivo.”
+
+Directiva canónica: [NCS_M0_OWNER_RATIFICATION_CONTROLLED_VALIDATION_DOCUMENTARY_ONLY_2026-10-25.md](BUILD/NCS_M0_OWNER_RATIFICATION_CONTROLLED_VALIDATION_DOCUMENTARY_ONLY_2026-10-25.md), commit inicial `880934725edc14dfc15d4e5c84615b2920f7a818`.
+
+**Efecto preciso:** queda autorizada la elaboración/revisión de documentación para perfilar un entorno de validación controlada separado del POCO/producción y una matriz de claims, precondiciones, evidencia y límites. La propuesta previa de ChatGPT ya no está “sin ratificar” en lo relativo a este alcance documental; sigue sin autorizar ejecución o implementación.
+
+**No autorizado:** ejecutar tests o CI; cambiar runtime, tests, workflows o configuración ejecutable; instalar software; modificar POCO/Android/OS/bootloader/dispositivo; usar claves raíz reales, datos o stores productivas; ejecutar efectos protegidos. Cualquier permiso de ese tipo requiere una autorización nueva, específica y explícita.
+
+No se selecciona ninguna opción de bootstrap: A = offline bootstrap + external quiescence; B = staging directory + atomic publication; C = persistent initialization marker; D = external coordination outside root. No inferir selección por descarte.
+
+**Gates permanecen intactos:** M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; `ROOT_READY` no habilitado. Tests/CI no ejecutados; runtime/dispositivo sin cambios.
+
+**Continuidad para Gemini:** leer primero STATUS, después `AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md`, la directiva ratificada y los artefactos BUILD ya existentes. Producir solo el perfil documental y la matriz claim/evidencia; reutilizar investigaciones previas y no repetir auditorías cerradas. Registrar incógnitas como `UNKNOWN/BLOCKED`, no crear mecanismos ni elegir A/B/C/D por inferencia. Cualquier futura ejecución/implementación requiere autorización separada.
