@@ -185,16 +185,16 @@ Esta secuencia expresa el orden lógico que debe cumplir el contrato; no decide 
 
 **Condición de salida de EXPLICIT_EXCEPTION:** la etiqueta aplicada a `assistants.mjs`/`simulate.mjs` significa solo “fuera del flujo ordinario de instancia Nexo mientras el diseño está abierto”. No es una garantía de aislamiento runtime. La excepción solo puede retirarse cuando (a) la propiedad de cada estado legacy esté decidida, (b) los lectores/escritores permitidos y prohibidos estén enumerados, (c) el corte de responsabilidades sea explícito, (d) se preserve la persistencia propia de Lúmina, y (e) la implementación/test/CI correspondiente haya sido autorizada y verificada sobre el SHA exacto. No se elige aquí una alternativa A/B/C.
 
-### Contrato padre/hijo Chronicle v0 — PROPUESTA NO RATIFICADA
-- Operación normal objetivo: un solo `--root <directory>`; la raíz debe existir y canonicalizarse antes de derivar stores.
-- El destino canónico propuesto es `<root>/continuity.json` y `<root>/chronicle.json`; el layout se convierte en normativo solo tras ratificación explícita.
+### Contrato padre/hijo Chronicle v0 — principios ratificados y detalles abiertos
+- **Ratificado por O-08:** operación normal con un solo `--root <directory>`, sin inicialización implícita, sin fallback ambiental/legacy y canonicalización antes de derivar rutas. El enforcement no está implementado ni verificado.
+- **Detalle abierto:** destino/layout canónico exacto de stores; no asumir que `<root>/continuity.json` y `<root>/chronicle.json` ya fueron ratificados.
 - El padre valida la sintaxis superficial y reenvía el contrato de argumentos, pero no transmite una “admisión heredada” como sustituto de la validación del hijo.
 - El hijo valida por sí mismo root, opciones duplicadas/contradictorias y prohibición de flags de inicialización en operación normal, antes de leer stores.
 - No se fija todavía si se admiten raíces relativas; si se permiten, debe congelarse una base única de resolución. Hasta decidirlo, una raíz relativa no tiene semántica normativa cerrada.
 - `--continuity`/`--chronicle` no deben coexistir con `--root` en modo raíz si permiten destinos contradictorios; los flags `--initialize-*` pertenecen a un flujo de bootstrap separado y no a operación normal. Los nombres/compatibilidad exactos deben cotejarse con el parser completo antes de ratificación.
 - El padre no retendrá un lock no reentrante mientras espera a un hijo que necesita la misma admisión. El contrato de ownership de admisión del proceso que ejecuta el append se debe reconciliar con la ejecución directa del hijo antes de congelar D1.
 
-Este bloque es una propuesta documental para discusión; no decide la raíz absoluta/relativa, el destino definitivo de `--initialize-*` ni P-04, y no autoriza parser/runtime/tests.
+Este bloque mezcla principios ratificados con detalles aún abiertos: no decide raíz absoluta/relativa, destino definitivo de `--initialize-*`, compatibilidad exacta de rutas heredadas ni P-04. No autoriza parser/runtime/tests.
 
 ### Alcance de la evidencia textual de aristas
 Claude informa una búsqueda textual `git grep` sobre 188 archivos JS-family trackeados, con un `import(` encontrado en `src/three-remote.js:18`, `child_process` en el CLI Nexo y sin coincidencias para otros patrones enumerados. El informe aportado no incluye el comando literal completo ni el SHA completo del árbol de búsqueda. Por tanto, se registra como resultado comunicado, no como evidencia reproducible completa. Antes de usarlo para reclasificar edges debe añadirse el comando exacto y el SHA/tree exacto; no repetir el barrido salvo que falte esa evidencia reproducible o cambie la fuente. Incluso con esos datos, el resultado es búsqueda textual, no cierre AST ni prueba de ausencia de consumidores externos/no-JS.
