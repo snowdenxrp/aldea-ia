@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — HANDOFF PARA SIGUIENTE CHAT (2026-10-24)
+
+- Handoff completo: [NCS_NEXT_CHAT_HANDOFF_2026-10-24_ENTRYPOINT_REACHABILITY.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-24_ENTRYPOINT_REACHABILITY.md), commit `9ce6cfd8ef2f541032adb25364123f0f349cb955`.
+- Incluye snapshot fuente fijado, resultados ya establecidos, informes previos, gates canónicos, restricciones de ejecución y siguiente paso estático de alcanzabilidad de entrypoints/wrappers.
+- Estado de trabajo de este punto: no se ha ejecutado código, pruebas ni CI; no se ha cambiado runtime, tests, workflows ni estado Lúmina. La solicitud actual fue guardar continuidad, no abrir una nueva investigación.
+- Próxima acción al retomar: leer este handoff y los informes de reparación/transition reachability y crash recovery; luego completar solo los enlaces de entrypoint que sigan desconocidos, sin rehacer inventarios.
+- Gates sin cambio: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — ALCANZABILIDAD DE REPARACIÓN Y TRANSICIÓN PROTEGIDA
 
 - Informe: [NCS_M0_REPAIR_AND_PROTECTED_TRANSITION_REACHABILITY_2026-10-24.md](BUILD/NCS_M0_REPAIR_AND_PROTECTED_TRANSITION_REACHABILITY_2026-10-24.md), commit `03b929e76e32018620b0c6a98c7bc467891bad1b`, blob releído `05db78a2df51947a5287c20f31f9e687bdc0e485`.
