@@ -138,3 +138,24 @@ A cross-artifact consistency check found a documentation mismatch in `NCS_M0_OWN
 Interpretation: the policy acceptance is recorded; detailed interface compatibility, bootstrap/recovery semantics, concrete path/symlink cases, and environment-specific migration evidence remain open. The stale section-2 labels must not be used to revert the accepted policy, nor should acceptance be misread as implementation approval.
 
 Attempted a documentation-only row reconciliation of the matrix, but the repository write was blocked by tool security controls. No claim that the matrix was changed. The verified handoff is the continuity record for this discrepancy until the matrix can be updated through an authorized write path. No runtime/tests/workflows changed; no tests/CI run.
+
+
+## ADDENDUM — registro de decisiones y puertas de evidencia (2026-10-24)
+
+Se creó y verificó el registro documental:
+- [NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md](NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md)
+- Commit: `9fef242512c18779f96f2f8574cc6691f11297c4`
+- Blob: `f8ce94cf0316bf55ad65ea52d86b78ef87f02084`
+
+El registro distingue decisiones aceptadas como base de diseño de propuestas aún no aceptadas, evidencia pendiente y capacidades bloqueadas. No sustituye los contratos fuente ni reabre auditorías cerradas.
+
+Conclusiones concretas:
+- D0-C1…C4 y D1-S0 constan como decisiones de diseño aceptadas; no están implementadas por ese hecho.
+- Bootstrap A, el alcance exacto de snapshots bajo admisión, elección de primitiva de lock, política de release incierto, valores de timeout/stale y tratamiento de assistants/simulate siguen como propuestas o puntos de diseño pendientes.
+- La prueba de root admission no existe por inferencia: tests de stores y CI anterior no la demuestran.
+- No se modificó runtime, tests ni workflows; no se ejecutaron pruebas/CI.
+- Estado conservador: M0 INCOMPLETO; D1-DESIGN OPEN; D1-IMPLEMENTATION NOT_STARTED; D2/D3 OPEN; authorization NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+HEAD documental de esta actualización: `9fef242512c18779f96f2f8574cc6691f11297c4`.
+
+Siguiente trabajo recomendado: cerrar D1-DESIGN únicamente contra las aristas UNKNOWN del manifiesto y el snapshot identificado; después terminar D2-DESIGN con la matriz de caracterización de locks. No repetir el censo histórico completo, no implementar runtime/tests/workflows y no ejecutar CI sin autorización separada.
