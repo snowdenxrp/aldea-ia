@@ -197,3 +197,18 @@ Cuando el propietario diga **«continúa»**:
 **Formato de salida de cada continuación:** (a) qué se verificó y con qué SHA; (b) hechos nuevos frente a hipótesis; (c) archivos/commits modificados, si los hubo; (d) tests/CI ejecutados o explícitamente no ejecutados; (e) gates canónicos y siguiente paso exacto.
 
 **Estado conocido en este checkpoint:** transición `BOOTSTRAP_PARTIAL → ROOT_READY` abierta; P-01/P-05 sin política ratificada; opciones canónicas A/B/C/D sin seleccionar; M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Continuación del checkpoint — límite M1/raíz y siguiente investigación (2026-10-25)
+
+La inspección estática de `NEXO_NCS/M1_ANDROID` encontró que:
+- `app/src/main/AndroidManifest.xml` declara una Activity `MAIN/LAUNCHER`, pero no `INTERNET`.
+- `MainActivity.kt` utiliza almacenamiento privado `filesDir` para el archivo del modelo (`model.gguf.part` → `model.gguf`) y la selección del modelo mediante `ACTION_OPEN_DOCUMENT`.
+- La Activity no muestra una ruta a Continuity/Chronicle/ROOT_READY ni importa el runtime Nexo.
+- Esto es evidencia estática, no prueba del APK instalado o del dispositivo.
+
+Conclusión limitada: M1 no está demostrado como bootstrapper ni escritor de la raíz NCS. No atribuir a su launcher la obligación de quiescencia de la raíz sin demostrar el enlace. La ubicación y el entrypoint real de bootstrap de la raíz permanecen `UNKNOWN`.
+
+Siguiente paso: inspección estática estrecha de los contratos/entrypoints de bootstrap y sus callers para localizar quién crea/modifica la raíz. Si no existe un entrypoint operativo definido, registrar el hueco; no inventar uno. No realizar barrido general ni repetir auditorías cerradas.
+
+Gates: opción A `UNKNOWN/BLOCKED`; B/C/D sin seleccionar; M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No se ejecutaron tests/CI ni cambios de runtime/dispositivo.
