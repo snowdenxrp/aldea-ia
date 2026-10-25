@@ -247,3 +247,10 @@ La revisión de `NCS_M0_D0_D1_ROOT_CONTRACT_RECONCILIATION_2026-10-25.md` y `NCS
 La brecha actual es de implementación y evidencia: el CLI inspeccionado aún acepta `--continuity`/`--chronicle`, no demuestra el contrato `--root`, y no expone transición verificada a `ROOT_READY`. Siguen abiertos los flags exactos de bootstrap, compatibilidad/rechazo de rutas legacy, layout, alias/symlink, propiedad de admisión y cobertura de callers. No volver a preguntar si debe existir raíz explícita; mapear la decisión ratificada contra fuentes y callers.
 
 Siguiente paso: tabla documental de conformidad O-01…O-04/O-08 frente al CLI y P-01/P-03/P-04/P-05. Sin cambios de runtime/tests/CI, sin implementación, sin seleccionar A/B/C/D.
+
+
+### Matriz de conformidad creada — siguiente tarea acotada (2026-10-25)
+
+Se creó `NEXO_NCS/BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md`, commit `6cebebb3c6d0dfcbfb2d37e0f367755db84a75af`. La matriz separa los principios O-01…O-04/O-08 ya ratificados de los huecos de implementación: CLI con rutas legacy separadas, inicialización separada de stores, falta de `ROOT_READY` conjunto y admisión de instancia no demostrada en todos los callers.
+
+Próximo paso: inventario limitado de callers directos/indirectos de `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`, más las APIs públicas que leen/mutan Continuity/Chronicle. No repetir auditoría general ni reabrir la raíz explícita. No cambiar runtime/tests/CI, no crear wrapper/flags, no seleccionar A/B/C/D. Si el despliegue real del CLI no se puede probar desde el repo, mantenerlo `UNKNOWN`.
