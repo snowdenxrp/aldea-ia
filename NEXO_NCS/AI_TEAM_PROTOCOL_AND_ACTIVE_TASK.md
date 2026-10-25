@@ -76,3 +76,27 @@ Al recibir «continúa»:
 3. Revisar si llegaron informes nuevos; no asumir que Claude/Gemini trabajaron sin ver sus respuestas.
 4. Ejecutar el siguiente paso de mayor valor sin reabrir hallazgos cerrados.
 5. Actualizar esta nota solo si la tarea/encargos/estado cambiaron materialmente; mantener STATUS como fuente canónica.
+
+
+## Reconciliación de respuestas externas — 2026-10-25
+
+### Estado de las revisiones
+- **Gemini:** respuesta recibida; la propia respuesta declara que no pudo verificar SHA ni inspeccionar el repositorio. Se clasifica como **red-team conceptual**, no como auditoría de fuentes ni hallazgo demostrado de una vulnerabilidad de Nexo.
+- **Claude:** no produjo informe; alcanzó el límite de uso. La revisión Claude de esta tarea queda **NO REALIZADA**, no “sin discrepancias”.
+- **Rama:** consulta directa a GitHub confirmó que `ncs-clean-architecture` apunta a `c893da9182e6e6c75c0d9346dab44f8efa176e28` al actualizar esta nota. Los documentos P-05 y D2 citados abajo se leyeron desde la rama, pero sus SHA son SHA de blob, no SHA de commit.
+
+### Clasificación de los puntos de Gemini
+1. **Supervisores que relanzan procesos:** riesgo conceptual válido y ya contemplado por D3 E2/E3/E5 y el intake mínimo 1–4. Falta evidencia específica del entorno real; no es una vulnerabilidad demostrada.
+2. **Pausar no equivale a quiescencia sostenida ni garantiza flush durable:** válido como distinción de evidencia. D3 ya exige impedir reinicios durante toda la ventana y registro independiente; el perfil real sigue desconocido. No convertir `fsync` en requisito universal sin definir primero almacenamiento, escritores y contrato de durabilidad.
+3. **Epoch ID para transacciones obsoletas:** propuesta nueva de Gemini, no aprobada. P-05 §3 prohíbe introducir por iniciativa propia IDs o mecanismos adicionales. No añadirlo sin demostrar una necesidad contractual y obtener autorización.
+4. **Timeout fijo insuficiente:** hipótesis no vinculada a código o entorno concretos; no se adopta como requisito por ahora. El timeout, si resultara pertinente, debe evaluarse contra el modelo operacional y el criterio de abort, no usarse como prueba de quiescencia.
+5. **Sockets/colas con payload pendiente:** hipótesis de entorno que podría entrar en el inventario de writers/consumidores si se confirma que existen. No hay evidencia de que Nexo use esos canales en el entorno inicial.
+6. **Escritor pausado que vacía buffers después de reanudarse:** contraejemplo conceptual compatible con la exigencia existente de quiescencia sostenida. No demuestra que tal intercalación haya ocurrido en Nexo.
+7. **Captura de descriptores sin handles de escritura:** posible evidencia auxiliar, no prueba suficiente por sí sola de ausencia de escritores, relanzadores o reanudación futura. D3 exige evidencia de control durante toda la ventana.
+8. **Path ausente, competidor durante recovery y no repetir automáticamente negocio:** ya cubierto directamente por P-05 §§2–5, casos E1–E9. No duplicar esos requisitos.
+
+### Decisión documental
+No hay contradicción material demostrada entre Gemini y P-05/D3. La contribución útil es reforzar que la evidencia debe cubrir **control sostenido sobre todos los actores capaces de escribir o relanzar**, no solo una instantánea de procesos. Permanecen sin demostrar el entorno, sus launchers/writers y la capacidad de impedir reinicios. No seleccionar A/B/C/D; P-01/P-05 siguen `UNKNOWN/BLOCKED`; M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+### Siguiente paso de mayor valor
+Continuar la revisión documental sin esperar a Claude: contrastar los predicados de `BOOTSTRAP_PARTIAL → ROOT_READY` y el paquete de decisiones del propietario contra el intake D3 y P-05, señalando solo condiciones que estén ausentes o ambiguas. No crear nuevos mecanismos, no ejecutar tests/CI y no cambiar runtime/tests/workflows. Si Claude vuelve a estar disponible, solicitar únicamente una verificación puntual de cualquier discrepancia concreta, no repetir la revisión completa.
