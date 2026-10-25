@@ -90,3 +90,21 @@ The following source files were fetched again from `ncs-clean-architecture` in t
 - Keep parent→child argument mapping, environment-selected paths, wrapper-mediated owner construction, and direct factory/owner callers as open graph edges until a reproducible resolver accounts for them.
 - Do not infer that no dynamic/computed loaders or external consumers exist: this pass did not execute a full AST-based repository graph scan or inspect every module in a local checkout.
 - No code, tests, or workflows were changed; no tests/CI were run. D1-DESIGN remains OPEN; D1-IMPLEMENTATION remains not authorized; M0 remains INCOMPLETO; root authority remains PENDING/UNKNOWN; protected effects remain STOP.
+
+
+## Addendum — repair-route and exact-tree cross-check (2026-10-25)
+
+Snapshot identity was independently confirmed through the GitHub branch API and recursive Git tree: branch `ncs-clean-architecture` points to commit `4a6ec260be349d3bfdfc6bdbc56142922a170371`; the recursive tree has 3,056 entries, `truncated=false`, and 188 JavaScript-family files. This establishes the exact tree identity for this review, not a completed AST/call-graph scan.
+
+### Refined repair-route evidence
+
+- `scripts/nexo-runtime-session.mjs` exports `runNexoRuntimeRepairSession()`, whose observed implementation always returns `status: "blocked"`, code `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `persisted: false`, and `dispatchAttempted: false`. This is a concrete runtime gate at that wrapper.
+- `scripts/assistants.mjs` calls that wrapper only when `--nexo-repair-once` is present, after its ordinary assistant path has already opened Continuity, recorded a mission, written Lúmina learning memory, and persisted world state. Therefore the wrapper blocks that specific repair dispatch route; it does not isolate the whole assistants command from Nexo/Lúmina/world persistence or establish root admission.
+- `scripts/nexo-repair-session.mjs` exports `runNexoRepairSession()`, which calls `runNexoRepairOnce()`; `scripts/nexo-repair-entrypoint.mjs` exports `runNexoRepairOnce()`, which contains PREPARED/journal checks and calls preparation, dispatch, lineage, and settlement helpers. These are callable module APIs in the repository. The source inspected here does not establish an independently guarded CLI for these files, nor does it prove that all possible importers are confined to tests. Keep their transitive production reachability `UNKNOWN/BLOCKED` until caller resolution is reproducible.
+- `scripts/nexo-repair-dispatch.mjs` imports `loadStateStrict`/ `persistState` from `scripts/simulate.mjs` and the Lúmina effect adapter. This is a cross-domain persistence/effect edge, not proof of an authorized Nexo protected-effect path. Option A still excludes the operation from M0; do not equate its internal protocol tests or PREPARED journal with authorization.
+- `scripts/nexo-continuity.mjs` is a two-line compatibility re-export of `openNexoContinuityOwner`. The wrapper itself is not a global guard: every importing caller must still be classified.
+- `tests/nexo/entrypoint.test.mjs` statically walks literal import/re-export specifiers from the two CLI roots and runs fixtures for the current path-based CLI contract. It does not implement the proposed all-entrypoint resolver, dynamic-loader closure, repair-caller closure, or `--root` contract. The existing test's successful behavior cannot be treated as D1 closure; this review did not execute it.
+
+### D1 consequence
+
+The evidence now distinguishes **a specific blocked wrapper** from **global reachability closure**. The former is observed in source; the latter remains unproven. The next useful closure target is the caller inventory for repair APIs and path-based owner/store creation, followed by the already-specified resolver/test design once implementation is separately authorized. No runtime, test, or workflow source was changed; no tests or CI were run. D1-DESIGN remains OPEN; D1-IMPLEMENTATION remains unauthorized; M0 remains INCOMPLETO; legitimate root remains PENDING/UNKNOWN; protected effects remain STOP.
