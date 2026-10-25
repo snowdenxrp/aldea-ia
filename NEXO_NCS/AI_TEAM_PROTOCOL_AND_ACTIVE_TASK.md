@@ -278,3 +278,24 @@ Documento: `NEXO_NCS/BUILD/NCS_M0_OWNER_DECISION_PROPOSAL_CONTROLLED_TEST_SCOPE_
 Instrucción a Gemini: leer la propuesta y tratarla solo como recomendación de ChatGPT. No registrarla como decisión del propietario, no cambiar el contrato canónico ni los gates. La recomendación es separar el diseño de validación de desarrollo en un entorno controlado de cualquier afirmación sobre el POCO/producción; no modifica los criterios de aceptación de M0. Esperar ratificación explícita del propietario antes de perfilar el entorno como directiva activa, y autorización separada antes de ejecutar tests/CI o tocar runtime/dispositivo. No elegir A/B/C/D por inferencia.
 
 Gates: M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Ningún test/CI ejecutado.
+
+
+### Directiva activa del propietario — solo diseño documental de validación controlada (2026-10-25)
+
+La ratificación explícita del propietario está registrada en `BUILD/NCS_M0_OWNER_RATIFICATION_CONTROLLED_VALIDATION_DOCUMENTARY_ONLY_2026-10-25.md` (commit de creación `880934725edc14dfc15d4e5c84615b2920f7a818`). Esta directiva prevalece sobre la instrucción anterior de esperar ratificación, pero solo en el alcance indicado aquí.
+
+**Permiso activo:** diseñar documentalmente un posible entorno de validación controlada separado del POCO X7 Pro/producción y redactar una matriz claim → precondiciones → método de evidencia → resultado esperado → límites → condición UNKNOWN/STOP.
+
+**Prohibiciones explícitas actuales:**
+- No ejecutar tests, suites, scripts de prueba ni CI.
+- No modificar runtime, tests, workflows ni configuración ejecutable.
+- No instalar APK/software/herramientas ni modificar el POCO, Android, OS, bootloader u otro dispositivo.
+- No usar claves raíz reales, datos/stores productivas ni efectos protegidos.
+- No afirmar que análisis estático o un futuro resultado de laboratorio prueba el despliegue real.
+- No elegir A/B/C/D por inferencia, ni cambiar gates, ni habilitar `ROOT_READY`.
+
+**Siguiente tarea documental:** reutilizar los artefactos ya existentes (matriz de opciones de bootstrap, crosscheck, P-03/P-04, P-05, caller inventory, perfil de entorno requerido y protocolo de evidencia de quiescencia) para definir el perfil candidato y la matriz de claims/evidencia. No repetir auditorías cerradas. OS, supervisor, aislamiento, writers externos y cualquier dato ausente deben quedar `UNKNOWN` hasta que haya evidencia.
+
+**Gates canónicos sin cambio:** M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; ninguna opción A/B/C/D seleccionada. No se han ejecutado tests/CI ni se han autorizado cambios de runtime/dispositivo.
+
+Cualquier ejecución de tests/CI, implementación, instalación o acción sobre el dispositivo requiere una autorización separada, específica y explícita del propietario. El equipo de IA debe dejar un handoff con documentos consultados, cambios documentales, incógnitas y siguiente paso; no declarar como ejecutada ninguna validación que solo fue diseñada.
