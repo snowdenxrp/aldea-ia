@@ -1605,3 +1605,10 @@ Estado canónico: D0/D1/D2/D3 OPEN; M0 INCOMPLETO; autorización NOT_EVALUATED; 
 - Próximo trabajo: seguir el paquete de decisiones; primero P-01 (capacidad real de exigir bootstrap manual/offline y demostrar quiescencia), sin inferir respuesta. Si el entorno o la quiescencia son desconocidos, mantener `UNKNOWN/BLOCKED`; no elegir B/C/D por descarte. Después resolver P-02→P-03→P-04→P-05 según dependencias.
 - No repetir el barrido de 188 archivos ni auditorías generales. No implementar ni ejecutar tests/CI sin autorización explícita separada.
 - Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Solo documentación; no runtime/tests/workflows ni pruebas/CI.
+
+
+### Propuesta de alcance de pruebas controladas — 2026-10-25 (NO RATIFICADA)
+
+Se añadió `BUILD/NCS_M0_OWNER_DECISION_PROPOSAL_CONTROLLED_TEST_SCOPE_2026-10-25.md`, commit `278db1e6e7bd789d59c7e5facf8ab82929f73977`. Recomendación de ChatGPT: separar la validación de desarrollo de M0 del despliegue inicial en POCO, sin rebajar el contrato de raíz ni interpretar pruebas locales como evidencia del dispositivo. Es propuesta no vinculante, no directiva del propietario y no cambia el estado canónico.
+
+No se eligió A/B/C/D ni se autorizó implementación o ejecución. Gates sin cambio: M0 `INCOMPLETO`; diseño `OPEN`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Sin cambios de runtime/tests/CI/dispositivo; tests/CI no ejecutados.
