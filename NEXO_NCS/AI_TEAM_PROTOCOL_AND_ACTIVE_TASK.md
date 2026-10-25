@@ -100,3 +100,33 @@ No hay contradicción material demostrada entre Gemini y P-05/D3. La contribuci�
 
 ### Siguiente paso de mayor valor
 Continuar la revisión documental sin esperar a Claude: contrastar los predicados de `BOOTSTRAP_PARTIAL → ROOT_READY` y el paquete de decisiones del propietario contra el intake D3 y P-05, señalando solo condiciones que estén ausentes o ambiguas. No crear nuevos mecanismos, no ejecutar tests/CI y no cambiar runtime/tests/workflows. Si Claude vuelve a estar disponible, solicitar únicamente una verificación puntual de cualquier discrepancia concreta, no repetir la revisión completa.
+
+
+## Continuación documental P-02 — comprobación acotada de fuente (2026-10-25)
+
+### Anclaje de revisión
+- HEAD de la rama verificado antes de esta lectura: `8ea145414e9518cdeb3cd3d14bcc2b1c8edd5f6a`.
+- Archivos leídos desde esa rama (SHA de blob):
+  - `scripts/assistants.mjs`: `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`.
+  - `scripts/simulate.mjs`: `623d316c7a1efd10cc2f06a3080c0d9f06087596`.
+  - `src/nexo/core/continuity-service.mjs`: `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`.
+  - `src/nexo/core/continuity-store.mjs`: `9ffd28930abdbe29f5b041711cc29b74dc99fbae`.
+  - Contrato de separación D1: `NCS_M0_NEXO_LUMINA_SEPARATION_CONTRACT_2026-10-24.md`, blob `b22c27aa8556034f88d91703d6a57642cae579af`.
+- Solo lectura de fuentes; no se ejecutaron comandos, pruebas ni CI. No se modificó runtime.
+
+### Mapa mínimo de responsabilidades observado
+| Ruta | Dominio/estado observado | Riesgo de frontera / conclusión |
+|---|---|---|
+| `scripts/assistants.mjs` | Carga el estado del mundo de Lúmina, crea/actualiza su memoria de aprendizaje, crea una misión Nexo y la registra en Continuity, y luego persiste memoria y mundo de Lúmina. | **Hecho de fuente:** un mismo entrypoint mezcla operaciones persistentes de ambos dominios. **No demostrado:** una frontera runtime que impida el cruce. Esto coincide con el contrato D1; no es un hallazgo nuevo ni una autorización para eliminar persistencia legítima de Lúmina. |
+| `scripts/simulate.mjs` | Exporta carga/validación y persistencia del estado de simulación; su persistencia usa un lock separado y existe lógica de recuperación de lock basada en edad/PID. También importa `openNexoContinuityOwner`. | **Hecho de fuente:** hay superficie de persistencia propia de Lúmina y acoplamiento de importación Nexo. **No demostrado:** aislamiento por dominio ni seguridad universal del lock. El protocolo de admisión de Nexo no debe absorber ni reescribir el lock de Lúmina por suposición. |
+| `continuity-service.mjs` | Abre el store operacional Nexo y documenta importación de memoria heredada solo cuando falta el store; bootstrap vacío depende de que el caller haya establecido por separado la ausencia del archivo de mundo. | **Hecho de fuente:** el servicio depende de premisas proporcionadas por el caller. **No demostrado:** que cada caller establezca admisión/autoridad correcta antes de leer o inicializar. |
+| `continuity-store.mjs` | Tiene protocolo de lock y registro de fallos de release local al proceso. | El lock per-store no demuestra por sí solo raíz legítima, admisión de instancia ni autorización constitucional; release/readmisión sigue delegado a P-05. |
+
+### Resolución de alcance
+- P-02 tiene ya un contrato de separación y un mapa de responsabilidades suficiente para evitar repetir el inventario general. La mezcla observable en `assistants.mjs` y la importación cruzada en `simulate.mjs` ya están descritas en el contrato D1; no se abren como “nuevos hallazgos”.
+- La decisión correcta ahora no es refactorizar a ciegas: primero debe definirse el corte mínimo de responsabilidades preservando aprendizaje y mundo canónico de Lúmina, sin importar Nexo en el flujo ordinario de Lúmina y sin migración silenciosa.
+- O-08 (raíz explícita) y O-10 (admisión antes de lectura persistente) son principios ratificados; enforcement, callers y gramática CLI permanecen no demostrados. P-03/P-04 siguen propuestas, no contrato completo ratificado.
+- No hay base para declarar que la separación ya está implementada, que los stores están aislados o que los locks actuales resuelven concurrencia.
+
+### Siguiente paso de mayor valor
+Continuar con la especificación de aceptación de D1/P-02 sin tocar código: comprobar si los criterios de cierre existentes distinguen claramente (a) Lúmina ordinaria conserva su persistencia, (b) Nexo ordinario no importa Lúmina, (c) no hay creación/registro de misión Nexo en la ruta ordinaria de Lúmina, (d) legacy/migración queda separado y explícito, y (e) los callers dinámicos/exportados desconocidos no se declaran cubiertos. Registrar solo cualquier criterio ausente o ambiguo; no repetir el barrido de 188 archivos. Implementación y tests siguen requiriendo autorización separada.
