@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — MIGRACIÓN Y SEPARACIÓN DE STORES NEXO/LÚMINA
+
+- Informe: [NCS_M0_CONTINUITY_MIGRATION_AND_STORE_SEPARATION_2026-10-24.md](BUILD/NCS_M0_CONTINUITY_MIGRATION_AND_STORE_SEPARATION_2026-10-24.md), commit `55138df2a6f115e7409350926d0430e1450043fc`, blob releído `2110fb3b5968f6ebe0e5869505043634f770eda3`.
+- Snapshot: commit fuente `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`.
+- Refinamiento importante: las pruebas existentes especifican que el estado canónico de Lúmina no debe serializar `nexoMemory`; la continuidad operacional vive en el store Nexo separado. `continuity-service.mjs` solo migra legacy si ese store no existe y falla cerrado ante estado desconocido o store canónico corrupto. Esto fue inspección de código y pruebas, no ejecución.
+- La secuencia de escritura en `assistants.mjs` aún contiene stores separados sin transacción multi-store visible. Siguiente paso: determinar el contrato aceptable de consistencia y comprobar estáticamente si existe reconciliación; no inventar wrappers ni transacciones.
+- Runtime/tests/workflows/estado Lúmina sin cambios; no tests/CI.
+- Gates: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — WORKFLOWS Y ACOPLAMIENTO DE MEMORIA D1
 
 - Nuevo informe: [NCS_M0_D1_GLOBAL_CALLER_AND_WORKFLOW_SCAN_PARTIAL_2026-10-24.md](BUILD/NCS_M0_D1_GLOBAL_CALLER_AND_WORKFLOW_SCAN_PARTIAL_2026-10-24.md), commit `62aaac222bce20363a676bbef29bd367280551b0`, blob releído `72d1f4b3c09f32a032394e887eb26d059ec09ce6`.
