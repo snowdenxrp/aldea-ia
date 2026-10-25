@@ -159,3 +159,17 @@ Conclusiones concretas:
 Commit del registro de decisiones: `9fef242512c18779f96f2f8574cc6691f11297c4`. Commit que incorporó este addendum al handoff: `cbfe98de1670ee4159d81cb944441177fc56b8d0` (el HEAD efectivo avanzará con la corrección de esta línea).
 
 Siguiente trabajo recomendado: cerrar D1-DESIGN únicamente contra las aristas UNKNOWN del manifiesto y el snapshot identificado; después terminar D2-DESIGN con la matriz de caracterización de locks. No repetir el censo histórico completo, no implementar runtime/tests/workflows y no ejecutar CI sin autorización separada.
+
+
+## ADDENDUM — checkpoint after repair-route cross-check (2026-10-25)
+
+- Confirmed branch HEAD: `5030085a55218386884e7c4123c42061717ca258`.
+- D1 manifest was updated and verified by read-after-write in commit `5030085a55218386884e7c4123c42061717ca258`, blob `3ed5633b6a1c090668abdfbb22c5f1dc34df1218`: [manifest](NCS_M0_D1_ENTRYPOINT_MANIFEST_AND_EDGE_CLASSIFICATION_2026-10-24.md).
+- Exact recursive tree for that HEAD: 3,056 entries, `truncated=false`, 188 JavaScript-family files. This is a tree identity check, not a complete call-graph execution or AST scan.
+- Refined repair finding: `nexo-runtime-session.mjs` blocks its wrapper with `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; however, repair session/entrypoint/dispatch modules expose callable exports and the complete set of callers is still not reproducibly closed. A specific wrapper block must not be described as global unreachability.
+- `assistants.mjs` still loads/persists Continuity, Lúmina learning memory and world state in its ordinary run; the optional repair wrapper is called after those operations. `nexo-repair-dispatch.mjs` links persisted simulation state and a Lúmina effect adapter. This remains a cross-domain edge and does not confer protected-effect authority.
+- No runtime, test, or workflow files changed. No tests/CI executed. D1-DESIGN remains OPEN; D1-IMPLEMENTATION unauthorized; M0 INCOMPLETO; root PENDING/UNKNOWN; protected effects STOP.
+
+### Exact next task
+
+Continue the bounded, source-based caller ledger from this exact HEAD. Resolve, without rerunning the historical broad census, all repository references to `runNexoRepairSession`, `runNexoRepairOnce`, `dispatchPreparedRepair`, `openNexoContinuityOwner`, `createNexoContinuityStore`, and `createNexoChronicleStore`; include test-only callers separately. GitHub code search did not return usable matches in this pass, so do not treat that search as negative evidence. If the connector cannot retrieve a reproducible repository-wide caller set, leave caller reachability UNKNOWN/BLOCKED rather than infer absence. Do not modify runtime/tests/workflows or run CI before D1/D2 design gates and separate implementation authorization.
