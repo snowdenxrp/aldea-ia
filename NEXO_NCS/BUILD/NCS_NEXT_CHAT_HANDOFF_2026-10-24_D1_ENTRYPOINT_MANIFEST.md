@@ -187,3 +187,13 @@ Continue the bounded, source-based caller ledger from this exact HEAD. Resolve, 
 ### Next exact task
 
 Do not repeat the 2,982-entry historical census or claim code-search returned no callers. The next useful step is a reproducible caller-resolution method against this exact HEAD (local checkout/AST resolver or equivalent source enumeration), separating production entrypoints, internal API callers, tests, and explicit exceptions. If the available connector cannot provide a complete caller set, preserve `UNKNOWN/BLOCKED` and document the limitation; do not infer absence. Only after D1 design closes should D2 freeze snapshot admission, child ownership/deadlock, and uncertain release behavior. No implementation until separate explicit authorization.
+
+
+## ADDENDUM — caller-resolution tooling boundary (2026-10-25; read-only investigation)
+
+- Reconfirmed exact branch checkpoint commit: `c931fb10b9bf41f37c941993356076778d74beec`.
+- Ran five focused GitHub code-search queries against the repository for `runNexoRepairOnce`, `dispatchPreparedRepair`, `openNexoContinuityOwner`, `runNexoChronicleAppend`, and `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`. All returned zero results, including known symbols already confirmed in fetched source files. Treat the connector's code-search results as unusable for caller-absence evidence.
+- Attempted to obtain a local checkout for repository-wide enumeration; the environment could not resolve `github.com`. No local source checkout or AST scan was produced.
+- Therefore, this pass did **not** establish a reproducible complete caller set. Existing bounded references remain valid as observed references, but caller closure stays `UNKNOWN/BLOCKED`. Do not repeat the same ineffective code-search queries as though they were progress.
+- Next viable step requires a source-enumeration route that can access the exact repository tree and all relevant source blobs (for example, a functioning local checkout/AST resolver or an equivalent authorized repository export). Once available, resolve the six named API families listed in the preceding checkpoint, and classify production entrypoints, internal callers, tests, and explicit exceptions separately.
+- No runtime, test, or workflow files changed. No tests or CI ran. M0 remains INCOMPLETO; D1-DESIGN OPEN; D1-IMPLEMENTATION unauthorized; D2/D3 OPEN; authorization NOT_EVALUATED; root PENDING/UNKNOWN; protected effects STOP.
