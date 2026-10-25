@@ -400,3 +400,17 @@ Se evaluó la respuesta completa de Gemini proporcionada por el propietario y se
 Reconciliar el dictamen con el manifiesto D1 y el registro de decisiones, y avanzar solo sobre aristas/superficies concretas aún abiertas. No repetir el barrido de 188 archivos sin cambio de fuente. No modificar runtime/tests/workflows ni ejecutar CI sin autorización separada.
 
 Este addendum y el documento de reconciliación son documentales; no hubo cambios de runtime/tests/workflows/datos operativos ni ejecución de pruebas/CI. Estado canónico sin cambios: M0 `INCOMPLETO`; D0 técnico/evidencia `OPEN`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## ADDENDUM — minimum responsibility cut and D1 closure matrix (2026-10-25)
+
+Nuevo artefacto documental creado y leído de vuelta desde GitHub:
+- [NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md](https://github.com/snowdenxrp/aldea-ia/blob/029998d25d809b24ab574428157791a840109fef/NEXO_NCS/BUILD/NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md)
+- Commit: `029998d25d809b24ab574428157791a840109fef`
+- Blob: `1ddebee757d183dd7bea59d87618301a26e517df`
+
+El documento transforma O-08…O-11 y P-02…P-04/P-08/P-09 en una matriz por entrypoint y criterios verificables de cierre D1. No elige la opción A/B/C; en particular, la opción B de Gemini continúa siendo una recomendación no ratificada. Especifica como objetivo: conservar la persistencia propia de Lúmina, retirar operaciones Nexo de los flujos ordinarios de Lúmina, sujetar queries/previews/Chronicle a admisión previa a lectura persistente, no inferir inaccesibilidad de APIs inferiores por wrappers, y no asumir que los argumentos heredados prueban admisión del hijo.
+
+El artefacto separa lo que debe definirse en D1 (fronteras, entrypoints, argumentos, prohibiciones y caller-resolution) de lo que sigue en D2 (lock primitive/ownership, sección crítica exacta, release incierto, cuarentena, timeout/stale y readmisión). Mantiene las aristas dinámicas/externas sin resolver como UNKNOWN/BLOCKED y prohíbe repetir el barrido de 188 archivos sin cambio de fuente o evidencia concreta.
+
+Este avance es solo documental: no hubo cambios de runtime/tests/workflows/datos operativos ni ejecución de tests/CI. Estado canónico sin cambios: M0 INCOMPLETO; D0 técnico/evidencia OPEN; D1-DESIGN OPEN; D1-IMPLEMENTATION NO AUTORIZADA; D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
