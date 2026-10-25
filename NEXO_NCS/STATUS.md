@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — PROPUESTA D0/D1/D2 DE ADMISIÓN
+
+- Se creó y leyó de vuelta [NCS_M0_D0_D1_D2_INSTANCE_ADMISSION_CONTRACT_PROPOSAL_2026-10-24.md](BUILD/NCS_M0_D0_D1_D2_INSTANCE_ADMISSION_CONTRACT_PROPOSAL_2026-10-24.md), commit `3591834748463bd5d99fa1d0f585e55ba221b0c9`, blob `b1d85d4deecb5d34dc7a14a383426b7962e59cd9`.
+- Consolida como propuesta no aceptada el contrato candidato de raíz explícita, derivación única de rutas, bootstrap separado, admisión antes de snapshots/consultas/previews, coordinación padre/hijo Chronicle, límites Nexo/Lúmina y criterio de cierre documental D1.
+- No selecciona decisiones reservadas (symlinks, garantía/duración del snapshot, protocolo de lock/release ni bootstrap parcial). No afirma cobertura completa de guards/cargadores ni consumidores externos.
+- Solo documentación. Runtime/tests/workflows sin cambios; no se ejecutaron tests ni CI.
+- Estado canónico: M0 `INCOMPLETO`; D0 técnico/evidencia `OPEN`; D1-DESIGN `OPEN`; implementación no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-24 — INVENTARIO D1
 
 - Nota nueva de inventario de entrypoints: [NCS_M0_D1_ENTRYPOINT_INVENTORY_NOTE_2026-10-24.md](BUILD/NCS_M0_D1_ENTRYPOINT_INVENTORY_NOTE_2026-10-24.md), commit `556fb1fff1106cf2beafa3d49b0dd6d169d4e26f`.
