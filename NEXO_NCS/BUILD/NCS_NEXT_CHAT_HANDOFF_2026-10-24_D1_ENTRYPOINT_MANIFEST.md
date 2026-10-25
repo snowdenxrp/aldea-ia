@@ -248,3 +248,19 @@ Do not repeat the 2,982-entry historical census or claim code-search returned no
 2. Finish D1-DESIGN only against genuinely unresolved edge classes and the child-process/root-admission contract.
 3. Continue the previously identified D2 design work after D1-DESIGN closure: snapshot admission scope, parent/child lock ownership/deadlock, and uncertain release/re-admission. No runtime/tests/workflows or CI until separate explicit implementation authorization.
 4. No runtime, test, workflow, or data file changed in this review; no tests/CI ran. Canonical state unchanged: M0 INCOMPLETO; D0 technical/evidence OPEN; D1-DESIGN OPEN; D1-IMPLEMENTATION unauthorized; D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+
+## ADDENDUM — parent/child instance-root boundary and D1-C2 cross-reference (2026-10-25)
+
+- D1-C2 in the D0/D2/D3 decision matrix was reconciled with the independence principle in documentation-only commit [e95ce728549ca31b77c635ef9af83e7a5125cf0b](https://github.com/snowdenxrp/aldea-ia/commit/e95ce728549ca31b77c635ef9af83e7a5125cf0b). The matrix now recommends that Lúmina's assistants command remain Lúmina-only; it must not open Nexo Continuity or create/register Nexo missions. The matrix row remains a design proposal, not implementation authorization.
+- Current parent CLI source (blob e471eb478a09aa8a9a8323795583e198cdf0a127) accepts separate --continuity paths for queries/previews and forwards raw Chronicle arguments to a child using spawnSync.
+- Current child CLI source (blob 30a53de2f108aa255a1dfd61ce78c19788de160b) is independently executable and accepts separate --continuity and --chronicle paths plus initialization flags. The application API (blob 5a20044bcddbaee79d0117934eefaea5f3b2c3bc) directly accepts paths, creates both stores, reads both before mutation, and opens the owner. None of these current source edges implements the accepted --root contract.
+- D1/D2 design consequence, recommendation only:
+  1. Parent and child both receive one explicit --root, with no mixed --root plus legacy store paths.
+  2. For Chronicle append, the parent parses/routes only and must not hold a non-reentrant root lock while waiting for the child. The independently executable child canonicalizes/validates the existing root and owns operation admission for its process.
+  3. For in-process query/preview APIs, admission must occur before the first canonical snapshot read. D2 must still freeze the precise scope, including previews, and the implementation must not rely on a CLI-only lock.
+  4. Path-based store factories and owner APIs remain internal/test primitives unless a caller is proven to enter through the admitted instance boundary. Existing public application imports and direct callers must be classified.
+  5. Missing/invalid root, contradictory paths, invalid configuration, or ambiguous store state must fail before store initialization or writes. Bootstrap remains separate and explicit.
+- The recommendation does not settle root-lock primitive, release-uncertainty behavior, exact snapshot critical section, or migration/cutover. Those remain D2/D3 dependencies. Do not infer a functioning root gate from this design note.
+- Latest source tree reviewed remains ef56184729ae710d7cd3f196d4e34028595a42eb (188 JS-family blobs); commits since that source checkpoint are documentation-only. Latest documentation checkpoint after this addendum will be the commit returned by the write/read-back below.
+- No runtime, tests, workflows, or data files changed; no tests/CI ran. D1-DESIGN OPEN; D1-IMPLEMENTATION unauthorized; D2/D3 OPEN; M0 INCOMPLETO; legitimate root PENDING/UNKNOWN; protected effects STOP.
