@@ -152,3 +152,10 @@ El registro canónico vigente, sección 8.2, mantiene P-01…P-05 abiertos. P-05
 - No solicitar credenciales, claves, rutas privadas ni datos operativos sensibles. “No sé” es una respuesta válida.
 - Si el entorno o el control de relanzamientos no se pueden establecer, P-01/P-05 permanecen `UNKNOWN/BLOCKED`; no elegir B/C/D por descarte. A puede evaluarse si los datos la justifican, pero no queda aprobada por esta nota.
 - Solo cambio documental; no runtime/tests/workflows, no tests/CI. Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Continuidad nueva — POCO inicial, PC futura (2026-10-25)
+
+El propietario confirma que el primer prototipo será en su POCO X7 Pro; Nexo también debe poder funcionar en PC y espera tener una PC al ensamblarlo. Tratar esto como objetivo de plataforma/portabilidad, no como prueba de compatibilidad. La PC no está disponible aún y su SO, versión, modo de lanzamiento y control operacional son desconocidos. Mantener la separación núcleo/adaptadores y validar PC cuando exista un entorno concreto.
+
+El POCO aclara el destino inicial (E1), pero no responde todavía E2–E6: modo de lanzamiento, escritores/relanzadores, quién puede detenerlos e impedir reinicios y evidencia verificable de quiescencia. No seleccionar protocolo P-01/P-05 por inferencia: continúan UNKNOWN/BLOCKED; no A/B/C/D seleccionado. No cambiar runtime/tests/workflows ni ejecutar tests/CI sin autorización separada.
