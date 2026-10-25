@@ -178,3 +178,22 @@ M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPE
 - Sin cambios de runtime/tests/workflows; no tests/CI; no se seleccionó A/B/C/D; no se autorizó implementación.
 - Gates sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Próximo paso: continuar desde STATUS y la matriz canónica; precisar solo las preguntas operacionales necesarias para evaluar quiescencia real. No tratar la respuesta externa como auditoría del código ni repetir revisiones generales.
+
+
+## Instrucción permanente para Gemini — continuidad por «continúa» (2026-10-25)
+
+**Punto de entrada obligatorio:** [`NEXO_NCS/STATUS.md`](STATUS.md). No uses el historial del chat como fuente canónica ni empieces por investigación antigua.
+
+Cuando el propietario diga **«continúa»**:
+1. Abre la rama `ncs-clean-architecture` y lee `NEXO_NCS/STATUS.md` primero.
+2. Sigue la ruta indicada allí: `MASTER → CORE → handoff vigente → BUILD/tarea activa`. Después lee esta nota, `NEXO_NCS/AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md`, para conocer los encargos y la coordinación de IA.
+3. Verifica el HEAD actual de la rama y los SHA/blob de los artefactos que realmente uses. Si no puedes acceder al repo o la rama cambió, dilo y no inventes contenido ni afirmes que revisaste archivos.
+4. Localiza el último checkpoint y la sección «Siguiente paso»; retoma desde allí. No preguntes al propietario que repita el contexto ya registrado.
+5. Haz el siguiente trabajo útil dentro del alcance autorizado, manteniendo la evidencia separada de hipótesis y propuestas. No repitas auditorías cerradas, barridos generales ni trabajos ya registrados.
+6. Si necesitas ChatGPT u otra IA, deja aquí un encargo acotado con rutas, SHA, pregunta exacta y límites. No afirmes que otra IA respondió hasta que su respuesta esté disponible.
+7. Actualiza el checkpoint/handoff de este protocolo y el documento correspondiente en `BUILD` solo cuando haya un cambio material. Preserva `STATUS.md` como puerta canónica.
+8. Nunca conviertas «continúa» en autorización para cambiar runtime, ejecutar tests/CI, modificar el dispositivo, desbloquear bootloader, borrar/flashear datos o habilitar efectos protegidos. Esas acciones requieren autorización específica cuando corresponda.
+
+**Formato de salida de cada continuación:** (a) qué se verificó y con qué SHA; (b) hechos nuevos frente a hipótesis; (c) archivos/commits modificados, si los hubo; (d) tests/CI ejecutados o explícitamente no ejecutados; (e) gates canónicos y siguiente paso exacto.
+
+**Estado conocido en este checkpoint:** transición `BOOTSTRAP_PARTIAL → ROOT_READY` abierta; P-01/P-05 sin política ratificada; opciones canónicas A/B/C/D sin seleccionar; M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
