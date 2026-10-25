@@ -379,3 +379,24 @@ The document was fetched again after writing. It records current source blob SHA
 Next bounded task: define the minimum responsibility cut that removes Nexo operations from ordinary Lúmina assistant/simulation routes while preserving Lúmina persistence, then specify how Nexo APIs receive root/admission. Do not re-run the 188-blob sweep without source changes. Keep unresolved dynamic/external edges UNKNOWN/BLOCKED. No runtime/tests/workflows changed and no tests/CI ran.
 
 Canonical state remains M0 INCOMPLETO; D1-DESIGN OPEN; implementation NO AUTORIZADA; D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+
+## ADDENDUM — Gemini review reconciliation (2026-10-25)
+
+Se evaluó la respuesta completa de Gemini proporcionada por el propietario y se registró en:
+- [NCS_M0_GEMINI_REVIEW_RECONCILIATION_2026-10-25.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_GEMINI_REVIEW_RECONCILIATION_2026-10-25.md)
+- Commit de creación: `912480571f1ed5914fa2c3d763e24d048f2f8818`
+- Blob verificado por lectura posterior: `262f76bb27fe4c6a1d031d86f31b3a1e990c3ed4`
+
+### Dictamen
+- La propuesta de Gemini es coherente con las políticas ya ratificadas sobre `--root`, ausencia de bootstrap/fallback implícito, admisión de lecturas persistentes en el alcance acordado, parada `UNKNOWN/BLOCKED` y preservación de la persistencia legítima de Lúmina.
+- Opción B (interfaces/guards) es una recomendación de Gemini, NO una decisión ratificada. No congelar D1 ni elegir el corte antes de definir fronteras y dependencias prohibidas.
+- Un guard lógico no prueba aislamiento global. Un wrapper bloqueado tampoco demuestra que exports inferiores sean inalcanzables. Clasificar entrypoints/APIs/callers según evidencia; mantener `UNKNOWN/BLOCKED` donde no se pueda cerrar alcanzabilidad.
+- Pasar `--root` al hijo no prueba por sí mismo canonicalización equivalente ni admisión. Debe definirse el contrato de argumentos y propiedad de admisión, evitando que el padre retenga un lock no reentrante mientras espera al hijo.
+- No imponer aislamiento físico de archivos como decisión automática ni “arreglar” la frontera desactivando memoria/aprendizaje o persistencia de estado del mundo de Lúmina.
+- D1 define fronteras, entrypoints, argumentos y prohibiciones; D2 conserva los detalles de primitiva/propiedad de lock, sección crítica exacta de snapshots, incertidumbre de liberación, timeout/stale y readmisión.
+
+### Siguiente paso acotado
+Reconciliar el dictamen con el manifiesto D1 y el registro de decisiones, y avanzar solo sobre aristas/superficies concretas aún abiertas. No repetir el barrido de 188 archivos sin cambio de fuente. No modificar runtime/tests/workflows ni ejecutar CI sin autorización separada.
+
+Este addendum y el documento de reconciliación son documentales; no hubo cambios de runtime/tests/workflows/datos operativos ni ejecución de pruebas/CI. Estado canónico sin cambios: M0 `INCOMPLETO`; D0 técnico/evidencia `OPEN`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
