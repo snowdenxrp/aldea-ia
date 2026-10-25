@@ -166,3 +166,15 @@ M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPE
 - El informe externo queda clasificado como red-team conceptual, no auditoría verificada del código ni evidencia de vulnerabilidad. Sus preguntas útiles se han conservado sin importar sus mecanismos como requisitos.
 - Siguiente paso: continuar el análisis documental desde las definiciones canónicas y cerrar únicamente discrepancias contractuales demostrables; mantener UNKNOWN para IPC/daemons/canales y shutdown global mientras no exista evidencia del entorno o del repositorio.
 - Gates sin cambio: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Reconciliación de respuesta externa — predicados de bootstrap y etiquetas A/B/C/D (2026-10-25)
+
+- Informe documental creado: [NCS_M0_BOOTSTRAP_EXTERNAL_RESPONSE_RECONCILIATION_2026-10-25.md](BUILD/NCS_M0_BOOTSTRAP_EXTERNAL_RESPONSE_RECONCILIATION_2026-10-25.md), commit `2f5329d76d181da1109d0338f1159e0d600c570c`.
+- HEAD anterior verificado antes de crear el informe: `df3c28109c3bfb6415d7e14f4f85a908a41cdb36`.
+- Discrepancia de taxonomía: la respuesta externa usa B=bootstrap embebido, C=publicación transaccional por etapas y D=demanda pasiva; la matriz canónica NCS usa B=staging/publicación atómica, C=marcador persistente y D=coordinación externa. A coincide en términos generales. No copiar etiquetas externas al registro de decisiones.
+- Manifiesto/checksums/esquema y permisos pueden evaluarse como criterios auxiliares, pero no están seleccionados como predicados canónicos ratificados. La ausencia de lock/path no prueba quiescencia; P-05 E6 lo descarta como evidencia suficiente si no se demuestra que el actor previo terminó.
+- El gap review ya exige recuperación explícita para bootstrap parcial y mantiene `UNKNOWN/BLOCKED` si falta evidencia. La detección de cada tipo de crash no se ha demostrado en runtime.
+- Sin cambios de runtime/tests/workflows; no tests/CI; no se seleccionó A/B/C/D; no se autorizó implementación.
+- Gates sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Próximo paso: continuar desde STATUS y la matriz canónica; precisar solo las preguntas operacionales necesarias para evaluar quiescencia real. No tratar la respuesta externa como auditoría del código ni repetir revisiones generales.
