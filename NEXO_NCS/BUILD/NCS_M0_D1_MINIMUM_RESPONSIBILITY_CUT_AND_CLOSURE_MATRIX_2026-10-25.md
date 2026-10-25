@@ -120,3 +120,12 @@ Este checklist es criterio de diseño; no afirma que ya esté satisfecho. Los te
 - Efectos protegidos: `STOP`
 
 No se modificaron runtime, tests, workflows ni datos operativos. No se ejecutaron tests/CI. Este documento no cierra D1 ni autoriza implementación.
+
+
+## Addendum — recheck de argumentos Chronicle y APIs de store (2026-10-25)
+
+Informe fuente asociado: `NCS_M0_D1_CHRONICLE_ARGUMENT_AND_STORE_SURFACE_RECHECK_2026-10-25.md`, commit `8611bfa3bea458f5f6ea6e14688535abeed2b8c6`.
+
+Hallazgos añadidos: el padre `scripts/nexo.mjs` reenvía los argumentos de `chronicle-append`; el hijo `scripts/nexo-chronicle-session.mjs` acepta `--continuity` y `--chronicle` por separado y no exige `--root`; la aplicación de Chronicle hace preflight de stores a través de rutas independientes; las funciones de consulta y las fábricas/owner son exports y no se ha demostrado una frontera de admisión universal. La búsqueda de callers no permite cerrar el grafo: dinámicos, computados, tests y consumidores externos siguen `UNKNOWN/BLOCKED`.
+
+Consecuencia: el contrato D1 debe definir un único `--root`, mapping determinista a stores, validación independiente del hijo y rechazo de argumentos contradictorios antes de cualquier lectura persistente. No se afirma que esto esté implementado. No se eligió A/B/C ni se autorizó implementación.
