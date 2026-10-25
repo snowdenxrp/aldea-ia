@@ -1,3 +1,16 @@
+# CHECKPOINT CANÓNICO ACTUAL — HANDOFF CLAUDE/D1 (2026-10-25)
+
+- Handoff vigente: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), commit `3c97840f7d50dc9559432b8bc5f0a1f2c9d829ac`.
+- Reconciliación Claude: [NCS_M0_CLAUDE_INDEPENDENT_D1_REVIEW_RECONCILIATION_2026-10-25.md](BUILD/NCS_M0_CLAUDE_INDEPENDENT_D1_REVIEW_RECONCILIATION_2026-10-25.md), commit `b6e71ba9ffa14ebd724d204977bb344cd719a242`.
+- Registro de decisiones corregido: commit `fc1a174dd607f895bcfbfcce8a0aaec28787bb8d`; IDs históricos `P-HIST-01…P-HIST-09`, decisiones actuales `P-01…P-10`, grupos de evidencia `G1…G5` separados de criterios M0 `A…E`.
+- Matriz D1 actualizada: commit `368fd7f3f2ef9af4b75d708f358173e7711b7523`; invariante de admisión previo a lectura como propuesta documental, propiedad provisional de estados Nexo/Lúmina y gramática root/Chronicle v0 no ratificada.
+- Manifiesto D1 actualizado: commit `23e21958ae3752821ca570713d71509f28012e0d`; resultado grep comunicado por Claude no se considera reproducible hasta registrar comando literal y SHA/tree exactos.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+- Solo cambios documentales. No runtime/tests/workflows/datos; no tests ni CI ejecutados.
+- Próximo paso: seguir el handoff indicado y resolver solo discrepancias concretas; no repetir el barrido de 188 archivos ni pedir otra auditoría general. No implementar sin autorización separada.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — HANDOFF PARA SIGUIENTE CHAT (2026-10-24)
 
 - Handoff completo: [NCS_NEXT_CHAT_HANDOFF_2026-10-24_ENTRYPOINT_REACHABILITY.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-24_ENTRYPOINT_REACHABILITY.md), commit `9ce6cfd8ef2f541032adb25364123f0f349cb955`.
