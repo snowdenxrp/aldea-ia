@@ -1,5 +1,16 @@
 # PUERTA CANÓNICA DE CONTINUIDAD — «CONTINÚA» (2026-10-25)
 
+## Punteros activos verificados — 2026-10-25 17:00 local
+
+HEAD de `ncs-clean-architecture` comprobado contra GitHub: `17440bb18f62e872f05b58fb18fa97b6a964e11e`.
+
+Para evitar que referencias cronológicas antiguas se confundan con el estado activo, los artefactos vigentes verificados son:
+- Matriz de aceptación bootstrap: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), último commit `96d99a7ad11b18bd95d66aea9827e06385fd980a`, blob actual `89558fb688f10c0cfc95c12430114a5837e124cc`.
+- Perfil de entorno D3: [NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md), último commit `1e88bd39baef678c6c71bf63a306933ee2375d15`, blob actual `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
+- Handoff de continuidad: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), último commit `4e786d09b2e2aa49dd8f35ae5a2f2d707896da4f`, blob actual `17ac954d52947086c3df9fdfd5244b18ca81caaa`.
+
+Los commits/blobs más antiguos que aparecen en las secciones cronológicas inferiores se conservan como evidencia histórica del estado de aquellos momentos; no deben presentarse como pins activos si el artefacto ha avanzado. Esta actualización solo corrige navegación/evidencia documental, no modifica decisiones ni estado canónico.
+
 ## Salvaguardas de evidencia CV-24–CV-26 (2026-10-25)
 
 - **CV-24 — Publicación:** la opción B exige evidencia del contexto real de staging/destino y de la semántica de publicación; no se infiere atomicidad, durabilidad ni seguridad por la mera llamada a `rename` o por una prueba de laboratorio. Véase la matriz de aceptación de bootstrap.
@@ -54,13 +65,13 @@
 # CHECKPOINT CANÓNICO ACTUAL — HANDOFF CLAUDE/D1 (2026-10-25)
 
 - Contraste del registro para bootstrap: [NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md), commit `280fbfdfedcae89451dcc33ff1c71b2150bbe46a`. El registro ratifica O-08 sobre raíz, pero conserva P-01 bootstrap y P-05 readmisión como pendientes; no hay selección A/B/C/D documentada.
-- Matriz de aceptación de opciones bootstrap: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), commit `04d8a4255c395a5df0ad1f6292678dc3204ebe58`. Compara A/B/C/D contra quiescencia, concurrencia, integridad, identidad de objetos, release previo y pruebas; no selecciona opción.
+- Matriz de aceptación de opciones bootstrap: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), commit vigente `96d99a7ad11b18bd95d66aea9827e06385fd980a`, blob `89558fb688f10c0cfc95c12430114a5837e124cc`. El commit `04d8a4255c395a5df0ad1f6292678dc3204ebe58` es el commit de creación, no el último cambio. Compara A/B/C/D; no selecciona opción.
 
 - Revisión documental D2 de bootstrap parcial/recuperación: [huecos contractuales](BUILD/NCS_M0_D2_BOOTSTRAP_PARTIAL_AND_RECOVERY_CONTRACT_GAP_REVIEW_2026-10-25.md), commit `9faad5504dda91e734167d7fe3c3b8b9275dad90`. Confirma que `BOOTSTRAP_PARTIAL → ROOT_READY` no tiene aún predicados completos ratificados y aclara que “Opción A” de raíz no ratifica por sí sola la Opción A de bootstrap offline. Sin implementación ni tests/CI.
 
 - Nueva especificación D2 P-05: [release incierto y evidencia para readmisión](BUILD/NCS_M0_D2_P05_RELEASE_UNCERTAINTY_AND_READMISSION_EVIDENCE_SPEC_2026-10-25.md), commit `6bf41465d5caf04ed68fbfbbb7ea8f498c1cd694`. Requisitos propuestos E1–E9; no selecciona recuperación A/B, no ratifica el contrato y no autoriza implementación.
 
-- Handoff vigente: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), commit `3c97840f7d50dc9559432b8bc5f0a1f2c9d829ac`.
+- Handoff vigente: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), último commit verificado `4e786d09b2e2aa49dd8f35ae5a2f2d707896da4f`, blob actual `17ac954d52947086c3df9fdfd5244b18ca81caaa`. El commit `3c97840f7d50dc9559432b8bc5f0a1f2c9d829ac` es un estado histórico anterior.
 - Reconciliación Claude: [NCS_M0_CLAUDE_INDEPENDENT_D1_REVIEW_RECONCILIATION_2026-10-25.md](BUILD/NCS_M0_CLAUDE_INDEPENDENT_D1_REVIEW_RECONCILIATION_2026-10-25.md), commit `b6e71ba9ffa14ebd724d204977bb344cd719a242`.
 - Registro de decisiones corregido: commit `fc1a174dd607f895bcfbfcce8a0aaec28787bb8d`; IDs históricos `P-HIST-01…P-HIST-09`, decisiones actuales `P-01…P-10`, grupos de evidencia `G1…G5` separados de criterios M0 `A…E`.
 - Matriz D1 actualizada: commit `368fd7f3f2ef9af4b75d708f358173e7711b7523`; invariante de admisión previo a lectura como propuesta documental, propiedad provisional de estados Nexo/Lúmina y gramática root/Chronicle v0 no ratificada.
