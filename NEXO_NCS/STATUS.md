@@ -1,6 +1,7 @@
 # CHECKPOINT DE CONTINUIDAD — 2026-10-24 — REVISIÓN DE API DE REPARACIÓN
 
 - Nota nueva de diseño, creada en commit `815601df24702f1f27eaad23120f0f0be4a80901`: [NCS_M0_D1_REPAIR_API_BOUNDARY_REVIEW_2026-10-24.md](BUILD/NCS_M0_D1_REPAIR_API_BOUNDARY_REVIEW_2026-10-24.md).
+- Ledger D1 actualizado en commit `934a88eee7c012512372df55208a9d9ff1d520b7`: [NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md](BUILD/NCS_M0_D1_CALLER_LEDGER_AND_ARCHITECTURE_TEST_SPEC_2026-10-23.md). El nuevo addendum incorpora las tres API inferiores, las dependencias de simulación y la condición de que el bloqueo del wrapper no cierra la exclusión global.
 - Hallazgo de código: `runNexoRuntimeRepairSession()` devuelve bloqueo Option A, pero existen APIs separadas `runNexoRepairSession()`, `runNexoRepairOnce()` y `dispatchPreparedRepair()`; las últimas rutas importan persistencia/adapter de simulación de Lúmina. El bloqueo de un wrapper no demuestra exclusión global de todas las rutas.
 - Interpretación acotada: es una brecha de clasificación y diseño por resolver, no prueba de que se ejecutara una reparación ni de explotación. No se invocó ninguna función y no se modificó estado.
 - Acción D1: incluir las tres APIs, reexports, callers y aristas al adapter de simulación en el inventario; clasificar rutas de producto y mantener UNKNOWN/BLOCKED para callers no resueltos. Preservar la persistencia legítima de Lúmina.
