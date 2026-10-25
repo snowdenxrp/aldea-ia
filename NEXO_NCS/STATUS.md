@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN MÁS RECIENTE — PLATAFORMA INICIAL Y PORTABILIDAD (2026-10-25)
+
+- El propietario confirma POCO X7 Pro/Android como primer entorno del prototipo y compatibilidad futura con PC como objetivo de diseño; espera disponer de una PC al ensamblar Nexo.
+- La PC futura no está disponible ni tiene un entorno operativo especificado. La portabilidad es intención, no capacidad implementada/verificada.
+- El perfil D3 y el handoff registran esta aclaración. El POCO identifica E1, pero no resuelve el modo de lanzamiento, escritores/relanzadores, autoridad para detenerlos ni evidencia de quiescencia.
+- P-01/P-05 permanecen UNKNOWN/BLOCKED; no se elige A/B/C/D. M0 INCOMPLETO; D3 OPEN; autorización de implementación NOT_EVALUATED; efectos protegidos STOP.
+- Cambio documental solamente; runtime/tests/workflows intactos; no tests/CI.
+
+---
+
 # ACTUALIZACIÓN MÁS RECIENTE — P-01 / PERFIL MÍNIMO DEL ENTORNO (2026-10-25)
 
 - El propietario confirma que todavía desconoce el entorno inicial y no puede confirmar quiescencia operacional. P-01 y P-05 permanecen `UNKNOWN/BLOCKED`; no se selecciona A/B/C/D.
