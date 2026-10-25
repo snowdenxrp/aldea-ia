@@ -59,6 +59,14 @@ Este documento enumera las entradas mínimas para especificar el procedimiento p
 
 **Regla:** el expediente debe poder demostrar qué se comprobó y qué quedó fuera de cobertura.
 
+## CV-25 — Alcance de evidencia entre entornos
+
+**Estado:** salvaguarda documental; no autoriza ejecución ni declara equivalencia entre entornos.
+
+Cada evidencia debe identificar el entorno, versión, configuración y alcance que realmente cubre. Un resultado favorable en análisis estático, simulación, laboratorio o en otro dispositivo no demuestra automáticamente las propiedades del POCO X7 Pro. Cuando una afirmación dependa de su filesystem, cifrado, supervisores, políticas de terminación, relanzadores o configuración efectiva, se requiere evidencia operacional pertinente del dispositivo objetivo para sostener esa afirmación.
+
+La equivalencia entre entornos solo puede invocarse si se identifican y justifican las condiciones relevantes para la propiedad evaluada. No se exige ejecutar todas las pruebas en el dispositivo; se prohíbe extrapolar una conclusión que dependa de condiciones no demostradas. Si la equivalencia o la evidencia necesaria falta, el resultado para el entorno objetivo es `UNKNOWN/BLOCKED`.
+
 ## 3. Tabla de decisión
 
 | Condición observada | Decisión requerida |
