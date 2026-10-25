@@ -149,3 +149,22 @@ This pass fetched the following exact source files from commit `a68660db5ddfe084
 The connector's code-search operation returned no usable matches for known symbols, including symbols verified to exist in fetched files. That result is not negative evidence. The sweep did not fetch and inspect every one of the 188 code files for every identifier, nor parse ASTs or execute imports. Therefore external/indirect/dynamic callers and complete production reachability remain `UNKNOWN/BLOCKED`; this addendum must not be read as a complete caller allowlist.
 
 No runtime, test, or workflow file changed. No tests/CI were run. D1-DESIGN remains OPEN; D1-IMPLEMENTATION remains unauthorized; M0 remains INCOMPLETO; root PENDING/UNKNOWN; protected effects STOP.
+
+
+## Addendum — reconciliación de puertas D1 (2026-10-25)
+
+Matriz de referencia: `NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md`, commit `e82337c70fd2545fa0e40e2eaa148a54d3f7674e`.
+
+- CLI principal: parser path-oriented; `--root` y admisión previa a I/O pendientes.
+- Chronicle hijo: invocable directamente; acepta rutas de stores separadas; root único y validación independiente pendientes.
+- Queries/previews: lectura por factories path-oriented; admisión previa a primera lectura para O-10 no demostrada.
+- Factories/owner: exports de bajo nivel; callers parcialmente identificados; no declarar inalcanzabilidad general.
+- Repair: O-07 excluye reparación del M0 operativo; no prueba que todas las APIs inferiores sean inalcanzables.
+- Nexo/Lúmina: acoplamientos conocidos en `assistants.mjs` y `simulate.mjs`; preservar persistencia legítima de Lúmina.
+- El test actual cubre imports/reexports literales desde dos CLIs, no el cierre de loaders dinámicos, procesos externos o consumidores downstream.
+
+La exclusión de repair O-07 no ratifica la Alternativa A de refactor de Gemini; la estrategia A/B/C sigue pendiente. Aristas no resueltas permanecen `UNKNOWN/BLOCKED`.
+
+Puertas D1: root/mapping determinista; precondición de admisión por entrypoint/API; contrato padre/hijo Chronicle con validación independiente y rechazo antes de I/O; admisión de queries/previews; estado propietario y dependencias prohibidas Nexo/Lúmina; clasificación explícita de edges desconocidos y decisiones pendientes.
+
+Estado: D1-DESIGN `OPEN`; implementación `NO AUTORIZADA`; M0 `INCOMPLETO`. Sin cambios de runtime/tests/workflows y sin tests/CI ejecutados.
