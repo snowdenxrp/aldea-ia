@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN MÁS RECIENTE — P-01 / PERFIL MÍNIMO DEL ENTORNO (2026-10-25)
+
+- El propietario confirma que todavía desconoce el entorno inicial y no puede confirmar quiescencia operacional. P-01 y P-05 permanecen `UNKNOWN/BLOCKED`; no se selecciona A/B/C/D.
+- Perfil de intake mínimo actualizado y releído: [NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md), commit `8a3495c8b53311b12e681de779fcb40947608ff4`, blob `ef463da2e60a9e08b13f30e8d9d1e62366c0c94e`. Primeros datos requeridos: destino/SO y alcance (prototipo o instalación real), modo de lanzamiento/relanzadores, capacidad para detener writers e impedir reinicios, y evidencia disponible para demostrarlo. El perfil de almacenamiento se pide después si hace falta.
+- Handoff vigente actualizado y releído: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), commit `c56af00dd8dbd05750befadc3314302aa2acc13e`, blob `f9bced739719fc09bb59c2bf10ee80b77ffab4a1`.
+- Esta respuesta es documental. No se modificó runtime/tests/workflows, no se ejecutaron tests/CI y no se concedió autorización de implementación.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT CANÓNICO ACTUAL — HANDOFF CLAUDE/D1 (2026-10-25)
 
 - Contraste del registro para bootstrap: [NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md), commit `280fbfdfedcae89451dcc33ff1c71b2150bbe46a`. El registro ratifica O-08 sobre raíz, pero conserva P-01 bootstrap y P-05 readmisión como pendientes; no hay selección A/B/C/D documentada.
