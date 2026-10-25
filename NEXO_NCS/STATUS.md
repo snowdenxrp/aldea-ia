@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — RECONCILIACIÓN Y CRASH RECOVERY
+
+- Informe nuevo: [NCS_M0_RECONCILIATION_CRASH_RECOVERY_MAP_2026-10-24.md](BUILD/NCS_M0_RECONCILIATION_CRASH_RECOVERY_MAP_2026-10-24.md), commit `59453bf5c454eb28e2d09026bf1082f9819ba5b6`, blob releído `45924c184848269272ce04947741512b0aaaa867`.
+- Snapshot fuente: `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`.
+- Precisión importante: `owner.reconcilePrepared()` sí existe. Para acciones genéricas exige verifier explícito y evidencia validada; para reparaciones rechaza ese camino y requiere settlement específico. La ruta de reparación es PREPARED durable → dispatch ligado a revisión → observación del estado persistido → settlement observado; no reclama causalidad ni atomicidad multi-store.
+- Pruebas existentes contienen crash cuts/replay/UNKNOWN/falta de verifier y reconstrucción tras reinicio, pero en esta revisión solo se leyeron; no se ejecutaron.
+- Siguiente paso: mapa estático de alcanzabilidad de PREPARED/dispatch/settlement desde entrypoints y wrappers; separar existencia API de accesibilidad, autoridad y ejecución efectiva.
+- Gates sin cambio: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — MIGRACIÓN Y SEPARACIÓN DE STORES NEXO/LÚMINA
 
 - Informe: [NCS_M0_CONTINUITY_MIGRATION_AND_STORE_SEPARATION_2026-10-24.md](BUILD/NCS_M0_CONTINUITY_MIGRATION_AND_STORE_SEPARATION_2026-10-24.md), commit `55138df2a6f115e7409350926d0430e1450043fc`, blob releído `2110fb3b5968f6ebe0e5869505043634f770eda3`.
