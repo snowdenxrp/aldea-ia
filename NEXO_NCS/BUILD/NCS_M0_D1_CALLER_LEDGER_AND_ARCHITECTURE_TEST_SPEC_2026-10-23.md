@@ -141,3 +141,39 @@ A targeted source read adds a distinct classification gap to the D1 ledger:
 **D1 consequence:** add all three lower-level APIs, their reexports/callers, and the simulation/effect-adapter edges to the eventual reproducible entrypoint/caller manifest. Do not mark M0 repair exclusion closed merely because the top-level runtime wrapper blocks. Known product routes must be explicitly excluded or admitted by policy; unknown/downstream callers remain UNKNOWN/BLOCKED. Preserve Lúmina's legitimate state persistence; separation requires removing the cross-domain dependency from the ordinary Nexo path, not disabling Lúmina behavior.
 
 This is a source-level reachability/design finding, not proof of execution or exploitation. No repair function was invoked; runtime/tests/workflows were unchanged and no tests/CI were run. D1-DESIGN remains OPEN; implementation remains unauthorized.
+
+
+## Addendum — verificación dirigida de cobertura de arquitectura y reparación (2026-10-25)
+
+### Fuentes reconsultadas
+- `tests/nexo/entrypoint.test.mjs` — blob `ff1bd2e9d292e21e00049b354249aee684837bbc`.
+- `tests/nexo/chronicle-runtime.test.mjs` — blob `0bf35f0dc1aadb121a8b2145b4963bacd5641c04`.
+- `tests/nexo/chronicle-session-input-guard.test.mjs` — blob `76d27ddee20ed84fb26f2ef5dc6039e4e7ecc648`.
+- `package.json` — blob `e45dc6d215db53ea2758009cd501f565634e3610`.
+- `.github/workflows/nexo-m0-chronicle.yml` — blob `65b2bc04a015f5bd1fe010e3f3eec6e0481514e7`.
+- `.github/workflows/nexo-mission-admission-continuity.yml` — blob `03f2a0cb8268e442ce4db434383b0f4854073d82`.
+- `scripts/nexo-repair-session.mjs` — blob `1ce95a621ed5bb9f473c9d0f15b5ee3f2f1459a5`.
+- `scripts/nexo-repair-entrypoint.mjs` — blob `74d0fa92c447034e7454b7b846d584819ac81ffd`.
+- `scripts/nexo-repair-dispatch.mjs` — blob `ed45438be7604d3b341cecd5fbcfc69adda2447e`.
+
+### Qué cubre el test actual de entrypoint — y qué no
+El test actual recorre imports/reexports locales estáticos desde `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs` usando una expresión regular sobre el texto fuente. Verifica que esas rutas no importen ciertos módulos Lúmina/legacy y que el API de aplicación permanezca estrecho. Es cobertura útil para el objetivo acotado que implementa, pero no es un grafo AST completo y no acredita:
+- `import()`, `require()` o módulos calculados;
+- llamadas a factories/owner desde todos los callers del repositorio;
+- rutas de ejecución externas o consumidores downstream;
+- proceso hijo con una raíz única canónica y admisión antes del primer acceso persistente;
+- prohibición de invocar directamente APIs exportadas de bajo nivel.
+
+El test no se ha ejecutado en esta revisión; estas observaciones derivan de lectura estática de su fuente.
+
+### Brecha de configuración de pruebas/CI
+`package.json` encadena explícitamente archivos de prueba; no usa descubrimiento global. Los workflows revisados ejecutan listas seleccionadas de tests y sus filtros de rutas no cubren todavía un contrato implementado de root admission, porque tal contrato y su test de arquitectura no existen en runtime en este snapshot. No cambiar workflows hasta que D1 congele el manifiesto, la especificación del test y los paths exactos; cualquier cambio requiere autorización de implementación.
+
+### Reparación: la exclusión de wrapper no cierra la cadena inferior
+Los módulos fuente exportan `runNexoRepairSession()`, `runNexoRepairOnce()` y `dispatchPreparedRepair()`. La cadena de entrypoint importa `loadStateStrict` desde `scripts/simulate.mjs`; el dispatcher importa `loadStateStrict`/`persistState` y el adaptador de simulación Lúmina. Esto confirma una cadena de código fuente que debe quedar explícitamente fuera de la ruta operativa M0 según Option A; no prueba que se haya ejecutado ni que todos los consumidores estén identificados. El wrapper bloqueado de `scripts/nexo-runtime-session.mjs` no sustituye esta clasificación. No se invocó ninguna función de reparación.
+
+### Estado/decisión
+- El diseño de D1 debe enumerar los límites de caller y la condición de admisión antes de primera lectura persistente; la prueba arquitectónica de fuente es una comprobación complementaria, no una frontera de seguridad en runtime.
+- Option A sigue siendo el alcance operativo vigente para excluir reparación; las rutas inferiores conocidas requieren clasificación explícita, no se consideran inalcanzables por inferencia.
+- Los consumidores externos/dinámicos y las aristas no resueltas siguen `UNKNOWN/BLOCKED`.
+- No se modificó runtime, tests, workflows ni datos operativos; no se ejecutaron tests ni CI. D1-DESIGN sigue `OPEN`; D1-IMPLEMENTATION sigue no autorizada; M0 `INCOMPLETO`.
