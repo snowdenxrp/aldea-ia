@@ -79,3 +79,44 @@ Estados utilizados:
 - [Matriz de estados D2](NCS_M0_D2_INSTANCE_ADMISSION_STATE_TRANSITION_MATRIX_2026-10-23.md)
 - [Alcance de cuarentena por release incierto](NCS_M0_D2_RELEASE_UNCERTAINTY_QUARANTINE_SCOPE_2026-10-23.md)
 - [Línea de meta M0](NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md)
+
+
+## 8. Ratificación del propietario — 2026-10-25
+
+Ratificación explícita recibida después de la versión inicial de este registro. Esta sección actualiza el estado de diseño; **no autoriza implementación**.
+
+### 8.1 Decisiones ratificadas
+
+| ID | Decisión ratificada | Límite / qué no significa |
+|---|---|---|
+| O-08 | Reafirmar D0-C1..C4 como contrato de diseño aceptado: raíz única explícita `--root`, operación normal sin inicialización implícita, canonicalización antes de derivar rutas y sin migración automática/fallback legacy en el alcance acordado. | No demuestra enforcement en runtime ni selecciona por sí sola el protocolo de bootstrap. |
+| O-09 | Para la separación Nexo/Lúmina, definir primero fronteras, estado y dependencias prohibidas; elegir después el refactor mínimo que haga cumplir el contrato. | No impone aislamiento físico de scripts como solución previa ni demuestra aislamiento actual. |
+| O-10 | Ninguna lectura persistente de consultas/previews/Chronicle dentro del alcance de admisión definido puede eludir esa frontera. | El alcance preciso, sección crítica, propiedad del lock y comportamiento padre/hijo deben quedar coherentes en D1/D2; no autoriza cambios. |
+| O-11 | Ante liberación incierta de un lock: `UNKNOWN/BLOCKED`; no reintentar automáticamente la operación de negocio ni permitir readmisión hasta resolver la incertidumbre. | No implica congelación permanente ni autoriza recuperación automática; el protocolo seguro de cuarentena y resolución sigue siendo diseño pendiente de D2. |
+
+### 8.2 Solo decisiones pendientes
+
+| ID | Decisión pendiente | Trabajo de diseño necesario | Estado mientras no se resuelva |
+|---|---|---|---|
+| P-01 | Protocolo concreto de bootstrap de raíz. | Seleccionar procedimiento explícito y demostrar cómo se garantiza quiescencia; publicación atómica solo si existen garantías verificables del filesystem. | No bootstrap implícito; `UNKNOWN/BLOCKED` si no se demuestra seguridad. |
+| P-02 | Fronteras exactas Nexo/Lúmina para `assistants.mjs`, `simulate.mjs` y rutas relacionadas. | Enumerar estado y dependencias permitidas/prohibidas, preservar el comportamiento propio de Lúmina y decidir exclusiones explícitas antes de escoger el refactor mínimo. | No declarar aislamiento de runtime demostrado. |
+| P-03 | Alcance exacto de admisión para consultas, previews, snapshots y uso de datos persistentes. | Definir comienzo/fin de la sección protegida y resultados ante fallo; mantener coherencia entre API pública, CLI y proceso hijo Chronicle. | Ningún bypass se considera seguro por suposición; bordes no resueltos `UNKNOWN/BLOCKED`. |
+| P-04 | Propiedad y composición de locks entre proceso padre, hijo Chronicle y APIs invocadas directamente. | Caracterizar locks actuales y decidir la primitiva solo tras comparar semánticas; demostrar ausencia de deadlock en el contrato. | No unificar ni refactorizar locks a ciegas. |
+| P-05 | Cuarentena y criterio verificable para resolver liberación incierta y permitir readmisión. | Definir cómo se demuestra que el actor anterior ya no puede modificar estado protegido y cómo se evita retirar un lock reemplazado. | `UNKNOWN/BLOCKED`; sin reintento de negocio ni readmisión automática. |
+| P-06 | Política de timeout/stale y recuperación de locks. | Acordar criterios y evidencias; edad o PID por sí solos no autorizan borrar locks. | Los valores numéricos anteriores siguen siendo candidatos, no decisiones. |
+| P-07 | Política de rutas reservadas y casos de filesystem/alias fuera del modelo cooperativo. | Definir casos aceptados/rechazados y límites de las garantías; no afirmar protección universal frente a TOCTOU hostil. | Ambigüedad → `UNKNOWN/BLOCKED`. |
+| P-08 | Compatibilidad de APIs/CLI existentes con el contrato de raíz única. | Resolver consumidores de rutas independientes, flags de inicialización y resultados de error antes de cualquier cambio. | Sin fallback silencioso ni cambio de comportamiento por inferencia. |
+| P-09 | Resolución de consumidores externos, cargas dinámicas y aristas indirectas que puedan eludir la frontera. | Cerrar solo las aristas concretas pendientes contra el snapshot identificado; registrar las que no puedan resolverse. | `UNKNOWN/BLOCKED`; no declarar inventario exhaustivo si no está demostrado. |
+| P-10 | Matriz final de evidencia de D1 y reconciliación con M0 A–E. | Vincular cada criterio aplicable a contrato, prueba, SHA exacto, workflow/job/run y resultado; mantener separadas las etiquetas documentado/decidido/implementado/verificado. | M0 sigue `INCOMPLETO`. |
+
+### 8.3 Estado canónico tras la ratificación
+
+- M0: `INCOMPLETO`.
+- D0 técnico/evidencia: `OPEN`.
+- D1-DESIGN: `OPEN` hasta resolver los puntos aplicables de la tabla 8.2 y documentar las incógnitas restantes.
+- D1-IMPLEMENTATION: `NO AUTORIZADA`.
+- D2/D3: `OPEN`.
+- `authorization: NOT_EVALUATED`.
+- Raíz legítima: `PENDING/UNKNOWN`.
+- Efectos protegidos: `STOP`.
+- No se ejecutaron pruebas ni CI como parte de esta ratificación; no se modificaron runtime, tests ni workflows.
