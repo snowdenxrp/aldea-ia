@@ -119,3 +119,33 @@ La evidencia tampoco permite afirmar que no exista otro launcher, proceso legacy
 - No exigir control absoluto de todos los procesos Android por defecto; identificar primero el proceso real que escribe o lanza escritores de la raíz.
 - Siguiente paso: localizar, mediante lectura estática estrecha, el contrato/entrypoint que pretende crear o modificar la raíz y quién lo invoca. Si ningún entrypoint operativo está definido, registrar la ausencia como hueco de diseño y mantener los gates.
 - Sin pruebas/CI, sin instalación, sin cambios de runtime ni de dispositivo.
+
+
+## 11. Entry point operativo encontrado: CLI Node.js, separado del cliente Android (2026-10-25)
+
+### Fuentes inspeccionadas
+
+- `scripts/nexo.mjs`, blob `e471eb478a09aa8a9a8323795583e198cdf0a127`.
+- `scripts/nexo-chronicle-session.mjs`, blob `30a53de2f108aa255a1dfd61ce78c19788de160b`.
+- `src/nexo/application/chronicle-append.mjs`, blob `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`.
+- `tests/nexo/entrypoint.test.mjs`, blob `ff1bd2e9d292e21e00049b354249aee684837bbc`.
+- `tests/nexo/root-bootstrap-protocol.test.mjs`, blob `996c031224ba4544d8982ca4fd1762e9d4f44dc0`.
+
+### Hallazgo estático
+
+1. Sí existe un entrypoint operativo de prototipo en `scripts/nexo.mjs`, que delega `chronicle-append` a `scripts/nexo-chronicle-session.mjs` mediante un proceso hijo Node.js.
+2. Ese comando acepta rutas explícitas `--continuity` y `--chronicle`, además de `--initialize-continuity` y `--initialize-chronicle`. Las stores tienen inicializadores independientes y el test de entrypoint documenta un caso de bootstrap parcial si Continuity se inicializa pero el destino de Chronicle falla. Esto no constituye un contrato de publicación atómica de una raíz única.
+3. El vector `tests/nexo/root-bootstrap-protocol.test.mjs` es prueba software de protocolo con fixtures; su propio comentario indica que no representa la raíz real de Nexo.
+4. No se ha identificado en estas fuentes una integración entre la app Android `org.nexo.m1` y este CLI Node.js, ni un servicio/supervisor de despliegue de ese CLI en el POCO. Tampoco se ha demostrado un comando de bootstrap de raíz canónica que controle ambas stores como una única raíz y produzca por sí mismo `ROOT_READY`.
+
+### Consecuencia para la opción A
+
+La pregunta anterior “¿la raíz se ejecutará en el POCO o el POCO será solo cliente?” queda refinada por la evidencia de código: **el cliente Android M1 y el CLI Node.js de stores son componentes separados en el repo; su integración en el POCO no está demostrada**. Por ello no debemos modelar la Activity Android como launcher del bootstrap de stores.
+
+- Para el CLI, la invocación explícita de un proceso Node es un candidato a operación manual, pero el modo de despliegue real, la ubicación de los archivos, los escritores/launchers adicionales y el control sostenido no están acreditados. No certificar A.
+- Para Android M1, la fuente actual no crea ni escribe la raíz NCS; su ciclo de vida no es la evidencia de quiescencia que exige A.
+- El bootstrap parcial de dos stores y el contrato de raíz/ROOT_READY siguen siendo un hueco de diseño distinto del control de launchers.
+
+### Siguiente paso acotado
+
+No continuar con inventario genérico de todos los daemons Android. El siguiente paso documental es comparar el contrato de raíz/ROOT_READY con el CLI existente y registrar exactamente qué frontera falta: una raíz canónica explícita, la relación entre las dos rutas de store, y el actor autorizado que invoca el bootstrap. No proponer wrapper ni código nuevo sin autorización de implementación. La opción A permanece `UNKNOWN/BLOCKED`; B/C/D no seleccionadas. Sin tests/CI ni cambios de runtime/dispositivo.
