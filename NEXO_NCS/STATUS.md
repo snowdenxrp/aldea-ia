@@ -1,5 +1,15 @@
 # PUERTA CANÓNICA DE CONTINUIDAD — «CONTINÚA» (2026-10-25)
 
+## Salvaguardas de evidencia CV-24–CV-26 (2026-10-25)
+
+- **CV-24 — Publicación:** la opción B exige evidencia del contexto real de staging/destino y de la semántica de publicación; no se infiere atomicidad, durabilidad ni seguridad por la mera llamada a `rename` o por una prueba de laboratorio. Véase la matriz de aceptación de bootstrap.
+- **CV-25 — Entornos:** la evidencia conserva el alcance del entorno realmente evaluado. Los resultados de laboratorio no se extrapolan al POCO X7 Pro cuando dependen de condiciones específicas del dispositivo que no se han demostrado. Véase el perfil D3.
+- **CV-26 — Estado canónico:** ninguna prueba aislada, script, marcador, ausencia momentánea de procesos o resultado de CI eleva por sí solo el estado a `ROOT_READY`. Todos los predicados ratificados deben satisfacerse con evidencia suficiente.
+- Estos criterios son salvaguardas documentales; no cambian los gates: M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Bootstrap A/B/C/D sigue sin selección.
+- No se ejecutaron tests/CI ni se modificaron runtime, workflows o dispositivo como parte de esta actualización documental.
+
+
+
 - **Entrada obligatoria para todas las IA:** este archivo `NEXO_NCS/STATUS.md`. Después seguir `MASTER → CORE → handoff vigente → BUILD/tarea activa`; consultar `NEXO_NCS/AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md` para coordinación y encargos a ChatGPT/Claude/Gemini.
 - **Checkpoint actual (2026-10-25):** inventario estático de callers y hueco de raíz documentado en [NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md](BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md), commit `d76950dec94367a8cfba2120bd396f69061eb25b`. Se confirmó el flujo `nexo.mjs → nexo-chronicle-session.mjs → runNexoChronicleAppend → stores` con rutas separadas `--continuity`/`--chronicle` e inicialización separada. La prueba de entrypoint documenta bootstrap parcial; los locks son cooperativos, no una barrera contra escritores externos. No se identificó un caller operativo de provisioning ni una ruta de raíz única en estos entrypoints. La matriz de conformidad y el principio ratificado `--root <directory>` siguen vigentes. M1 Android y el CLI Node no tienen integración demostrada en el POCO.
 - **Siguiente paso:** determinar si existe un despliegue/provisioning operativo definido que conecte `--root <directory>` con las stores y su caller autorizado. Si no existe, registrar el vacío de diseño y solicitar evidencia mínima: invocador real, raíz física/rutas derivadas y autoridad para detener escritores. No inventar un entrypoint ni implementar wrapper/flags; no seleccionar A/B/C/D. Mantener `UNKNOWN/BLOCKED` si no se puede demostrar.
