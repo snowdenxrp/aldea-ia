@@ -212,3 +212,17 @@ Conclusión limitada: M1 no está demostrado como bootstrapper ni escritor de la
 Siguiente paso: inspección estática estrecha de los contratos/entrypoints de bootstrap y sus callers para localizar quién crea/modifica la raíz. Si no existe un entrypoint operativo definido, registrar el hueco; no inventar uno. No realizar barrido general ni repetir auditorías cerradas.
 
 Gates: opción A `UNKNOWN/BLOCKED`; B/C/D sin seleccionar; M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No se ejecutaron tests/CI ni cambios de runtime/dispositivo.
+
+
+### Refinamiento del checkpoint — CLI y Android no están integrados (2026-10-25)
+
+Lectura estática adicional:
+- `scripts/nexo.mjs` delega `chronicle-append` a `scripts/nexo-chronicle-session.mjs` como proceso hijo Node.js.
+- El CLI acepta `--continuity`, `--chronicle`, `--initialize-continuity` y `--initialize-chronicle`; son rutas/initializaciones de stores independientes.
+- `tests/nexo/entrypoint.test.mjs` contiene un caso explícito de bootstrap parcial entre ambas stores. No es prueba de una raíz canónica única ni de transición a `ROOT_READY`.
+- `tests/nexo/root-bootstrap-protocol.test.mjs` usa fixtures de software, no la raíz real.
+- No se encontró evidencia estática de que `org.nexo.m1` invoque ese CLI ni de que el CLI esté desplegado en el POCO X7 Pro.
+
+**Implicación:** no atribuir al launcher Android la responsabilidad de quiescencia de las stores. Para el CLI, el lanzamiento manual es solo un candidato conceptual; el despliegue real, los writers/launchers relevantes y la capacidad de impedir relanzamientos siguen sin evidencia. Opción A permanece `UNKNOWN/BLOCKED`; B/C/D no seleccionadas.
+
+Siguiente tarea: contrastar el contrato de raíz/`ROOT_READY` con las dos inicializaciones independientes del CLI y delimitar el hueco de diseño (raíz canónica, relación de stores, invocador autorizado). Documental solamente; no tests/CI, runtime ni dispositivo.
