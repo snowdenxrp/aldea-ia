@@ -310,3 +310,52 @@ Decision register updated in documentation-only commit `5acf8c9fb0d8b78820556454
 - Protected effects: `STOP`.
 
 No runtime, test, workflow or data file was changed as part of this checkpoint. No tests/CI were run. This addendum records the owner decisions and continuation path; it does not claim D1 closure.
+
+
+## ADDENDUM — Gemini independent review and D1 boundary reconciliation (2026-10-25)
+
+### New verified documentation checkpoints
+
+1. Independent review of Gemini's response:
+   - `NCS_M0_GEMINI_INDEPENDENT_D1_DESIGN_REVIEW_2026-10-25.md`
+   - Commit: `ac498b3d7cc820b76ef3e697ce43b15b8c04342b`
+   - Blob: `f9e4a01e0e6d9760d54084663f76bd20e3e20f25`
+   - URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_GEMINI_INDEPENDENT_D1_DESIGN_REVIEW_2026-10-25.md
+
+2. Reconciled boundary/admission design contract:
+   - `NCS_M0_D1_BOUNDARY_AND_ADMISSION_CONTRACT_RECONCILIATION_2026-10-25.md`
+   - Commit: `156fb5ef98b9e57c618638d1f358e42b995d1258`
+   - Blob: `6cbbcfba19b21ba72498b6a6234750ea3ebff5cc`
+   - URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D1_BOUNDARY_AND_ADMISSION_CONTRACT_RECONCILIATION_2026-10-25.md
+
+Both new documents were fetched again from GitHub after writing. They are documentation-only; no runtime, tests, workflows, or operational data changed, and no tests/CI ran.
+
+### Conclusions from Gemini review
+
+- Keep logical/modular separation as a candidate only; it is not a newly ratified owner decision and does not establish runtime enforcement. O-09 requires defining boundaries/prohibited dependencies first and selecting the minimum refactor afterward.
+- O-10 is already ratified: persistent reads in the agreed query/preview/Chronicle admission scope cannot bypass admission. The remaining work is to specify exact scope, ownership and parent/child behavior—not to assume a read-only exception.
+- Chronicle's child is independently executable. It must validate the root contract itself; inherited arguments/context are not proof of admission. Parent/child lock ownership must avoid holding a non-reentrant lock while waiting for a child that needs it.
+- The 188-blob named-identifier sweep is not a complete semantic call graph. Unresolved dynamic/external edges remain UNKNOWN/BLOCKED and cannot be reclassified as accepted risk merely to close D1.
+- Preserve legitimate Lúmina learning-memory and world-state persistence. Do not delete/disable Lúmina behavior to hide the cross-domain coupling; ordinary Lúmina commands must not perform Nexo operations or implicit migration.
+
+### Exact continuation point
+
+Do not repeat the 188-file sweep absent a source-tree change. Continue with concrete unresolved D1 surfaces only:
+1. reconcile the new boundary contract with the existing entrypoint manifest and decision register;
+2. classify direct-execution guards, dynamic/computed loaders, external consumers, direct path-based store/owner callers, and parent-to-child root/argument mapping where source evidence is available;
+3. where complete caller resolution is unavailable, preserve UNKNOWN/BLOCKED and state which closure claim it blocks;
+4. keep root-lock primitive, exact snapshot critical section, uncertain release/quarantine, timeout/stale, and API/CLI compatibility as open design dependencies for D2;
+5. do not change runtime/tests/workflows or run CI without separate explicit implementation authorization.
+
+### Canonical state remains unchanged
+
+- M0: INCOMPLETO.
+- D0 technical/evidence: OPEN.
+- D1-DESIGN: OPEN.
+- D1-IMPLEMENTATION: NO AUTORIZADA.
+- D2/D3: OPEN.
+- authorization: NOT_EVALUATED.
+- legitimate root: PENDING/UNKNOWN.
+- protected effects: STOP.
+
+This addendum records continuity only. It does not close D1, claim runtime isolation, or authorize implementation.
