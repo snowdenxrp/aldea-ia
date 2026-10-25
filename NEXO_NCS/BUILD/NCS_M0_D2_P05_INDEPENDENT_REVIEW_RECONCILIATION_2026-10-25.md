@@ -117,3 +117,25 @@ Antes de elegir una solución, el propietario debe ratificar un modelo de proces
 - Efectos protegidos: `STOP`.
 
 **Siguiente paso permitido:** decisión del propietario sobre la política P-05/modelo de filesystem, o revisión documental adicional de los contratos relacionados. No parchear runtime ni cambiar las pruebas sin autorización separada.
+
+
+## 8. Contraste complementario con Chronicle (lectura estática)
+
+Fuente: `src/nexo/core/chronicle-store.mjs`, blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`; no se ejecutaron pruebas.
+
+- Chronicle no contiene el mismo reintento explícito de release de Continuity: tras el fallo de su primer `rm`, devuelve `status: "failed"`.
+- Sin embargo, su release también lee el owner, compara el token y luego elimina por ruta. Por tanto, la ausencia del segundo intento no demuestra por sí sola que la liberación inicial esté libre de TOCTOU.
+- Si falla la escritura inicial de `owner.json`, Chronicle también intenta `rm(lock, { recursive: true, force: true })` y absorbe el error de limpieza. Esa ruta comparte el riesgo conceptual de la limpieza de Continuity.
+- Chronicle sí falla cerrado ante recuperación de un lock que parece stale: su código comenta que el check-then-remove es racy y exige recuperación explícita. Esto es una salvaguarda relevante para reclamación de locks stale, pero no demuestra seguridad de sus rutas de release ni de limpieza tras fallo de owner.
+- En ambos stores, `readLockOwner` devuelve `null` ante errores de lectura/parseo. En el camino de release, esto conduce a `not_owned`; por ello, la salida no distingue necesariamente “token distinto” de “owner ilegible”. La clasificación precisa de errores requiere un contrato de estado más rico o una decisión explícita sobre la semántica del resultado.
+
+### Consecuencia
+
+No se debe copiar automáticamente el comportamiento de Chronicle como “solución” de Continuity. Las dos implementaciones tienen semánticas diferentes, y ninguna queda demostrada como segura frente a sustitución de la ruta durante release solo por no tener un retry ciego. La comparación refuerza la necesidad de definir el modelo de filesystem/procesos y los predicados de propiedad antes de modificar cualquiera de los stores.
+
+## 9. Estado y límites después del contraste
+
+- Contraste Continuity/Chronicle: inspección estática de ambos blobs; sin ejecución.
+- E3/E4 para ambos stores: no demostrados por las fuentes/pruebas identificadas.
+- No se declara que una carrera haya ocurrido en producción.
+- No se modifica el estado canónico: M0 `INCOMPLETO`; D2/P-05 `OPEN`; implementación `NO AUTORIZADA`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
