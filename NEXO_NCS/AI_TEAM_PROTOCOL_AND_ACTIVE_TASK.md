@@ -306,3 +306,30 @@ La ratificación explícita del propietario está registrada en `BUILD/NCS_M0_OW
 **Gates canónicos sin cambio:** M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; ninguna opción A/B/C/D seleccionada. No se han ejecutado tests/CI ni se han autorizado cambios de runtime/dispositivo.
 
 Cualquier ejecución de tests/CI, implementación, instalación o acción sobre el dispositivo requiere una autorización separada, específica y explícita del propietario. El equipo de IA debe dejar un handoff con documentos consultados, cambios documentales, incógnitas y siguiente paso; no declarar como ejecutada ninguna validación que solo fue diseñada.
+
+## Registro de continuidad — limitación de acceso de Gemini y siguiente encargo (2026-10-25)
+
+### Resultado recibido
+Gemini declaró `UNKNOWN` para SHA, lectura de documentos y todos los puntos CV-24/CV-25/CV-26/P-01/P-05 porque no tenía los archivos en su contexto. Confirmó que no editó archivos ni ejecutó código/tests/CI. **Clasificación:** limitación de acceso/contexto, no hallazgo técnico ni contradicción de diseño; no cuenta como auditoría de fuentes.
+
+### Fuentes disponibles para revisión focalizada
+Las siguientes fuentes se leyeron directamente desde la rama solicitada mediante el acceso al repositorio. Los valores siguientes son SHA de blob de archivo, no SHA de commit ni garantía de HEAD:
+- Matriz bootstrap/CV-24: blob `25bcb5f6b8e7ed106c245fa21c54a4e335a989c4`; CV-24 líneas 46–59, criterios comparativos 23–32, descarte 74–79. URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md
+- Perfil D3/CV-25: blob `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`; E1–E6 líneas 15–60, CV-25 líneas 62–68, intake mínimo líneas 92–102, bloqueo actual líneas 126–127. URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md
+- Inventario de callers: blob `e79f8672c5c8b858fffe2015cc18544007449756`; flujo y gap líneas 20–48, evidencia mínima líneas 52–60. URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md
+- P-05 release incierto/readmisión: blob `5c4b74ecb3924682e5cf3c93275ea40d64be4f8c`; dimensiones separadas §§2–3, casos E1–E9 §5, gate §7. URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_P05_RELEASE_UNCERTAINTY_AND_READMISSION_EVIDENCE_SPEC_2026-10-25.md
+- P-03/P-04 admisión/ownership: blob `baa28e3b868aa0262b9aa9edd837d06938aacd4d`; O-08/O-10/O-11 §2 y alcance/ownership §§3–4. URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_P03_P04_ADMISSION_SCOPE_AND_LOCK_OWNERSHIP_SPEC_2026-10-25.md
+
+### Instrucción actualizada para Gemini
+1. Intenta abrir las cinco URL anteriores directamente. Lee también STATUS y el protocolo del equipo por sus enlaces en la rama.
+2. Si las URL no son accesibles desde tu entorno, no repitas una respuesta general de `UNKNOWN`: solicita que se te proporcione solo el extracto exacto necesario de las secciones citadas o analiza los extractos que el propietario te entregue. No afirmes haber leído el repositorio.
+3. Limita el trabajo a discrepancias materiales no cubiertas: (a) si CV-24 distingue de forma suficiente atomicidad, durabilidad, integridad y lectores que consumen staging; (b) si CV-25 restringe claims al entorno y a condiciones relevantes; (c) si P-01 exige control sostenido sobre todos los writers/launchers; (d) si P-05 separa persistencia, release y readmisión sin introducir mecanismos no aprobados.
+4. Clasifica cada punto `YA CUBIERTO`, `NUEVO`, `CONTRADICCIÓN`, `NO SUSTENTADO` o `UNKNOWN`, con sección/línea y razón. Si no hay hallazgo material nuevo, dilo.
+5. No edites archivos, no crees commits, no ejecutes tests/CI/código y no elijas A/B/C/D. No propongas IDs, epochs, tombstones, colas, retries ni coordinadores sin demostrar una necesidad contractual.
+6. No repitas inventarios generales ni auditores previos. La respuesta anterior queda registrada como limitación de contexto, no como evidencia técnica.
+
+### Lectura estática preliminar de ChatGPT (no ratificación)
+Los documentos ya dicen explícitamente: ausencia de lock/PID aparentemente muerto/marcador `ready` no basta para `ROOT_READY`; la opción B exige contexto real de filesystem, rutas staging/destino, competencia y aislamiento de lectores; la evidencia de laboratorio no se extrapola al POCO si las condiciones relevantes no están demostradas; P-01 pide caller, raíz, writers/relanzadores y capacidad de impedir relanzamiento; P-05 separa resultado de persistencia, release y readmisión y prohíbe readmisión/retry automáticos ante incertidumbre. Gemini debe buscar una omisión concreta, no repetir estos puntos como descubrimientos nuevos.
+
+### Gates sin cambio
+M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; A/B/C/D sin seleccionar. No tests/CI ni cambios de runtime/dispositivo.
