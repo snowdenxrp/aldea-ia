@@ -127,3 +127,17 @@ La política aceptada exige `--root` explícito único sin env/fallback legacy e
 - **Clasificación no cerrada:** los callers identificados tienen propuesta/estado abierto; toda arista no resuelta debe seguir `UNKNOWN/BLOCKED`. El escaneo de wrapper con dos callers internos no prueba ausencia de consumidores externos.
 - **Consistencia D0→D1:** la política de raíz ahora está decidida; falta traducirla a una allowlist/manifiesto de entrypoints y condiciones verificables, sin implementar el test todavía.
 - **Estado:** D1-DESIGN `OPEN`; D1-IMPLEMENTATION no autorizada/no iniciada; runtime/tests/workflows sin cambios por esta actualización; no se ejecutó CI. Estado canónico M0 `INCOMPLETO`; D0/D1/D2/D3 gates abiertos; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Addendum — repair API reachability boundary (2026-10-24)
+
+A targeted source read adds a distinct classification gap to the D1 ledger:
+- `scripts/nexo-runtime-session.mjs` returns the Option A blocked result, but that is a wrapper-local guarantee.
+- `scripts/nexo-repair-session.mjs` exports `runNexoRepairSession()`.
+- `scripts/nexo-repair-entrypoint.mjs` exports `runNexoRepairOnce()` and imports `loadStateStrict` from `scripts/simulate.mjs`.
+- `scripts/nexo-repair-dispatch.mjs` exports `dispatchPreparedRepair()`; it imports `loadStateStrict` and `persistState` from Lúmina's simulation module and the Lúmina simulation adapter.
+- Exact source blob SHAs and the bounded interpretation are recorded in `NCS_M0_D1_REPAIR_API_BOUNDARY_REVIEW_2026-10-24.md`.
+
+**D1 consequence:** add all three lower-level APIs, their reexports/callers, and the simulation/effect-adapter edges to the eventual reproducible entrypoint/caller manifest. Do not mark M0 repair exclusion closed merely because the top-level runtime wrapper blocks. Known product routes must be explicitly excluded or admitted by policy; unknown/downstream callers remain UNKNOWN/BLOCKED. Preserve Lúmina's legitimate state persistence; separation requires removing the cross-domain dependency from the ordinary Nexo path, not disabling Lúmina behavior.
+
+This is a source-level reachability/design finding, not proof of execution or exploitation. No repair function was invoked; runtime/tests/workflows were unchanged and no tests/CI were run. D1-DESIGN remains OPEN; implementation remains unauthorized.
