@@ -97,7 +97,7 @@ D1-DESIGN solo puede cerrarse cuando:
 - [ ] Las APIs de bajo nivel están clasificadas según evidencia, no por inferencia desde wrappers.
 - [ ] Las aristas dinámicas, externas y computadas se resuelven contra el snapshot exacto o se mantienen UNKNOWN/BLOCKED con su efecto preciso sobre la afirmación de cierre.
 - [ ] Las decisiones pendientes del registro se marcan como ratificadas, abiertas o fuera de alcance; no se promueven propuestas de Gemini automáticamente.
-- [ ] La revisión de consistencia con criterios M0 A–E distingue documento, decisión, implementación y verificación.
+- [ ] La revisión de consistencia usa los criterios normativos A–E de la línea de meta M0 y distingue documento, decisión, implementación y verificación; los grupos de evidencia G1–G5 del registro no son una segunda taxonomía de aceptación.
 
 Este checklist es criterio de diseño; no afirma que ya esté satisfecho. Los tests/CI de implementación son una fase posterior, no se ejecutaron aquí.
 
@@ -159,3 +159,42 @@ Consecuencia: el contrato D1 debe definir un único `--root`, mapping determinis
 No repetir el barrido de 188 fuentes ni pedir otra revisión general a Gemini. Siguiente acción: reconciliar esta matriz con el manifiesto de entrypoints y el registro de decisiones; investigar solo edges específicos que sigan sin evidencia.
 
 Estado: D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; M0 `INCOMPLETO`; root `PENDING/UNKNOWN`; efectos protegidos `STOP`. Sin cambios de runtime/tests/workflows y sin tests/CI ejecutados.
+
+
+## Addendum — reconciliación de IDs, taxonomía y admisión previa a lectura (2026-10-25)
+
+### Identificadores y línea de meta
+El registro de decisiones ahora califica las propuestas históricas de §3 como `P-HIST-01`…`P-HIST-09`; la tabla vigente de decisiones pendientes §8.2 mantiene `P-01`…`P-10`. Las referencias en esta matriz a P-xx se refieren a la tabla vigente §8.2, salvo indicación histórica explícita. Los criterios normativos de aceptación M0 son A–E en la línea de meta. Los grupos G1–G5 del registro solo agrupan evidencia y no reemplazan esos criterios.
+
+### Invariante D1 de admisión previa a la primera lectura persistente — propuesta de precisión normativa
+1. **Validación pura de argumentos:** analizar sintaxis y detectar opciones ausentes, duplicadas o contradictorias sin abrir archivos ni consultar stores.
+2. **Resolución de raíz:** resolver y canonicalizar la raíz existente según D0, y rechazar ambigüedad antes de derivar las rutas canónicas de stores. La operación normal no crea ni repara una raíz ausente.
+3. **Admisión:** establecer que la operación se ejecuta bajo el contrato de instancia correspondiente antes de leer contenido persistente de los stores de Nexo.
+4. **Primera lectura de stores:** solo después de superar la admisión se permite cargar `continuity.json` o `chronicle.json` y consumir el snapshot correspondiente.
+
+Esta secuencia expresa el orden lógico que debe cumplir el contrato; no decide todavía qué mecanismo de lock protege cada fase. D2 conserva la sección crítica exacta, ownership, duración del snapshot, concurrencia y release incierto. Antes de ratificar esta redacción se debe definir explícitamente el tratamiento de metadatos de raíz (`realpath/stat`), archivos de lock, stdin y archivos de entrada del operador (`--draft`/`--request`): no se los clasifica automáticamente como lectura de store canónico ni se los exime por silencio. La admisión no puede depender de leer previamente un snapshot de Continuity/Chronicle. El principio aplica a queries, previews y Chronicle cubiertos por O-10; no existe excepción general por ser “read-only”.
+
+### Matriz de estado propietario y excepción Lúmina
+| Artefacto/estado | Dominio propietario provisional | Lectura/escritura permitida en el contrato objetivo | Arista observada / bloqueo |
+|---|---|---|---|
+| `continuity.json` y estado de misión Nexo | Nexo | Solo entrypoints Nexo admitidos bajo raíz explícita; sin importación de Lúmina como autoridad o bootstrap | La ruta actual es path-oriented; enforcement no demostrado |
+| `chronicle.json` | Nexo | Chronicle bajo la misma raíz de instancia y contrato de admisión | Hijo directo y rutas separadas aún no cumplen el contrato objetivo |
+| Estado del mundo de simulación | Lúmina | Lectura/escritura por sus flujos propios de simulación | `simulate.mjs` también lee `state.nexoMemory` y abre Continuity; arista legacy pendiente de resolver |
+| Memoria de aprendizaje Lúmina | Lúmina | Lectura/escritura mediante su propio contrato | `assistants.mjs` orquesta memoria y Continuity en un mismo flujo; corte pendiente |
+| `state.nexoMemory` / rama `nexo` en memoria de asistentes | Dominio legacy por determinar; no es fuente de autoridad canónica | No importar, combinar, migrar ni dual-write implícitamente en el flujo ordinario; conservar datos hasta una decisión/migración autorizada | Propiedad y condición de salida pendientes; no borrar ni desactivar persistencia legítima de Lúmina |
+
+**Condición de salida de EXPLICIT_EXCEPTION:** la etiqueta aplicada a `assistants.mjs`/`simulate.mjs` significa solo “fuera del flujo ordinario de instancia Nexo mientras el diseño está abierto”. No es una garantía de aislamiento runtime. La excepción solo puede retirarse cuando (a) la propiedad de cada estado legacy esté decidida, (b) los lectores/escritores permitidos y prohibidos estén enumerados, (c) el corte de responsabilidades sea explícito, (d) se preserve la persistencia propia de Lúmina, y (e) la implementación/test/CI correspondiente haya sido autorizada y verificada sobre el SHA exacto. No se elige aquí una alternativa A/B/C.
+
+### Contrato padre/hijo Chronicle v0 — PROPUESTA NO RATIFICADA
+- Operación normal objetivo: un solo `--root <directory>`; la raíz debe existir y canonicalizarse antes de derivar stores.
+- El destino canónico propuesto es `<root>/continuity.json` y `<root>/chronicle.json`; el layout se convierte en normativo solo tras ratificación explícita.
+- El padre valida la sintaxis superficial y reenvía el contrato de argumentos, pero no transmite una “admisión heredada” como sustituto de la validación del hijo.
+- El hijo valida por sí mismo root, opciones duplicadas/contradictorias y prohibición de flags de inicialización en operación normal, antes de leer stores.
+- No se fija todavía si se admiten raíces relativas; si se permiten, debe congelarse una base única de resolución. Hasta decidirlo, una raíz relativa no tiene semántica normativa cerrada.
+- `--continuity`/`--chronicle` no deben coexistir con `--root` en modo raíz si permiten destinos contradictorios; los flags `--initialize-*` pertenecen a un flujo de bootstrap separado y no a operación normal. Los nombres/compatibilidad exactos deben cotejarse con el parser completo antes de ratificación.
+- El padre no retendrá un lock no reentrante mientras espera a un hijo que necesita la misma admisión. El contrato de ownership de admisión del proceso que ejecuta el append se debe reconciliar con la ejecución directa del hijo antes de congelar D1.
+
+Este bloque es una propuesta documental para discusión; no decide la raíz absoluta/relativa, el destino definitivo de `--initialize-*` ni P-04, y no autoriza parser/runtime/tests.
+
+### Alcance de la evidencia textual de aristas
+Claude informa una búsqueda textual `git grep` sobre 188 archivos JS-family trackeados, con un `import(` encontrado en `src/three-remote.js:18`, `child_process` en el CLI Nexo y sin coincidencias para otros patrones enumerados. El informe aportado no incluye el comando literal completo ni el SHA completo del árbol de búsqueda. Por tanto, se registra como resultado comunicado, no como evidencia reproducible completa. Antes de usarlo para reclasificar edges debe añadirse el comando exacto y el SHA/tree exacto; no repetir el barrido salvo que falte esa evidencia reproducible o cambie la fuente. Incluso con esos datos, el resultado es búsqueda textual, no cierre AST ni prueba de ausencia de consumidores externos/no-JS.
