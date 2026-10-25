@@ -108,3 +108,12 @@ Los datos 1–4 son el mínimo para el siguiente intercambio; E4–E6 completos 
 ## 7. Continuidad
 
 El siguiente chat debe usar este perfil para identificar la única información de entorno realmente necesaria, sin pedir al usuario que vuelva a describir la arquitectura Nexo completa. Una vez conocido el despliegue objetivo, comparar el mecanismo propuesto con los entrypoints legacy ya censados. No repetir el censo salvo cambio verificable de fuente. No implementar hasta que los contratos estén cerrados y exista autorización explícita.
+
+
+## 5B. Plataforma inicial y portabilidad prevista — aclaración del propietario (2026-10-25)
+
+- **Primer entorno de prototipo:** POCO X7 Pro con Android. Esto define el primer destino de desarrollo/prueba, no demuestra que sea la instalación definitiva ni que el procedimiento de quiescencia esté resuelto.
+- **Portabilidad requerida:** Nexo también debería funcionar en PC; el propietario espera disponer de una PC cuando se ensamble Nexo. La PC futura no se considera disponible hoy ni se le atribuyen SO, versión, permisos, lanzadores o garantías operacionales todavía desconocidos.
+- **Consecuencia de arquitectura:** preservar la separación entre núcleo independiente de plataforma y adaptadores específicos de Android/PC. La compatibilidad real con PC requiere verificación futura en un entorno concreto; esta nota es una intención de diseño, no evidencia de portabilidad implementada o probada.
+- **Alcance del bloqueo actual:** la elección del POCO como primer prototipo responde a E1, pero no resuelve E2–E6. Aún falta saber cómo se inicia el prototipo, qué procesos pueden escribir/relanzarse, quién puede detenerlos y qué evidencia puede demostrar que permanecen detenidos.
+- Estado sin cambio: P-01/P-05 UNKNOWN/BLOCKED; D3 OPEN; no se selecciona protocolo A/B/C/D; sin cambios de runtime/tests/workflows y sin tests/CI.
