@@ -130,3 +130,29 @@ Continuar la revisión documental sin esperar a Claude: contrastar los predicado
 
 ### Siguiente paso de mayor valor
 Continuar con la especificación de aceptación de D1/P-02 sin tocar código: comprobar si los criterios de cierre existentes distinguen claramente (a) Lúmina ordinaria conserva su persistencia, (b) Nexo ordinario no importa Lúmina, (c) no hay creación/registro de misión Nexo en la ruta ordinaria de Lúmina, (d) legacy/migración queda separado y explícito, y (e) los callers dinámicos/exportados desconocidos no se declaran cubiertos. Registrar solo cualquier criterio ausente o ambiguo; no repetir el barrido de 188 archivos. Implementación y tests siguen requiriendo autorización separada.
+
+
+## Continuidad activa — P-02 caller/migration distinction (2026-10-25)
+
+### Evidencia nueva fijada
+- Informe de migración/separación actualizado: `NEXO_NCS/BUILD/NCS_M0_CONTINUITY_MIGRATION_AND_STORE_SEPARATION_2026-10-24.md`, blob `503fb64dedc999c0ac0f386de798dd3cce65b8f6`.
+- Commit documental verificado como HEAD de `ncs-clean-architecture`: `f0df24b8b7b98fc2c5c41b5004626b21e057f5fb` (`docs(ncs): clarify simulation caller migration boundary`).
+- Fuente observada: `scripts/simulate.mjs`, blob `623d316c7a1efd10cc2f06a3080c0d9f06087596`; servicio: `src/nexo/core/continuity-service.mjs`, blob `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`.
+
+### Resultado acotado
+El servicio de Continuity condiciona la migración al estado del store, pero el caller ordinario `simulate.mjs` transmite automáticamente `state.nexoMemory` y permite bootstrap vacío cuando no encuentra `world-state.json`. Por ello, “migración controlada/fail-closed dentro del servicio” no equivale a “migración y bootstrap explícitos, separados de la operación ordinaria de Lúmina”. `persistState()` omite `nexoMemory` intencionalmente; no restaurar esa mezcla.
+
+No es evidencia de pérdida de datos ni vulnerabilidad demostrada. No se cambió código, tests, workflows o datos; no se ejecutaron tests/CI.
+
+### Siguiente tarea exacta
+Contrastar los cinco requisitos de caller añadidos al informe con los criterios de cierre de D1 §6 y la tabla de entrypoints de D1 §5. Determinar si la matriz de aceptación distingue explícitamente:
+1. persistencia Lúmina conservada;
+2. ruta ordinaria Lúmina sin apertura de Continuity, migración legacy ni bootstrap Nexo;
+3. migración/bootstrap solo mediante entrypoint separado y explícito;
+4. “no existe estado previo” versus “estado previo desconocido” evaluado con evidencia del dominio Nexo, no solo ausencia de `world-state.json`;
+5. ausencia de side effects Nexo en el caller, sin presumir cobertura de callers dinámicos/exportados.
+
+Registrar únicamente criterios ausentes o ambiguos. No repetir el barrido de 188 blobs, no refactorizar, no añadir mecanismos de recuperación ni ejecutar tests/CI. Si los criterios ya cubren algo, marcarlo cubierto y citar el criterio existente. Después seguir P-03/P-04 como propuestas separadas; no elevarlas a contrato ratificado.
+
+### Gates sin cambio
+M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
