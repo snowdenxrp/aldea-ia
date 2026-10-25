@@ -143,3 +143,12 @@ El registro canónico vigente, sección 8.2, mantiene P-01…P-05 abiertos. P-05
 3. Aclarar P-04 (dueño efectivo por flujo y relación padre/hijo) antes de elegir política de readmisión P-05. No basta releer `owner.json` ni reintentar borrar una ruta para cerrar la carrera.
 4. Solo después de una decisión explícita y una autorización separada, convertir E3/E4 y los demás casos aplicables en pruebas deterministas. Hasta entonces no tocar runtime/tests/workflows ni ejecutar CI.
 5. Mantener los estados canónicos: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+## Continuidad — P-01 permanece UNKNOWN/BLOCKED; intake mínimo del entorno (2026-10-25)
+
+- El propietario indicó explícitamente que todavía desconoce el entorno real y no puede confirmar quiescencia operacional. Esto no selecciona ninguna opción de bootstrap.
+- Se actualizó el perfil [NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md](NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md), commit `8a3495c8b53311b12e681de779fcb40947608ff4`, blob `ef463da2e60a9e08b13f30e8d9d1e62366c0c94e`.
+- La adición define un intake escalonado, no una decisión: (1) destino y sistema/versión; (2) modo de lanzamiento y relanzadores conocidos; (3) quién puede detener todos los escritores e impedir reinicios; (4) qué evidencia real permite demostrar esa condición. Solo después se pide el perfil de almacenamiento (E4) si hace falta comparar alternativas.
+- No solicitar credenciales, claves, rutas privadas ni datos operativos sensibles. “No sé” es una respuesta válida.
+- Si el entorno o el control de relanzamientos no se pueden establecer, P-01/P-05 permanecen `UNKNOWN/BLOCKED`; no elegir B/C/D por descarte. A puede evaluarse si los datos la justifican, pero no queda aprobada por esta nota.
+- Solo cambio documental; no runtime/tests/workflows, no tests/CI. Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
