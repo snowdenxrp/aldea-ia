@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — REVISIÓN DE API DE REPARACIÓN
+
+- Nota nueva de diseño, creada en commit `815601df24702f1f27eaad23120f0f0be4a80901`: [NCS_M0_D1_REPAIR_API_BOUNDARY_REVIEW_2026-10-24.md](BUILD/NCS_M0_D1_REPAIR_API_BOUNDARY_REVIEW_2026-10-24.md).
+- Hallazgo de código: `runNexoRuntimeRepairSession()` devuelve bloqueo Option A, pero existen APIs separadas `runNexoRepairSession()`, `runNexoRepairOnce()` y `dispatchPreparedRepair()`; las últimas rutas importan persistencia/adapter de simulación de Lúmina. El bloqueo de un wrapper no demuestra exclusión global de todas las rutas.
+- Interpretación acotada: es una brecha de clasificación y diseño por resolver, no prueba de que se ejecutara una reparación ni de explotación. No se invocó ninguna función y no se modificó estado.
+- Acción D1: incluir las tres APIs, reexports, callers y aristas al adapter de simulación en el inventario; clasificar rutas de producto y mantener UNKNOWN/BLOCKED para callers no resueltos. Preservar la persistencia legítima de Lúmina.
+- Solo revisión de código/documentación. Runtime/tests/workflows sin cambios; no se ejecutaron tests ni CI.
+- Estado canónico: M0 INCOMPLETO; D1-DESIGN OPEN; implementación no autorizada; D2/D3 OPEN; autorización NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; operaciones protegidas STOP.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-24 — CONTRATO DE SEPARACIÓN NEXO/LÚMINA
 
 - Contrato de diseño creado y leído de vuelta: [NCS_M0_NEXO_LUMINA_SEPARATION_CONTRACT_2026-10-24.md](BUILD/NCS_M0_NEXO_LUMINA_SEPARATION_CONTRACT_2026-10-24.md), blob `b22c27aa8556034f88d91703d6a57642cae579af`, commit de creación `d9bc549aa16c8f8d621384ce537729d07a9054a2`.
