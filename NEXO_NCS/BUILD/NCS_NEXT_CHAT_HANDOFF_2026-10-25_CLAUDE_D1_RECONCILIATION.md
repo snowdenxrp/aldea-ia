@@ -159,3 +159,22 @@ El registro canónico vigente, sección 8.2, mantiene P-01…P-05 abiertos. P-05
 El propietario confirma que el primer prototipo será en su POCO X7 Pro; Nexo también debe poder funcionar en PC y espera tener una PC al ensamblarlo. Tratar esto como objetivo de plataforma/portabilidad, no como prueba de compatibilidad. La PC no está disponible aún y su SO, versión, modo de lanzamiento y control operacional son desconocidos. Mantener la separación núcleo/adaptadores y validar PC cuando exista un entorno concreto.
 
 El POCO aclara el destino inicial (E1), pero no responde todavía E2–E6: modo de lanzamiento, escritores/relanzadores, quién puede detenerlos e impedir reinicios y evidencia verificable de quiescencia. No seleccionar protocolo P-01/P-05 por inferencia: continúan UNKNOWN/BLOCKED; no A/B/C/D seleccionado. No cambiar runtime/tests/workflows ni ejecutar tests/CI sin autorización separada.
+
+
+## Continuidad de producto — avatar Android proactivo (2026-10-25)
+
+Especificación nueva, creada y leída de vuelta desde GitHub: [NEXO_ANDROID_PROACTIVE_AVATAR_PRODUCT_SPEC_2026-10-25.md](NEXO_ANDROID_PROACTIVE_AVATAR_PRODUCT_SPEC_2026-10-25.md), blob `258e62ee37056d645cdf00aa1c162ed74d17c289`, commit de creación `b9d9a527d890e0e9ee6c3ef023c53d9e306e48ff`.
+
+### Acuerdos del propietario que debe conservar el siguiente chat
+- Nexo debe sentirse como asistente personal persistente, no solo chatbot.
+- Avatar pequeño y animado flotante sobre otras aplicaciones; puede tocarse para abrir un panel, conversar por voz/texto, revisar avisos y administrar preferencias. Ocultar/cerrar avatar no debe borrar identidad ni continuidad.
+- Frase de activación deseada: “Nexo”. Investigar detección local si es viable; no fingir escucha, no asumir grabación permanente ni transmisión remota.
+- Iniciativa proactiva con cinco clases de fuentes autorizadas para diseñar: tareas/recordatorios asignados a Nexo; notificaciones del teléfono; calendario/eventos autorizados; señales operativas/de seguridad observables de Nexo; contexto adicional solo con permiso explícito específico.
+- El diseño incluye propuesta P0 crítico / P1 importante / P2 informativo / P3 silencioso; umbrales aún pendientes.
+- Principios: mínimo privilegio, transparencia, revocación, retención limitada, separación Nexo/Lúmina, no leer indiscriminadamente contenido privado ni códigos de autenticación, y detección/notificación no equivale a autoridad para ejecutar efectos.
+- Destino inicial: POCO X7 Pro / Android 16. PC futura es objetivo de portabilidad, pero su SO/entorno aún no se conoce y compatibilidad no está demostrada.
+- El propietario recordó que ya había permitido considerar modificaciones del teléfono/sistema e incluso desbloqueo del bootloader si fuese necesario. Esto es margen de exploración, NO decisión de desbloquear ni autorización para borrar datos, root, flashear o cambiar firmware. Primero demostrar necesidad, evaluar alternativas y riesgos, respaldar datos y obtener confirmación específica antes de cualquier paso irreversible.
+- Revisar restricciones reales del Android del POCO: superposición, foreground service/notificación persistente, restricciones en segundo plano, batería, micrófono, pantalla apagada, permisos de notificaciones/calendario y revocación.
+- Orden sugerido: preferencias/privacidad/quiet hours/retención; recordatorios deterministas; calendario y notificaciones; avatar/panel; wake word local; fuentes contextuales después, con permisos y contratos separados.
+- Todo lo anterior es DISEÑO DOCUMENTADO, no implementación ni pruebas. No se ejecutaron tests/CI ni se modificaron runtime/tests/workflows.
+- En el chat siguiente, primero ruta canónica STATUS → MASTER → CORE → handoff; luego leer esta especificación. Mantener este trabajo de producto separado del cierre NCS M0 y de la autoridad inicial/efectos protegidos.
