@@ -156,6 +156,6 @@ Conclusiones concretas:
 - No se modificó runtime, tests ni workflows; no se ejecutaron pruebas/CI.
 - Estado conservador: M0 INCOMPLETO; D1-DESIGN OPEN; D1-IMPLEMENTATION NOT_STARTED; D2/D3 OPEN; authorization NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
 
-HEAD documental de esta actualización: `9fef242512c18779f96f2f8574cc6691f11297c4`.
+Commit del registro de decisiones: `9fef242512c18779f96f2f8574cc6691f11297c4`. Commit que incorporó este addendum al handoff: `cbfe98de1670ee4159d81cb944441177fc56b8d0` (el HEAD efectivo avanzará con la corrección de esta línea).
 
 Siguiente trabajo recomendado: cerrar D1-DESIGN únicamente contra las aristas UNKNOWN del manifiesto y el snapshot identificado; después terminar D2-DESIGN con la matriz de caracterización de locks. No repetir el censo histórico completo, no implementar runtime/tests/workflows y no ejecutar CI sin autorización separada.
