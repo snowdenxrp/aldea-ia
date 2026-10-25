@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — WORKFLOWS Y ACOPLAMIENTO DE MEMORIA D1
+
+- Nuevo informe: [NCS_M0_D1_GLOBAL_CALLER_AND_WORKFLOW_SCAN_PARTIAL_2026-10-24.md](BUILD/NCS_M0_D1_GLOBAL_CALLER_AND_WORKFLOW_SCAN_PARTIAL_2026-10-24.md), commit `62aaac222bce20363a676bbef29bd367280551b0`, blob releído `72d1f4b3c09f32a032394e887eb26d059ec09ce6`.
+- Snapshot de fuente: commit `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`.
+- Evidencia: `package.json` expone scripts assistants/simulate/nexo; `.github/workflows/lumina-simulation.yml` contiene pasos para `npm test`, `npm run assistants`, `npm run simulate`; `src/assistants/memory.js` conserva registros Nexo en rama `nexo` de la memoria de asistentes. Esto es una superficie de acoplamiento de datos, no prueba de efecto protegido ni de bypass.
+- La separación de propiedad/persistencia Nexo–Lúmina queda como criterio de diseño que requiere cierre explícito. Ningún cambio de runtime ni estado de Lúmina.
+- Siguiente paso: seguir el flujo assistants → memory → persistencia y simulate → world-state para identificar almacenes y responsabilidades; clasificar triggers de workflows por lectura estática. No ejecutar tests/CI.
+- Gates canónicos: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — CONSUMIDORES DE REPARACIÓN Y BARRIDO SRC D1
 
 - Nuevo documento: [NCS_M0_D1_REPAIR_TEST_CONSUMERS_AND_SRC_SCAN_2026-10-24.md](BUILD/NCS_M0_D1_REPAIR_TEST_CONSUMERS_AND_SRC_SCAN_2026-10-24.md), commit `fce3dce5703e609f0b992faa21b0b0816c0ef335`, blob verificado `0b5f791ad1d7cdfcdb814eb1cac3436139002790`.
