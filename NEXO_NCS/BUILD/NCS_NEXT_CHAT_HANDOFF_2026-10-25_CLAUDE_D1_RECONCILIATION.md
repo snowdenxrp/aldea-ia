@@ -38,6 +38,7 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - [Reconciliación D0/D1 del contrato de raíz](NCS_M0_D0_D1_ROOT_CONTRACT_RECONCILIATION_2026-10-25.md), commit `2866565231b8aaa365029a1819b239d595faea9f`.
 - [Restricciones D2 ratificadas y puertas abiertas](NCS_M0_D2_RATIFIED_CONSTRAINTS_AND_OPEN_DESIGN_GATES_2026-10-25.md), commit `f019fe5eb8cc77d13d4ff654d06e2ab2f7480b91`.
 - Matriz D1 reconciliada con O-08/O-10: raíz explícita y admisión previa a lecturas persistentes están ratificadas como diseño, no implementadas; commit `6d581ece054db88a22d6912e9121e11fb502966e`.
+- Corrección adicional de la sección Chronicle v0: separa la raíz explícita ratificada de layout/flags/compatibilidad aún abiertos; commit `eec4e415443557572f49f1ea2996042be5fdce3b`.
 - `STATUS.md` actualizado para apuntar a este avance; commit `23388d18bb4f34009aea8eaf577a0920b4d45a19`.
 - [Línea de meta M0](NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md)
 
