@@ -1,3 +1,11 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — INVENTARIO D1
+
+- Nota nueva de inventario de entrypoints: [NCS_M0_D1_ENTRYPOINT_INVENTORY_NOTE_2026-10-24.md](BUILD/NCS_M0_D1_ENTRYPOINT_INVENTORY_NOTE_2026-10-24.md), commit `556fb1fff1106cf2beafa3d49b0dd6d169d4e26f`.
+- Resume los blobs exactos consultados en `package.json`, los dos workflows Nexo, `tests/nexo/entrypoint.test.mjs` y ambos entrypoints CLI. Distingue la cobertura actual de regex estática de un manifiesto completo; cargas dinámicas/computadas, guards, callers de factories/owners, procesos hijos y consumidores externos siguen sin cierre.
+- Revisión de solo lectura. Runtime/tests/workflows sin cambios; no tests ni CI. D1-DESIGN OPEN; implementación no autorizada; M0 INCOMPLETO; D2/D3 OPEN; raíz PENDING/UNKNOWN; operaciones protegidas STOP.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-24 — REVISIÓN DE API DE REPARACIÓN
 
 - Nota nueva de diseño, creada en commit `815601df24702f1f27eaad23120f0f0be4a80901`: [NCS_M0_D1_REPAIR_API_BOUNDARY_REVIEW_2026-10-24.md](BUILD/NCS_M0_D1_REPAIR_API_BOUNDARY_REVIEW_2026-10-24.md).
