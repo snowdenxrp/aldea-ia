@@ -264,3 +264,13 @@ Do not repeat the 2,982-entry historical census or claim code-search returned no
 - The recommendation does not settle root-lock primitive, release-uncertainty behavior, exact snapshot critical section, or migration/cutover. Those remain D2/D3 dependencies. Do not infer a functioning root gate from this design note.
 - Latest source tree reviewed remains ef56184729ae710d7cd3f196d4e34028595a42eb (188 JS-family blobs); commits since that source checkpoint are documentation-only. Latest documentation checkpoint after this addendum will be the commit returned by the write/read-back below.
 - No runtime, tests, workflows, or data files changed; no tests/CI ran. D1-DESIGN OPEN; D1-IMPLEMENTATION unauthorized; D2/D3 OPEN; M0 INCOMPLETO; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+
+## ADDENDUM — explicit Nexo/Lúmina separation contract (2026-10-24)
+
+- Added design-only contract: [NCS_M0_NEXO_LUMINA_SEPARATION_CONTRACT_2026-10-24.md](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_NEXO_LUMINA_SEPARATION_CONTRACT_2026-10-24.md), commit `d9bc549aa16c8f8d621384ce537729d07a9054a2`.
+- The contract makes the boundary explicit: Nexo Core/CLI/store ownership is Nexo-owned; ordinary Lúmina assistant/simulation entrypoints remain Lúmina-only; Lúmina learning memory and canonical world-state persistence must continue working. Do not “isolate” by disabling Lúmina persistence.
+- No automatic import, silent deletion, heuristic merge, or dual-write of legacy `persisted.nexoMemory`. Any migration is a separate, explicit, authorized operation with its own source/destination evidence and recovery policy.
+- D1 entrypoint requirements are stated for both sides: Nexo explicit `--root`, no mixed legacy store paths, existing-root validation, separate bootstrap, parent/child Chronicle admission ownership, and admission before first persistent read in query/preview paths. These are target requirements, not implemented behavior.
+- Closure criteria now require an inventory of executable entrypoints, exported APIs, repair/query/preview paths, compatibility surfaces, and process edges; unresolved dynamic/external callers remain UNKNOWN/BLOCKED. The bounded 188-file symbol sweep is not a full semantic call graph.
+- This is a documentation-only checkpoint. No runtime, tests, workflows, or data files changed; no tests/CI ran. M0 INCOMPLETO; D1-DESIGN OPEN; D1-IMPLEMENTATION unauthorized; D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
