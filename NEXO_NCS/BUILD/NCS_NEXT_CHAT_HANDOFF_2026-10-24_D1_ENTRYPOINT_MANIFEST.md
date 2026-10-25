@@ -274,3 +274,39 @@ Do not repeat the 2,982-entry historical census or claim code-search returned no
 - D1 entrypoint requirements are stated for both sides: Nexo explicit `--root`, no mixed legacy store paths, existing-root validation, separate bootstrap, parent/child Chronicle admission ownership, and admission before first persistent read in query/preview paths. These are target requirements, not implemented behavior.
 - Closure criteria now require an inventory of executable entrypoints, exported APIs, repair/query/preview paths, compatibility surfaces, and process edges; unresolved dynamic/external callers remain UNKNOWN/BLOCKED. The bounded 188-file symbol sweep is not a full semantic call graph.
 - This is a documentation-only checkpoint. No runtime, tests, workflows, or data files changed; no tests/CI ran. M0 INCOMPLETO; D1-DESIGN OPEN; D1-IMPLEMENTATION unauthorized; D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
+
+
+## ADDENDUM — owner ratification and bounded D1 continuation (2026-10-25)
+
+### Owner decisions recorded
+
+The owner explicitly ratified the following design decisions in the conversation on 2026-10-25. These are design decisions only and do not authorize implementation:
+
+- D0-C1..C4 remain accepted design contracts: explicit single `--root`, no implicit bootstrap, canonicalize before deriving paths, and no automatic legacy migration/fallback within the agreed initial scope.
+- For Nexo/Lúmina separation, define the boundaries and prohibited dependencies first; choose the minimum refactor only after the contract is clear. Do not assume physical script isolation is already selected.
+- No persistent read in the defined admission scope for queries, previews, or Chronicle may bypass admission. The exact critical section and parent/child lock ownership still require coherent D1/D2 contracts.
+- Uncertain lock release remains `UNKNOWN/BLOCKED`; no automatic business-operation retry and no re-admission until uncertainty is resolved. This does not imply permanent freeze or authorize automatic recovery.
+
+Decision register updated in documentation-only commit `5acf8c9fb0d8b78820556454c2d3027b9b221618`:
+[NCS M0 decision register](NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md).
+
+### Remaining work — do not repeat completed scans
+
+1. Reconcile the existing 188-file named-identifier sweep with the D1 manifest; do not repeat it absent a source-tree change.
+2. Resolve the concrete outstanding source-edge classes: direct-execution guards, dynamic/computed loaders, external consumers, direct path-based store/owner callers, and parent-to-child argument/root mapping. If a complete source-enumeration route is unavailable, retain `UNKNOWN/BLOCKED`; do not infer absence.
+3. Complete the D1 boundary contract for Lúmina commands `assistants.mjs` and `simulate.mjs`: preserve their legitimate Lúmina learning-memory and world-state persistence, but do not treat their current Nexo Continuity/mission integration as isolated or protected. Choose the minimum refactor only after the boundary is defined.
+4. Keep D2 work separate: exact persistent snapshot/query/preview admission scope; root-lock primitive and ownership across parent/child Chronicle; uncertain release, quarantine and criteria for re-admission; timeout/stale behavior; public CLI/API compatibility.
+5. Reconcile the remaining D1 evidence against M0 finish-line criteria A–E. Static documentation is not runtime verification; no test or CI may be run and no runtime/tests/workflows may be changed before separate explicit implementation authorization.
+
+### Canonical state
+
+- M0: `INCOMPLETO`.
+- D0 technical/evidence: `OPEN`.
+- D1-DESIGN: `OPEN`.
+- D1-IMPLEMENTATION: `NO AUTORIZADA`.
+- D2/D3: `OPEN`.
+- Authorization: `NOT_EVALUATED`.
+- Legitimate root: `PENDING/UNKNOWN`.
+- Protected effects: `STOP`.
+
+No runtime, test, workflow or data file was changed as part of this checkpoint. No tests/CI were run. This addendum records the owner decisions and continuation path; it does not claim D1 closure.
