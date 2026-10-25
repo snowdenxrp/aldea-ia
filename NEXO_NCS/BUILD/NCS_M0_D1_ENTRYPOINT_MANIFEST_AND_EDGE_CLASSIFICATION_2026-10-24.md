@@ -70,3 +70,23 @@ A previously recorded recursive repository tree was `fc546b0e998abcecafb44ead2b2
 This pass establishes a consolidated, source-linked documentary ledger and makes explicit that workflow path filters are not themselves proof of coverage. It does **not** close the transitive graph, D1-DESIGN, D0 technical evidence, D2, or D3. No runtime/test/workflow code was changed. No test or CI was run. M0 remains `INCOMPLETO`; implementation authorization `NOT_EVALUATED`; legitimate root `PENDING/UNKNOWN`; protected effects `STOP`.
 
 Next step: close the remaining D1 source-surface inventory against all relevant direct-execution guards and module-loading forms using a reproducible source snapshot, without changing code.
+
+## Addendum — source-surface recheck (2026-10-24)
+
+The following source files were fetched again from `ncs-clean-architecture` in this pass. Their observed blob SHAs match the evidence snapshot above: `package.json` (`e45dc6d...`), `scripts/nexo.mjs` (`e471eb4...`), `scripts/nexo-chronicle-session.mjs` (`30a53de...`), `scripts/nexo-continuity.mjs` (`f08969f...`), `scripts/assistants.mjs` (`d31c6db...`), `scripts/simulate.mjs` (`623d316...`), and both workflow files (`65b2bc0...`, `03f2a0c...`). This is a source-file cross-check, not a reproducible full-tree graph run.
+
+### Specific execution-surface findings
+
+1. **Nexo parent CLI:** `scripts/nexo.mjs` parses `--continuity` on read/preview commands and dispatches `chronicle-append` using `spawnSync(process.execPath, [chronicleEntrypoint, ...parsed.args])`. The child arguments are forwarded rather than transformed into a single explicit root contract. Root admission is therefore not evidenced at this edge.
+2. **Chronicle child:** `scripts/nexo-chronicle-session.mjs` accepts `--continuity`, `--chronicle`, `--mission`, `--step`, and initialization/content flags. It has its own direct-execution guard and can invoke `runNexoChronicleAppend` without the parent CLI. This is a distinct production entrypoint, not merely a private helper.
+3. **Assistants exception is executable, not protective:** `scripts/assistants.mjs` executes its operational path at module top level; the inspected beginning has no direct-execution guard before state loading and owner opening. It selects state, Lúmina memory, and Continuity paths using environment variables with legacy defaults, calls `openNexoContinuityOwner`, persists simulation state, and includes the explicit `--nexo-repair-once` branch that invokes `runNexoRuntimeRepairSession`. This remains an `EXPLICIT_EXCEPTION — DESIGN ONLY`, but its exclusion does not establish runtime inaccessibility or root admission.
+4. **Simulation exception:** `scripts/simulate.mjs` has a direct-execution guard for `main()`, but it exports state/persistence helpers and opens Continuity using the fixed legacy `.nexo-continuity.json` path, with state initialization/legacy-memory input tied to simulation state. It remains outside the ordinary instance contract until a separate boundary is defined and verified.
+5. **CI scope:** the Chronicle workflow runs the Chronicle store test, Chronicle runtime test, and `entrypoint.test.mjs`; its path filters are explicit. The mission-admission workflow runs selected orchestrator/runtime/effect/reconstruction/continuity/migration/Chronicle tests. These commands do not establish a root-admission graph test. The workflow file contents and their observed blob SHAs match the earlier ledger; no workflow was modified or run.
+
+### Consequence for D1 classification
+
+- Keep `assistants` and `simulate` as design exceptions, but do not describe them as technically blocked.
+- Treat the Chronicle child as an independent production entrypoint that must validate its own root/admission contract.
+- Keep parent→child argument mapping, environment-selected paths, wrapper-mediated owner construction, and direct factory/owner callers as open graph edges until a reproducible resolver accounts for them.
+- Do not infer that no dynamic/computed loaders or external consumers exist: this pass did not execute a full AST-based repository graph scan or inspect every module in a local checkout.
+- No code, tests, or workflows were changed; no tests/CI were run. D1-DESIGN remains OPEN; D1-IMPLEMENTATION remains not authorized; M0 remains INCOMPLETO; root authority remains PENDING/UNKNOWN; protected effects remain STOP.
