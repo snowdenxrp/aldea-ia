@@ -129,3 +129,33 @@ Informe fuente asociado: `NCS_M0_D1_CHRONICLE_ARGUMENT_AND_STORE_SURFACE_RECHECK
 Hallazgos añadidos: el padre `scripts/nexo.mjs` reenvía los argumentos de `chronicle-append`; el hijo `scripts/nexo-chronicle-session.mjs` acepta `--continuity` y `--chronicle` por separado y no exige `--root`; la aplicación de Chronicle hace preflight de stores a través de rutas independientes; las funciones de consulta y las fábricas/owner son exports y no se ha demostrado una frontera de admisión universal. La búsqueda de callers no permite cerrar el grafo: dinámicos, computados, tests y consumidores externos siguen `UNKNOWN/BLOCKED`.
 
 Consecuencia: el contrato D1 debe definir un único `--root`, mapping determinista a stores, validación independiente del hijo y rechazo de argumentos contradictorios antes de cualquier lectura persistente. No se afirma que esto esté implementado. No se eligió A/B/C ni se autorizó implementación.
+
+
+## Addendum — cierre D1 por afirmación y evidencia (2026-10-25)
+
+**Distinción de alcance:** O-07 excluye repair del M0 operativo. Esto no ratifica la Alternativa A de arquitectura propuesta por Gemini (separación por entrypoint); A/B/C siguen sin selección del propietario.
+
+| Afirmación | Evidencia actual | Condición pendiente | Estado si falta |
+|---|---|---|---|
+| CLI principal aplica root/admisión antes de I/O | Parser actual es path-oriented; no exige `--root` | Congelar contrato y, tras autorización, test que pruebe rechazo antes de lectura | No afirmar root admission en runtime |
+| Chronicle hijo no elude admisión | Hijo invocable directamente, recibe rutas de Continuity/Chronicle por separado | Contrato de raíz única, mapping determinista, validación independiente y pruebas de argumentos contradictorios | No-bypass no demostrado |
+| Queries/previews cumplen O-10 | Consultas abren store path-oriented y llaman `loadCurrent()` | Definir punto de admisión D1 y snapshot/lock D2; test sin lectura al fallar admisión | No declarar queries admitidas |
+| Stores/owner son inalcanzables externamente | Exports y callers de prueba conocidos; censo parcial | Manifiesto reproducible de callers, loaders y procesos hijos; clasificar aristas no resueltas | UNKNOWN/BLOCKED |
+| Repair queda fuera de M0 | O-07 y cadena inferior de dispatch identificada | Enumerar entrypoints conocidos y regla de no exposición/dispatch; probar solo con autorización | Exclusión de alcance sí; inalcanzabilidad técnica no demostrada |
+| Separación Nexo/Lúmina completa | `assistants.mjs` y `simulate.mjs` presentan acoplamientos observados | Definir estado propietario y corte mínimo; conservar persistencia legítima de Lúmina | No declarar separación completa |
+| Grafo de callers cerrado | Test existente recorre imports/reexports literales de dos CLIs | Resolver imports dinámicos/computados, `require`, procesos hijos y consumers externos; prueba de arquitectura tras autorización | Aristas potencialmente relevantes UNKNOWN/BLOCKED |
+| M0 llegó a la línea de meta | Criterios de aceptación existen; CI histórico en otros SHA | Contratos, implementación autorizada, tests y CI del SHA exacto; sin UNKNOWN/BLOCKED dentro del alcance | M0 INCOMPLETO |
+
+### Puertas documentales de D1
+1. Especificar una única raíz y mapping a stores, separando operación normal y bootstrap.
+2. Clasificar cada entrypoint y API exportada relevante con dominio, precondición de admisión, caller y política de invocación directa.
+3. Definir contrato padre/hijo Chronicle: argumentos válidos, rechazo antes de I/O, validación independiente y sin lock no reentrante retenido por el padre mientras espera al hijo.
+4. Definir admisión previa a la primera lectura persistente de queries/previews incluidas en O-10.
+5. Especificar estado propietario, dependencias prohibidas y corte mínimo Nexo/Lúmina sin desactivar persistencia legítima de Lúmina.
+6. Enumerar cada edge no resuelto y la afirmación que bloquea; no tratar búsquedas sin resultados como evidencia negativa.
+7. Separar decisiones de alcance ratificadas de alternativas de refactor no seleccionadas.
+8. Marcar enforcement pendiente como no autorizado/no implementado/no verificado, sin confundir cierre documental con la línea de meta de M0.
+
+No repetir el barrido de 188 fuentes ni pedir otra revisión general a Gemini. Siguiente acción: reconciliar esta matriz con el manifiesto de entrypoints y el registro de decisiones; investigar solo edges específicos que sigan sin evidencia.
+
+Estado: D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; M0 `INCOMPLETO`; root `PENDING/UNKNOWN`; efectos protegidos `STOP`. Sin cambios de runtime/tests/workflows y sin tests/CI ejecutados.
