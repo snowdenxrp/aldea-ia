@@ -254,3 +254,18 @@ Siguiente paso: tabla documental de conformidad O-01…O-04/O-08 frente al CLI y
 Se creó `NEXO_NCS/BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md`, commit `6cebebb3c6d0dfcbfb2d37e0f367755db84a75af`. La matriz separa los principios O-01…O-04/O-08 ya ratificados de los huecos de implementación: CLI con rutas legacy separadas, inicialización separada de stores, falta de `ROOT_READY` conjunto y admisión de instancia no demostrada en todos los callers.
 
 Próximo paso: inventario limitado de callers directos/indirectos de `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`, más las APIs públicas que leen/mutan Continuity/Chronicle. No repetir auditoría general ni reabrir la raíz explícita. No cambiar runtime/tests/CI, no crear wrapper/flags, no seleccionar A/B/C/D. Si el despliegue real del CLI no se puede probar desde el repo, mantenerlo `UNKNOWN`.
+
+
+### Checkpoint documentado por ChatGPT — caller y rutas de bootstrap (2026-10-25)
+
+Informe nuevo: `NEXO_NCS/BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md`, commit `d76950dec94367a8cfba2120bd396f69061eb25b`.
+
+Hechos estáticos añadidos:
+- Call chain de Chronicle: `scripts/nexo.mjs → scripts/nexo-chronicle-session.mjs → runNexoChronicleAppend → stores`.
+- El CLI sigue aceptando `--continuity`/ `--chronicle` y flags de inicialización separados; no demuestra la raíz única `--root <directory>` ratificada como diseño.
+- La prueba de entrypoint incluye un caso de bootstrap parcial. Los locks de las stores coordinan participantes cooperativos, no demuestran quiescencia frente a escritores externos.
+- No se identificó en los entrypoints examinados un caller de provisioning operativo ni evidencia de integración con M1 Android/POCO.
+
+Próximo paso: establecer si existe despliegue/provisioning operativo que conecte la raíz canónica con las stores y un caller autorizado. Si no existe, registrar el hueco y solicitar evidencia mínima (invocador real, raíz física/rutas derivadas y autoridad para detener escritores). No inventar un entrypoint; no implementar wrapper/flags; no ejecutar tests/CI ni cambios de runtime/dispositivo.
+
+Gates intactos: opción A `UNKNOWN/BLOCKED`; B/C/D sin seleccionar; M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
