@@ -100,3 +100,12 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - No confundir recomendación provisional de bootstrap offline con decisión del propietario. No pedir que repita una decisión ratificada: la selección concreta no aparece en el registro revisado.
 - Nota de precisión: la revisión de huecos de bootstrap menciona O-01…O-04 en una frase; la referencia canónica vigente para los principios de raíz es O-08 del registro §8.1. Interpretar ese pasaje como referencia a los principios de raíz ratificados, no como un identificador de decisión distinto.
 - Sin cambios de runtime/tests/workflows; no tests/CI. Estado canónico no cambia.
+
+
+## Matriz de aceptación de bootstrap — continuación 2026-10-25
+
+- Nuevo documento: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), commit `04d8a4255c395a5df0ad1f6292678dc3204ebe58`.
+- Compara las cuatro alternativas ya existentes (A offline/quiescencia; B staging/publicación; C marcador; D coordinación externa) con gates verificables y condiciones de descarte. No agrega una opción ni selecciona una por el usuario.
+- Los gates comunes cubren autoridad operacional, quiescencia/concurrencia, integridad, identidad de objetos durante limpieza, actores anteriores de release, resultado exacto y pruebas vinculadas al SHA.
+- Para avanzar sin adivinar: la cuestión operacional clave es si el primer despliegue puede exigir instalación manual/offline y quiescencia realmente demostrable. Si no, hacen falta datos del filesystem real para evaluar B; C/D no se justifican sin necesidad demostrada. P-05 debe coordinarse con cualquier alternativa.
+- STATUS indexado; runtime/tests/workflows sin cambios; no tests/CI. Estado canónico sin cambios.
