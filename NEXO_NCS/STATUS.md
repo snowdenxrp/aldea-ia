@@ -1,3 +1,14 @@
+# CHECKPOINT DE CONTINUIDAD — GRAFO PARCIAL DE LLAMADORES DE REPARACIÓN D1
+
+- Se creó y releyó [NCS_M0_D1_REPAIR_CALLER_GRAPH_PARTIAL_2026-10-24.md](BUILD/NCS_M0_D1_REPAIR_CALLER_GRAPH_PARTIAL_2026-10-24.md), commit `852153dbee659f81a782af7c97443589dbca3efb`, blob `354b01357f11252da8dc1f38f04de9d0b782c79e`.
+- Snapshot de fuente: commit `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`.
+- Se inspeccionaron los 13 archivos JavaScript/MJS/CJS de `scripts/` en ese árbol y se trazó la cadena interna de reparación hasta `persistState`. La ruta CLI conocida `--nexo-repair-once` llama al wrapper bloqueado; las APIs inferiores forman una cadena interna, pero los consumidores fuera de `scripts/` no están resueltos.
+- Esto es un grafo parcial y una búsqueda textual, no una prueba de inalcanzabilidad global. `src/**`, `tests/**`, importadores/reexports dinámicos y consumidores externos siguen pendientes/UNKNOWN.
+- Solo inspección estática y documentación; sin runtime/tests/workflows/estado Lúmina; sin tests/CI.
+- Estado canónico: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — SUPERFICIES EJECUTABLES D1
 
 - Se creó y releyó [NCS_M0_D1_EXECUTABLE_SURFACES_AND_IMPORTABLE_REPAIR_APIS_2026-10-24.md](BUILD/NCS_M0_D1_EXECUTABLE_SURFACES_AND_IMPORTABLE_REPAIR_APIS_2026-10-24.md), commit `83de482d62cf84db255fdf04787886e597ae6329`, blob `24fa2eadbc68052eb9283dd82b851e1bea2363b1`.
