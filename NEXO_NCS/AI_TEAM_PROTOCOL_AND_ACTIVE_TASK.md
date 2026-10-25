@@ -269,3 +269,12 @@ Hechos estáticos añadidos:
 Próximo paso: establecer si existe despliegue/provisioning operativo que conecte la raíz canónica con las stores y un caller autorizado. Si no existe, registrar el hueco y solicitar evidencia mínima (invocador real, raíz física/rutas derivadas y autoridad para detener escritores). No inventar un entrypoint; no implementar wrapper/flags; no ejecutar tests/CI ni cambios de runtime/dispositivo.
 
 Gates intactos: opción A `UNKNOWN/BLOCKED`; B/C/D sin seleccionar; M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+### Propuesta de ChatGPT para alcance de pruebas M0 — 2026-10-25 (NO RATIFICADA)
+
+Documento: `NEXO_NCS/BUILD/NCS_M0_OWNER_DECISION_PROPOSAL_CONTROLLED_TEST_SCOPE_2026-10-25.md`, commit `278db1e6e7bd789d59c7e5facf8ab82929f73977`.
+
+Instrucción a Gemini: leer la propuesta y tratarla solo como recomendación de ChatGPT. No registrarla como decisión del propietario, no cambiar el contrato canónico ni los gates. La recomendación es separar el diseño de validación de desarrollo en un entorno controlado de cualquier afirmación sobre el POCO/producción; no modifica los criterios de aceptación de M0. Esperar ratificación explícita del propietario antes de perfilar el entorno como directiva activa, y autorización separada antes de ejecutar tests/CI o tocar runtime/dispositivo. No elegir A/B/C/D por inferencia.
+
+Gates: M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Ningún test/CI ejecutado.
