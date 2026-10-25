@@ -68,6 +68,13 @@ Realiza un red-team independiente, estrictamente documental, del mismo alcance P
 ### Encargo para ChatGPT
 Integrar las dos respuestas cuando estén disponibles. Clasificar cada punto como nuevo, ya conocido, no sustentado o contradicción real. Si las respuestas externas no se han entregado en esta conversación, no fingir haberlas recibido. Actualizar el estado de coordinación y preparar la siguiente tarea útil; no convertir la coordinación en un bloqueo adicional del trabajo NCS.
 
+## Salvaguardas de evidencia CV-24–CV-26
+
+- **CV-24:** al evaluar publicación por staging, documentar rutas resueltas, contexto de filesystem/volumen, semántica real de la operación, errores/colisiones y garantía de que lectores no consumen staging. No inferir atomicidad ni durabilidad por nombre de API.
+- **CV-25:** etiquetar cada resultado con entorno y alcance. No extrapolar resultados de laboratorio al POCO X7 Pro cuando la afirmación dependa de condiciones específicas no demostradas.
+- **CV-26:** ningún resultado aislado puede elevar el estado canónico a `ROOT_READY`; comprobar todos los predicados ratificados y conservar `UNKNOWN/BLOCKED` si falta evidencia.
+- Estas reglas no autorizan ejecución, tests/CI, cambios de runtime ni selección de bootstrap A/B/C/D. El estado canónico continúa siendo el de `STATUS.md`.
+
 ## Cómo retomar
 
 Al recibir «continúa»:
