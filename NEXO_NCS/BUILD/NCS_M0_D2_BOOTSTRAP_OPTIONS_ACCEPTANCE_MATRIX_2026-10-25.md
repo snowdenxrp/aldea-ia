@@ -64,9 +64,15 @@ FBE, FUSE, montajes separados y capas de abstracción se evalúan cuando sean pe
 
 Toda evidencia debe identificar el entorno al que se limita. Un resultado favorable en análisis estático, simulación, laboratorio o un dispositivo distinto no demuestra automáticamente el mismo comportamiento en el POCO X7 Pro. Si una afirmación depende de propiedades específicas del entorno objetivo, debe contar con evidencia operacional pertinente de ese entorno. La equivalencia de condiciones debe justificarse; cuando no pueda demostrarse, el resultado para el entorno objetivo permanece `UNKNOWN/BLOCKED`.
 
-## CV-26 — Separación entre resultado de prueba y estado canónico
+## CV-26 — Separación entre preparación local, autoridad y efectos protegidos
 
-Ninguna prueba aislada, script, marcador persistente, ausencia momentánea de procesos o resultado de CI produce por sí solo la transición a `ROOT_READY`. Esta transición requiere satisfacer todos los predicados ratificados, incluida la autoridad legítima, el control de admisión, la integridad y las garantías de concurrencia y recuperación pertinentes. Si falta una condición necesaria, no se eleva el estado por heurística; se mantiene `UNKNOWN/BLOCKED` o el estado de bloqueo correspondiente.
+Ninguna prueba aislada, script, marcador persistente, ausencia momentánea de procesos o resultado de CI produce por sí solo la transición a `ROOT_READY`. Los predicados locales ratificados para preparar y validar la raíz deben satisfacerse con evidencia verificable; si falta alguno, el estado local permanece `UNKNOWN/BLOCKED`.
+
+**Límite semántico:** `ROOT_READY` describe únicamente la preparación local y acotada de la raíz conforme a su contrato; no demuestra identidad del propietario, legitimidad constitucional ni autorización para efectos protegidos. La autoridad legítima y la autorización de efectos son gates separados y deben permanecer `PENDING/UNKNOWN` o `NOT_EVALUATED` hasta contar con sus propias pruebas.
+
+**Orden no circular:** el contrato de transición debe identificar qué condiciones preceden a la admisión y cuáles son condiciones posteriores para permitir operaciones protegidas. No puede exigir como precondición de `ROOT_READY` que la admisión ya esté adquirida si la propia transición es la que permite adquirirla. Esta aclaración no ratifica por sí sola un orden completo de ejecución ni autoriza implementación; la secuencia concreta de admisión sigue abierta hasta que se reconcilie con las especificaciones P-03/P-04 y el contrato de transición.
+
+Si una condición necesaria para el uso solicitado no está satisfecha, no se eleva el estado por heurística: se mantiene `UNKNOWN/BLOCKED` y los efectos protegidos permanecen `STOP`.
 
 ## Criterios de descarte inmediato
 
@@ -92,3 +98,10 @@ No se requiere reabrir O-08. La decisión pendiente es P-01; la política de rel
 M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 
 Solo documentación. No se modifican runtime/tests/workflows/datos operativos. No se ejecutaron tests ni CI.
+
+
+## Nota de reconciliación semántica — revisión Claude 2026-10-25
+
+Esta aclaración resuelve la ambigüedad de redacción entre el estado local `ROOT_READY` y la legitimidad constitucional: no son equivalentes y no deben codificarse como un único predicado. No cierra los gates de P-01/P-05 ni prueba que el runtime actual implemente esta separación. El contrato de admisión debe evitar circularidad y conservar la autoridad legítima como gate independiente para efectos protegidos.
+
+Estado tras la revisión: solo cambio documental; no tests/CI, runtime, workflow, configuración ejecutable ni dispositivo. M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; opciones A/B/C/D sin seleccionar.
