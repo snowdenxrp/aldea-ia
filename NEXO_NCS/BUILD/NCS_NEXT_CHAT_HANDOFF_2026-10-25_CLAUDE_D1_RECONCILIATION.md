@@ -82,3 +82,12 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - La política de recuperación/readmisión sigue pendiente del propietario. Si no puede demostrarse quiescencia o identidad según una política futura aprobada, el resultado permanece `UNKNOWN/BLOCKED`; la ausencia del path no basta por sí sola.
 - Solo documentación: no runtime/tests/workflows/datos; no tests/CI. P-03/P-04/P-05 no se consideran cerrados.
 - Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Actualización documental — bootstrap parcial/recuperación D2 (2026-10-25)
+
+- Nueva revisión: [NCS_M0_D2_BOOTSTRAP_PARTIAL_AND_RECOVERY_CONTRACT_GAP_REVIEW_2026-10-25.md](NCS_M0_D2_BOOTSTRAP_PARTIAL_AND_RECOVERY_CONTRACT_GAP_REVIEW_2026-10-25.md), commit `9faad5504dda91e734167d7fe3c3b8b9275dad90`.
+- Hallazgo: `BOOTSTRAP_PARTIAL → ROOT_READY` carece de predicados completos ratificados; se deben resolver autoridad operacional, quiescencia, integridad, identidad de objetos durante limpieza, release anterior, resultado de salida y evidencia reproducible.
+- Aclaración de nombres: “Opción A” aceptada como dirección en el contrato de raíz no significa que esté ratificada la “Opción A” de D0-C2 (bootstrap offline con quiescencia). La política de bootstrap sigue pendiente del propietario.
+- Próxima continuidad: revisar el registro de decisiones actual y las puertas D0-C2/P-05 para detectar si ya hay decisión explícita del propietario; no pedirla de nuevo si está registrada. No crear protocolo/command de recuperación, ni modificar runtime/tests/workflows.
+- Estado canónico: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No tests/CI.
