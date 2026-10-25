@@ -6,6 +6,7 @@
 - Matriz D1 actualizada: commit `368fd7f3f2ef9af4b75d708f358173e7711b7523`; invariante de admisión previo a lectura como propuesta documental, propiedad provisional de estados Nexo/Lúmina y gramática root/Chronicle v0 no ratificada.
 - Manifiesto D1 actualizado: commit `23e21958ae3752821ca570713d71509f28012e0d`; resultado grep comunicado por Claude no se considera reproducible hasta registrar comando literal y SHA/tree exactos.
 - Reconciliación D2 (2026-10-25): commit `f019fe5eb8cc77d13d4ff654d06e2ab2f7480b91`; consolida O-08…O-11 y puertas P-01/P-03…P-09, sin seleccionar protocolo de recuperación.
+- Especificación D2 P-03/P-04 (alcance de admisión, ownership padre/hijo, caracterización de locks y condiciones de release incierto): `NEXO_NCS/BUILD/NCS_M0_D2_P03_P04_ADMISSION_SCOPE_AND_LOCK_OWNERSHIP_SPEC_2026-10-25.md`, commit `ccba5401e0730ab24460fec4851d1e1d8aec1aaf`. Propuesta documental; P-03/P-04/P-05 no quedan cerrados y no hay autorización de implementación.
 - Matriz D1 corregida para reflejar que raíz explícita y admisión previa a lectura sí están ratificadas (O-08/O-10), mientras la gramática CLI, caller coverage y enforcement siguen abiertos; commit `6d581ece054db88a22d6912e9121e11fb502966e`.
 - Estado canónico sin cambio: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
 - Solo cambios documentales. No runtime/tests/workflows/datos; no tests ni CI ejecutados.
