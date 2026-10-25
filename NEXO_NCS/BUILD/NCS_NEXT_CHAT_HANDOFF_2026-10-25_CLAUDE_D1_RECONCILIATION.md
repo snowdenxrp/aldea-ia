@@ -73,3 +73,12 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - No crear mecanismos nuevos (IDs/colas/retries/tombstones/locks/transacciones) por iniciativa propia.
 - `UNKNOWN/BLOCKED` es resultado válido y detiene cualquier afirmación de éxito.
 - Root legítimo/autoridad/efectos protegidos permanecen pendientes/STOP.
+
+
+## Actualización documental — D2 P-05 (2026-10-25)
+
+- Nueva especificación: [NCS_M0_D2_P05_RELEASE_UNCERTAINTY_AND_READMISSION_EVIDENCE_SPEC_2026-10-25.md](NCS_M0_D2_P05_RELEASE_UNCERTAINTY_AND_READMISSION_EVIDENCE_SPEC_2026-10-25.md), commit `6bf41465d5caf04ed68fbfbbb7ea8f498c1cd694`.
+- P-05 separa explícitamente resultado de persistencia, resultado de release y readmisión; establece evidencia propuesta E1–E9, sin elegir política A/B ni inventar un mecanismo.
+- La política de recuperación/readmisión sigue pendiente del propietario. Si no puede demostrarse quiescencia o identidad según una política futura aprobada, el resultado permanece `UNKNOWN/BLOCKED`; la ausencia del path no basta por sí sola.
+- Solo documentación: no runtime/tests/workflows/datos; no tests/CI. P-03/P-04/P-05 no se consideran cerrados.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
