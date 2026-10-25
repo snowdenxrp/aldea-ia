@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — CONTROL DE DERIVA DEL SNAPSHOT D1
+
+- Se registró y verificó la nota [NCS_M0_D1_SOURCE_SNAPSHOT_DRIFT_CONTROL_2026-10-24.md](BUILD/NCS_M0_D1_SOURCE_SNAPSHOT_DRIFT_CONTROL_2026-10-24.md), commit `c9296f7add6ff2a8d737f0280e16cf07102e91b5`, blob `57f3c89495868404f77d7431c0f62f3a0018016d`.
+- Motivo: se observó actividad automatizada de estado Lúmina en el commit `4135178045434a17af67e104de2e84b94d719154`, tocando `.lumina-assistant-memory.json` y `world-state.json`. No se alteraron esos archivos. Esto obliga a fijar un commit/tree coherente antes de afirmar que un manifiesto D1 representa un único snapshot de código.
+- Regla futura: registrar HEAD + tree no truncado; leer las fuentes desde ese mismo commit; si HEAD cambia, reiniciar la captura o declarar explícitamente la mezcla. Un hash de blob no demuestra cobertura ni ejecución.
+- Solo documentación. Runtime/tests/workflows y estado Lúmina sin cambios; no tests/CI.
+- Estado canónico: M0 `INCOMPLETO`; D0 técnico/evidencia `OPEN`; D1-DESIGN `OPEN`; implementación no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-24 — PROPUESTA D0/D1/D2 DE ADMISIÓN
 
 - Se creó y leyó de vuelta [NCS_M0_D0_D1_D2_INSTANCE_ADMISSION_CONTRACT_PROPOSAL_2026-10-24.md](BUILD/NCS_M0_D0_D1_D2_INSTANCE_ADMISSION_CONTRACT_PROPOSAL_2026-10-24.md), commit `3591834748463bd5d99fa1d0f585e55ba221b0c9`, blob `b1d85d4deecb5d34dc7a14a383426b7962e59cd9`.
