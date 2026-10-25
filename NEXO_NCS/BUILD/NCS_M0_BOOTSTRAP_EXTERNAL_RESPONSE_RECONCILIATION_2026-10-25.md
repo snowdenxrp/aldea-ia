@@ -173,3 +173,15 @@ Fuentes de contrato contrastadas:
 El bloqueo inmediato no es “Android tiene demasiados daemons” en abstracto. La brecha más temprana es que el repo no demuestra que el bootstrap de stores del CLI sea el bootstrap de una raíz canónica que el sistema operativo del POCO vaya a ejecutar. Antes de medir quiescencia para A, el diseño debe definir esa relación y el actor de invocación.
 
 No crear un wrapper para ocultar esta brecha ni introducir flags/markers nuevos por inferencia. P-01/P-05 siguen pendientes; opción A `UNKNOWN/BLOCKED`; B/C/D sin seleccionar. La tabla es comparación documental, no prueba de ejecución.
+
+
+## 13. Precisión de precedencia: raíz explícita ya ratificada como diseño
+
+La lectura de `NCS_M0_D0_D1_ROOT_CONTRACT_RECONCILIATION_2026-10-25.md` (blob `99e9fe8a57639e96f5f114b6ef722bfb4652a33b`) y `NCS_M0_D2_P03_P04_ADMISSION_SCOPE_AND_LOCK_OWNERSHIP_SPEC_2026-10-25.md` (blob `baa28e3b868aa0262b9aa9edd837d06938aacd4d`) obliga a precisar la conclusión anterior:
+
+- **Ya ratificado como diseño:** una raíz explícita única por operación mediante `--root <directory>`, sin override ambiental ni fallback legacy; operación normal sin bootstrap implícito; canonicalización de la raíz antes de derivar paths; admisión antes de leer stores dentro del alcance.
+- **No implementado/no demostrado:** el CLI inspeccionado sigue aceptando `--continuity` y `--chronicle` como rutas separadas; no se ha demostrado el cumplimiento de `--root`, la admisión efectiva ni una transición de raíz a `ROOT_READY`.
+- **Sigue abierto:** gramática exacta de flags de bootstrap, compatibilidad/rechazo de rutas legacy, layout, tratamiento de aliases/symlinks, ownership efectivo de admisión y mapa completo de callers.
+- **No debe reabrirse:** la decisión normativa de raíz explícita. El trabajo pendiente es trazarla a la implementación/callers y documentar la brecha, no pedir al propietario que vuelva a decidir el principio.
+
+Próximo paso ajustado: elaborar una tabla documental de conformidad entre O-01…O-04/O-08 ratificados, el CLI actual y los puntos concretos aún abiertos de P-01/P-03/P-04/P-05; sin modificar runtime ni tests. La opción de bootstrap A permanece `UNKNOWN/BLOCKED`, no seleccionada.
