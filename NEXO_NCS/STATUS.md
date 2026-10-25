@@ -1,3 +1,16 @@
+# CHECKPOINT DE CONTINUIDAD — 2026-10-24 — CONTRATO DE SEPARACIÓN NEXO/LÚMINA
+
+- Contrato de diseño creado y leído de vuelta: [NCS_M0_NEXO_LUMINA_SEPARATION_CONTRACT_2026-10-24.md](BUILD/NCS_M0_NEXO_LUMINA_SEPARATION_CONTRACT_2026-10-24.md), blob `b22c27aa8556034f88d91703d6a57642cae579af`, commit de creación `d9bc549aa16c8f8d621384ce537729d07a9054a2`.
+- Handoff D1 actualizado con referencia al contrato: [NCS_NEXT_CHAT_HANDOFF_2026-10-24_D1_ENTRYPOINT_MANIFEST.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-24_D1_ENTRYPOINT_MANIFEST.md), blob `7680085db6bd0e4336bb388a1bfc1e0b92036cf1`, commit de actualización `534c2d2703ea608d25393347e713b9927da8fb2f`.
+- Principio de frontera: Nexo debe operar sin depender de Lúmina; los comandos ordinarios de Lúmina deben seguir siendo Lúmina-only, preservando su propia memoria de aprendizaje y persistencia de world-state. No aislar Nexo desactivando persistencia legítima de Lúmina.
+- No importar, borrar, mezclar ni duplicar automáticamente el legacy `persisted.nexoMemory`. Cualquier migración requiere ruta separada, autorización y evidencia.
+- El contrato de raíz explícita `--root`, admisión de padre/hijo y admisión previa a lecturas persistentes es TARGET de diseño, no comportamiento demostrado del código actual.
+- Este avance es solo documentación. No se modificó runtime/tests/workflows/datos de ejecución; no se ejecutaron tests ni CI.
+- Continuidad: usar este `STATUS.md` como puerta de entrada; seguir con el handoff D1 más reciente y el contrato de separación. No repetir el barrido previo de 188 archivos salvo que cambie el snapshot de código.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — 2026-10-24 — D1-S0 ACEPTADA
 
 - El propietario aceptó separar `D1-DESIGN` de `D1-IMPLEMENTATION`; esto resuelve únicamente la secuencia, no cierra el diseño ni autoriza implementación.
