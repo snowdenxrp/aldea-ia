@@ -36,6 +36,7 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - [Manifiesto de entrypoints y edges](NCS_M0_D1_ENTRYPOINT_MANIFEST_AND_EDGE_CLASSIFICATION_2026-10-24.md)
 - [Reconciliación Claude](NCS_M0_CLAUDE_INDEPENDENT_D1_REVIEW_RECONCILIATION_2026-10-25.md)
 - [Reconciliación D0/D1 del contrato de raíz](NCS_M0_D0_D1_ROOT_CONTRACT_RECONCILIATION_2026-10-25.md), commit `2866565231b8aaa365029a1819b239d595faea9f`.
+- [Restricciones D2 ratificadas y puertas abiertas](NCS_M0_D2_RATIFIED_CONSTRAINTS_AND_OPEN_DESIGN_GATES_2026-10-25.md), commit `f019fe5eb8cc77d13d4ff654d06e2ab2f7480b91`.
 - [Línea de meta M0](NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md)
 
 ## Hallazgos que deben mantenerse
@@ -55,7 +56,8 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 3. Usar la reconciliación D0/D1 nueva para distinguir principios de root ya ratificados de detalles técnicos aún abiertos; no volver a presentar la raíz explícita básica como decisión pendiente.
 4. Si hace falta una decisión de propietario, presentar una pregunta acotada; no escoger A/B/C ni asumir que raíz absoluta/relativa o `--initialize-*` ya está decidido.
 4. No pedir otra auditoría general a Gemini. Claude/Gemini pueden ayudar con preguntas puntuales de contradicción, no como sustituto de evidencia fuente.
-5. No escribir tests ni modificar runtime/workflows sin autorización explícita separada.
+5. Usar también la consolidación D2 nueva como índice de restricciones ya ratificadas y puertas abiertas; no reabrir O-08…O-11 ni convertir propuestas de recuperación en decisiones.
+6. No escribir tests ni modificar runtime/workflows sin autorización explícita separada.
 
 ## Reglas permanentes de continuidad
 - No reabrir auditorías cerradas ni repetir el censo de 188 archivos.
