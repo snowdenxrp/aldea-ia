@@ -108,3 +108,44 @@ Snapshot identity was independently confirmed through the GitHub branch API and 
 ### D1 consequence
 
 The evidence now distinguishes **a specific blocked wrapper** from **global reachability closure**. The former is observed in source; the latter remains unproven. The next useful closure target is the caller inventory for repair APIs and path-based owner/store creation, followed by the already-specified resolver/test design once implementation is separately authorized. No runtime, test, or workflow source was changed; no tests or CI were run. D1-DESIGN remains OPEN; D1-IMPLEMENTATION remains unauthorized; M0 remains INCOMPLETO; legitimate root remains PENDING/UNKNOWN; protected effects remain STOP.
+
+
+## Addendum — targeted caller reference sweep (2026-10-25; read-only)
+
+This pass fetched the following exact source files from commit `a68660db5ddfe084758ab907bea5bab899f97efa` and counted references to the named APIs. This is a bounded source-reference sweep, not a complete AST call graph and not proof that all repository callers have been found.
+
+### Observed production-source references
+
+| Source | Observed reference | Interpretation |
+|---|---|---|
+| `scripts/nexo.mjs` | `spawnSync` to `scripts/nexo-chronicle-session.mjs` | Parent→child argument handoff; child has its own direct execution guard. |
+| `scripts/nexo-chronicle-session.mjs` | Imports and calls `runNexoChronicleAppend`; accepts `--continuity`, `--chronicle`, and initialization flags | Independent CLI surface; no `--root` contract in the inspected parser. |
+| `scripts/nexo-continuity.mjs` | Re-exports `openNexoContinuityOwner` from `src/nexo/core/continuity-service.mjs` | Compatibility surface; caller-specific admission still required. |
+| `scripts/assistants.mjs` | Calls `openNexoContinuityOwner` and optional `runNexoRuntimeRepairSession` | Ordinary path already crosses Continuity, Lúmina memory and world-state persistence. Optional repair call reaches a wrapper that returns a blocked result under Option A. |
+| `scripts/simulate.mjs` | Calls `openNexoContinuityOwner` | Separate simulation/legacy persistence surface; not proven to share a canonical instance root. |
+| `scripts/nexo-repair-session.mjs` | Exports `runNexoRepairSession`; calls `runNexoRepairOnce` | Callable repair API chain; do not assume production reachability is closed. |
+| `scripts/nexo-repair-entrypoint.mjs` | Exports `runNexoRepairOnce`; calls `dispatchPreparedRepair` | PREPARED/reconciliation/dispatch protocol; not authority or instance admission. |
+| `scripts/nexo-repair-dispatch.mjs` | Exports `dispatchPreparedRepair`; imports `loadStateStrict`/`persistState` from simulation and Lúmina effect adapter | Cross-domain environment persistence/effect edge; excluded from M0 operational scope. |
+| `src/nexo/application/chronicle-append.mjs` | Opens owner and creates Continuity/Chronicle stores | Composite write path; must sit under one admitted operation boundary. |
+| `src/nexo/application/continuity-queries.mjs` | Directly creates Continuity store; invokes `loadCurrent` paths | Read/snapshot path; D2 must define admission scope. |
+| `src/nexo/core/continuity-service.mjs` | Creates Continuity store and exports owner-opening service | Central service still accepts a file path; root derivation/admission not evidenced. |
+| `src/nexo/core/continuity-store.mjs`, `chronicle-store.mjs` | Define/export path-based store factories | Low-level primitives; callers require classification, not automatic trust. |
+| `src/nexo/core/continuity-owner.mjs`, `owner-backed-runtime.mjs`, observation adapters | Use `loadCurrent` and/or conditional commit paths | Internal snapshot/commit paths; instance admission must precede the first persistent read if the bounded snapshot guarantee is retained. |
+
+### Observed test-only references (sampled, not exhaustive)
+
+- `tests/nexo/assistants-runtime-cli.test.mjs`: `runNexoRuntimeRepairSession`, `openNexoContinuityOwner`.
+- `tests/nexo/chronicle-runtime.test.mjs`: owner, both store factories, and `runNexoChronicleAppend`.
+- `tests/nexo/chronicle-session-input-guard.test.mjs`: `runNexoChronicleAppend`.
+- `tests/nexo/chronicle-store.test.mjs`: Chronicle store factory.
+- `tests/nexo/continuity-contract.test.mjs`, `continuity-service-options-input-guard.test.mjs`, `continuity-migration.test.mjs`, `continuity-store.test.mjs`, and `entrypoint.test.mjs`: owner/store APIs.
+- `tests/nexo/repair-mission-verification.test.mjs`: `runNexoRepairSession`.
+- `tests/nexo/repair-owner-lifecycle.test.mjs`: `runNexoRepairOnce`, `dispatchPreparedRepair`, owner API.
+- `tests/nexo/repair-session.test.mjs`: `runNexoRepairSession`, `dispatchPreparedRepair`, runtime wrapper, owner API.
+- `tests/nexo/repair-settlement-crash-cuts.test.mjs`: owner API.
+
+### Limit of this sweep
+
+The connector's code-search operation returned no usable matches for known symbols, including symbols verified to exist in fetched files. That result is not negative evidence. The sweep did not fetch and inspect every one of the 188 code files for every identifier, nor parse ASTs or execute imports. Therefore external/indirect/dynamic callers and complete production reachability remain `UNKNOWN/BLOCKED`; this addendum must not be read as a complete caller allowlist.
+
+No runtime, test, or workflow file changed. No tests/CI were run. D1-DESIGN remains OPEN; D1-IMPLEMENTATION remains unauthorized; M0 remains INCOMPLETO; root PENDING/UNKNOWN; protected effects STOP.
