@@ -109,3 +109,15 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - Los gates comunes cubren autoridad operacional, quiescencia/concurrencia, integridad, identidad de objetos durante limpieza, actores anteriores de release, resultado exacto y pruebas vinculadas al SHA.
 - Para avanzar sin adivinar: la cuestión operacional clave es si el primer despliegue puede exigir instalación manual/offline y quiescencia realmente demostrable. Si no, hacen falta datos del filesystem real para evaluar B; C/D no se justifican sin necesidad demostrada. P-05 debe coordinarse con cualquier alternativa.
 - STATUS indexado; runtime/tests/workflows sin cambios; no tests/CI. Estado canónico sin cambios.
+
+
+## Paquete compacto de decisiones del propietario — 2026-10-25
+
+- Documento creado y verificado por lectura posterior: [NCS_M0_OWNER_DECISION_PACKET_P01_P02_P03_P04_P05_2026-10-25.md](NCS_M0_OWNER_DECISION_PACKET_P01_P02_P03_P04_P05_2026-10-25.md).
+- Commit de creación: `8bf65b568b88ca805c1592ae9490bb3adff0f624`; blob verificado: `ebbc087da258e3c3cf36192ae876ff3876e873d8`.
+- Consolida dependencias de P-01 bootstrap, P-02 frontera Nexo/Lúmina, P-03 alcance de admisión, P-04 propiedad de locks y P-05 release incierto/readmisión. Es paquete para preparar decisiones, no decisión ratificada ni sustituto de especificaciones detalladas.
+- Pregunta operacional pendiente para P-01: ¿puede la instalación inicial exigir procedimiento manual/offline con escritores, launchers, supervisores y actores de limpieza detenidos y con capacidad demostrable de no reiniciarlos durante el bootstrap? No inferir respuesta ni seleccionar alternativa.
+- Si se confirma que sí, la alternativa offline/quiescencia sigue siendo candidata, no aprobación automática: aún faltan predicados y pruebas. Si no o no se sabe, no elegir B/C/D por descarte; exigir caracterización del filesystem/entorno real. Incertidumbre → `UNKNOWN/BLOCKED`.
+- Orden de dependencias: P-01 bootstrap; P-02 mapa de estado/dependencias; P-03 alcance de admisión; P-04 dueño efectivo por flujo; P-05 resolución de release/readmisión. No reabrir el censo de 188 archivos ni repetir revisiones generales.
+- **Índice STATUS:** el paquete nuevo y el grafo de dependencias D2 / matriz de evidencia M0 no se han confirmado en STATUS; sí quedan enlazados desde este handoff. No afirmar que estén indexados en STATUS.
+- No runtime/tests/workflows modificados; no tests/CI. Estado canónico no cambia: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
