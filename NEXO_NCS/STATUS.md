@@ -1,5 +1,7 @@
 # CHECKPOINT CANÓNICO ACTUAL — HANDOFF CLAUDE/D1 (2026-10-25)
 
+- Contraste del registro para bootstrap: [NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md), commit `280fbfdfedcae89451dcc33ff1c71b2150bbe46a`. El registro ratifica O-08 sobre raíz, pero conserva P-01 bootstrap y P-05 readmisión como pendientes; no hay selección A/B/C/D documentada.
+
 - Revisión documental D2 de bootstrap parcial/recuperación: [huecos contractuales](BUILD/NCS_M0_D2_BOOTSTRAP_PARTIAL_AND_RECOVERY_CONTRACT_GAP_REVIEW_2026-10-25.md), commit `9faad5504dda91e734167d7fe3c3b8b9275dad90`. Confirma que `BOOTSTRAP_PARTIAL → ROOT_READY` no tiene aún predicados completos ratificados y aclara que “Opción A” de raíz no ratifica por sí sola la Opción A de bootstrap offline. Sin implementación ni tests/CI.
 
 - Nueva especificación D2 P-05: [release incierto y evidencia para readmisión](BUILD/NCS_M0_D2_P05_RELEASE_UNCERTAINTY_AND_READMISSION_EVIDENCE_SPEC_2026-10-25.md), commit `6bf41465d5caf04ed68fbfbbb7ea8f498c1cd694`. Requisitos propuestos E1–E9; no selecciona recuperación A/B, no ratifica el contrato y no autoriza implementación.
