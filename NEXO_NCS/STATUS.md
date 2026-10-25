@@ -1,3 +1,15 @@
+# CHECKPOINT DE CONTINUIDAD — SNAPSHOT BASE D1 FIJADO
+
+- Se creó y verificó [NCS_M0_D1_PINNED_SOURCE_SNAPSHOT_BASE_2026-10-24.md](BUILD/NCS_M0_D1_PINNED_SOURCE_SNAPSHOT_BASE_2026-10-24.md), commit `54506ca2f70ec74ef1c7103b9e7948c7f1d2f058`, blob `1060c18d16b110c0e0de345f70178c27d049d620`.
+- Snapshot fuente observado: commit `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`, árbol recursivo `truncated=false`, 3061 entradas.
+- Inventario inicial por ruta/extensión: 137 candidatos (13 scripts JS/MJS/CJS, 28 workflows YAML, 95 tests JS/MJS/CJS y package.json). Este conteo no equivale a cobertura ni a lista completa de entrypoints.
+- Se recuperaron 16 fuentes críticas desde el commit fijado y se cotejaron sus blob SHA con el árbol. El documento enumera rutas y hashes.
+- El commit fijado es una base reproducible para este pase; no se declara que siga siendo el HEAD de la rama después de añadir documentación. Revalidar HEAD antes de cada pase posterior y no mezclar fuentes de snapshots distintos.
+- Solo documentación. Runtime/tests/workflows/estado Lúmina sin cambios; no tests/CI.
+- Estado canónico: M0 `INCOMPLETO`; D0 técnico/evidencia `OPEN`; D1-DESIGN `OPEN`; implementación no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — CONTROL DE DERIVA DEL SNAPSHOT D1
 
 - Se registró y verificó la nota [NCS_M0_D1_SOURCE_SNAPSHOT_DRIFT_CONTROL_2026-10-24.md](BUILD/NCS_M0_D1_SOURCE_SNAPSHOT_DRIFT_CONTROL_2026-10-24.md), commit `c9296f7add6ff2a8d737f0280e16cf07102e91b5`, blob `57f3c89495868404f77d7431c0f62f3a0018016d`.
