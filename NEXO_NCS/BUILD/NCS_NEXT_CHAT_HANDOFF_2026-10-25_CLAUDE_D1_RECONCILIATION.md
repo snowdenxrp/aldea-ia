@@ -121,3 +121,25 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - Orden de dependencias: P-01 bootstrap; P-02 mapa de estado/dependencias; P-03 alcance de admisión; P-04 dueño efectivo por flujo; P-05 resolución de release/readmisión. No reabrir el censo de 188 archivos ni repetir revisiones generales.
 - **Índice STATUS:** el paquete nuevo y el grafo de dependencias D2 / matriz de evidencia M0 no se han confirmado en STATUS; sí quedan enlazados desde este handoff. No afirmar que estén indexados en STATUS.
 - No runtime/tests/workflows modificados; no tests/CI. Estado canónico no cambia: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## Actualización de continuidad — reconciliación P-05 de locks (2026-10-25)
+
+Fuente nueva verificada: [NCS_M0_D2_P05_INDEPENDENT_REVIEW_RECONCILIATION_2026-10-25.md](NCS_M0_D2_P05_INDEPENDENT_REVIEW_RECONCILIATION_2026-10-25.md), blob `e718182cb18c4a58de97d4ab1e0523ec8b1ee55c`, commit `1d783db9dba68faacc61692a94b7504583473407`.
+
+### Resultado consolidado
+- La revisión estática de Continuity detectó que el release comprueba el token del propietario y después elimina por ruta; si falla el primer `rm`, el segundo intento no vuelve a comprobar la identidad del objeto. También hay limpieza por ruta tras fallo al escribir `owner.json`, con error de limpieza absorbido.
+- Chronicle no tiene el mismo segundo intento, pero tampoco queda demostrado seguro: su release inicial sigue siendo comprobar propietario y eliminar por ruta; su limpieza inicial tras fallo de `owner.json` comparte el riesgo conceptual. Su recuperación de lock stale sí falla cerrada.
+- En ambas implementaciones, un `readLockOwner()` que devuelve `null` ante ausencia o ciertos errores puede colapsar estados distintos. La ausencia de una ruta y un `force: true` no prueban que se retiró la misma instancia de lock ni que el actor anterior haya terminado.
+- Los tests existentes revisados no demuestran los casos de sustitución de ruta E3/E4. **No se ejecutaron tests ni CI**; no se reprodujo una carrera; no se modificaron runtime/tests/workflows. Son hallazgos estáticos, no prueba de explotación ni demostración de ausencia global de seguridad.
+- El análisis de Gemini fue conceptual y sin acceso a las fuentes exactas; el de Claude fue más específico a código. Ambos convergen en no afirmar “nunca borra un lock ajeno” sin evidencia de identidad/ownership.
+
+### Decisión del propietario: sigue pendiente
+El registro canónico vigente, sección 8.2, mantiene P-01…P-05 abiertos. P-05 permite recuperación externa bajo quiescencia demostrada (A), mecanismo ligado a identidad de objeto bajo un modelo cooperativo explícito (B), o mantener `UNKNOWN/BLOCKED` hasta contar con evidencia suficiente. No se ha elegido A ni B. No confundir esto con O-08/raíz explícita ratificada ni con “Opción A” de otros temas.
+
+### Próximo paso acotado
+1. No repetir auditorías generales ni volver a escanear 188 archivos.
+2. Resolver primero la precondición operacional de P-01: si la instalación inicial puede exigir procedimiento manual/offline y demostrar quiescencia de todos los escritores, launchers, supervisores y actores de limpieza. Si no se conoce o no puede probarse, mantener `UNKNOWN/BLOCKED`; no seleccionar B/C/D por descarte.
+3. Aclarar P-04 (dueño efectivo por flujo y relación padre/hijo) antes de elegir política de readmisión P-05. No basta releer `owner.json` ni reintentar borrar una ruta para cerrar la carrera.
+4. Solo después de una decisión explícita y una autorización separada, convertir E3/E4 y los demás casos aplicables en pruebas deterministas. Hasta entonces no tocar runtime/tests/workflows ni ejecutar CI.
+5. Mantener los estados canónicos: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
