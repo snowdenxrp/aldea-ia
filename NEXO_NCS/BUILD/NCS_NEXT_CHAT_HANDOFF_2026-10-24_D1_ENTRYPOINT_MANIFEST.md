@@ -359,3 +359,23 @@ Do not repeat the 188-file sweep absent a source-tree change. Continue with conc
 - protected effects: STOP.
 
 This addendum records continuity only. It does not close D1, claim runtime isolation, or authorize implementation.
+
+
+## ADDENDUM — concrete D1 execution-surface recheck (2026-10-25)
+
+New source-linked documentary artifact:
+- `NCS_M0_D1_EXECUTION_SURFACE_RECHECK_2026-10-25.md`
+- Commit: `af3941315cd093f033bcd323ff244d2120b23886`
+- Blob: `7ac4b7e65ad9349cf6e5a1179a65cd3a8565fb23`
+- URL: https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D1_EXECUTION_SURFACE_RECHECK_2026-10-25.md
+
+The document was fetched again after writing. It records current source blob SHAs and concrete observations:
+- `scripts/nexo.mjs` still accepts `--continuity` for queries/previews and forwards Chronicle arguments to the child with `spawnSync`; the reviewed surface does not implement the accepted `--root` contract.
+- `scripts/nexo-chronicle-session.mjs` is independently executable and accepts direct store paths plus initialization flags.
+- `scripts/assistants.mjs` combines Nexo Continuity/mission work with Lúmina memory/world-state writes; the repair wrapper blocks its specific repair session but does not prove lower-level repair APIs unreachable.
+- `scripts/simulate.mjs` opens Nexo Continuity and passes legacy `state.nexoMemory` while persisting simulation state.
+- GitHub search for selected dynamic-loader identifiers returned no usable results; this is not evidence that dynamic/computed loaders or external consumers are absent.
+
+Next bounded task: define the minimum responsibility cut that removes Nexo operations from ordinary Lúmina assistant/simulation routes while preserving Lúmina persistence, then specify how Nexo APIs receive root/admission. Do not re-run the 188-blob sweep without source changes. Keep unresolved dynamic/external edges UNKNOWN/BLOCKED. No runtime/tests/workflows changed and no tests/CI ran.
+
+Canonical state remains M0 INCOMPLETO; D1-DESIGN OPEN; implementation NO AUTORIZADA; D2/D3 OPEN; authorization NOT_EVALUATED; legitimate root PENDING/UNKNOWN; protected effects STOP.
