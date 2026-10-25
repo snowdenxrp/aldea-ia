@@ -91,3 +91,12 @@ Propósito: continuar desde los cambios documentales recientes sin rehacer audit
 - Aclaración de nombres: “Opción A” aceptada como dirección en el contrato de raíz no significa que esté ratificada la “Opción A” de D0-C2 (bootstrap offline con quiescencia). La política de bootstrap sigue pendiente del propietario.
 - Próxima continuidad: revisar el registro de decisiones actual y las puertas D0-C2/P-05 para detectar si ya hay decisión explícita del propietario; no pedirla de nuevo si está registrada. No crear protocolo/command de recuperación, ni modificar runtime/tests/workflows.
 - Estado canónico: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. No tests/CI.
+
+
+## Contraste adicional — decisión de bootstrap (2026-10-25)
+
+- Documento: [NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md](NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md), commit `280fbfdfedcae89451dcc33ff1c71b2150bbe46a`.
+- Registro vigente §8.1 ratifica O-08 (raíz explícita/sin bootstrap implícito), mientras §8.2 conserva P-01 (protocolo bootstrap) y P-05 (release/readmisión) como pendientes. No consta selección explícita de A/B/C/D ni una política permanente de bloqueo; `UNKNOWN/BLOCKED` sigue siendo la conducta conservadora mientras no se resuelva el diseño.
+- No confundir recomendación provisional de bootstrap offline con decisión del propietario. No pedir que repita una decisión ratificada: la selección concreta no aparece en el registro revisado.
+- Nota de precisión: la revisión de huecos de bootstrap menciona O-01…O-04 en una frase; la referencia canónica vigente para los principios de raíz es O-08 del registro §8.1. Interpretar ese pasaje como referencia a los principios de raíz ratificados, no como un identificador de decisión distinto.
+- Sin cambios de runtime/tests/workflows; no tests/CI. Estado canónico no cambia.
