@@ -333,3 +333,82 @@ Los documentos ya dicen explícitamente: ausencia de lock/PID aparentemente muer
 
 ### Gates sin cambio
 M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; A/B/C/D sin seleccionar. No tests/CI ni cambios de runtime/dispositivo.
+
+## Paquete de extractos para Gemini — CV-24/CV-25/P-01/P-05/P-03-P-04 (2026-10-25)
+
+**Propósito:** evitar que la auditoría quede bloqueada por la falta de acceso directo de Gemini al repositorio. Los extractos siguientes se recuperaron desde la rama `ncs-clean-architecture` mediante acceso al repositorio. Los números son líneas del blob citado; los SHA son blob SHA, no SHA de commit ni prueba del HEAD.
+
+### CV-24 — matriz de aceptación, líneas 46–59
+Fuente: [matriz bootstrap](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), blob `25bcb5f6b8e7ed106c245fa21c54a4e335a989c4`.
+
+> La opción B no se acepta por la mera presencia de `rename`, por una prueba de laboratorio ni por asumir que dos rutas comparten un filesystem. La evaluación documental debe exigir evidencia específica del entorno para:
+> 1. Las rutas efectivas de staging y destino, incluida su resolución.
+> 2. El filesystem, volumen o montaje relevante y la semántica de publicación aplicable.
+> 3. El cumplimiento de los requisitos de la operación elegida (incluido mismo filesystem cuando sea requisito).
+> 4. El tratamiento de errores, interrupciones y colisiones, sin inferir durabilidad a partir de atomicidad.
+> 5. La garantía de que los lectores autorizados consumen la ruta publicada y no staging.
+> 6. La versión, configuración y alcance exacto de la evidencia.
+>
+> FBE, FUSE, montajes separados y capas de abstracción se evalúan cuando sean pertinentes; su presencia por sí sola no prueba fallo, y su ausencia no prueba seguridad. Si faltan evidencias necesarias, la opción B queda `UNKNOWN/BLOCKED` para ese entorno. No se declara `ROOT_READY`.
+
+Contexto adicional, líneas 23–32: la opción B exige que todos los lectores usen la ruta final y nunca staging; la competencia debe dejar un único publicador ganador sin sobrescritura ni mezcla; se requieren evidencias del filesystem/volumen y competencia, pruebas de crash/colisión tras autorización, y no se promete atomicidad universal.
+
+CV-26, líneas 67–69: ninguna prueba aislada, script, marcador persistente, ausencia momentánea de procesos o resultado de CI produce por sí solo `ROOT_READY`. Se requieren todos los predicados ratificados, incluida autoridad legítima, control de admisión, integridad y garantías pertinentes de concurrencia/recuperación. Si falta una condición, `UNKNOWN/BLOCKED`.
+
+### CV-25 — perfil de despliegue, líneas 62–68
+Fuente: [perfil D3](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md), blob `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
+
+> Cada evidencia debe identificar el entorno, versión, configuración y alcance que realmente cubre. Un resultado favorable en análisis estático, simulación, laboratorio o en otro dispositivo no demuestra automáticamente las propiedades del POCO X7 Pro. Cuando una afirmación dependa de su filesystem, cifrado, supervisores, políticas de terminación, relanzadores o configuración efectiva, se requiere evidencia operacional pertinente del dispositivo objetivo para sostener esa afirmación.
+>
+> La equivalencia entre entornos solo puede invocarse si se identifican y justifican las condiciones relevantes para la propiedad evaluada. No se exige ejecutar todas las pruebas en el dispositivo; se prohíbe extrapolar una conclusión que dependa de condiciones no demostradas. Si la equivalencia o la evidencia necesaria falta, el resultado para el entorno objetivo es `UNKNOWN/BLOCKED`.
+
+Contexto E2/E3/E5, líneas 22–52: identificar quién puede detener todos los escritores y launchers y cómo impedir su reinicio; una terminal cerrada no prueba ausencia de servicios/sesiones/relanzadores; launcher desconocido implica `UNKNOWN/BLOCKED`; la ventana debe mantenerse durante toda la copia y validación.
+
+### P-01 — inventario de callers, líneas 44–60
+Fuente: [inventario de callers](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md), blob `e79f8672c5c8b858fffe2015cc18544007449756`.
+
+> Los locks de stores solo coordinan participantes que respetan esos locks. No demuestran quiescencia externa universal.
+>
+> La prueba de entrypoint documenta un escenario de inicialización parcial y un reintento; no prueba el comportamiento en el POCO X7 Pro ni una transacción atómica entre stores.
+>
+> Sin el caller operativo, la ubicación de la raíz y el propietario autorizado de esas rutas, no es posible definir un predicado empírico completo de quiescencia.
+>
+> Opción A permanece `UNKNOWN/BLOCKED`; B/C/D no se seleccionan.
+>
+> Evidencia mínima que falta:
+> 1. Identidad del invocador real del bootstrap en el entorno inicial.
+> 2. Raíz física prevista y regla para derivar las rutas de Continuity/Chronicle desde ella.
+> 3. Lista de actores que pueden escribir o lanzar escritores sobre esa raíz y autoridad para detenerlos.
+> 4. Condición observable que mantiene cerrada la admisión durante bootstrap y antes de la readmisión.
+> 5. Política ante corte entre inicializaciones, cierre de proceso, lock irresuelto y resultado de persistencia desconocido.
+>
+> Si el despliegue aún no está definido, registrar explícitamente que no existe caller operativo seleccionado; no inventar uno ni resolverlo añadiendo flags/wrappers por inferencia.
+
+### P-05 — especificación de release incierto/readmisión, líneas 20–39 y 69–88
+Fuente: [especificación P-05](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_P05_RELEASE_UNCERTAINTY_AND_READMISSION_EVIDENCE_SPEC_2026-10-25.md), blob `5c4b74ecb3924682e5cf3c93275ea40d64be4f8c`.
+
+> Todo resultado posterior a una operación debe conservar separadas estas dimensiones:
+> 1. Resultado de negocio/persistencia: confirmado, fallo demostrado antes de cualquier escritura, o `UNKNOWN` si pudo haber escritura y no puede demostrarse el estado final.
+> 2. Resultado de release: confirmado para la misma instancia del lock, fallo observado, o incierto.
+> 3. Readmisión: permitida solo si el criterio de seguridad elegido y aprobado aporta evidencia suficiente; de otro modo `BLOCKED/UNKNOWN`.
+>
+> No se permite inferir que un fallo de release significa que la operación de negocio falló. Tampoco que un path de lock ausente, por sí solo, prueba que ningún proceso anterior sigue ejecutando una liberación/limpieza. No se reejecuta automáticamente la operación de negocio para “arreglar” la incertidumbre del lock.
+>
+> Después de `LOCK_RELEASE_UNCERTAIN` o de una limpieza de bootstrap/owner igualmente ambigua: no iniciar otra operación de negocio mientras la admisión sea incierta; no borrar/modificar un lock por edad, PID aparentemente muerto, owner ilegible o path ausente/reaparecido; no usar una variable local como coordinación interproceso; no introducir por iniciativa propia marcador persistente, lock hermano, tombstone, cola, ID, retry, transacción o servicio de recuperación; preservar el resultado de persistencia observado y exponer release incierto por separado; sin evidencia suficiente, permanecer `UNKNOWN/BLOCKED`.
+>
+> El resultado debe distinguir persistencia observada, release observado, concesión o no de readmisión y motivo/evidencia faltante. P-05 permanece abierto hasta que se ratifique la política, se escriban los límites del modelo, se resuelva la identidad/propiedad del lock y, tras autorización independiente, se acepten los casos aplicables vinculados al SHA exacto. No se infiere autoridad constitucional a partir de lock, raíz o éxito de filesystem.
+
+### P-03/P-04 — admisión y ownership, líneas 14–21, 27–37, 94–102
+Fuente: [especificación P-03/P-04](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/NEXO_NCS/BUILD/NCS_M0_D2_P03_P04_ADMISSION_SCOPE_AND_LOCK_OWNERSHIP_SPEC_2026-10-25.md), blob `baa28e3b868aa0262b9aa9edd837d06938aacd4d`.
+
+> Decisiones de diseño ratificadas que restringen el diseño: raíz explícita única `--root`, sin override ambiental/fallback legacy; operación normal sin bootstrap implícito; canonicalizar antes de derivar rutas; consultas/previews/Chronicle dentro del alcance pasan por admisión antes de leer datos persistentes; release incierto implica `UNKNOWN/BLOCKED`, sin retry automático ni readmisión hasta resolver la incertidumbre. La raíz o el lock no son autoridad constitucional.
+>
+> La secuencia propuesta valida argumentos sin abrir stores, resuelve/canonicaliza la raíz, adquiere admisión, y solo después abre/lee stores; conserva admisión mientras se usa el snapshot; captura por separado resultado de negocio/persistencia y release. Si release es incierto, no repite la operación y bloquea readmisión.
+>
+> Los locks per-store solo coordinan participantes que los respetan; el contexto de CLI no demuestra cobertura de consumidores directos. El contrato de esta especificación está propuesto y no ratificado como contrato completo ni autoriza implementación.
+
+### Encargo para Gemini
+Con estos extractos ya no es necesario acceso directo al repositorio para la primera pasada. Clasifica cada punto como `YA CUBIERTO`, `NUEVO`, `CONTRADICCIÓN`, `NO SUSTENTADO` o `UNKNOWN`. Para cada `NUEVO`/contradicción, cita el texto exacto que origina la observación y explica por qué los criterios actuales no lo cubren. Si no hay hallazgos materiales nuevos, indícalo. No reescribas los contratos, no añadas mecanismos por inercia, no edites el repositorio, no ejecutes código/tests/CI y no selecciones A/B/C/D. La falta de acceso previa queda superada para esta revisión por los extractos, pero no equivale a verificación independiente del SHA/HEAD del repositorio.
+
+### Gates inalterados
+M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; A/B/C/D sin seleccionar. No tests/CI ni cambios de runtime/dispositivo.
