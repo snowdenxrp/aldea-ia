@@ -87,3 +87,35 @@ Solo se realizó lectura documental y reconciliación. No se modificaron runtime
 ## 8. Siguiente paso
 
 Seguir desde `NEXO_NCS/STATUS.md` y la matriz canónica. Antes de pedir una decisión al propietario, formular únicamente las preguntas operacionales que distinguen las alternativas canónicas: si la primera instalación puede exigir operación offline con quiescencia demostrable, y qué evidencia real puede producir el entorno para demostrar control sostenido de writers/launchers. No presentar la selección como urgente si el entorno todavía es desconocido; conservar `UNKNOWN/BLOCKED`.
+
+
+## 10. Verificación documental del límite M1 frente al bootstrap de la raíz (2026-10-25)
+
+### Fuentes inspeccionadas
+
+- `NEXO_NCS/M1_ANDROID/README.md`, blob `70cf0abc5b8902035da7ed67de823ba39c03937b`.
+- `NEXO_NCS/M1_ANDROID/app/build.gradle.kts`, blob `5b9006127bfb890431a0cc8cb3e7abd489ad0fdf`.
+- `NEXO_NCS/M1_ANDROID/app/src/main/AndroidManifest.xml`, blob `b4bc8281df05460724d775b8a97da924c6a4ea0d`.
+- `NEXO_NCS/M1_ANDROID/app/src/main/kotlin/org/nexo/m1/MainActivity.kt`, blob `ce22225a8661a4afa2e7eb1f6b65dfb1b3db26b0`.
+- `.github/workflows/nexo-m1-android-build.yml`, blob `b21eb080d9024c7cf580b7f06729bbe65a89cb59`.
+
+### Hechos estáticos observados
+
+1. El módulo M1 es una aplicación Android separada con `applicationId = org.nexo.m1` y una actividad `MAIN/LAUNCHER`; por tanto, Android puede lanzarla como aplicación normal. La mera existencia de este launcher no prueba que la app sea un escritor de la raíz NCS.
+2. El manifiesto inspeccionado no declara `android.permission.INTERNET`; la Activity usa inferencia local y declara en su comentario de diseño que no importa el runtime Nexo. Esto es evidencia estática de alcance de app, no prueba de aislamiento de todo el dispositivo ni de comportamiento del APK instalado.
+3. El único archivo persistente descrito/observado en la Activity es el modelo, bajo `filesDir` privado de la app (incluye un temporal `model.gguf.part` y destino `model.gguf`). Las escrituras/deletes observadas en este archivo corresponden al aprovisionamiento local del modelo.
+4. La Activity invoca `startActivityForResult` con `ACTION_OPEN_DOCUMENT` para que el usuario elija el archivo del modelo. No se encontró en la Activity una ruta hacia `Continuity`, `Chronicle`, `ROOT_READY`, ni una importación del runtime Nexo.
+5. El workflow define un build Android y verificaciones estáticas/artefactos; no se ejecutó en esta revisión y no demuestra cuál APK está instalado en el POCO X7 Pro.
+
+### Inferencia acotada
+
+Con la fuente actual inspeccionada, M1 **no está demostrado como el bootstrapper ni como escritor de la raíz NCS**. Por tanto, el ciclo de vida/relanzamiento de M1 no puede usarse por sí solo como prueba de que la opción A sea inviable o viable. El proceso de bootstrap de la raíz y su ubicación operacional siguen sin identificarse en las fuentes revisadas.
+
+La evidencia tampoco permite afirmar que no exista otro launcher, proceso legacy, actor de release/limpieza o mecanismo externo que escriba la raíz. Esa arista permanece `UNKNOWN`.
+
+### Decisión de continuidad
+
+- Mantener opción A `UNKNOWN/BLOCKED`; no seleccionar B/C/D.
+- No exigir control absoluto de todos los procesos Android por defecto; identificar primero el proceso real que escribe o lanza escritores de la raíz.
+- Siguiente paso: localizar, mediante lectura estática estrecha, el contrato/entrypoint que pretende crear o modificar la raíz y quién lo invoca. Si ningún entrypoint operativo está definido, registrar la ausencia como hueco de diseño y mantener los gates.
+- Sin pruebas/CI, sin instalación, sin cambios de runtime ni de dispositivo.
