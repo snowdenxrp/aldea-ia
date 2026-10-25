@@ -1,3 +1,13 @@
+# CHECKPOINT DE CONTINUIDAD — SUPERFICIES EJECUTABLES D1
+
+- Se creó y releyó [NCS_M0_D1_EXECUTABLE_SURFACES_AND_IMPORTABLE_REPAIR_APIS_2026-10-24.md](BUILD/NCS_M0_D1_EXECUTABLE_SURFACES_AND_IMPORTABLE_REPAIR_APIS_2026-10-24.md), commit `83de482d62cf84db255fdf04787886e597ae6329`, blob `24fa2eadbc68052eb9283dd82b851e1bea2363b1`.
+- Evidencia anclada al snapshot fuente `50b40b1ca9029bceb7bf65dbb1b5c3d81d57889a`, tree `1f63ffd83682f490482a09b974f6455605ed0767`.
+- Distinción documentada entre scripts npm, guardias de ejecución directa y APIs de reparación importables. El wrapper de runtime que bloquea una ruta no demuestra exclusión global de las APIs inferiores; consumidores no identificados permanecen `UNKNOWN/BLOCKED`.
+- Solo lectura estática y documentación. Sin runtime/tests/workflows/estado Lúmina; sin tests/CI.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; D0 `OPEN`; D1-DESIGN `OPEN`; implementación D1 no autorizada; D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # CHECKPOINT DE CONTINUIDAD — SNAPSHOT BASE D1 FIJADO
 
 - Se creó y verificó [NCS_M0_D1_PINNED_SOURCE_SNAPSHOT_BASE_2026-10-24.md](BUILD/NCS_M0_D1_PINNED_SOURCE_SNAPSHOT_BASE_2026-10-24.md), commit `54506ca2f70ec74ef1c7103b9e7948c7f1d2f058`, blob `1060c18d16b110c0e0de345f70178c27d049d620`.
