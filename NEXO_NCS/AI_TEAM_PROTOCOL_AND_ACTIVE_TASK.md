@@ -412,3 +412,31 @@ Con estos extractos ya no es necesario acceso directo al repositorio para la pri
 
 ### Gates inalterados
 M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; A/B/C/D sin seleccionar. No tests/CI ni cambios de runtime/dispositivo.
+
+
+## Revisión documental Claude — informe recibido 2026-10-25
+
+**Estado de la revisión:** informe de solo lectura recibido del propietario. Claude declara haber verificado rama y SHA al inicio y al final: `ncs-clean-architecture @ e30f09b4fdea23fe47798918e8bbbbdea8c70721`; sin modificaciones locales, tests, CI ni ejecución de código. ChatGPT confirmó que ese commit era idéntico al HEAD de la rama antes de esta actualización documental. Los hallazgos que se basan en archivos o líneas no recuperados independientemente por ChatGPT se registran como informes de Claude pendientes de verificación puntual, no como prueba autónoma de código.
+
+### Hallazgos de Claude y tratamiento
+
+- **H1 — semántica ROOT_READY:** discrepancia material entre el estado local/acotado descrito por la reconciliación semántica y CV-26, que agrupaba autoridad legítima, admisión e integridad dentro de la transición. ChatGPT aplica una aclaración documental conservadora en la matriz de aceptación: `ROOT_READY` es preparación local, no legitimidad constitucional; autoridad y efectos protegidos son gates separados. La secuencia completa de admisión sigue abierta; no hay cambio de runtime ni cierre de gate.
+- **H2 — colisión de etiquetas:** se propone desambiguar sistemáticamente las familias de etiquetas: `D3-E1…E6`, `P05-E1…E9`, `P01-A…D`, `P05-A/B`, `D2R-A/B/C`. Pendiente de normalización documental coordinada; no reinterpretar decisiones previas por una letra/número sin prefijo.
+- **H3 — perfil de entorno E1:** el dispositivo/prototipo descrito no demuestra por sí solo versión/build observada ni qué runtime escribirá Continuity/Chronicle en el POCO. Tratar el intake E1 como parcial hasta aclarar despliegue y caller reales; no extrapolar el CLI Node al teléfono.
+- **H4 — intake mínimo D3:** Claude identifica posible inconsistencia entre ítems 1–4 y el mapeo a bloques E; verificar el texto fuente antes de editar. No declarar intake completo por la frase “mínimo 1–4” sin tabla inequívoca ítem→bloque.
+- **H5 — actores de release/limpieza y reanudación:** la cobertura de escritores/launchers debe incluir actores que puedan continuar o reanudar release/limpieza, no solo procesos observados en una instantánea. La omisión textual reportada requiere reconciliación; el comportamiento real de ciclo de vida Android continúa `UNKNOWN`.
+- **H6 — P-05 E6/E7:** la ausencia de un path no demuestra que el actor previo haya terminado. La verificabilidad de los casos E6/E7 depende de la política de release/readmisión y del modelo de procesos/filesystem, todavía no ratificados. No inventar mecanismo ni declarar estos casos superados.
+- **H7 — “descartar A” frente a `UNKNOWN/BLOCKED`:** distinguir falta de demostración (bloqueo) de imposibilidad demostrada (descarte). La ausencia de evidencia no selecciona B/C/D.
+- **H8 — pines blob obsoletos:** actualizar o marcar como históricos los SHA documentales que ya no coincidan con la rama; cada pin debe indicar si es blob actual, histórico o SHA de commit. Pendiente de cotejo antes de editar.
+- **H9 — callers assistants/simulate:** Claude reporta que `scripts/assistants.mjs` y `scripts/simulate.mjs` pueden inicializar Continuity y no aparecen en el inventario acotado de callers. Verificar los blobs actuales y añadirlos como callers de código, si se confirma, dejando explícito que el workflow de simulación en GitHub no demuestra despliegue en el POCO.
+
+### Orden de trabajo documental
+
+1. La aclaración H1 ya se incorporó en la matriz de aceptación (ver commit registrado en la conversación; confirmar el SHA actual de rama antes de la siguiente edición).
+2. Siguiente: verificación puntual de H2/H4/H8 contra los documentos actuales y corrección editorial mínima; cotejar H3/H5 con el perfil D3 y el protocolo de quiescencia; verificar H9 contra los blobs actuales.
+3. Después, aclarar E6/E7 de P-05 sin elegir política de recuperación/readmisión. Mantener cualquier mecanismo no ratificado fuera del diseño.
+4. Actualizar STATUS/handoff solo después de confirmar las rutas/SHAs y sin reescribir el estado canónico extenso de forma parcial.
+
+### Gates y autorización
+
+Trabajo documental solamente, conforme a la ratificación del propietario del 2026-10-25. No ejecutar tests/CI/código; no modificar runtime/tests/workflows/configuración ejecutable; no instalar ni modificar dispositivo/OS/bootloader; no seleccionar bootstrap o recuperación A/B/C/D. M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Los hallazgos de Claude no prueban una vulnerabilidad de runtime ni cierran P-01/P-05.
