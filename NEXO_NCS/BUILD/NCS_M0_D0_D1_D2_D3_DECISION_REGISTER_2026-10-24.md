@@ -31,25 +31,25 @@ Estados utilizados:
 
 | ID | Tema | Recomendación de trabajo | Decisión/evidencia que falta | Mientras tanto |
 |---|---|---|---|---|
-| P-01 | Bootstrap C2 | Preferir bootstrap offline y controlado por operador (opción A) solo si se puede demostrar quiescencia. Si no, UNKNOWN/BLOCKED; evaluar publicación atómica B únicamente con garantías del filesystem demostradas. | Confirmar el procedimiento operacional y cómo se prueba que ningún proceso/supervisor legacy puede reanudar escrituras. | No bootstrap normal ni autónomo; no inicialización implícita. |
-| P-02 | Alcance de admisión | Incluir en la sección crítica de instancia las lecturas que materializan snapshots y previews, desde antes del primer `loadCurrent()` hasta terminar su uso. | Cerrar D2 con contrato de alcance y consumidores; no atribuir cuota de heap a un lock. | No afirmar snapshot/heap agregado acotado ni consistencia de instancia implementada. |
-| P-03 | Primitiva de lock | Caracterizar los locks de Continuity y Chronicle antes de elegir: A, lock raíz independiente, o B, primitiva compartida con adaptadores de política. Elegir B solo si preserva semántica observable. | Matriz de caracterización y comparación verificable de owner schema, timeout, stale, release retry, cuarentena y códigos. | No unificar ni refactorizar locks a ciegas. |
-| P-04 | Propiedad del lock | El proceso que realiza append debe ser dueño de la admisión; el hijo Chronicle debe validar/adquirir por sí mismo si se ejecuta directamente. No mantener el lock del padre mientras espera al hijo que debe adquirirlo. | Pruebas de proceso hijo, invocación directa, contención y ausencia de deadlock, tras autorización de implementación. | No afirmar que el proceso hijo está protegido por el padre. |
-| P-05 | Release incierto | Separar resultado de negocio/persistencia, resultado de liberación y permiso de readmisión. Nunca reintentar automáticamente la operación de negocio. Nunca retirar un lock reemplazado por otro actor. | Contrato de cuarentena y pruebas de reemplazo de path, release fallido, owner corrupto y actor todavía vivo. | UNKNOWN/BLOCKED; no éxito limpio ni repetición automática. |
-| P-06 | Stale/timeout | 2.000 ms de espera, intervalo de 10 ms y criterio candidato de 60 s + PID muerto son valores de referencia, no decisiones cerradas. | Pruebas y aprobación contractual; edad/PID no bastan para borrar lock. | No auto-borrar lock stale ni presentar valores como política aprobada. |
-| P-07 | Alias y filesystem | `realpath` para resolver alias de symlink bajo el modelo cooperativo; no prometer seguridad frente a proceso hostil, TOCTOU, hard-link/mount alias ni filesystem no compatible. | Política de rutas reservadas y matriz de casos positivos/negativos. | Ambigüedad → UNKNOWN/BLOCKED. |
-| P-08 | `assistants.mjs` / `simulate.mjs` | Mantener la separación de estado Nexo, estado del mundo y memoria Lúmina; no asumir que sus accesos actuales están bloqueados. | Decidir su contrato de integración o exclusión explícita y probarlo. | Excepción de diseño provisional; no declarar barrera de runtime. |
-| P-09 | Compatibilidad legacy | En modo root, rechazar rutas independientes y combinaciones ambiguas; no hacer fallback silencioso. | Revisión de consumidores y envelopes de resultado antes de cambiar API/CLI. | No cambiar el comportamiento por inferencia ni migrar automáticamente. |
+| P-HIST-01 | Bootstrap C2 | Preferir bootstrap offline y controlado por operador (opción A) solo si se puede demostrar quiescencia. Si no, UNKNOWN/BLOCKED; evaluar publicación atómica B únicamente con garantías del filesystem demostradas. | Confirmar el procedimiento operacional y cómo se prueba que ningún proceso/supervisor legacy puede reanudar escrituras. | No bootstrap normal ni autónomo; no inicialización implícita. |
+| P-HIST-02 | Alcance de admisión | Incluir en la sección crítica de instancia las lecturas que materializan snapshots y previews, desde antes del primer `loadCurrent()` hasta terminar su uso. | Cerrar D2 con contrato de alcance y consumidores; no atribuir cuota de heap a un lock. | No afirmar snapshot/heap agregado acotado ni consistencia de instancia implementada. |
+| P-HIST-03 | Primitiva de lock | Caracterizar los locks de Continuity y Chronicle antes de elegir: A, lock raíz independiente, o B, primitiva compartida con adaptadores de política. Elegir B solo si preserva semántica observable. | Matriz de caracterización y comparación verificable de owner schema, timeout, stale, release retry, cuarentena y códigos. | No unificar ni refactorizar locks a ciegas. |
+| P-HIST-04 | Propiedad del lock | El proceso que realiza append debe ser dueño de la admisión; el hijo Chronicle debe validar/adquirir por sí mismo si se ejecuta directamente. No mantener el lock del padre mientras espera al hijo que debe adquirirlo. | Pruebas de proceso hijo, invocación directa, contención y ausencia de deadlock, tras autorización de implementación. | No afirmar que el proceso hijo está protegido por el padre. |
+| P-HIST-05 | Release incierto | Separar resultado de negocio/persistencia, resultado de liberación y permiso de readmisión. Nunca reintentar automáticamente la operación de negocio. Nunca retirar un lock reemplazado por otro actor. | Contrato de cuarentena y pruebas de reemplazo de path, release fallido, owner corrupto y actor todavía vivo. | UNKNOWN/BLOCKED; no éxito limpio ni repetición automática. |
+| P-HIST-06 | Stale/timeout | 2.000 ms de espera, intervalo de 10 ms y criterio candidato de 60 s + PID muerto son valores de referencia, no decisiones cerradas. | Pruebas y aprobación contractual; edad/PID no bastan para borrar lock. | No auto-borrar lock stale ni presentar valores como política aprobada. |
+| P-HIST-07 | Alias y filesystem | `realpath` para resolver alias de symlink bajo el modelo cooperativo; no prometer seguridad frente a proceso hostil, TOCTOU, hard-link/mount alias ni filesystem no compatible. | Política de rutas reservadas y matriz de casos positivos/negativos. | Ambigüedad → UNKNOWN/BLOCKED. |
+| P-HIST-08 | `assistants.mjs` / `simulate.mjs` | Mantener la separación de estado Nexo, estado del mundo y memoria Lúmina; no asumir que sus accesos actuales están bloqueados. | Decidir su contrato de integración o exclusión explícita y probarlo. | Excepción de diseño provisional; no declarar barrera de runtime. |
+| P-HIST-09 | Compatibilidad legacy | En modo root, rechazar rutas independientes y combinaciones ambiguas; no hacer fallback silencioso. | Revisión de consumidores y envelopes de resultado antes de cambiar API/CLI. | No cambiar el comportamiento por inferencia ni migrar automáticamente. |
 
-## 4. Puertas de evidencia por criterio de salida M0
+## 4. Grupos de evidencia para los criterios de salida M0 (G1–G5; no confundir con A–E de la línea de meta)
 
-| Criterio | Estado conservador actual | Evidencia necesaria para cerrar |
+| Grupo de evidencia | Estado conservador actual | Evidencia necesaria para cerrar |
 |---|---|---|
-| A — aceptación reproducible | PARCIAL: existe ejecución CI determinista satisfactoria en SHA histórico de la rama; no equivale a cierre global. | Workflow/job/test exactos, SHA de implementación final, resultado SUCCESS y mapa finito de pruebas obligatorias. |
-| B — continuidad/admisión/persistencia | PENDIENTE para el contrato de raíz/admisión; los tests existentes de stores no demuestran root admission. | Contratos, tests de rechazo/no-write, snapshot admission y regresiones de persistencia ligadas al mismo SHA. |
-| C — reconstrucción de resultado terminal | Reutilizar evidencia existente; no repetir auditorías sin discrepancia nueva. | Casos conflict/context mismatch/ausencia de outcome enlazados a test y ejecución exactos. |
-| D — journal/recuperación/UNKNOWN | PENDIENTE para la nueva frontera de instancia y release incierto. | Pruebas de crash cuts, unknown, lock reemplazado, release incierto y no redispatch automático. |
-| E — raíz legítima/frontera de efectos | BLOQUEANTE: raíz legítima PENDING/UNKNOWN; root lock no es autoridad. | Ruta integrada de procedencia de raíz legítima y frontera real de efectos demostrada. No sustituible por CI, `AUTHORIZED` suministrado por caller o admisión de filesystem. |
+| G1 — aceptación reproducible | PARCIAL: existe ejecución CI determinista satisfactoria en SHA histórico de la rama; no equivale a cierre global. | Workflow/job/test exactos, SHA de implementación final, resultado SUCCESS y mapa finito de pruebas obligatorias. |
+| G2 — continuidad/admisión/persistencia | PENDIENTE para el contrato de raíz/admisión; los tests existentes de stores no demuestran root admission. | Contratos, tests de rechazo/no-write, snapshot admission y regresiones de persistencia ligadas al mismo SHA. |
+| G3 — reconstrucción de resultado terminal | Reutilizar evidencia existente; no repetir auditorías sin discrepancia nueva. | Casos conflict/context mismatch/ausencia de outcome enlazados a test y ejecución exactos. |
+| G4 — journal/recuperación/UNKNOWN | PENDIENTE para la nueva frontera de instancia y release incierto. | Pruebas de crash cuts, unknown, lock reemplazado, release incierto y no redispatch automático. |
+| G5 — raíz legítima/frontera de efectos | BLOQUEANTE: raíz legítima PENDING/UNKNOWN; root lock no es autoridad. | Ruta integrada de procedencia de raíz legítima y frontera real de efectos demostrada. No sustituible por CI, `AUTHORIZED` suministrado por caller o admisión de filesystem. |
 
 ## 5. Orden de trabajo sin repetir auditorías
 
@@ -120,3 +120,12 @@ Ratificación explícita recibida después de la versión inicial de este regist
 - Raíz legítima: `PENDING/UNKNOWN`.
 - Efectos protegidos: `STOP`.
 - No se ejecutaron pruebas ni CI como parte de esta ratificación; no se modificaron runtime, tests ni workflows.
+
+
+## 9. Reconciliación de identificadores y taxonomías — 2026-10-25
+
+Para evitar colisiones dentro de este documento, los identificadores de la tabla histórica de propuestas de §3 se renombran `P-HIST-01`…`P-HIST-09`. Son referencias históricas de la versión inicial, no decisiones pendientes vigentes. La tabla §8.2 conserva `P-01`…`P-10` como identificadores canónicos actuales de decisiones pendientes. Si una nota antigua cita un identificador histórico sin el prefijo, debe interpretarse en el contexto de su sección original y actualizarse al editar esa nota; no se debe inferir equivalencia semántica por número.
+
+La línea de meta M0 define la taxonomía normativa A–E. La tabla de §4 de este registro se denomina ahora grupos de evidencia G1–G5 y no redefine ni sustituye los criterios A–E. Las referencias futuras deben nombrar explícitamente “criterio de aceptación A–E” o “grupo de evidencia G1–G5”.
+
+Este cambio solo corrige trazabilidad documental; no modifica el contenido de decisiones O-01…O-11, no cierra P-01…P-10, no cambia el estado canónico ni autoriza implementación.
