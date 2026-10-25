@@ -43,6 +43,31 @@ Antes de seleccionar una opción, la especificación concreta deberá responder:
 6. **Resultado exacto:** condiciones para `ROOT_READY`, rechazo definitivo de la operación actual o permanencia en `UNKNOWN/BLOCKED`; persistencia, release y readmisión se informan por separado.
 7. **Reproducibilidad:** casos deterministas de interrupción/crash y competencia, tests vinculados al SHA de implementación y CI posterior a autorización independiente.
 
+## CV-24 — Contexto real de publicación y semántica de atomicidad
+
+**Estado:** criterio documental incorporado en esta matriz; no implica selección de B ni autorización de implementación.
+
+La opción B no se acepta por la mera presencia de `rename`, por una prueba de laboratorio ni por asumir que dos rutas comparten un filesystem. La evaluación documental debe exigir evidencia específica del entorno para:
+
+1. Las rutas efectivas de staging y destino, incluida su resolución.
+2. El filesystem, volumen o montaje relevante y la semántica de publicación aplicable.
+3. El cumplimiento de los requisitos de la operación elegida (incluido mismo filesystem cuando sea requisito).
+4. El tratamiento de errores, interrupciones y colisiones, sin inferir durabilidad a partir de atomicidad.
+5. La garantía de que los lectores autorizados consumen la ruta publicada y no staging.
+6. La versión, configuración y alcance exacto de la evidencia.
+
+FBE, FUSE, montajes separados y capas de abstracción se evalúan cuando sean pertinentes; su presencia por sí sola no prueba fallo, y su ausencia no prueba seguridad. Si faltan evidencias necesarias, la opción B queda `UNKNOWN/BLOCKED` para ese entorno. No se declara `ROOT_READY`.
+
+## CV-25 — Límite de extrapolación entre entornos
+
+**Estado:** regla transversal referenciada desde esta matriz.
+
+Toda evidencia debe identificar el entorno al que se limita. Un resultado favorable en análisis estático, simulación, laboratorio o un dispositivo distinto no demuestra automáticamente el mismo comportamiento en el POCO X7 Pro. Si una afirmación depende de propiedades específicas del entorno objetivo, debe contar con evidencia operacional pertinente de ese entorno. La equivalencia de condiciones debe justificarse; cuando no pueda demostrarse, el resultado para el entorno objetivo permanece `UNKNOWN/BLOCKED`.
+
+## CV-26 — Separación entre resultado de prueba y estado canónico
+
+Ninguna prueba aislada, script, marcador persistente, ausencia momentánea de procesos o resultado de CI produce por sí solo la transición a `ROOT_READY`. Esta transición requiere satisfacer todos los predicados ratificados, incluida la autoridad legítima, el control de admisión, la integridad y las garantías de concurrencia y recuperación pertinentes. Si falta una condición necesaria, no se eleva el estado por heurística; se mantiene `UNKNOWN/BLOCKED` o el estado de bloqueo correspondiente.
+
 ## Criterios de descarte inmediato
 
 - Descartar A para una ejecución concreta si no puede demostrarse la quiescencia operacional.
