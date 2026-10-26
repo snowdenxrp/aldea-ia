@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — MATRIZ DE FACTIBILIDAD DE ESCENARIOS DE RECONCILIACIÓN (2026-10-26)
+
+- Matriz docs-only añadida: [Matriz de factibilidad de escenarios de reconciliación](BUILD/NCS_M0_RECONCILIATION_SCENARIO_FEASIBILITY_MATRIX_2026-10-26.md).
+- Se documentan escenarios de snapshot coincidente, revisión antigua/superior, lectura fallida, corrupción, múltiples writers, conflicto condicional y fallos posteriores a escritura/cleanup.
+- Reafirma la separación entre resultado de llamada, estado durable observado, correspondencia causal y outcome terminal. La coincidencia de revisión no prueba causalidad.
+- Solo documentación: no se modificaron runtime/tests/workflows y no se ejecutaron tests ni CI.
+- Gates intactos: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; integración de reconciliación no autorizada y no implementada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — NCS M0 — SIGUIENTE DISEÑO DE FRONTERA DE RECONCILIACIÓN (2026-10-26)
 
 - Diseño estático añadido: [Siguiente diseño de frontera de reconciliación](BUILD/NCS_M0_RECONCILIATION_BOUNDARY_NEXT_DESIGN_2026-10-26.md), commit `b9c6552df0309f0bf1cbecacca6a5cb2b46e79b9`.
