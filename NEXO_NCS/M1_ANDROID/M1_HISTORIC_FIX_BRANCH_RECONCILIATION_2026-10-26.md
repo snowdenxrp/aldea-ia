@@ -88,3 +88,48 @@ La consulta de historial por ruta en la rama histórica identifica estos commits
 Se comparó cada uno de los commits representativos `f2c33093…`, `83ad5f40…`, `695ff124…`, `e5fd0054…` y `a7d1076f…` contra `ncs-clean-architecture`. Cada comparación reportó `status=diverged` con merge-base `0a8b5a0d8bde2d91b78e3eb1ea5a1d563dbdc852`; por tanto, ninguno se confirma como ancestro directo del HEAD canónico. Esto respalda la conclusión de que no se debe tratar la corrección histórica como integrada por herencia de commits.
 
 La comparación de ramas divergidas no excluye que un cambio equivalente se haya portado manualmente a otro archivo/artefacto; no se encontró evidencia suficiente para afirmar tal port. Para cerrar ese claim solo sería válido un cotejo estático por contenido del código nativo efectivo incluido en el árbol canónico y, posteriormente con autorización, evidencia del build/APK correspondiente. No ejecutar pruebas ni builds ahora.
+
+
+## 7. Nueva evidencia estática decisiva: el build canónico fija upstream sin aplicar el parche histórico
+
+Esta sección eleva la conclusión para el **árbol/build declarado**: ya no es solo que el script no aparezca en el árbol canónico; las instrucciones de build leídas muestran que el flujo canónico obtiene la fuente upstream sin ejecutar ese script.
+
+### 7.1 Preparación y workflow canónicos
+
+- `NEXO_NCS/M1_ANDROID/prepare-llama-android.sh`, blob `1981bf23223f5ac580ed604c7c67efbcd54e86c8`:
+  - fija `LLAMA_CPP_SHA=10a60cf303566e10d6a7a2774c17d2085503d87b`;
+  - clona/descarga y hace checkout detached de esa revisión;
+  - verifica el SHA;
+  - copia `llama-lib.build.gradle.kts` sobre el Gradle upstream.
+  - **No invoca** `apply-native-diagnostics.py` ni aplica modificaciones a `ai_chat.cpp` o `InferenceEngineImpl.kt`.
+- `.github/workflows/nexo-m1-android-build.yml`, blob `b21eb080d9024c7cf580b7f06729bbe65a89cb59`:
+  - ejecuta `prepare-llama-android.sh`;
+  - verifica que la fuente descargada tenga el SHA esperado;
+  - verifica mediante `grep` la forma antigua del log `Formatted and added %s message:`;
+  - después ejecutaría `gradle ... assembleDebug`.
+  - No contiene un paso que ejecute `apply-native-diagnostics.py`.
+- No se ejecutó este workflow ni se construyó nada durante esta revisión. La conclusión anterior describe el **flujo de build definido en el código**, no un build ejecutado en esta sesión.
+
+### 7.2 Fuente upstream exacta fijada por el build
+
+Consulté directamente la fuente pública `ggml-org/llama.cpp` en el SHA `10a60cf303566e10d6a7a2774c17d2085503d87b` fijado por el script.
+
+- `examples/llama.android/lib/src/main/cpp/ai_chat.cpp`, blob upstream `ca6f7172d910da06a26be0eaaa3da1ff01834639`:
+  - líneas 289–297: `chat_add_and_format` llama a `common_chat_format_single(... /* use_jinja */ false)`; añade el mensaje al historial y devuelve el formato.
+  - líneas 432–448: `user_prompt_size` se calcula antes del truncamiento; el vector `user_tokens` puede reducirse en las líneas 434–438, pero la posición se incrementa luego usando el tamaño anterior en la línea 447 y la parada se calcula como `current_position + user_prompt_size + n_predict` en la línea 448. Es la discrepancia de contabilidad que el parche histórico intentaba corregir.
+- `examples/llama.android/lib/src/main/java/com/arm/aichat/internal/InferenceEngineImpl.kt`, blob upstream `a293796f9017326531021c9be38bdd33fcb9667e`:
+  - líneas 217–244: `sendUserPrompt(message, predictLength)` pasa la pregunta y el límite a `processUserPrompt`, luego emite los tokens que devuelve la generación.
+- Fuente de la app canónica `MainActivity.kt`, blob `ce22225a8661a4afa2e7eb1f6b65dfb1b3db26b0`: `sendPrompt()` llama a `sendUserPrompt(userText, MAX_GENERATED_TOKENS)` y añade cada fragmento a la salida; la constante de UI es 256.
+
+### 7.3 Conclusión actualizada por alcance
+
+| Afirmación | Estado |
+|---|---|
+| El build declarado descarga una revisión upstream exacta y la deja sin aplicar el script histórico de corrección | **OBSERVADO** en el script y workflow canónicos |
+| Esa revisión upstream contiene el uso de plantilla `use_jinja=false` y la contabilidad anterior del límite | **OBSERVADO** en el blob upstream fijado, líneas citadas |
+| El flujo de build canónico definido incluye las correcciones del script histórico | **CONTRADICHO por las fuentes inspeccionadas**: no hay paso de aplicación; el workflow exige el patrón de log antiguo |
+| Se ejecutó un build de esa fuente durante esta revisión | **NO** |
+| La APK instalada en el POCO corresponde a ese build o a otro artefacto corregido | **UNKNOWN** |
+| Estos defectos explican por completo la frase genérica repetida observada por el propietario | **NO DEMOSTRADO**; son defectos concretos que requieren validación controlada posterior |
+
+**Resultado técnico:** existe una brecha verificable entre el arreglo histórico propuesto y el flujo de build canónico documentado. El siguiente paso, aún documental, es revisar el historial/artefactos de build ya existentes solo si aportan identidad de commit y APK; no ejecutar el workflow ni generar una APK nueva sin autorización expresa. No aplicar el parche automáticamente.
