@@ -234,3 +234,22 @@ El propietario recordó que M1 tenía un fallo observable importante: **repetía
 ### Siguiente paso combinado
 1. Primero conservar el bloqueo M1 y reconciliar documentalmente la corrección histórica contra el HEAD actual (identificar qué commits/blobs de la rama de corrección están o no integrados); no hacer cherry-pick ni modificar runtime.
 2. Después continuar el bloqueo M0 de caller/root y esperar la revisión independiente del issue #107. No repetir auditorías cerradas ni cambiar gates.
+
+
+## Continuación documental — reconciliación de M1 histórico (2026-10-26)
+
+**Nuevo artefacto:** [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](../M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `71422c8b88f6cd06d0e3d4b5018e9bf2f6cd23e6`. El registro de bloqueo M1 fue actualizado en commit `2c88171962b59d90dd75fa28eb856f5e2712279a`.
+
+### Resultado de la comparación exacta
+
+- HEAD canónico observado: `d6d08c086c55a6f297bf73d8d23d4f4266f23d04`.
+- La rama `ncs/m1-fix-chat-context-generation-limit` está divergida de `ncs-clean-architecture`; GitHub compare reportó `diverged`, `ahead_by=3518`, `behind_by=41`, merge-base `0a8b5a0d8bde2d91b78e3eb1ea5a1d563dbdc852`. No tratar la rama como un parche limpio ni hacer cherry-pick por inferencia.
+- `MainActivity.kt` canónico blob `ce22225a8661a4afa2e7eb1f6b65dfb1b3db26b0` y el histórico blob `9cff99daaf48a91eb1076236ad1aae1733834f59` mantienen el mismo flujo de prompt→motor→stream visible. Las diferencias de UI observadas no acreditan la corrección del contexto.
+- El script histórico `NEXO_NCS/M1_ANDROID/apply-native-diagnostics.py`, blob `7ea0f3e56dac32680d8bcaee69eafc90b4419ef3`, propone cambios nativos de plantilla Qwen3/Jinja, prefijo exacto del contexto, BOS y contabilidad de tokens. El script no está en el árbol canónico inspeccionado y no se ejecutó.
+- La auditoría histórica blob `1029dce05ad6ef39f6c077ba756e6dfe79d8dba9` y plan de regresión blob `9bb6aa11c9b240f6c47a369e82b9bcb6e769485a` tampoco están en el árbol canónico inspeccionado.
+
+### Conclusión y siguiente acción
+
+La integración de la corrección es **NO EVIDENCIADA / UNKNOWN**. La identidad y comportamiento de la APK instalada siguen **UNKNOWN**. Mantener el problema de respuestas repetidas abierto. Si se continúa, rastrear documentalmente los commits exactos que introdujeron el script y los cambios de fuente upstream; no aplicar el script ni copiar código a la rama canónica sin revisión y autorización separada.
+
+La autorización actual no cambia: solo diseño documental/lectura estática. No tests, CI, build, APK, instalación, cambios de runtime ni dispositivo. M0 sigue INCOMPLETO; D0/D1-DESIGN/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
