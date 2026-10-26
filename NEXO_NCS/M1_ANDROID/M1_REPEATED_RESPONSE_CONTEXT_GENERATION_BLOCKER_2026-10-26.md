@@ -74,3 +74,15 @@ Hallazgos confirmados por lectura estática:
 - La auditoría histórica (blob `1029dce05ad6ef39f6c077ba756e6dfe79d8dba9`) y el plan de regresión (blob `9bb6aa11c9b240f6c47a369e82b9bcb6e769485a`) permanecen en la rama histórica, no en el árbol canónico inspeccionado.
 
 Conclusión: corrección integrada = **NO EVIDENCIADA / UNKNOWN**; comportamiento de la APK instalada = **UNKNOWN**; no declarar el fallo resuelto. No tests/CI, compilación, instalación, cambios runtime ni dispositivo. La siguiente acción es documental y acotada: si hace falta, rastrear los commits exactos del script/cambios upstream; no copiar ni aplicar el script automáticamente.
+
+
+## 8. Hallazgo confirmado sobre el build declarado (2026-10-26)
+
+El informe [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `7af4d686e06bc093624a622846c60166e842c402`, ahora incluye una comparación directa con el upstream exacto que el build declara fijar.
+
+- `prepare-llama-android.sh` (blob `1981bf23223f5ac580ed604c7c67efbcd54e86c8`) fija `llama.cpp` en `10a60cf303566e10d6a7a2774c17d2085503d87b`, valida la revisión y copia únicamente la configuración Gradle. No ejecuta `apply-native-diagnostics.py`.
+- Workflow `.github/workflows/nexo-m1-android-build.yml` (blob `b21eb080d9024c7cf580b7f06729bbe65a89cb59`) llama a ese preparador, comprueba la fuente y luego define `assembleDebug`; no aplica el script histórico.
+- En la fuente upstream fijada, `ai_chat.cpp` blob `ca6f7172d910da06a26be0eaaa3da1ff01834639`, líneas 289–297 usa `common_chat_format_single(... use_jinja=false)`; líneas 432–448 calcula el tamaño antes de truncar y vuelve a sumar el tamaño original al límite de generación. Son defectos estáticos concretos respecto de los objetivos de la corrección histórica.
+- La revisión estática confirma que el build **definido en la rama** no incorpora ese parche histórico. No ejecuté el workflow, no compilé, y no afirmo que la APK instalada sea ese build.
+
+Conclusión refinada: la integración del parche en el flujo de build canónico está **CONTRADICHA por los archivos de build inspeccionados**; identidad/estado de la APK instalada permanece **UNKNOWN**. La causa completa de la frase genérica repetida no queda probada. Mantener el bloqueo abierto y no aplicar cambios automáticamente.
