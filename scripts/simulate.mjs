@@ -17,8 +17,30 @@ function clone(value) { return structuredClone(value); }
 const STATE_LOCK_RETRY_MS = 10;
 const STATE_LOCK_STALE_MS = 60_000;
 
+function normalizePersistencePath(statePath) {
+  let nativePath;
+  if (typeof statePath === "string") {
+    if (!statePath.trim() || !path.isAbsolute(statePath)) {
+      throw new TypeError("statePath must be a non-empty absolute native path or file URL");
+    }
+    nativePath = statePath;
+  } else if (statePath instanceof URL) {
+    if (statePath.protocol !== "file:") {
+      throw new TypeError("statePath URL must use the file: scheme");
+    }
+    nativePath = fileURLToPath(statePath);
+  } else {
+    throw new TypeError("statePath must be a non-empty absolute native path or file URL");
+  }
+
+  if (!path.isAbsolute(nativePath)) {
+    throw new TypeError("statePath must resolve to an absolute native path");
+  }
+  return path.normalize(nativePath);
+}
+
 function lockPathFor(statePath) {
-  return `${statePath.pathname}.lock`;
+  return `${statePath}.lock`;
 }
 
 function processIsAlive(pid) {
@@ -190,10 +212,11 @@ function advance(simulation, seconds) {
 }
 
 export async function persistState(statePath, simulation, savedAt, { expectedRevision = null, stateRevision = null, loadCurrentState = loadState, fsModule = fs } = {}) {
-  const releaseLock = await acquireStateLock(statePath);
+  const normalizedStatePath = normalizePersistencePath(statePath);
+  const releaseLock = await acquireStateLock(normalizedStatePath);
   try {
   if (expectedRevision !== null) {
-    const current = await loadCurrentState(statePath);
+    const current = await loadCurrentState(normalizedStatePath);
     const currentRevision = Number.isInteger(Number(current.stateRevision)) ? Number(current.stateRevision) : 0;
     if (currentRevision !== Number(expectedRevision)) {
       const error = new Error(`STATE_REVISION_CONFLICT: expected ${expectedRevision}, found ${currentRevision}`);
@@ -213,15 +236,15 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     agents: simulation.agents,
     events: simulation.events.slice(-500),
   };
-  const tempPrefix = `${statePath.pathname}.tmp-`;
+  const tempPrefix = `${normalizedStatePath}.tmp-`;
   try {
-    const siblings = await fs.readdir(path.dirname(statePath.pathname));
-    await Promise.all(siblings.filter(name => name.startsWith(path.basename(tempPrefix))).map(name => fs.rm(path.join(path.dirname(statePath.pathname), name), { force: true })));
+    const siblings = await fs.readdir(path.dirname(normalizedStatePath));
+    await Promise.all(siblings.filter(name => name.startsWith(path.basename(tempPrefix))).map(name => fs.rm(path.join(path.dirname(normalizedStatePath), name), { force: true })));
   } catch {}
-  const tempPath = `${statePath.pathname}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
+  const tempPath = `${normalizedStatePath}.tmp-${process.pid}-${Date.now()}-${++tempSequence}`;
   try {
     await fsModule.writeFile(tempPath, JSON.stringify(payload, null, 2) + "\n", "utf8");
-    await fsModule.rename(tempPath, statePath);
+    await fsModule.rename(tempPath, normalizedStatePath);
   } catch (error) {
     await fs.rm(tempPath, { force: true }).catch(() => {});
     throw error;
