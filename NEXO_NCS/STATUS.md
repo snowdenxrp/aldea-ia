@@ -4,7 +4,7 @@
 - Hallazgo: `prepare-llama-android.sh` (blob `1981bf23223f5ac580ed604c7c67efbcd54e86c8`) fija upstream `llama.cpp` SHA `10a60cf303566e10d6a7a2774c17d2085503d87b` y copia solo configuración Gradle; no ejecuta `apply-native-diagnostics.py`.
 - Workflow `.github/workflows/nexo-m1-android-build.yml` (blob `b21eb080d9024c7cf580b7f06729bbe65a89cb59`) no aplica el parche histórico. El upstream fijado contiene `use_jinja=false` en `ai_chat.cpp` líneas 289–297 y la contabilidad anterior del límite en líneas 432–448.
 - Informe: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `7af4d686e06bc093624a622846c60166e842c402`.
-- Registro de bloqueo: commit `fe0736296a486c4a37f371bcca32bbc64d6ec20c`. Handoff: commit `6980e8975eaa7a66185ed5cfb213ce18867da627`.
+- Registro de bloqueo: commit `fe0736296a486c4a37f371bcca32bbc64d6ec20c`. Handoff: commit `b7512f61b856e8b60e2586b9e352918587b12162`.
 - Conclusión: el parche histórico no forma parte del flujo de build definido por los archivos inspeccionados. No se ejecutó build; APK instalada sigue UNKNOWN; causa completa del síntoma no probada.
 - Continuidad autorizada solo documental: no tests/CI, build, APK, runtime, instalación ni dispositivo.
 
