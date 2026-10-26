@@ -1,3 +1,16 @@
+# ACTUALIZACIÓN PRIORITARIA — INVENTARIO DE RELANZADORES (2026-10-26)
+
+- HEAD observado inmediatamente antes de esta actualización: `17f6244542dde9975e865dc5337b857cb5e9e4cc`.
+- Se añadió al protocolo de equipo una evaluación documental de la brecha de completitud del inventario: `NEXO_NCS/AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md`, blob `4b6092f6dba367ea585af6f5bf3ddf6307c8360c`; commit `17f6244542dde9975e865dc5337b857cb5e9e4cc`.
+- Claude informó un commit local `ceaebb1` y un parche local, pero no se integraron. La adición remota es una revisión documental independiente basada en la evidencia descrita y las fuentes existentes.
+- Criterio pendiente: documentar alcance, fuentes de descubrimiento, límites/omisiones y evidencia de que el inventario incluye todos los actores capaces de escribir o relanzar escritores dentro de ese alcance. Gatear solo al caller principal no demuestra quiescencia global. Si no se demuestra exhaustividad, `UNKNOWN/BLOCKED`.
+- La evidencia disponible no demuestra exhaustividad empírica en el entorno real ni cierra P-01/P-05. `CV-01` no es el ID que utiliza la matriz actual (`CVM-01…CVM-10`); no renumerar por inferencia.
+- No se ejecutaron tests/CI/código y no se modificaron runtime, workflows ni dispositivo.
+
+Gates sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; A/B/C/D sin seleccionar.
+
+---
+
 # HANDOFF PRIORITARIO — CONTINUIDAD Y REGLAS DE AUTORIZACIÓN CODEX (2026-10-25)
 
 - Handoff de siguiente chat creado: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CONTINUITY_CODEX_AUTHORIZATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CONTINUITY_CODEX_AUTHORIZATION.md), commit `46cd56d63aede6af289529d7f21bdee8f4188ce2`.
