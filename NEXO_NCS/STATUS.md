@@ -1,6 +1,6 @@
 # ACTUALIZACIÓN PRIORITARIA — M1: FUENTE UPSTREAM FIJADA Y PARCHE NO APLICADO (2026-10-26)
 
-- HEAD observado antes de esta actualización: `6980e8975eaa7a66185ed5cfb213ce18867da627`. Consultar la rama de nuevo al retomar.
+- HEAD observado inmediatamente antes de la última actualización de STATUS: `dacd869daf54b5348599027fc789417de3533cb9`. Consultar la rama de nuevo al retomar.
 - Hallazgo: `prepare-llama-android.sh` (blob `1981bf23223f5ac580ed604c7c67efbcd54e86c8`) fija upstream `llama.cpp` SHA `10a60cf303566e10d6a7a2774c17d2085503d87b` y copia solo configuración Gradle; no ejecuta `apply-native-diagnostics.py`.
 - Workflow `.github/workflows/nexo-m1-android-build.yml` (blob `b21eb080d9024c7cf580b7f06729bbe65a89cb59`) no aplica el parche histórico. El upstream fijado contiene `use_jinja=false` en `ai_chat.cpp` líneas 289–297 y la contabilidad anterior del límite en líneas 432–448.
 - Informe: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `7af4d686e06bc093624a622846c60166e842c402`.
