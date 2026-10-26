@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — REPARACIÓN DE RUTAS DE PERSISTENCIA B (2026-10-26)
+
+- El owner ratificó opción B y autorizó el cambio acotado de runtime/tests.
+- Runtime actualizado: `scripts/simulate.mjs`, commit `b96d8f6694aa87601d1da1b85f0c337d62b84f85`.
+- Tests actualizados: `tests/nexo/conditional-commit-persist-state.test.mjs`, commit `d65b5d65ff0ea8efc18cc7397737eb6abe3f68ae`.
+- Workflow `Nexo — deterministic persistence tests`: run `40366480168`, HEAD `d65b5d65ff0ea8efc18cc7397737eb6abe3f68ae`, job `tests` y paso `Run tests` en `success`. [Ejecución CI](https://github.com/snowdenxrp/aldea-ia/actions/runs/40366480168).
+- Evidencia detallada y límites: [Implementación opción B y CI](BUILD/NCS_M0_PERSISTENCE_PATH_OPTION_B_IMPLEMENTATION_AND_CI_2026-10-26.md).
+- Alcance limitado a persistencia; M0 sigue `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap sin seleccionar. No se afirma CI global verde ni reconciliación de outcomes ambiguos resuelta.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — EVIDENCIA RECUPERADA DEL FALLO CI DE PERSISTENCIA (2026-10-26)
 
 - Evidencia del log del run `40270739196` / job `121402789784` recuperada y registrada: [Evidencia del fallo CI de persistencia](BUILD/NCS_M0_CI_PERSISTENCE_FAILURE_LOG_EVIDENCE_2026-10-26.md), commit `6a7635c0cafe8b6dffb8985a07990ed674df5342`.
