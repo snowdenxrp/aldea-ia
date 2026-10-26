@@ -3,22 +3,24 @@
 ## Purpose and authority
 This is a docs-only continuation checkpoint. It does not change runtime, tests, workflow configuration, device state, or canonical gates. It is not CI execution evidence by itself.
 
-## Current branch identity
+## Verified source baseline before this document revision
 - Repository: `snowdenxrp/aldea-ia`
 - Branch: `ncs-clean-architecture`
-- Latest HEAD observed during this checkpoint: `0f818d3099533f434129cf9f389d66b8db2160e6`
-- Commit: `docs(ncs): add 2026-10-26 repair route and M0 exit handoff`
-- Tree SHA: `9f92f2e2f3e6e86a4946dbc77fdf451aa90025c2`
-- Confirm branch HEAD again before relying on any results; branch rewrites are possible.
+- Baseline HEAD immediately before this revision: `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`
+- Baseline commit: `docs(ncs): record specialized CI evidence checkpoint`
+- Tree SHA: `2ce530455b3807664a4c1b0f6e0713178f9ab075`
+- This document is being revised on that baseline; the resulting documentation commit will become the branch HEAD. Verify branch HEAD again after the revision and do not confuse the baseline SHA with the resulting commit SHA.
 
-## Confirmed CI evidence
-- Run: [40420502163](https://github.com/snowdenxrp/aldea-ia/actions/runs/40420502163)
+## Confirmed CI evidence on the baseline
+- Run: [40421889169](https://github.com/snowdenxrp/aldea-ia/actions/runs/40421889169)
 - Workflow: `Nexo — deterministic persistence tests`
-- Job: `tests`, job ID `121913443433`
-- Exact HEAD: `0f818d3099533f434129cf9f389d66b8db2160e6`
+- Job: `tests`, job ID `121918084740`
+- Exact HEAD: `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`
 - Conclusion: `success`
-- Job steps observed completed: checkout, Node.js, install, `Run tests`, and `Bounded temporary cleanup regression`.
+- Job steps observed completed successfully: checkout, Node.js, install, `Run tests`, and `Bounded temporary cleanup regression`.
 - Scope limit: this does not prove the specialized repair-session or assistants runtime CLI workflows ran. The `npm test` command in `package.json` does not include `tests/nexo/repair-session.test.mjs`.
+
+Prior run [40420502163](https://github.com/snowdenxrp/aldea-ia/actions/runs/40420502163) also passed on earlier HEAD `0f818d3099533f434129cf9f389d66b8db2160e6`; it is historical evidence, not evidence for later SHAs.
 
 ## Specialized workflows inspected
 1. [Nexo M0 — integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/.github/workflows/nexo-m0-acceptance.yml)
@@ -29,10 +31,10 @@ This is a docs-only continuation checkpoint. It does not change runtime, tests, 
    - Includes `tests/nexo/repair-session.test.mjs`, `tests/nexo/assistants-runtime-cli.test.mjs`, owner lifecycle, crash cuts and syntax checks.
 
 ### Search limitations
-- The repository-wide recent Actions listing returned 2,500 total runs but the first page contained recent general deterministic-persistence runs and no matching specialized workflow runs.
+- The repository-wide Actions listing returned `total_count=2500`; recent pages queried in this session did not show either specialized workflow.
 - Workflow-specific API queries were rejected by the GitHub connector as unsupported URLs.
-- Therefore the correct state is **no specialized run verified in this checkpoint**, not “the workflows never ran” or “no run exists.”
-- The available GitHub connector tools expose read/list/log operations and rerun operations for existing failed jobs, but no workflow-dispatch action was available in this session. No workflow was dispatched and no commit was created to force path filters.
+- Correct conclusion: **no specialized run verified in this checkpoint**, not “the workflows never ran” or “no run exists.”
+- The available GitHub connector operations in this session support reading/listing workflow runs, jobs and logs, plus rerunning existing failed jobs; no workflow-dispatch action was available. No specialized workflow was dispatched, and no code commit was made to force path filters.
 
 ## Required next operation
 Manually dispatch both specialized workflows from GitHub Actions for branch `ncs-clean-architecture`:
@@ -58,4 +60,4 @@ Then verify each run's workflow name, event, exact HEAD SHA, job conclusion, ste
 - Historical CI run `40270739196` primary cause: `UNKNOWN`
 
 ## Safety and scope
-No runtime/test/workflow changes were made as part of this checkpoint. Do not add a new retry, reconciler, authority port, journal, persistence layer, queue, or wrapper as a workaround. Do not declare M0 complete solely because the two workflows pass; use their evidence to update the finite acceptance table and preserve remaining UNKNOWNs.
+This revision only corrects evidence provenance and branch-SHA wording. No runtime/test/workflow changes were made. Do not add a new retry, reconciler, authority port, journal, persistence layer, queue, or wrapper as a workaround. Do not declare M0 complete solely because the two workflows pass; use their evidence to update the finite acceptance table and preserve remaining UNKNOWNs.
