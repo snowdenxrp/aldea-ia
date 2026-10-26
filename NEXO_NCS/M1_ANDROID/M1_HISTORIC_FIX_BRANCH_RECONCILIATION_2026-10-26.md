@@ -72,3 +72,19 @@ La lectura estática del script muestra reemplazos propuestos en el código upst
 - No se modificaron runtime, tests, workflows, APK, instalación ni dispositivo.
 - M1: issue conocido; corrección integrada **UNKNOWN**; validación de runtime **PENDING**.
 - NCS M0: estado y gates sin cambios. M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+## 6. Commits exactos de la corrección histórica y comprobación de ancestralidad
+
+La consulta de historial por ruta en la rama histórica identifica estos commits:
+- `f2c33093cf9e08e777f3041832ff14c76acb545f` — configuración de plantilla Qwen3 / thinking mode.
+- `83ad5f40a1a7ff4add68c61b301ebfb39e54fe65` — límites de tokens y tokenización de prompt templated.
+- `695ff1249cffc3560db4e971dd07a3bab2320ff0` — fail-closed ante historial de plantilla inconsistente.
+- `e5fd005495d03d0e937c9b200adee447e3de8a28` — política BOS/EOS y salto de línea.
+- `4789f74289aac92140f9ee39ae2d4bff35635d6b` — reparación de anchors del script nativo.
+- `b5bad536ea5ba928f750dd9d9116301d18bcddbb` — aserciones de invariantes de contexto/generación.
+- `a7d1076f32891c5044a2e7a12369853f4b9df347` — plan de aceptación/regresión.
+
+Se comparó cada uno de los commits representativos `f2c33093…`, `83ad5f40…`, `695ff124…`, `e5fd0054…` y `a7d1076f…` contra `ncs-clean-architecture`. Cada comparación reportó `status=diverged` con merge-base `0a8b5a0d8bde2d91b78e3eb1ea5a1d563dbdc852`; por tanto, ninguno se confirma como ancestro directo del HEAD canónico. Esto respalda la conclusión de que no se debe tratar la corrección histórica como integrada por herencia de commits.
+
+La comparación de ramas divergidas no excluye que un cambio equivalente se haya portado manualmente a otro archivo/artefacto; no se encontró evidencia suficiente para afirmar tal port. Para cerrar ese claim solo sería válido un cotejo estático por contenido del código nativo efectivo incluido en el árbol canónico y, posteriormente con autorización, evidencia del build/APK correspondiente. No ejecutar pruebas ni builds ahora.
