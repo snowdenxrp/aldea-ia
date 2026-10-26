@@ -9,7 +9,7 @@ Docs-only continuation checkpoint. It does not change runtime, tests, workflow c
 - Verified current HEAD at checkpoint review: `b6a93161510bc2d7911100eb3a6865570d8042a3`
 - Commit: `docs(ncs): correct CI checkpoint provenance`
 - Tree SHA: `17ac679a05f4a90acaa8f5c965207b382b899585`
-- Parent/baseline before that commit: `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`, tree `2ce530455b3807664a4c8f5c965207b382b899585`.
+- Parent/baseline before that commit: `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`, tree `2ce530455b3807664a4c1b0f6e0713178f9ab075`.
 - Important: the baseline SHA is not the current HEAD. Recheck branch HEAD before future work; this checkpoint can become stale if the branch moves.
 
 ## Confirmed general CI evidence
