@@ -3,7 +3,7 @@
 ## Punteros activos verificados — revisión posterior a H8
 
 - Rama: `ncs-clean-architecture`.
-- HEAD consultado en GitHub inmediatamente antes de esta actualización: `c1fb133811019f034e0b3cd79d22285d63971f25`. Volver a consultar el HEAD antes de continuar; este valor es un pin de observación, no una garantía de que la rama no avance.
+- HEAD consultado en GitHub inmediatamente antes de esta actualización: `836719f0a3a2e7a00242f7e5bb9ada086639299b`. Volver a consultar el HEAD antes de continuar; este valor es un pin de observación, no una garantía de que la rama no avance.
 - Este bloque es el índice operativo. Las entradas rotuladas «REGISTRO HISTÓRICO» más abajo preservan contexto y no sustituyen los pins listados aquí.
 
 ### Artefactos activos para la continuidad
@@ -15,7 +15,7 @@
 - **Contrato de raíz vs. CLI:** [matriz de conformidad](BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md) — blob `3dec849623f168bb76435a2a618210926cee98db`.
 - **Bootstrap:** [matriz de aceptación de alternativas](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md) — blob `89558fb688f10c0cfc95c12430114a5837e124cc`; no se ha seleccionado A/B/C/D.
 - **Entorno/quiescencia:** [perfil D3 requerido](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md) — blob `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
-- **Handoff:** [reconciliación D1 para el siguiente chat](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md) — blob `8eae66f8f5b88a2b9ca0c607129364163874d41c`; actualizado con la matriz CVM-01…CVM-10 y el límite entre M0 Node CLI y M1 Android.
+- **Handoff:** [reconciliación D1 para el siguiente chat](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md) — blob `262850aad9e70b2d67c742b5826cf6831cf10d77`; incluye la matriz CVM-01…CVM-10, el límite M0/M1 y el bloqueo de respuestas repetidas de M1.
 - **Coordinación IA:** [protocolo de equipo y tarea activa](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md) — blob `d7db844310afbc6235492bcba022d0e288fb3cae`.
 - **Visión maestra / Core:** [MASTER README](MASTER/README.md) — blob `97fbfc63004432de3d2e99e66f534d4e0d8ed774`; [CORE README](CORE/README.md) — blob `82db0ac21edcb9a9bdcbb2760da8f48c7ad3ca36`.
 
