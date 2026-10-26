@@ -12,6 +12,17 @@ Para evitar que referencias cronológicas antiguas se confundan con el estado ac
 
 Los commits/blobs más antiguos que aparecen en las secciones cronológicas inferiores se conservan como evidencia histórica del estado de aquellos momentos; no deben presentarse como pins activos si el artefacto ha avanzado. Esta actualización solo corrige navegación/evidencia documental, no modifica decisiones ni estado canónico.
 
+## Continuación documental verificada — cotejo H2/H4/H8 (2026-10-25, hora local)
+
+- Rama consultada: `ncs-clean-architecture`; HEAD observado en API al revisar: `0a9614bfdf83deea87b8809d261aa7acc55aafc1`. Confirmar nuevamente el HEAD antes de cualquier trabajo futuro.
+- Fuentes cotejadas desde GitHub: perfil D3 blob `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`; especificación P-05 blob `5c4b74ecb3924682e5cf3c93275ea40d64be4f8c`; matriz bootstrap blob `89558fb688f10c0cfc95c12430114a5837e124cc`; este STATUS blob `2a44972160c6a8ea090be21169ae44ca837084cd`.
+- Registro de cotejo y paquete de fuentes para revisión puntual de Gemini: [issue #107, comentario de revisión documental](https://github.com/snowdenxrp/aldea-ia/issues/107#issuecomment-6406372373).
+- **H2 — IDs:** no se demuestra colisión semántica dentro de cada documento; sí hay riesgo al citar IDs reutilizados fuera de contexto. Regla mínima propuesta: cualificar referencias cruzadas como `D3-E1`, `P05-E1`, `BOOTSTRAP-A`, `P01-A`, `P05-A` y `D2R-A`, sin renombrar IDs existentes.
+- **H4 — intake D3:** el crosswalk 1–5 ya existe en sección 5A. La cobertura es parcial y escalonada; no se demuestra contradicción normativa en las fuentes revisadas. No confundir triage inicial con cobertura completa de E1–E6.
+- **H8 — navegación:** los pins superiores se declaran activos y los históricos inferiores se explican en general; persisten encabezados inferiores “ACTUALIZACIÓN MÁS RECIENTE”/“CHECKPOINT CANÓNICO ACTUAL” y referencias antiguas que pueden confundir cuando se leen aisladas. Preservar historia; normalizar etiquetas solo en una pasada documental focalizada.
+- Esto es cotejo estático de los blobs citados, no una auditoría independiente de Gemini ni evidencia de runtime. No se ejecutaron código, tests o CI; no se modificaron runtime/tests/workflows ni dispositivo.
+- **Siguiente paso:** si Gemini aporta un comentario nuevo con evidencia de líneas, reconciliar solo las discrepancias concretas. Si no, abordar la ambigüedad residual H8 con una edición mínima de encabezados históricos; después volver al bloqueo de diseño D1/D2 que depende de caller operativo, admisión y política de readmisión. No repetir el censo ni reabrir decisiones ratificadas.
+
 ## Continuación documental verificada — D1 caller/migration boundary (2026-10-25, hora local)
 
 - Reconciliado el informe de separación/migración con los criterios de cierre D1 existentes. La matriz ya exigía separar las rutas ordinarias de Lúmina, pero no expresaba con suficiente precisión tres condiciones: fallo del store Nexo independiente de la persistencia Lúmina; evidencia Nexo para distinguir estado ausente de estado desconocido; migración/bootstrap separados del flujo ordinario.
