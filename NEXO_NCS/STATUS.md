@@ -1,3 +1,16 @@
+# ACTUALIZACIÓN PRIORITARIA — CONTRATO DE RUTAS DE PERSISTENCIA Y CI (2026-10-26)
+
+- HEAD consultado inmediatamente antes de este registro: `452a018dc52ea1f1a2089d4465f9fa5ca9b3f784`.
+- Informe documental añadido: [NCS M0 — Contrato de rutas de persistencia y fallo CI](BUILD/NCS_M0_PERSISTENCE_PATH_CONTRACT_AND_CI_FAILURE_2026-10-26.md), commit `452a018dc52ea1f1a2089d4465f9fa5ca9b3f784`.
+- Run existente revisado: [Nexo — deterministic persistence tests, run 40270739196](https://github.com/snowdenxrp/aldea-ia/actions/runs/40270739196), job `121402789784`, falló en `tests/nexo/conditional-commit-persist-state.test.mjs:88`: actual `RECONCILE_REQUIRED`, esperado `SAFE_COMMIT`.
+- Defecto estático confirmado: `scripts/simulate.mjs` deriva lock y temporal mediante `statePath.pathname`, aunque el adaptador exige y la prueba fallida pasa `statePath` como cadena. La causa exacta de la excepción del CI sigue UNKNOWN: los logs disponibles solo muestran la aserción.
+- No se cambió runtime, tests ni workflows; no se ejecutaron pruebas ni CI durante esta revisión. Solo se consultó el run existente.
+- Próximo paso: decidir documentalmente el contrato de ruta (string/URL `file:`, rutas relativas y normalización canónica) y preparar criterios de regresión. No implementar ni ejecutar validación sin autorización específica.
+
+Gates sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — INVENTARIO DE RELANZADORES (2026-10-26)
 
 - HEAD observado inmediatamente antes de esta actualización: `17f6244542dde9975e865dc5337b857cb5e9e4cc`.
