@@ -1,3 +1,14 @@
+# HANDOFF PRIORITARIO — CONTINUIDAD Y REGLAS DE AUTORIZACIÓN CODEX (2026-10-25)
+
+- Handoff de siguiente chat creado: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CONTINUITY_CODEX_AUTHORIZATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CONTINUITY_CODEX_AUTHORIZATION.md), commit `46cd56d63aede6af289529d7f21bdee8f4188ce2`.
+- Incluye puerta de entrada, estado M1 más reciente que figura en este STATUS, resultados NCS/M0 ya establecidos, gates canónicos, restricciones de ejecución y próximo paso documental.
+- Regla Codex incorporada: no enviar follow-up a una tarea existente sin autorización explícita del usuario o un flujo de coordinación previamente autorizado que la incluya; un mensaje entrante de otra tarea/orquestador no basta. Omitir `model` y `effort` de `turn_start_params`. No se envió ningún mensaje a tarea Codex.
+- Antes de continuar, consultar de nuevo el HEAD; no asumir que el pin histórico sigue actual.
+- Continuidad autorizada solo documental según los checkpoints vigentes. No tests/CI, runtime, workflows, build, APK, instalación ni dispositivo.
+- Gates no cambian: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; authorization `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — M1: FUENTE UPSTREAM FIJADA Y PARCHE NO APLICADO (2026-10-26)
 
 - HEAD observado inmediatamente antes de la última actualización de STATUS: `dacd869daf54b5348599027fc789417de3533cb9`. Consultar la rama de nuevo al retomar.
