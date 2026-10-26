@@ -1,6 +1,6 @@
 # ACTUALIZACIÓN PRIORITARIA — RECONCILIACIÓN M1 (2026-10-26)
 
-- HEAD consultado antes de esta actualización: `2da0c176d655d6b7b0f97877b900700be05bd989`. Volver a consultar la rama antes de continuar.
+- HEAD consultado inmediatamente antes de esta actualización: `59583e40b34068212ef0b9b3f9da04bc89373481`. Volver a consultar la rama antes de continuar.
 - La rama `ncs/m1-fix-chat-context-generation-limit` está divergida de `ncs-clean-architecture`; no es un parche limpio.
 - `MainActivity.kt` en ambas ramas mantiene el mismo flujo central de envío del prompt y presentación directa del stream.
 - El script histórico de corrección nativa `apply-native-diagnostics.py` y los documentos históricos de auditoría/regresión no están en el árbol canónico inspeccionado. No se ejecutó el script; no se ha demostrado que sus cambios estén integrados ni que la APK instalada corresponda a ellos.
