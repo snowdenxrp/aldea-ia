@@ -1,3 +1,12 @@
+# ACTUALIZACIÓN PRIORITARIA — MATRIZ DE ACEPTACIÓN UNKNOWN (2026-10-26)
+
+- Nueva [Matriz de aceptación para outcomes UNKNOWN](BUILD/NCS_M0_UNKNOWN_OUTCOME_ACCEPTANCE_TEST_MATRIX_2026-10-26.md), commit `b10bb770d5351e9a008df3460c20d1ad390855ee`.
+- La matriz separa 10 escenarios UO-01–UO-10, cobertura identificada y aceptación pendiente: error de persistencia, outcome UNKNOWN, excepción de commit, evidencia no confiable, contrato del consumidor, no reintento automático, bloqueo de efectos protegidos, preservación diagnóstica y niveles de durabilidad.
+- Identifica como pendientes la cobertura end-to-end de producto, la ausencia global de reintentos/efectos laterales, y el contrato de propagación de `errorCode`. No crea autoridad ni evidencia causal artificial.
+- Docs-only: runtime/tests/workflows sin cambios; tests/CI no ejecutados. La alternativa A sigue siendo recomendación no ratificada. Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria de run `40270739196` `UNKNOWN`.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — MAPEO DE PRUEBAS Y BRECHAS DEL GATE UNKNOWN (2026-10-26)
 
 - Se amplió el [Gate del contrato de producto para outcomes UNKNOWN](BUILD/NCS_M0_UNKNOWN_OUTCOME_PRODUCT_CONTRACT_GATE_2026-10-26.md), commit `b5c98b65d76345afe1d3b196428d09364b69f760`, con cobertura existente y brechas verificadas por lectura estática.
