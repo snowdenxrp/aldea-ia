@@ -1,63 +1,73 @@
 # NCS — CI EVIDENCE CHECKPOINT — 2026-10-26
 
 ## Purpose and authority
-This is a docs-only continuation checkpoint. It does not change runtime, tests, workflow configuration, device state, or canonical gates. It is not CI execution evidence by itself.
+Docs-only continuation checkpoint. It does not change runtime, tests, workflow configuration, device state, or canonical gates. This document is not CI execution evidence by itself.
 
-## Verified source baseline before this document revision
+## Verified current source and checkpoint revision
 - Repository: `snowdenxrp/aldea-ia`
 - Branch: `ncs-clean-architecture`
-- Baseline HEAD immediately before this revision: `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`
-- Baseline commit: `docs(ncs): record specialized CI evidence checkpoint`
-- Tree SHA: `2ce530455b3807664a4c1b0f6e0713178f9ab075`
-- This document is being revised on that baseline; the resulting documentation commit will become the branch HEAD. Verify branch HEAD again after the revision and do not confuse the baseline SHA with the resulting commit SHA.
+- Verified current HEAD at checkpoint review: `b6a93161510bc2d7911100eb3a6865570d8042a3`
+- Commit: `docs(ncs): correct CI checkpoint provenance`
+- Tree SHA: `17ac679a05f4a90acaa8f5c965207b382b899585`
+- Parent/baseline before that commit: `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`, tree `2ce530455b3807664a4c8f5c965207b382b899585`.
+- Important: the baseline SHA is not the current HEAD. Recheck branch HEAD before future work; this checkpoint can become stale if the branch moves.
 
-## Confirmed CI evidence on the baseline
-- Run: [40421889169](https://github.com/snowdenxrp/aldea-ia/actions/runs/40421889169)
+## Confirmed general CI evidence
+- Run: [40422457556](https://github.com/snowdenxrp/aldea-ia/actions/runs/40422457556)
 - Workflow: `Nexo — deterministic persistence tests`
-- Job: `tests`, job ID `121918084740`
-- Exact HEAD: `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`
+- Job: `tests`, job ID `121919939110`
+- Exact HEAD: `b6a93161510bc2d7911100eb3a6865570d8042a3`
 - Conclusion: `success`
-- Job steps observed completed successfully: checkout, Node.js, install, `Run tests`, and `Bounded temporary cleanup regression`.
-- Scope limit: this does not prove the specialized repair-session or assistants runtime CLI workflows ran. The `npm test` command in `package.json` does not include `tests/nexo/repair-session.test.mjs`.
+- Completed steps: setup job, checkout, Node.js, install, Run tests, Bounded temporary cleanup regression, post steps and job completion.
+- Scope limit: this general workflow does not establish that the specialized repair-session or assistants runtime CLI workflows ran. `npm test` does not include `tests/nexo/repair-session.test.mjs`.
 
-Prior run [40420502163](https://github.com/snowdenxrp/aldea-ia/actions/runs/40420502163) also passed on earlier HEAD `0f818d3099533f434129cf9f389d66b8db2160e6`; it is historical evidence, not evidence for later SHAs.
+Prior evidence:
+- Run [40421889169](https://github.com/snowdenxrp/aldea-ia/actions/runs/40421889169) passed on parent/baseline SHA `daf4c2b1a5dffeb0eccd3c2ae38b52a4d2d59a3b`, job `tests`, ID `121918084740`. Historical evidence only for that SHA.
+- Run [40420502163](https://github.com/snowdenxrp/aldea-ia/actions/runs/40420502163) passed on earlier SHA `0f818d3099533f434129cf9f389d66b8db2160e6`. Historical evidence only for that SHA.
 
 ## Specialized workflows inspected
 1. [Nexo M0 — integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/.github/workflows/nexo-m0-acceptance.yml)
-   - Has `workflow_dispatch`.
-   - Includes `tests/nexo/repair-session.test.mjs`, protected transition tests, entrypoint, crash-cut and related contract tests.
+   - Supports `workflow_dispatch`.
+   - Includes continuity, restart reconstruction, protected-transition, Chronicle, crash-cut, owner lifecycle, repair-session, mission verification and outcome classification tests.
 2. [Nexo M0 — repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/.github/workflows/nexo-m0-repair-crash-cuts.yml)
-   - Has `workflow_dispatch`.
-   - Includes `tests/nexo/repair-session.test.mjs`, `tests/nexo/assistants-runtime-cli.test.mjs`, owner lifecycle, crash cuts and syntax checks.
+   - Supports `workflow_dispatch`.
+   - Includes repair crash cuts, continuity migration, owner lifecycle, repair-session, runtime/assistant syntax checks, `tests/nexo/assistants-runtime-cli.test.mjs`, and mission verification.
 
-### Search limitations
-- The repository-wide Actions listing returned `total_count=2500`; recent pages queried in this session did not show either specialized workflow.
-- Workflow-specific API queries were rejected by the GitHub connector as unsupported URLs.
-- Correct conclusion: **no specialized run verified in this checkpoint**, not “the workflows never ran” or “no run exists.”
-- The available GitHub connector operations in this session support reading/listing workflow runs, jobs and logs, plus rerunning existing failed jobs; no workflow-dispatch action was available. No specialized workflow was dispatched, and no code commit was made to force path filters.
-
-## Required next operation
-Manually dispatch both specialized workflows from GitHub Actions for branch `ncs-clean-architecture`:
-- `nexo-m0-acceptance.yml`
-- `nexo-m0-repair-crash-cuts.yml`
-
-Then verify each run's workflow name, event, exact HEAD SHA, job conclusion, step conclusions, and relevant logs. Do not infer a pass from workflow configuration or from a different SHA. If either run cannot be verified, keep that criterion `UNKNOWN/PENDING`.
+## Dispatch and discovery limits
+- The repository-wide Actions endpoint returned `total_count=22836`; the default first page showed the general run above. That response does not exhaustively establish whether either specialized workflow has ever run.
+- Workflow-specific API queries were rejected by the connected GitHub interface as unsupported URLs. No specialized run has been verified in this checkpoint. This means `UNKNOWN/PENDING`, not “never ran” or “no run exists.”
+- Available GitHub operations in this session did not include manual workflow dispatch. No specialized workflow was dispatched and no artificial code commit was made to force path filters.
+- Required manual operation: open each workflow, select **Run workflow**, choose `ncs-clean-architecture`, and start it. Then verify workflow name, event, exact HEAD SHA, job/step conclusions, and relevant logs:
+  - [Dispatch integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/workflows/nexo-m0-acceptance.yml)
+  - [Dispatch repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/workflows/nexo-m0-repair-crash-cuts.yml)
 
 ## Existing technical interpretation to preserve
-- Product route `runNexoRuntimeRepairSession()` was observed to return `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `dispatchAttempted:false`, `persisted:false`.
+- `runNexoRuntimeRepairSession()` was observed to return `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `dispatchAttempted:false`, `persisted:false`.
 - A separate lower-level repair path contains `dispatchPreparedRepair()` and a simulation `persistState()` call. This is source-level evidence of a persistence-capable lower-level path, not proof that it is globally reachable or a protected Nexo effect.
-- `scripts/assistants.mjs` normal simulation persistence can occur before the optional repair gate. Thus `persisted:false` for the blocked repair result must not be interpreted as “the entire assistants process wrote nothing.”
+- `scripts/assistants.mjs` may persist normal simulation state before the optional repair gate. Thus `persisted:false` for the blocked repair result must not be interpreted as “the entire assistants process wrote nothing.”
 - Unit tests cover some no-redispatch and UNKNOWN barriers, but do not prove global no-retry/no-writer claims or integration of the protected-effect boundary across all consumers.
-- The product contract `COMMIT.UNKNOWN` Option A is ratified: preserve unresolved outcome until explicit intervention; no automatic retry; do not promote UNKNOWN to success.
+- `src/nexo/core/protected-transition.mjs` maps `COMMIT.UNKNOWN` to `RECONCILE_REQUIRED`, but its reason is generic (`conditional commit outcome is UNKNOWN`) and does not propagate the adapter's stable `errorCode` through that branch. This is a diagnostic-contract gap, not proof that the durable outcome is known.
+- `src/nexo/core/reconciliation.mjs` remains fail-closed: caller-supplied `authoritative: true` does not resolve the case; the reconciler exposes no commit, execute or authorize capability.
+- Product contract Option A is ratified: preserve UNKNOWN unresolved until explicit intervention; no automatic retry; do not promote UNKNOWN to success.
+- The cause of historical CI run `40270739196` remains `UNKNOWN`; do not repeat archaeology absent new direct evidence.
+
+## Acceptance gaps to address next
+- UO-06: consumer/product behavior must visibly represent `RECONCILE_REQUIRED` / `UNRESOLVED` and stop the affected path.
+- UO-07: global absence of automatic retries is not established.
+- UO-08: no integrated proof that protected effects are not prepared/executed after UNKNOWN; effect boundary is not integrated in the inspected transition.
+- UO-09: define and test diagnostic `errorCode` propagation without implying durable outcome.
+- UO-10: define the durability model (process failure, OS crash, power/storage loss) before claiming F2/F3.
+- Run the two specialized workflows on the current branch SHA before updating any CI acceptance claims.
+- Do not change runtime semantics for diagnostic propagation without a separately scoped authorization. Do not add a journal, retry, queue, new authority port, reconciler, or wrapper as a workaround.
 
 ## Canonical gates — unchanged
 - M0: `INCOMPLETO`
 - Root authority: `PENDING/UNKNOWN`
 - Authorization: `NOT_EVALUATED` unless actual evidence establishes otherwise
 - Protected effects: `STOP`
-- Reconciliation: not integrated
+- Reconciliation: not integrated; fail-closed
 - M0 exit-criteria proposal: not ratified; documentation is not acceptance evidence
 - Historical CI run `40270739196` primary cause: `UNKNOWN`
 
 ## Safety and scope
-This revision only corrects evidence provenance and branch-SHA wording. No runtime/test/workflow changes were made. Do not add a new retry, reconciler, authority port, journal, persistence layer, queue, or wrapper as a workaround. Do not declare M0 complete solely because the two workflows pass; use their evidence to update the finite acceptance table and preserve remaining UNKNOWNs.
+This checkpoint revision corrects provenance and adds a confirmed general-CI result plus explicit acceptance gaps. No runtime, test or workflow code was changed. Do not declare M0 complete solely because the two specialized workflows pass; use their exact-SHA evidence to update the finite acceptance table and preserve remaining UNKNOWNs.
