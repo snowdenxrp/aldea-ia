@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import { loadState, applyState, persistState } from "../../scripts/simulate.mjs";
 import {
@@ -36,6 +37,31 @@ const statePath = path.join(tempDir, "world-state.json");
 
 try {
   const initial = await loadState(statePath);
+
+  // persistState accepts native absolute paths and file: URLs, normalizing
+  // encoded URL path segments before using them for every filesystem operation.
+  const urlStatePath = path.join(tempDir, "world state url.json");
+  await persistState(pathToFileURL(urlStatePath), applyState(initial), 1234567890000, {
+    stateRevision: initial.stateRevision
+  });
+  const urlPersisted = await loadState(urlStatePath);
+  assert.equal(urlPersisted.stateRevision, initial.stateRevision);
+  assert.equal(urlPersisted.savedAt, 1234567890000);
+
+  // Invalid paths must be rejected before lock or file operations.
+  await assert.rejects(
+    () => persistState("relative/world-state.json", applyState(initial), 1),
+    /statePath must be a non-empty absolute native path or file URL/
+  );
+  await assert.rejects(
+    () => persistState(new URL("https://example.invalid/world-state.json"), applyState(initial), 1),
+    /statePath URL must use the file: scheme/
+  );
+  await assert.rejects(
+    () => persistState(42, applyState(initial), 1),
+    /statePath must be a non-empty absolute native path or file URL/
+  );
+
   const claim = createClaimEnvelope({
     claimId: "step-3c-real-persist",
     action: "advance-snapshot"
