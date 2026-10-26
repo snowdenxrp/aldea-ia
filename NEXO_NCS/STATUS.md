@@ -12,7 +12,7 @@ Para evitar que referencias cronológicas antiguas se confundan con el estado ac
 
 Los commits/blobs más antiguos que aparecen en las secciones cronológicas inferiores se conservan como evidencia histórica del estado de aquellos momentos; no deben presentarse como pins activos si el artefacto ha avanzado. Esta actualización solo corrige navegación/evidencia documental, no modifica decisiones ni estado canónico.
 
-## Continuación documental verificada — D1 caller/migration boundary (2026-10-26)
+## Continuación documental verificada — D1 caller/migration boundary (2026-10-25, hora local)
 
 - Reconciliado el informe de separación/migración con los criterios de cierre D1 existentes. La matriz ya exigía separar las rutas ordinarias de Lúmina, pero no expresaba con suficiente precisión tres condiciones: fallo del store Nexo independiente de la persistencia Lúmina; evidencia Nexo para distinguir estado ausente de estado desconocido; migración/bootstrap separados del flujo ordinario.
 - Se añadieron esos criterios a la matriz D1. Solo documentación; no se modificó runtime/tests/workflows/datos y no se ejecutaron tests/CI.
