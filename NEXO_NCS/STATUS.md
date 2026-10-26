@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — FACTIBILIDAD DE OPCIÓN C (2026-10-26)
+
+- Análisis docs-only: [Factibilidad de opción C: exclusión de escritores y durabilidad](BUILD/NCS_M0_OPTION_C_WRITER_EXCLUSION_FEASIBILITY_2026-10-26.md), commit `d55f536f01c48ab29058dd8333eb9a02cb0e3da3`.
+- Con la evidencia actual, opción C no demuestra exclusión de extremo a extremo de todos los escritores ni durabilidad frente a todos los cortes de fallo. El bloqueo de `persistState()` coordina solo a escritores cooperantes; `rename()` no demuestra por sí solo durabilidad ante pérdida de energía.
+- Recomendación no ratificada: conservar `COMMIT.UNKNOWN → RECONCILE_REQUIRED` y el reconciliador fail-closed; si no se exige resolución automática, mantener el caso sin resolver hasta intervención explícita.
+- Solo documentación: runtime/tests/workflows sin cambios; tests/CI no ejecutados. No se integró el puerto de reconciliación ni se añadió mecanismo de persistencia.
+- Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada. Causa primaria exacta del run `40270739196`: `UNKNOWN`.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — BLOQUEO DE CORRESPONDENCIA CAUSAL (2026-10-26)
 
 - Memo docs-only: [Prueba de correspondencia causal pendiente](BUILD/NCS_M0_CAUSAL_CORRESPONDENCE_GAP_DECISION_2026-10-26.md).
