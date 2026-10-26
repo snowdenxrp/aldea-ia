@@ -449,3 +449,21 @@ Trabajo documental solamente, conforme a la ratificación del propietario del 20
 - Gemini debe confirmar el HEAD real al empezar; el encargo inicial apuntaba a `17440bb18f62e872f05b58fb18fa97b6a964e11e`. STATUS se actualizó después con un cambio exclusivamente documental, por lo que se espera que Gemini ancle su informe al HEAD actual que verifique, no al SHA antiguo.
 - No se debe pedir a Gemini una auditoría general ni afirmar que ya respondió. El encargo no modifica el estado canónico ni autoriza tests/CI, runtime, dispositivo o selección de opciones.
 - ChatGPT ya verificó los tres artefactos vigentes por lectura de GitHub y corrigió los pins activos de STATUS. Gemini debe servir como refutación independiente y detectar cualquier error restante, no como sustituto de esa verificación.
+
+
+## Revisión documental de Claude — completitud del inventario de relanzadores (2026-10-26)
+
+**Anclaje remoto comprobado por ChatGPT antes de esta edición:** rama `ncs-clean-architecture`, HEAD `5209aea3cbe1cd07413984dab7057a9515a591fa`; este archivo tenía blob `d7db844310afbc6235492bcba022d0e288fb3cae`. El commit local `ceaebb1` y el parche `ncs-p01-relaunchers-doc.patch` mencionados por Claude no están integrados en la rama remota verificada.
+
+### Evaluación del hallazgo
+
+- La evidencia documental ya limita la afirmación al caller principal y a los actores enumerados: los locks solo coordinan a participantes que los respetan; la admisión de un CLI no demuestra cobertura de consumidores externos.
+- La brecha adicional es **la integridad del inventario**: enumerar los actores conocidos no demuestra que la lista esté completa. Gatear el caller principal no prueba control sobre escritores, launchers, actores de release/limpieza ni mecanismos de reanudación omitidos.
+- El perfil D3, el inventario de callers, P-05 y CVM-03/CVM-06/CVM-07 proporcionan criterios relacionados, pero las fuentes inspeccionadas no aportan todavía evidencia empírica de exhaustividad para el entorno real.
+- Criterio pendiente para cualquier cierre: identificar el alcance del inventario, las fuentes usadas para descubrir actores, los límites/omisiones conocidos y la evidencia reproducible de que todos los actores capaces de escribir o relanzar escritores dentro de ese alcance están enumerados. Una lista de procesos observada en una sola instantánea no basta por sí sola.
+- Si no puede demostrarse la exhaustividad dentro del alcance declarado, registrar `UNKNOWN/BLOCKED`; no afirmar quiescencia global ni descartar una opción por falta de evidencia. Esto no exige demostrar control de procesos que no puedan escribir, lanzar escritores ni afectar la admisión de la raíz canónica; esa frontera debe justificarse explícitamente.
+- La mención de `CV-01` en el informe de Claude no corresponde a un ID de la matriz actual consultada, que utiliza `CVM-01…CVM-10`. No reinterpretar ni renumerar criterios por inferencia.
+
+### Estado y límites
+
+Esta adición registra un criterio de evidencia pendiente; no certifica completitud del inventario, no cierra P-01/P-05 ni cambia la selección de bootstrap. M0 sigue `INCOMPLETO`; D0/D1-DESIGN/D2/D3 siguen `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; A/B/C/D sin seleccionar. No se ejecutaron tests/CI ni código, y no se modificaron runtime, workflows ni dispositivo.
