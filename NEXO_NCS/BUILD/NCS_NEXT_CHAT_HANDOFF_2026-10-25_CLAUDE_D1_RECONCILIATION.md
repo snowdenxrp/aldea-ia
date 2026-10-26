@@ -267,3 +267,28 @@ Se identificaron los commits históricos concretos:
 - `a7d1076f32891c5044a2e7a12369853f4b9df347` — plan de regresión.
 
 Comparados contra `ncs-clean-architecture`, los commits representativos siguen divergidos y comparten el merge-base `0a8b5a0d8bde2d91b78e3eb1ea5a1d563dbdc852`; no son ancestros directos del HEAD canónico. Esto refuerza que la integración no puede asumirse. No excluye un port manual equivalente, pero ese port tampoco está demostrado; no ejecutar builds/tests ni aplicar cambios.
+
+
+## Continuación M1 — fuente upstream fijada y parche no aplicado (2026-10-26)
+
+**Hallazgo nuevo y más fuerte que la reconciliación de ramas:** el flujo de build canónico inspeccionado descarga el upstream de `llama.cpp` en `10a60cf303566e10d6a7a2774c17d2085503d87b`, verifica ese SHA y solo copia la configuración Gradle. No ejecuta el script histórico `apply-native-diagnostics.py`.
+
+Evidencia:
+- Preparador canónico `NEXO_NCS/M1_ANDROID/prepare-llama-android.sh`, blob `1981bf23223f5ac580ed604c7c67efbcd54e86c8`.
+- Workflow `.github/workflows/nexo-m1-android-build.yml`, blob `b21eb080d9024c7cf580b7f06729bbe65a89cb59`: invoca el preparador, verifica el source y define `assembleDebug`, sin paso para aplicar el parche histórico.
+- Fuente upstream fijada `ai_chat.cpp`, blob `ca6f7172d910da06a26be0eaaa3da1ff01834639`: líneas 289–297 usa `use_jinja=false`; líneas 432–448 calcula el tamaño de prompt antes del truncamiento y lo vuelve a sumar al límite.
+- Wrapper Kotlin upstream `InferenceEngineImpl.kt`, blob `a293796f9017326531021c9be38bdd33fcb9667e`, líneas 217–244 pasa la pregunta/límite a la función nativa y emite tokens.
+- Informe completo actualizado: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](../M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `7af4d686e06bc093624a622846c60166e842c402`.
+- Registro de bloqueo M1 actualizado: commit `fe0736296a486c4a37f371bcca32bbc64d6ec20c`.
+
+### Interpretación y límites
+
+La inclusión del parche histórico en el flujo de build definido está **CONTRADICHA por los archivos de build inspeccionados**; ya no es solo un caso de “no encontramos el script en el árbol”. Sin embargo, no se ejecutó el workflow, no se produjo APK en esta revisión y no se conoce la identidad de la APK instalada en el POCO. Los defectos de plantilla y contabilidad son observados, pero no demuestran por sí solos la causa completa de la frase genérica repetida.
+
+### Próxima acción documental
+
+1. Inspeccionar solo evidencia de builds ya existentes (si existe), vinculando run → commit → artifact → SHA-256, sin disparar workflow.
+2. No reescribir ni aplicar el parche histórico todavía. La corrección debe convertirse primero en un cambio acotado y revisado cuando haya autorización separada para tocar runtime.
+3. No repetir una auditoría general ni instalar/desinstalar APK o reimportar el GGUF.
+
+Autorización vigente: solo lectura estática y documentación. No tests/CI, build, APK, runtime, instalación ni dispositivo. M0 y los gates constitucionales no cambian.
