@@ -205,3 +205,17 @@ Si el repo no puede probar un despliegue real, la pregunta no se resuelve por ot
 - M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`.
 - Authorization `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
 - No tests/CI, cambios runtime/tests/workflows, instalación o modificación de dispositivo. No inventar caller, wrapper, flags ni política de fallback.
+
+
+## Continuación documental — matriz de validación controlada (2026-10-26)
+
+- **Artefacto nuevo:** [NCS M0 controlled validation design and claim/evidence matrix](NCS_M0_CONTROLLED_VALIDATION_DESIGN_AND_CLAIM_EVIDENCE_MATRIX_2026-10-26.md), commit de creación `dfff88c3dbacf09064fd883decff1dbe4b6849ce`.
+- Contiene CVM-01…CVM-10 con claim, precondiciones, evidencia futura requerida y límites actuales; añade puerta de admisión previa a cualquier propuesta de ejecución. Ningún claim se considera probado por esta matriz.
+- La matriz separa explícitamente POCO X7 Pro/Android M1 (objetivo inicial del prototipo) del CLI Node.js M0 en el repositorio. No se encontró evidencia documental de que Android M1 lance esos scripts; ausencia de integración en las fuentes inspeccionadas no prueba imposibilidad externa.
+- Revisión independiente focalizada solicitada en [issue #107, comentario 6406540022](https://github.com/snowdenxrp/aldea-ia/issues/107#issuecomment-6406540022): verificar la frontera M0 Node CLI/M1 Android y especificar únicamente la evidencia mínima faltante. No atribuir respuesta a Gemini hasta comprobar un comentario nuevo.
+- La autorización del propietario cubre únicamente diseño documental. La matriz no autoriza tests/CI, runtime, instalación, uso de claves/datos reales ni modificación del dispositivo.
+
+### Siguiente paso
+1. Si llega respuesta independiente, contrastar solo los claims concretos y corregir cualquier afirmación no sostenida por los blobs/HEAD que cite.
+2. Mientras tanto, no abrir otra auditoría general. Mantener el caller operativo y el modo de lanzamiento como `UNKNOWN/BLOCKED` salvo evidencia externa real.
+3. No pedir de nuevo cuál es el dispositivo objetivo: POCO X7 Pro/Android M1 ya está identificado. Lo que falta es determinar qué entorno ejecuta el CLI M0 y, si se pretende validar en él, cuál es su invocador real.
