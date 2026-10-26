@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — MATRIZ DE DECISIÓN DE RUTAS (2026-10-26)
+
+- HEAD previo verificado: `5cd257aa1f1f7c0934c64a9fb0affc69cbf2b6ad`; documento de matriz añadido en commit `695683a71eff6b4006de8f6b5ec22c2ff48769e8`.
+- Documento: [Matriz de decisión del contrato de rutas de persistencia](BUILD/NCS_M0_PERSISTENCE_PATH_CONTRACT_DECISION_MATRIX_2026-10-26.md).
+- Compara tres contratos; recomienda evaluar provisionalmente la aceptación explícita de string y URL `file:` en `persistState()` con normalización central. No selecciona ni ratifica opción.
+- Hecho estático: las fuentes examinadas mezclan string y URL `file:`; la causa exacta del run CI `40270739196` sigue UNKNOWN.
+- Solo documentación. Runtime/tests/workflows no modificados; no se ejecutaron pruebas ni CI.
+- Gates sin cambio: M0 INCOMPLETO; D0/D1-DESIGN/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — CONTRATO DE RUTAS DE PERSISTENCIA Y CI (2026-10-26)
 
 - HEAD consultado inmediatamente antes de este registro: `452a018dc52ea1f1a2089d4465f9fa5ca9b3f784`.
