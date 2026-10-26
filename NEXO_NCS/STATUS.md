@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — GATE DE CONTRATO DE PRODUCTO PARA UNKNOWN (2026-10-26)
+
+- Recomendación docs-only: [Gate del contrato de producto para outcomes UNKNOWN](BUILD/NCS_M0_UNKNOWN_OUTCOME_PRODUCT_CONTRACT_GATE_2026-10-26.md), commit `9f1ca402e818bd9fc81e22d255f00e0f69e6ae5f`.
+- Se separa el requisito mínimo de seguridad de la capacidad opcional de reconciliación automática. Propuesta no ratificada: M0 puede preservar `COMMIT.UNKNOWN → RECONCILE_REQUIRED` y dejar el caso `UNRESOLVED` hasta intervención explícita, salvo que el owner exija resolución automática.
+- El contrato de durabilidad debe indicar si cubre fallo de proceso, caída del SO o pérdida de energía. La primitiva actual no demuestra por sí sola garantías F2/F3.
+- Solo documentación: runtime/tests/workflows sin cambios; tests/CI no ejecutados. No se conectó el puerto ni se añadió mecanismo de persistencia.
+- Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria del run `40270739196` `UNKNOWN`.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — FACTIBILIDAD DE OPCIÓN C (2026-10-26)
 
 - Análisis docs-only: [Factibilidad de opción C: exclusión de escritores y durabilidad](BUILD/NCS_M0_OPTION_C_WRITER_EXCLUSION_FEASIBILITY_2026-10-26.md), commit `d55f536f01c48ab29058dd8333eb9a02cb0e3da3`.
