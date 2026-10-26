@@ -1,5 +1,7 @@
 # ACTUALIZACIÓN PRIORITARIA — PROPUESTA DE LÍNEA DE META M0 (2026-10-26)
 
+- Paquete de revisión independiente preparado para Claude, Perplexity y Qwen: [órdenes de revisión IA](BUILD/NCS_M0_INDEPENDENT_AI_REVIEW_ORDERS_2026-10-26.md), commit `7dd2912f96fe0888721bc500a6d05c2f2a20106e`. **Preparado, no enviado:** no hay evidencia de que esas IAs hayan recibido o respondido las órdenes. Alcance docs-only; sin cambios de runtime/tests/workflows.
+
 - Propuesta docs-only creada: [Línea de meta y criterios de aceptación M0](BUILD/NCS_M0_EXIT_CRITERIA_PROPOSAL_2026-10-26.md), commit `554134f6aa3b4c634528f0341d2d2b2819846f62`.
 - Define cinco grupos de aceptación: alcance/arquitectura; persistencia/admisión; outcomes ambiguos; autoridad/efectos; reproducibilidad/evidencia.
 - No ratificada: no declara M0 completo ni cambia los gates canónicos. No modifica runtime/tests/workflows/dispositivo.
