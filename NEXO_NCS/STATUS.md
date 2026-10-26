@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — INVENTARIO DE FRONTERAS DE PERSISTENCIA (2026-10-26)
+
+- HEAD consultado antes de esta actualización: `6c4bc757d076857cfe385106d6a734c8c1ee6761`; inventario añadido en commit `4dd4a6e7990eaa0b4ac770f3d97c3969c34384ed`.
+- Documento: [Inventario de callers y fronteras de persistencia](BUILD/NCS_M0_PERSISTENCE_CALLER_BOUNDARY_INVENTORY_2026-10-26.md).
+- Lectura acotada confirma: `scripts/simulate.mjs` usa URL `file:` en la ruta principal; `persistState()` deriva lock/temporales mediante `.pathname`; el adaptador de commit exige string; pruebas de reinicio usan URL `file:`. El inventario declara explícitamente que no es exhaustivo.
+- No se selecciona A/B/C. La causa exacta del run CI `40270739196` sigue UNKNOWN.
+- Solo documentación; runtime/tests/workflows sin cambios; no se ejecutaron tests ni CI.
+- Gates sin cambio: M0 INCOMPLETO; D0/D1-DESIGN/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — MATRIZ DE DECISIÓN DE RUTAS (2026-10-26)
 
 - HEAD previo verificado: `5cd257aa1f1f7c0934c64a9fb0affc69cbf2b6ad`; documento de matriz añadido en commit `695683a71eff6b4006de8f6b5ec22c2ff48769e8`.
