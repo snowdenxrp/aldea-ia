@@ -1,3 +1,18 @@
+# ACTUALIZACIÓN PRIORITARIA — RECONCILIACIÓN M1 (2026-10-26)
+
+- HEAD consultado antes de esta actualización: `2da0c176d655d6b7b0f97877b900700be05bd989`. Volver a consultar la rama antes de continuar.
+- La rama `ncs/m1-fix-chat-context-generation-limit` está divergida de `ncs-clean-architecture`; no es un parche limpio.
+- `MainActivity.kt` en ambas ramas mantiene el mismo flujo central de envío del prompt y presentación directa del stream.
+- El script histórico de corrección nativa `apply-native-diagnostics.py` y los documentos históricos de auditoría/regresión no están en el árbol canónico inspeccionado. No se ejecutó el script; no se ha demostrado que sus cambios estén integrados ni que la APK instalada corresponda a ellos.
+- Artefacto de comparación: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `71422c8b88f6cd06d0e3d4b5018e9bf2f6cd23e6`.
+- Bloqueo M1 actualizado: commit `2c88171962b59d90dd75fa28eb856f5e2712279a`. Handoff actualizado: commit `2da0c176d655d6b7b0f97877b900700be05bd989`.
+- Resultado: corrección integrada `UNKNOWN / NO EVIDENCIADA`; síntoma de respuestas repetidas permanece abierto. No hacer cherry-pick ni aplicar el script por inferencia.
+- Continuidad autorizada solo documental: no tests/CI, build, APK, instalación, cambios runtime ni dispositivo.
+
+Gates NCS no cambian: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # PUERTA CANÓNICA DE CONTINUIDAD — «CONTINÚA» (2026-10-25)
 
 ## Punteros activos verificados — revisión posterior a H8
@@ -10,12 +25,13 @@
 
 - **Corte y cierre D1:** [matriz de responsabilidad y cierre](BUILD/NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md) — blob `a15c5ec173683fdd68246f076ba59d85feece5fa`.
 - **Validación controlada documental:** [matriz claim/evidencia y perfil de validación](BUILD/NCS_M0_CONTROLLED_VALIDATION_DESIGN_AND_CLAIM_EVIDENCE_MATRIX_2026-10-26.md) — commit `dfff88c3dbacf09064fd883decff1dbe4b6849ce`; diseño únicamente, no autoriza ejecución.
-- **Bloqueo M1 de respuestas repetidas/contexto:** [registro de regresión y estado](M1_ANDROID/M1_REPEATED_RESPONSE_CONTEXT_GENERATION_BLOCKER_2026-10-26.md) — commit `9162100a64d1d7ac075a8307dc9420c6e9263da9`; síntoma conocido, no declarado resuelto; solo documentación.
+- **Bloqueo M1 de respuestas repetidas/contexto:** [registro de regresión y estado](M1_ANDROID/M1_REPEATED_RESPONSE_CONTEXT_GENERATION_BLOCKER_2026-10-26.md) — commit `2c88171962b59d90dd75fa28eb856f5e2712279a`; síntoma conocido, no declarado resuelto; solo documentación.
+- **Reconciliación de la rama histórica M1:** [comparación exacta de rama/fuentes](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md) — commit `71422c8b88f6cd06d0e3d4b5018e9bf2f6cd23e6`; la corrección nativa no está evidenciada como integrada.
 - **Callers y hueco de raíz:** [inventario acotado](BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md) — blob `e79f8672c5c8b858fffe2015cc18544007449756`.
 - **Contrato de raíz vs. CLI:** [matriz de conformidad](BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md) — blob `3dec849623f168bb76435a2a618210926cee98db`.
 - **Bootstrap:** [matriz de aceptación de alternativas](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md) — blob `89558fb688f10c0cfc95c12430114a5837e124cc`; no se ha seleccionado A/B/C/D.
 - **Entorno/quiescencia:** [perfil D3 requerido](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md) — blob `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
-- **Handoff:** [reconciliación D1 para el siguiente chat](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md) — blob `262850aad9e70b2d67c742b5826cf6831cf10d77`; incluye la matriz CVM-01…CVM-10, el límite M0/M1 y el bloqueo de respuestas repetidas de M1.
+- **Handoff:** [reconciliación D1 para el siguiente chat](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md) — commit `2da0c176d655d6b7b0f97877b900700be05bd989`; incluye CVM-01…CVM-10, el límite M0/M1 y la reconciliación exacta de la rama histórica M1.
 - **Coordinación IA:** [protocolo de equipo y tarea activa](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md) — blob `d7db844310afbc6235492bcba022d0e288fb3cae`.
 - **Visión maestra / Core:** [MASTER README](MASTER/README.md) — blob `97fbfc63004432de3d2e99e66f534d4e0d8ed774`; [CORE README](CORE/README.md) — blob `82db0ac21edcb9a9bdcbb2760da8f48c7ad3ca36`.
 
