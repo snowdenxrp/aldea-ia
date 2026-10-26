@@ -60,3 +60,17 @@ La especificación histórica más detallada de estos casos está en `M1_CHAT_CO
 - APK corregida instalada: **no afirmado**.
 - Instalación existente y modelo local: preservar.
 - Nexo M0 gates: sin cambios; este problema M1 no cambia autorización, raíz ni estado de efectos protegidos.
+
+
+## 7. Reconciliación documental de la rama histórica (2026-10-26)
+
+Se creó [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `71422c8b88f6cd06d0e3d4b5018e9bf2f6cd23e6`.
+
+Hallazgos confirmados por lectura estática:
+- El HEAD canónico observado es `d6d08c086c55a6f297bf73d8d23d4f4266f23d04`.
+- La comparación de ramas devuelve `diverged`; no debe tratarse como un parche directo ni hacerse cherry-pick por inferencia.
+- El `MainActivity.kt` canónico (blob `ce22225a8661a4afa2e7eb1f6b65dfb1b3db26b0`) y el histórico (blob `9cff99daaf48a91eb1076236ad1aae1733834f59`) mantienen el mismo flujo central: pasan el prompt al motor y añaden directamente el stream a la salida.
+- El script histórico `apply-native-diagnostics.py` (blob `7ea0f3e56dac32680d8bcaee69eafc90b4419ef3`) propone cambios para Jinja/`enable_thinking=false`, prefijo exacto del contexto, BOS y límite de generación, pero no está en el árbol canónico inspeccionado. No se ejecutó; su existencia no demuestra integración ni build.
+- La auditoría histórica (blob `1029dce05ad6ef39f6c077ba756e6dfe79d8dba9`) y el plan de regresión (blob `9bb6aa11c9b240f6c47a369e82b9bcb6e769485a`) permanecen en la rama histórica, no en el árbol canónico inspeccionado.
+
+Conclusión: corrección integrada = **NO EVIDENCIADA / UNKNOWN**; comportamiento de la APK instalada = **UNKNOWN**; no declarar el fallo resuelto. No tests/CI, compilación, instalación, cambios runtime ni dispositivo. La siguiente acción es documental y acotada: si hace falta, rastrear los commits exactos del script/cambios upstream; no copiar ni aplicar el script automáticamente.
