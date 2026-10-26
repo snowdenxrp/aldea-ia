@@ -238,7 +238,7 @@ El propietario recordó que M1 tenía un fallo observable importante: **repetía
 
 ## Continuación documental — reconciliación de M1 histórico (2026-10-26)
 
-**Nuevo artefacto:** [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](../M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `71422c8b88f6cd06d0e3d4b5018e9bf2f6cd23e6`. El registro de bloqueo M1 fue actualizado en commit `2c88171962b59d90dd75fa28eb856f5e2712279a`.
+**Nuevo artefacto:** [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](../M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `86db80ff52566c48e774888b02a93ac387255ec1`. El registro de bloqueo M1 fue actualizado en commit `2c88171962b59d90dd75fa28eb856f5e2712279a`.
 
 ### Resultado de la comparación exacta
 
@@ -253,3 +253,17 @@ El propietario recordó que M1 tenía un fallo observable importante: **repetía
 La integración de la corrección es **NO EVIDENCIADA / UNKNOWN**. La identidad y comportamiento de la APK instalada siguen **UNKNOWN**. Mantener el problema de respuestas repetidas abierto. Si se continúa, rastrear documentalmente los commits exactos que introdujeron el script y los cambios de fuente upstream; no aplicar el script ni copiar código a la rama canónica sin revisión y autorización separada.
 
 La autorización actual no cambia: solo diseño documental/lectura estática. No tests, CI, build, APK, instalación, cambios de runtime ni dispositivo. M0 sigue INCOMPLETO; D0/D1-DESIGN/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+
+
+### Resultado adicional — commits históricos de M1
+
+Se identificaron los commits históricos concretos:
+- `f2c33093cf9e08e777f3041832ff14c76acb545f` — Qwen3 thinking/template.
+- `83ad5f40a1a7ff4add68c61b301ebfb39e54fe65` — tokenización/límite.
+- `695ff1249cffc3560db4e971dd07a3bab2320ff0` — rechazo fail-closed de historial inconsistente.
+- `e5fd005495d03d0e937c9b200adee447e3de8a28` — BOS/EOS/newline.
+- `4789f74289aac92140f9ee39ae2d4bff35635d6b` — anchors del script.
+- `b5bad536ea5ba928f750dd9d9116301d18bcddbb` — aserciones de invariantes.
+- `a7d1076f32891c5044a2e7a12369853f4b9df347` — plan de regresión.
+
+Comparados contra `ncs-clean-architecture`, los commits representativos siguen divergidos y comparten el merge-base `0a8b5a0d8bde2d91b78e3eb1ea5a1d563dbdc852`; no son ancestros directos del HEAD canónico. Esto refuerza que la integración no puede asumirse. No excluye un port manual equivalente, pero ese port tampoco está demostrado; no ejecutar builds/tests ni aplicar cambios.
