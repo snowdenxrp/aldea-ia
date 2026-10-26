@@ -4,7 +4,7 @@
 
 - Tipo: propuesta de criterios de salida; documentación únicamente.
 - Rama de referencia: `ncs-clean-architecture`.
-- No ratificado por el owner; no cambia gates canónicos.
+- La propuesta de línea de meta sigue sin ratificación del owner; no cambia gates canónicos.
 - No modifica runtime, tests, workflows, dispositivo ni permisos.
 - No declara M0 completo ni autoriza efectos protegidos.
 - Relacionado con: [Gate del contrato de producto para outcomes UNKNOWN](NCS_M0_UNKNOWN_OUTCOME_PRODUCT_CONTRACT_GATE_2026-10-26.md) y [Matriz de aceptación UNKNOWN](NCS_M0_UNKNOWN_OUTCOME_ACCEPTANCE_TEST_MATRIX_2026-10-26.md).
@@ -13,7 +13,7 @@
 
 Definir una línea de meta finita para M0 como núcleo/prototipo no autoritativo. M0 no necesita convertirse en un sistema de autoridad raíz ni resolver automáticamente todos los outcomes ambiguos para poder cerrar su alcance inicial; pero cualquier criterio de cierre debe demostrar que las capacidades incluidas son reproducibles y que las capacidades no autorizadas siguen bloqueadas.
 
-Esta propuesta no selecciona por inferencia la alternativa A o B del gate de producto para `COMMIT.UNKNOWN`. La decisión del owner continúa pendiente.
+El contrato de producto para `COMMIT.UNKNOWN` ya tiene la alternativa A ratificada por el owner: conservar el outcome no resuelto hasta intervención explícita, sin reintento automático. Esta propuesta de línea de meta, por separado, sigue sin ratificación.
 
 ## Alcance que puede cerrarse en M0
 
@@ -75,7 +75,7 @@ M0 no pasa su línea de meta si ocurre cualquiera de estos casos:
 |---|---|---|
 | G1 — Alcance y arquitectura | Parcialmente documentado | Completar evidencia de aceptación consolidada |
 | G2 — Persistencia y admisión | Hay cambios acotados y runs específicos exitosos | No generalizar a durabilidad F2/F3 ni a CI global |
-| G3 — Outcomes ambiguos | Matriz UO-01–UO-10 y gate publicados | Contrato de producto no ratificado; aceptación end-to-end pendiente |
+| G3 — Outcomes ambiguos | Matriz UO-01–UO-10 y gate publicados; alternativa A ratificada como contrato de producto | Aceptación end-to-end de la implementación pendiente |
 | G4 — Autoridad y efectos | STOP / PENDING / UNKNOWN | No hay autorización ni prueba para activarlos |
 | G5 — Reproducibilidad | Hay runs identificados por HEAD | Falta una declaración final de aceptación que consolide la evidencia requerida |
 
@@ -84,7 +84,7 @@ Estos estados son una lectura de los artefactos y registros referenciados, no un
 ## Próxima acción de menor riesgo
 
 1. Ratificar o rechazar explícitamente la propuesta de línea de meta como criterio de cierre M0.
-2. Resolver el gate de producto de `COMMIT.UNKNOWN`: aceptar el estado no resuelto para M0 o declarar la resolución automática como requisito.
+2. Aplicar la decisión de producto ya ratificada para `COMMIT.UNKNOWN` (alternativa A); mantener pendiente la evidencia de aceptación end-to-end.
 3. Solo después, preparar una lista de aceptación final que enlace las pruebas existentes y marque con precisión las que faltan. Cualquier modificación de runtime/tests distinta de la reparación de rutas ya autorizada requiere autorización acotada propia.
 
 ## Gates que no cambian por este documento
@@ -93,5 +93,5 @@ Estos estados son una lectura de los artefactos y registros referenciados, no un
 - Autoridad raíz: `PENDING/UNKNOWN`.
 - Efectos protegidos: `STOP`.
 - Reconciliación: diseño pendiente, no integrada.
-- Alternativa A/B del contrato de producto: no ratificada.
+- Contrato de producto `COMMIT.UNKNOWN`: alternativa A ratificada; aceptación de implementación pendiente de evidencia.
 - Causa primaria exacta del run CI histórico `40270739196`: `UNKNOWN`.
