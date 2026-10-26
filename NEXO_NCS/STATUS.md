@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — NCS M0 — SIGUIENTE DISEÑO DE FRONTERA DE RECONCILIACIÓN (2026-10-26)
+
+- Diseño estático añadido: [Siguiente diseño de frontera de reconciliación](BUILD/NCS_M0_RECONCILIATION_BOUNDARY_NEXT_DESIGN_2026-10-26.md), commit `b9c6552df0309f0bf1cbecacca6a5cb2b46e79b9`.
+- Confirma que el adaptador conserva `errorCode` en `COMMIT.UNKNOWN`, pero la transición lo pierde en una razón genérica; el puerto de reconciliación existe pero no está conectado a `executeProtectedTransition()`; el reconciliador actual permanece `UNRESOLVED` porque no hay verificador independiente ni evidencia durable autenticada conectada.
+- Define como requisito previo distinguir resultado de llamada, estado durable, correspondencia causal y clasificación terminal. La coincidencia de revisión por sí sola no demuestra que el snapshot pertenezca a la transición candidata.
+- Solo documentación: no se modificaron runtime/tests/workflows y no se ejecutaron tests ni CI. La causa primaria exacta del run `40270739196` sigue `UNKNOWN`.
+- No cambia la autorización: la reparación de rutas opción B es el único cambio de runtime previamente autorizado; cualquier nueva integración de reconciliación requiere autorización acotada propia. M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — REPARACIÓN DE RUTAS DE PERSISTENCIA B (2026-10-26)
 
 - El owner ratificó opción B y autorizó el cambio acotado de runtime/tests.
