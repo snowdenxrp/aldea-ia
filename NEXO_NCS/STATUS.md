@@ -13,7 +13,7 @@
 - **Contrato de raíz vs. CLI:** [matriz de conformidad](BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md) — blob `3dec849623f168bb76435a2a618210926cee98db`.
 - **Bootstrap:** [matriz de aceptación de alternativas](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md) — blob `89558fb688f10c0cfc95c12430114a5837e124cc`; no se ha seleccionado A/B/C/D.
 - **Entorno/quiescencia:** [perfil D3 requerido](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md) — blob `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
-- **Handoff:** [reconciliación D1 para el siguiente chat](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md) — blob `17ac954d52947086c3df9fdfd5244b18ca81caaa`.
+- **Handoff:** [reconciliación D1 para el siguiente chat](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md) — blob `67593cbb5b06bc0e7d6f8ad23335ac4f8c5d447c`; actualizado tras H8 para registrar el bloqueo de caller/root y la evidencia externa mínima pendiente.
 - **Coordinación IA:** [protocolo de equipo y tarea activa](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md) — blob `d7db844310afbc6235492bcba022d0e288fb3cae`.
 - **Visión maestra / Core:** [MASTER README](MASTER/README.md) — blob `97fbfc63004432de3d2e99e66f534d4e0d8ed774`; [CORE README](CORE/README.md) — blob `82db0ac21edcb9a9bdcbb2760da8f48c7ad3ca36`.
 
