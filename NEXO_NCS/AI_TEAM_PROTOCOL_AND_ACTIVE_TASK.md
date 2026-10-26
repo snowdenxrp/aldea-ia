@@ -440,3 +440,12 @@ M0 `INCOMPLETO`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`;
 ### Gates y autorización
 
 Trabajo documental solamente, conforme a la ratificación del propietario del 2026-10-25. No ejecutar tests/CI/código; no modificar runtime/tests/workflows/configuración ejecutable; no instalar ni modificar dispositivo/OS/bootloader; no seleccionar bootstrap o recuperación A/B/C/D. M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; implementación `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`. Los hallazgos de Claude no prueban una vulnerabilidad de runtime ni cierran P-01/P-05.
+
+
+## Encargo Gemini activo — verificación H2/H4/H8 (2026-10-25)
+
+- Issue con instrucciones completas: [#107 — NCS documental: verificación independiente acotada H2/H4/H8](https://github.com/snowdenxrp/aldea-ia/issues/107).
+- Alcance: ambigüedad de etiquetas E1–E6 vs. E1–E9 y familias A/B/C/D (H2); mapeo del intake mínimo D3 a bloques E (H4); distinguir pins históricos de referencias activas obsoletas en STATUS (H8).
+- Gemini debe confirmar el HEAD real al empezar; el encargo inicial apuntaba a `17440bb18f62e872f05b58fb18fa97b6a964e11e`. STATUS se actualizó después con un cambio exclusivamente documental, por lo que se espera que Gemini ancle su informe al HEAD actual que verifique, no al SHA antiguo.
+- No se debe pedir a Gemini una auditoría general ni afirmar que ya respondió. El encargo no modifica el estado canónico ni autoriza tests/CI, runtime, dispositivo o selección de opciones.
+- ChatGPT ya verificó los tres artefactos vigentes por lectura de GitHub y corrigió los pins activos de STATUS. Gemini debe servir como refutación independiente y detectar cualquier error restante, no como sustituto de esa verificación.
