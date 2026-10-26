@@ -3,7 +3,7 @@
 - Propuesta docs-only creada: [Línea de meta y criterios de aceptación M0](BUILD/NCS_M0_EXIT_CRITERIA_PROPOSAL_2026-10-26.md), commit `554134f6aa3b4c634528f0341d2d2b2819846f62`.
 - Define cinco grupos de aceptación: alcance/arquitectura; persistencia/admisión; outcomes ambiguos; autoridad/efectos; reproducibilidad/evidencia.
 - No ratificada: no declara M0 completo ni cambia los gates canónicos. No modifica runtime/tests/workflows/dispositivo.
-- La alternativa A/B del contrato `COMMIT.UNKNOWN` sigue pendiente de decisión explícita del owner. M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria del run `40270739196` `UNKNOWN`.
+- Contrato de producto `COMMIT.UNKNOWN`: alternativa A ratificada por el owner; outcome UNKNOWN se conserva sin resolver hasta intervención explícita. Reconciliación automática futura, F1/F2/F3, evidencia causal y recuperación siguen pendientes. M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria del run `40270739196` `UNKNOWN`.
 - CI para el commit de la propuesta estaba `in_progress` al registrar esta actualización; no se afirma su resultado.
 
 ---
@@ -13,7 +13,7 @@
 - Nueva [Matriz de aceptación para outcomes UNKNOWN](BUILD/NCS_M0_UNKNOWN_OUTCOME_ACCEPTANCE_TEST_MATRIX_2026-10-26.md), commit `b10bb770d5351e9a008df3460c20d1ad390855ee`.
 - La matriz separa 10 escenarios UO-01–UO-10, cobertura identificada y aceptación pendiente: error de persistencia, outcome UNKNOWN, excepción de commit, evidencia no confiable, contrato del consumidor, no reintento automático, bloqueo de efectos protegidos, preservación diagnóstica y niveles de durabilidad.
 - Identifica como pendientes la cobertura end-to-end de producto, la ausencia global de reintentos/efectos laterales, y el contrato de propagación de `errorCode`. No crea autoridad ni evidencia causal artificial.
-- Docs-only: runtime/tests/workflows sin cambios; tests/CI no ejecutados. La alternativa A sigue siendo recomendación no ratificada. Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria de run `40270739196` `UNKNOWN`.
+- Docs-only: runtime/tests/workflows sin cambios; tests/CI no ejecutados. La alternativa A está ratificada como contrato de producto; su aceptación de implementación sigue pendiente de evidencia. Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria de run `40270739196` `UNKNOWN`.
 
 ---
 
@@ -41,7 +41,7 @@
 
 - Análisis docs-only: [Factibilidad de opción C: exclusión de escritores y durabilidad](BUILD/NCS_M0_OPTION_C_WRITER_EXCLUSION_FEASIBILITY_2026-10-26.md), commit `d55f536f01c48ab29058dd8333eb9a02cb0e3da3`.
 - Con la evidencia actual, opción C no demuestra exclusión de extremo a extremo de todos los escritores ni durabilidad frente a todos los cortes de fallo. El bloqueo de `persistState()` coordina solo a escritores cooperantes; `rename()` no demuestra por sí solo durabilidad ante pérdida de energía.
-- Recomendación no ratificada: conservar `COMMIT.UNKNOWN → RECONCILE_REQUIRED` y el reconciliador fail-closed; si no se exige resolución automática, mantener el caso sin resolver hasta intervención explícita.
+- Decisión A ratificada para M0: conservar `COMMIT.UNKNOWN → RECONCILE_REQUIRED` y el reconciliador fail-closed; si no se exige resolución automática, mantener el caso sin resolver hasta intervención explícita.
 - Solo documentación: runtime/tests/workflows sin cambios; tests/CI no ejecutados. No se integró el puerto de reconciliación ni se añadió mecanismo de persistencia.
 - Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada. Causa primaria exacta del run `40270739196`: `UNKNOWN`.
 
