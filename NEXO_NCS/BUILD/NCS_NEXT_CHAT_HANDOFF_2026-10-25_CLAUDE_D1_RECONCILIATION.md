@@ -292,3 +292,15 @@ La inclusión del parche histórico en el flujo de build definido está **CONTRA
 3. No repetir una auditoría general ni instalar/desinstalar APK o reimportar el GGUF.
 
 Autorización vigente: solo lectura estática y documentación. No tests/CI, build, APK, runtime, instalación ni dispositivo. M0 y los gates constitucionales no cambian.
+
+
+### Encargo Gemini #107 — adenda de evidencia publicada (2026-10-26)
+
+Se publicó una adenda estática en [issue #107, comentario 6406887004](https://github.com/snowdenxrp/aldea-ia/issues/107#issuecomment-6406887004). Añade evidencia exacta de la frontera M0/M1:
+- README Android declara aislamiento del runtime Node.js/Lúmina;
+- Gradle Android solo incluye `:app` y `:llama-lib`;
+- `MainActivity.kt` invoca el motor nativo `com.arm.aichat`;
+- `prepare-llama-android.sh` descarga el upstream fijado, no invoca los scripts CLI de M0.
+La conclusión se limita al diseño fuente inspeccionado; no prueba imposibilidad de una invocación externa ni identifica un caller operativo del CLI M0.
+
+La adenda solicita a Gemini responder solo sobre evidencia de invocación, evidencia externa mínima del caller y separación observado/inferencia/UNKNOWN. **Aún no se debe atribuir una respuesta a Gemini** hasta volver a leer comentarios y encontrar una respuesta nueva distinta de la adenda de ChatGPT.
