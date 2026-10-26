@@ -6,7 +6,7 @@ Clase de cambio: documentación de diseño; no autoriza cambios de runtime.
 
 ## Propósito
 
-Convertir el gate del contrato de producto para `UNKNOWN` en escenarios verificables y separar la cobertura existente de las pruebas aún necesarias. La matriz asume la alternativa A como recomendación de diseño, **no como decisión ratificada por el owner**.
+Convertir el gate del contrato de producto para `UNKNOWN` en escenarios verificables y separar la cobertura existente de las pruebas aún necesarias. La matriz refleja la alternativa A **ratificada por el owner como contrato de producto para M0**; su aceptación de implementación continúa pendiente de evidencia.
 
 Documento relacionado: [Gate del contrato de producto para outcomes UNKNOWN](NCS_M0_UNKNOWN_OUTCOME_PRODUCT_CONTRACT_GATE_2026-10-26.md).
 
@@ -36,7 +36,7 @@ Documento relacionado: [Gate del contrato de producto para outcomes UNKNOWN](NCS
 
 ## Orden recomendado
 
-1. Ratificar explícitamente el contrato de producto (alternativa A o B); esta matriz no lo ratifica.
+1. Aplicar el contrato de producto A ya ratificado; esta matriz no demuestra que la implementación lo satisfaga.
 2. Definir el comportamiento del consumidor de producto para `RECONCILE_REQUIRED` y `UNRESOLVED`.
 3. Definir si el outcome final preserva un código de error estable y bajo qué esquema, sin afirmar resultado durable.
 4. Autorizar por separado cualquier cambio runtime.
