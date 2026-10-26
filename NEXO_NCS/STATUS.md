@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — MAPEO DE PRUEBAS Y BRECHAS DEL GATE UNKNOWN (2026-10-26)
+
+- Se amplió el [Gate del contrato de producto para outcomes UNKNOWN](BUILD/NCS_M0_UNKNOWN_OUTCOME_PRODUCT_CONTRACT_GATE_2026-10-26.md), commit `b5c98b65d76345afe1d3b196428d09364b69f760`, con cobertura existente y brechas verificadas por lectura estática.
+- Tests existentes contienen cobertura fail-closed: el adaptador conserva `EIO`/`PERSISTENCE_UNKNOWN` como `COMMIT.UNKNOWN`; la transición devuelve `RECONCILE_REQUIRED`; el reconciliador no confía en `authoritative: true` aportado por el llamador.
+- Brecha observada: el `errorCode` del adaptador se pierde en la razón genérica del outcome `RECONCILE_REQUIRED`. No se cambió runtime porque el contrato de salida/diagnóstico requiere decisión y autorización específica.
+- También sigue sin estar demostrado el contrato de producto para presentar `UNRESOLVED`, la ausencia global de reintentos/efectos fuera del flujo inspeccionado, ni durabilidad F2/F3.
+- Solo documentación: runtime/tests/workflows sin cambios; tests/CI no ejecutados en este avance. Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria del run `40270739196` `UNKNOWN`.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — GATE DE CONTRATO DE PRODUCTO PARA UNKNOWN (2026-10-26)
 
 - Recomendación docs-only: [Gate del contrato de producto para outcomes UNKNOWN](BUILD/NCS_M0_UNKNOWN_OUTCOME_PRODUCT_CONTRACT_GATE_2026-10-26.md), commit `9f1ca402e818bd9fc81e22d255f00e0f69e6ae5f`.
