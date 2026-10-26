@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — RESULTADO DE COMMIT, RECONCILIACIÓN Y OBSERVABILIDAD (2026-10-26)
+
+- Revisión estática read-only documentada: [Resultado de commit, reconciliación y brechas de observabilidad](BUILD/NCS_M0_COMMIT_OUTCOME_RECONCILIATION_OBSERVABILITY_2026-10-26.md), commit `26c8db311f2b22eb738be0b1922e7daffaca6bd9`.
+- Hallazgos: el adaptador conserva `errorCode` al devolver `COMMIT.UNKNOWN`, pero `executeProtectedTransition()` lo reduce a una razón genérica; el core no invoca `reconciliation.reconcile` en el tramo inspeccionado; cleanup de temporales y release lock requieren pruebas explícitas para fijar preservación de error primario/secundario.
+- El core no promueve un resultado de commit `UNKNOWN` a `SAFE_COMMIT`; lo clasifica como `RECONCILE_REQUIRED`. Esto es una clasificación conservadora, no una reconciliación probada.
+- No se ejecutaron tests ni CI; runtime/tests/workflows no cambiaron. Causa exacta del run `40270739196` sigue `UNKNOWN`. Contrato de rutas A/B/C y política de observabilidad/cleanup siguen sin ratificar.
+
+Gates sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; authorization `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — PROPUESTA DE POLÍTICA DE RUTAS (2026-10-26)
 
 - Documento añadido en commit `6ce96764c620c5645bec31eb618290d902919b6d`: [Propuesta de política para rutas de persistencia](BUILD/NCS_M0_PERSISTENCE_PATH_POLICY_PROPOSAL_2026-10-26.md).
