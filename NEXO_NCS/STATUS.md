@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — BLOQUEO DE CORRESPONDENCIA CAUSAL (2026-10-26)
+
+- Memo docs-only: [Prueba de correspondencia causal pendiente](BUILD/NCS_M0_CAUSAL_CORRESPONDENCE_GAP_DECISION_2026-10-26.md).
+- No se ha demostrado una prueba durable independiente que vincule el snapshot con la transición concreta. Revisión o similitud de contenido no bastan por sí solas.
+- Mantener `COMMIT.UNKNOWN → RECONCILE_REQUIRED`; reconciliador fail-closed y puerto sin integrar hasta definir y ratificar evidencia causal.
+- Solo documentación; runtime/tests/workflows sin cambios. Tests/CI no ejecutados.
+- Gates: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — MATRIZ DE FACTIBILIDAD DE ESCENARIOS DE RECONCILIACIÓN (2026-10-26)
 
 - Matriz docs-only añadida: [Matriz de factibilidad de escenarios de reconciliación](BUILD/NCS_M0_RECONCILIATION_SCENARIO_FEASIBILITY_MATRIX_2026-10-26.md).
