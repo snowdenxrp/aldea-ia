@@ -219,3 +219,18 @@ Si el repo no puede probar un despliegue real, la pregunta no se resuelve por ot
 1. Si llega respuesta independiente, contrastar solo los claims concretos y corregir cualquier afirmación no sostenida por los blobs/HEAD que cite.
 2. Mientras tanto, no abrir otra auditoría general. Mantener el caller operativo y el modo de lanzamiento como `UNKNOWN/BLOCKED` salvo evidencia externa real.
 3. No pedir de nuevo cuál es el dispositivo objetivo: POCO X7 Pro/Android M1 ya está identificado. Lo que falta es determinar qué entorno ejecuta el CLI M0 y, si se pretende validar en él, cuál es su invocador real.
+
+
+## Continuación documental — recuperación explícita del bloqueo M1 (2026-10-26)
+
+El propietario recordó que M1 tenía un fallo observable importante: **repetía la misma respuesta/frase genérica en preguntas diferentes** (ejemplo histórico: «¿Quieres hablar de algo?»). No permitir que este problema desaparezca de la continuidad ni confundir carga correcta del modelo/compilación con conversación funcional.
+
+- Registro canónico nuevo: [M1 repeated response/context-generation blocker](../M1_ANDROID/M1_REPEATED_RESPONSE_CONTEXT_GENERATION_BLOCKER_2026-10-26.md), commit `9162100a64d1d7ac075a8307dc9420c6e9263da9`.
+- Fuente M1 actual inspeccionada estáticamente: `NEXO_NCS/M1_ANDROID/app/src/main/kotlin/org/nexo/m1/MainActivity.kt`, blob `ce22225a8661a4afa2e7eb1f6b65dfb1b3db26b0`. `sendPrompt()` pasa el prompt actual a `sendUserPrompt` y agrega el flujo recibido directamente a la UI; la reconstrucción del contexto depende del wrapper nativo. Esto no demuestra por sí solo la causa exacta del síntoma.
+- En la rama histórica `ncs/m1-fix-chat-context-generation-limit` existen una auditoría de salida/contexto (blob `1029dce05ad6ef39f6c077ba756e6dfe79d8dba9`) y un plan de regresión (blob `9bb6aa11c9b240f6c47a369e82b9bcb6e769485a`). La revisión histórica señaló dos focos: extracción segura del sufijo del historial (prefijo exacto, BOS/EOS/saltos de línea) y posible doble contabilización del prompt en el límite de generación. No afirmar que estos fixes estén en el HEAD canónico hasta reconciliar blobs/commits.
+- Los criterios futuros incluyen: respuesta exacta `VERDE`, aritmética 17×23=391, recuperación mult-turn de `AZUL-27`, tres preguntas distintas consecutivas sin respuesta repetida, medición real del límite de tokens y fallo cerrado ante mismatch de plantilla/contexto.
+- **No se ejecutaron** tests/CI ni validación en dispositivo. No generar ni instalar APK, no borrar/reinstalar la app ni volver a descargar/reimportar el modelo sin evidencia de necesidad. La autorización actual sigue siendo documental únicamente.
+
+### Siguiente paso combinado
+1. Primero conservar el bloqueo M1 y reconciliar documentalmente la corrección histórica contra el HEAD actual (identificar qué commits/blobs de la rama de corrección están o no integrados); no hacer cherry-pick ni modificar runtime.
+2. Después continuar el bloqueo M0 de caller/root y esperar la revisión independiente del issue #107. No repetir auditorías cerradas ni cambiar gates.
