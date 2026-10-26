@@ -2,7 +2,7 @@
 
 ## Punteros activos verificados — 2026-10-25 17:00 local
 
-HEAD de `ncs-clean-architecture` comprobado contra GitHub: `17440bb18f62e872f05b58fb18fa97b6a964e11e`.
+HEAD de referencia al iniciar esta reconciliación documental: `17440bb18f62e872f05b58fb18fa97b6a964e11e`. Los commits documentales posteriores avanzaron la rama; este hash es histórico, no el HEAD actual. Verificar el HEAD al retomar.
 
 Para evitar que referencias cronológicas antiguas se confundan con el estado activo, los artefactos vigentes verificados son:
 - Matriz de aceptación bootstrap: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), último commit `96d99a7ad11b18bd95d66aea9827e06385fd980a`, blob actual `89558fb688f10c0cfc95c12430114a5837e124cc`.
