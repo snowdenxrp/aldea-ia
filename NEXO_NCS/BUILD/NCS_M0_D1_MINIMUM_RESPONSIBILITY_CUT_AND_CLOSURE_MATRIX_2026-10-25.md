@@ -91,7 +91,10 @@ Elegir el menor corte que cumpla simultáneamente:
 
 D1-DESIGN solo puede cerrarse cuando:
 - [ ] Cada entrypoint y API relevante tiene dominio, contrato de admisión y clasificación de caller.
-- [ ] `assistants.mjs` y `simulate.mjs` tienen un corte de responsabilidades especificado que preserva la persistencia propia de Lúmina y excluye operaciones Nexo ordinarias.
+- [ ] `assistants.mjs` y `simulate.mjs` tienen un corte de responsabilidades especificado que preserva la memoria de aprendizaje y la persistencia canónica de Lúmina, y excluye de la ruta ordinaria abrir Continuity, crear/registrar misiones Nexo o importar/migrar estado legado Nexo.
+- [ ] La ausencia, corrupción o fallo de acceso al store Nexo no bloquea ni altera por sí solo la persistencia legítima de Lúmina; cualquier dependencia distinta requiere un contrato de integración separado, explícito y autorizado.
+- [ ] La decisión entre «no existe estado previo de Nexo» y «estado previo desconocido» se basa en evidencia del estado Nexo relevante; la mera ausencia de `world-state.json` no prueba que no exista estado Nexo anterior.
+- [ ] La migración de `state.nexoMemory` y el bootstrap vacío de Continuity solo pueden ejecutarse mediante una ruta separada, explícita y autorizada; no como efecto colateral de `simulate` o `assistants` ordinarios.
 - [ ] El contrato de root/argumentos padre-hijo es coherente y no presupone que la herencia de argumentos equivale a admisión.
 - [ ] Queries/previews/snapshots están dentro de una regla de admisión sin excepción de solo lectura.
 - [ ] Las APIs de bajo nivel están clasificadas según evidencia, no por inferencia desde wrappers.
