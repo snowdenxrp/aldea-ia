@@ -3,13 +3,14 @@
 ## Punteros activos verificados — revisión posterior a H8
 
 - Rama: `ncs-clean-architecture`.
-- HEAD consultado en GitHub inmediatamente antes de esta actualización: `6578d46e0bd7f0bfd9f68de353050c8aa392cb62`. Volver a consultar el HEAD antes de continuar; este valor es un pin de observación, no una garantía de que la rama no avance.
+- HEAD consultado en GitHub inmediatamente antes de esta actualización: `c1fb133811019f034e0b3cd79d22285d63971f25`. Volver a consultar el HEAD antes de continuar; este valor es un pin de observación, no una garantía de que la rama no avance.
 - Este bloque es el índice operativo. Las entradas rotuladas «REGISTRO HISTÓRICO» más abajo preservan contexto y no sustituyen los pins listados aquí.
 
 ### Artefactos activos para la continuidad
 
 - **Corte y cierre D1:** [matriz de responsabilidad y cierre](BUILD/NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md) — blob `a15c5ec173683fdd68246f076ba59d85feece5fa`.
 - **Validación controlada documental:** [matriz claim/evidencia y perfil de validación](BUILD/NCS_M0_CONTROLLED_VALIDATION_DESIGN_AND_CLAIM_EVIDENCE_MATRIX_2026-10-26.md) — commit `dfff88c3dbacf09064fd883decff1dbe4b6849ce`; diseño únicamente, no autoriza ejecución.
+- **Bloqueo M1 de respuestas repetidas/contexto:** [registro de regresión y estado](M1_ANDROID/M1_REPEATED_RESPONSE_CONTEXT_GENERATION_BLOCKER_2026-10-26.md) — commit `9162100a64d1d7ac075a8307dc9420c6e9263da9`; síntoma conocido, no declarado resuelto; solo documentación.
 - **Callers y hueco de raíz:** [inventario acotado](BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md) — blob `e79f8672c5c8b858fffe2015cc18544007449756`.
 - **Contrato de raíz vs. CLI:** [matriz de conformidad](BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md) — blob `3dec849623f168bb76435a2a618210926cee98db`.
 - **Bootstrap:** [matriz de aceptación de alternativas](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md) — blob `89558fb688f10c0cfc95c12430114a5837e124cc`; no se ha seleccionado A/B/C/D.
