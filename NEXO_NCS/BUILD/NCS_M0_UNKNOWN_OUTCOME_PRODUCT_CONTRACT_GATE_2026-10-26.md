@@ -1,7 +1,7 @@
 # NCS M0 — Gate del contrato de producto para outcomes UNKNOWN (2026-10-26)
 
 ## Estado
-- Tipo: recomendación de diseño y gate de decisión; no ratificado.
+- Tipo: contrato de producto para M0; alternativa A ratificada por el owner el 2026-10-26.
 - Runtime/tests/workflows: sin cambios.
 - Tests/CI: no ejecutados.
 - No autoriza integración de reconciliación ni efectos protegidos.
@@ -38,9 +38,9 @@ La primitiva actual con bloqueo, archivo temporal y `rename()` no demuestra por 
 - No se implementan journal, IDs de operación, fencing, retries, colas ni tombstones por inferencia.
 - La observabilidad debe preservar el código estable de error de forma segura, pero cambiar el diagnóstico de runtime es trabajo separado y requiere autorización específica.
 
-## Gate de decisión pendiente del owner
-A. **M0 acepta UNKNOWN no resuelto hasta intervención explícita.** Se cierra la necesidad de resolución automática para M0; el trabajo se limita a mantener y probar el comportamiento fail-closed ya existente, si se autoriza.
-B. **M0 exige resolución automática.** Antes de implementar, definir modelo de fallo F1/F2/F3, fuente de evidencia independiente, contrato causal, comportamiento de recuperación y pruebas de aceptación. No seleccionar automáticamente la opción D ni ninguna técnica concreta.
+## Decisión del owner
+A. **RATIFICADA para M0:** aceptar UNKNOWN no resuelto hasta intervención explícita; preservar el comportamiento fail-closed. No exige reconciliación automática en M0.
+B. **No seleccionada:** la reconciliación automática no se descarta para fases futuras, pero permanece pendiente de diseño, evidencia y autorización explícita. No seleccionar automáticamente ninguna técnica concreta.
 
 ## Evidencia que sigue sin cambiar
 - La opción C no está demostrada como exclusión de writers de extremo a extremo ni como contrato completo de durabilidad.
@@ -80,3 +80,20 @@ Los archivos siguientes se leyeron en la rama indicada; esto es un mapeo estáti
 
 ### Criterio mínimo antes de declarar la alternativa A satisfecha
 La alternativa A solo puede declararse implementada cuando el contrato de producto esté ratificado y exista evidencia específica de que: (a) `COMMIT.UNKNOWN` termina como no resuelto; (b) no hay reintento automático del intento incierto; (c) no se ejecutan efectos protegidos como consecuencia de ese resultado; (d) la salida al usuario/sistema consumidor no afirma éxito ni fracaso definitivo; y (e) los tests correspondientes pasan en un run identificado por HEAD y suite. Esta lista no autoriza a implementar esos cambios.
+
+
+## Decisión del owner — alternativa A ratificada (2026-10-26)
+
+El owner ratifica **A para NCS M0**: aceptar el outcome `COMMIT.UNKNOWN` como no resuelto, detener de forma segura la ruta afectada y dejar la resolución para intervención explícita. No se autoriza reintento automático ni ejecución de efectos protegidos derivada del intento incierto.
+
+**La decisión no cierra el resto del diseño ni reduce la autonomía futura de Nexo.** Quedan pendientes, sin selección ni implementación implícitas:
+- si una fase posterior debe ofrecer reconciliación automática;
+- modelos de fallo F1/F2/F3 y sus garantías de durabilidad;
+- evidencia independiente de correspondencia causal;
+- contrato de recuperación y pruebas para cualquier futura reconciliación;
+- propagación del diagnóstico `errorCode` por el outcome final;
+- validación end-to-end de no reintento y bloqueo de efectos protegidos.
+
+A preserva autonomía futura al evitar imponer ahora una técnica de recuperación prematura. No convierte los pendientes en prohibiciones permanentes: cada capacidad futura requerirá diseño, evidencia y autorización explícitos. Esta ratificación es una decisión de contrato de producto para M0, no una afirmación de que el comportamiento ya esté completamente implementado o probado.
+
+Estado actualizado: contrato de producto A `RATIFICADO`; aceptación de implementación A `PENDIENTE DE EVIDENCIA`; M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación automática futura `PENDIENTE`.
