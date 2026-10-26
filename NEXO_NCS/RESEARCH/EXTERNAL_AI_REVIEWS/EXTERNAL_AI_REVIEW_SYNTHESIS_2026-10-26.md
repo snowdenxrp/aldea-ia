@@ -68,3 +68,40 @@ La matriz es una fotografía parcial de los archivos recuperados en esta comprob
 - Tests/CI ejecutados por esta síntesis: no.
 - Cambios de runtime, tests, workflows, APK o dispositivo: ninguno.
 - Autoriza efectos protegidos: no.
+
+
+## Ampliación de inventario: artefactos externos en otras rutas
+
+La búsqueda de continuidad en `NEXO_NCS/STATUS.md` encontró dos artefactos relacionados que viven fuera de `RESEARCH/EXTERNAL_AI_REVIEWS`. Se recuperaron de la rama de trabajo y se revisaron sus límites declarados:
+
+### Claude — reconciliación documental de D1
+
+- Archivo: [`NCS_M0_CLAUDE_INDEPENDENT_D1_REVIEW_RECONCILIATION_2026-10-25.md`](../../BUILD/NCS_M0_CLAUDE_INDEPENDENT_D1_REVIEW_RECONCILIATION_2026-10-25.md).
+- Blob recuperado: `389e579c448583c75697913670a75c78b579b844`.
+- El propio encabezado dice que es una reconciliación documental, no cierra D1 y no autoriza implementación.
+- Es evidencia de que existe una reconciliación archivada sobre una revisión aportada por Claude; no demuestra que las órdenes del 26 de octubre se enviaran ni que Claude haya respondido a ese paquete nuevo.
+
+### Gemini — cotejo documental vinculado a issue
+
+- `STATUS.md` enlaza [issue #107 y su comentario de revisión documental](https://github.com/snowdenxrp/aldea-ia/issues/107#issuecomment-6406372373).
+- El mismo STATUS limita explícitamente el resultado a cotejo estático de blobs citados: no es una auditoría independiente de Gemini ni evidencia de runtime. Señala que, si Gemini aporta evidencia nueva, solo deben reconciliarse discrepancias concretas.
+- Por tanto, se registra como un artefacto de cotejo documental relacionado con Gemini, no como prueba de una respuesta nueva o de que una orden independiente haya sido ejecutada.
+
+### Órdenes preparadas, no enviadas
+
+- Archivo: [`NCS_M0_INDEPENDENT_AI_REVIEW_ORDERS_2026-10-26.md`](../../BUILD/NCS_M0_INDEPENDENT_AI_REVIEW_ORDERS_2026-10-26.md).
+- Blob recuperado: `e34c727bbdc0af9785e48887fdbaf43acd286cd0`.
+- El documento declara que es una orden para copiar en cada IA y que no afirma que alguna haya sido contactada o haya respondido.
+- El estado del repositorio y este inventario concuerdan: preparación no equivale a envío ni a resultado.
+
+## Inventario actualizado: alcance exacto
+
+| IA / artefacto | Evidencia recuperada | Qué sí permite afirmar | Qué no permite afirmar |
+|---|---|---|---|
+| Perplexity — persistencia/durabilidad | Informe en `EXTERNAL_AI_REVIEWS` | Informe documental archivado y recuperado | Tests/CI ejecutados o identidad byte por byte con el original |
+| Claude — D1 | Reconciliación en `BUILD` | Existe un artefacto que registra y contrasta una revisión atribuida a Claude | D1 cerrado, implementación autorizada o respuesta a las órdenes nuevas |
+| Gemini — cotejo | Referencia en `STATUS.md` a issue #107/comentario | Existe un cotejo estático documentado y con límites explícitos | Auditoría independiente nueva o validación runtime |
+| Qwen — órdenes del 26 de octubre | Orden preparada; no se verificó informe de respuesta | Se preparó una solicitud | Que se envió, se respondió o existe un informe archivado en otra ruta |
+| Gemini/Claude/Perplexity — paquete del 26 de octubre | Órdenes preparadas, no enviadas según STATUS | Hay un paquete documental preparado | Que esas IAs hayan recibido ese paquete o hayan respondido |
+
+Esta ampliación corrige una limitación del primer inventario: la ausencia de un informe dentro de `EXTERNAL_AI_REVIEWS` no demuestra que no exista material relacionado en `BUILD`, `STATUS.md` o issues. El inventario sigue siendo parcial, y no se hizo un barrido exhaustivo de todos los archivos o conversaciones.
