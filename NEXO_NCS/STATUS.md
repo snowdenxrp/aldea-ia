@@ -1,3 +1,15 @@
+# ACTUALIZACIÓN PRIORITARIA — EVIDENCIA RECUPERADA DEL FALLO CI DE PERSISTENCIA (2026-10-26)
+
+- Evidencia del log del run `40270739196` / job `121402789784` recuperada y registrada: [Evidencia del fallo CI de persistencia](BUILD/NCS_M0_CI_PERSISTENCE_FAILURE_LOG_EVIDENCE_2026-10-26.md), commit `6a7635c0cafe8b6dffb8985a07990ed674df5342`.
+- El log confirma la aserción en `tests/nexo/conditional-commit-persist-state.test.mjs:88:10`: actual `RECONCILE_REQUIRED`, esperado `SAFE_COMMIT`. No expone la excepción primaria ni el `errorCode` del adapter.
+- Se registra explícitamente que el defecto estático de tipo/ruta es una hipótesis fuerte, no causa raíz probada. No atribuir a `rename()`, `EXDEV` ni al estado final del destino sin prueba.
+- Diagnóstico siguiente propuesto: prueba aislada, captura del resultado tipado del adapter, pruebas de ruta nativa/URL `file:` y fallos inyectados de escritura/rename, después de ratificar el contrato de ruta. No “arreglar” relajando la aserción.
+- Solo documentación; runtime/tests/workflows sin cambios; no se ejecutó test aislado ni CI. Causa raíz sigue `UNKNOWN`.
+
+Gates sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; authorization `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — MATRIZ DE RECONCILIACIÓN Y OBSERVABILIDAD (2026-10-26)
 
 - Documento de diseño añadido: [Matriz de reconciliación y observabilidad de commit](BUILD/NCS_M0_COMMIT_RECONCILIATION_OBSERVABILITY_MATRIX_2026-10-26.md), commit `5d5f8655163bc0632c68f2cd4d69a993860bdba9`.
