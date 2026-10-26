@@ -1,3 +1,17 @@
+# ACTUALIZACIÓN PRIORITARIA — M1: FUENTE UPSTREAM FIJADA Y PARCHE NO APLICADO (2026-10-26)
+
+- HEAD observado antes de esta actualización: `6980e8975eaa7a66185ed5cfb213ce18867da627`. Consultar la rama de nuevo al retomar.
+- Hallazgo: `prepare-llama-android.sh` (blob `1981bf23223f5ac580ed604c7c67efbcd54e86c8`) fija upstream `llama.cpp` SHA `10a60cf303566e10d6a7a2774c17d2085503d87b` y copia solo configuración Gradle; no ejecuta `apply-native-diagnostics.py`.
+- Workflow `.github/workflows/nexo-m1-android-build.yml` (blob `b21eb080d9024c7cf580b7f06729bbe65a89cb59`) no aplica el parche histórico. El upstream fijado contiene `use_jinja=false` en `ai_chat.cpp` líneas 289–297 y la contabilidad anterior del límite en líneas 432–448.
+- Informe: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `7af4d686e06bc093624a622846c60166e842c402`.
+- Registro de bloqueo: commit `fe0736296a486c4a37f371bcca32bbc64d6ec20c`. Handoff: commit `6980e8975eaa7a66185ed5cfb213ce18867da627`.
+- Conclusión: el parche histórico no forma parte del flujo de build definido por los archivos inspeccionados. No se ejecutó build; APK instalada sigue UNKNOWN; causa completa del síntoma no probada.
+- Continuidad autorizada solo documental: no tests/CI, build, APK, runtime, instalación ni dispositivo.
+
+Gates NCS no cambian: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — RECONCILIACIÓN M1 (2026-10-26)
 
 - HEAD consultado inmediatamente antes de esta actualización: `59583e40b34068212ef0b9b3f9da04bc89373481`. Volver a consultar la rama antes de continuar.
@@ -5,7 +19,7 @@
 - `MainActivity.kt` en ambas ramas mantiene el mismo flujo central de envío del prompt y presentación directa del stream.
 - El script histórico de corrección nativa `apply-native-diagnostics.py` y los documentos históricos de auditoría/regresión no están en el árbol canónico inspeccionado. No se ejecutó el script; no se ha demostrado que sus cambios estén integrados ni que la APK instalada corresponda a ellos.
 - Artefacto de comparación: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `86db80ff52566c48e774888b02a93ac387255ec1`.
-- Bloqueo M1 actualizado: commit `2c88171962b59d90dd75fa28eb856f5e2712279a`. Handoff actualizado: commit `59583e40b34068212ef0b9b3f9da04bc89373481`.
+- Bloqueo M1 actualizado: commit `2c88171962b59d90dd75fa28eb856f5e2712279a`. Handoff actualizado: commit `6980e8975eaa7a66185ed5cfb213ce18867da627`.
 - Resultado: corrección integrada `UNKNOWN / NO EVIDENCIADA`; síntoma de respuestas repetidas permanece abierto. No hacer cherry-pick ni aplicar el script por inferencia.
 - Continuidad autorizada solo documental: no tests/CI, build, APK, instalación, cambios runtime ni dispositivo.
 
@@ -25,7 +39,7 @@ Gates NCS no cambian: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTAT
 
 - **Corte y cierre D1:** [matriz de responsabilidad y cierre](BUILD/NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md) — blob `a15c5ec173683fdd68246f076ba59d85feece5fa`.
 - **Validación controlada documental:** [matriz claim/evidencia y perfil de validación](BUILD/NCS_M0_CONTROLLED_VALIDATION_DESIGN_AND_CLAIM_EVIDENCE_MATRIX_2026-10-26.md) — commit `dfff88c3dbacf09064fd883decff1dbe4b6849ce`; diseño únicamente, no autoriza ejecución.
-- **Bloqueo M1 de respuestas repetidas/contexto:** [registro de regresión y estado](M1_ANDROID/M1_REPEATED_RESPONSE_CONTEXT_GENERATION_BLOCKER_2026-10-26.md) — commit `2c88171962b59d90dd75fa28eb856f5e2712279a`; síntoma conocido, no declarado resuelto; solo documentación.
+- **Bloqueo M1 de respuestas repetidas/contexto:** [registro de regresión y estado](M1_ANDROID/M1_REPEATED_RESPONSE_CONTEXT_GENERATION_BLOCKER_2026-10-26.md) — commit `fe0736296a486c4a37f371bcca32bbc64d6ec20c`; síntoma conocido, no declarado resuelto; solo documentación.
 - **Reconciliación de la rama histórica M1:** [comparación exacta de rama/fuentes](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md) — commit `71422c8b88f6cd06d0e3d4b5018e9bf2f6cd23e6`; la corrección nativa no está evidenciada como integrada.
 - **Callers y hueco de raíz:** [inventario acotado](BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md) — blob `e79f8672c5c8b858fffe2015cc18544007449756`.
 - **Contrato de raíz vs. CLI:** [matriz de conformidad](BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md) — blob `3dec849623f168bb76435a2a618210926cee98db`.
