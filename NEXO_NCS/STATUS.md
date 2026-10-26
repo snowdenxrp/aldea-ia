@@ -61,7 +61,7 @@ Los commits/blobs más antiguos que aparecen en las secciones cronológicas infe
 
 ---
 
-# ACTUALIZACIÓN MÁS RECIENTE — PLATAFORMA INICIAL Y PORTABILIDAD (2026-10-25)
+# REGISTRO HISTÓRICO — actualización registrada — PLATAFORMA INICIAL Y PORTABILIDAD (2026-10-25)
 
 - El propietario confirma POCO X7 Pro/Android como primer entorno del prototipo y compatibilidad futura con PC como objetivo de diseño; espera disponer de una PC al ensamblar Nexo.
 - La PC futura no está disponible ni tiene un entorno operativo especificado. La portabilidad es intención, no capacidad implementada/verificada.
@@ -71,7 +71,7 @@ Los commits/blobs más antiguos que aparecen en las secciones cronológicas infe
 
 ---
 
-# ACTUALIZACIÓN MÁS RECIENTE — P-01 / PERFIL MÍNIMO DEL ENTORNO (2026-10-25)
+# REGISTRO HISTÓRICO — actualización registrada — P-01 / PERFIL MÍNIMO DEL ENTORNO (2026-10-25)
 
 - El propietario confirma que todavía desconoce el entorno inicial y no puede confirmar quiescencia operacional. P-01 y P-05 permanecen `UNKNOWN/BLOCKED`; no se selecciona A/B/C/D.
 - Perfil de intake mínimo actualizado y releído: [NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md), commit `8a3495c8b53311b12e681de779fcb40947608ff4`, blob `ef463da2e60a9e08b13f30e8d9d1e62366c0c94e`. Primeros datos requeridos: destino/SO y alcance (prototipo o instalación real), modo de lanzamiento/relanzadores, capacidad para detener writers e impedir reinicios, y evidencia disponible para demostrarlo. El perfil de almacenamiento se pide después si hace falta.
@@ -81,7 +81,7 @@ Los commits/blobs más antiguos que aparecen en las secciones cronológicas infe
 
 ---
 
-# CHECKPOINT CANÓNICO ACTUAL — HANDOFF CLAUDE/D1 (2026-10-25)
+# REGISTRO HISTÓRICO — checkpoint canónico registrado — HANDOFF CLAUDE/D1 (2026-10-25)
 
 - Contraste del registro para bootstrap: [NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_DECISION_REGISTER_CROSSCHECK_2026-10-25.md), commit `280fbfdfedcae89451dcc33ff1c71b2150bbe46a`. El registro ratifica O-08 sobre raíz, pero conserva P-01 bootstrap y P-05 readmisión como pendientes; no hay selección A/B/C/D documentada.
 - Matriz de aceptación de opciones bootstrap: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), commit vigente `96d99a7ad11b18bd95d66aea9827e06385fd980a`, blob `89558fb688f10c0cfc95c12430114a5837e124cc`. El commit `04d8a4255c395a5df0ad1f6292678dc3204ebe58` es el commit de creación, no el último cambio. Compara A/B/C/D; no selecciona opción.
