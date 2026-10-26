@@ -6,10 +6,18 @@ HEAD de referencia al iniciar esta reconciliación documental: `17440bb18f62e872
 
 Para evitar que referencias cronológicas antiguas se confundan con el estado activo, los artefactos vigentes verificados son:
 - Matriz de aceptación bootstrap: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), último commit `96d99a7ad11b18bd95d66aea9827e06385fd980a`, blob actual `89558fb688f10c0cfc95c12430114a5837e124cc`.
+- Matriz de corte mínimo y cierre D1: [NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md), actualización documental commit `5912311d088d22b2f258403e063d123f380ba8fd`, blob actual `a15c5ec173683fdd68246f076ba59d85feece5fa`. Añade criterios explícitos para que fallos/ausencia del store Nexo no alteren la persistencia Lúmina, distingue estado Nexo ausente de desconocido y exige migración/bootstrap mediante ruta separada y autorizada.
 - Perfil de entorno D3: [NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md), último commit `1e88bd39baef678c6c71bf63a306933ee2375d15`, blob actual `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
 - Handoff de continuidad: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), último commit `4e786d09b2e2aa49dd8f35ae5a2f2d707896da4f`, blob actual `17ac954d52947086c3df9fdfd5244b18ca81caaa`.
 
 Los commits/blobs más antiguos que aparecen en las secciones cronológicas inferiores se conservan como evidencia histórica del estado de aquellos momentos; no deben presentarse como pins activos si el artefacto ha avanzado. Esta actualización solo corrige navegación/evidencia documental, no modifica decisiones ni estado canónico.
+
+## Continuación documental verificada — D1 caller/migration boundary (2026-10-26)
+
+- Reconciliado el informe de separación/migración con los criterios de cierre D1 existentes. La matriz ya exigía separar las rutas ordinarias de Lúmina, pero no expresaba con suficiente precisión tres condiciones: fallo del store Nexo independiente de la persistencia Lúmina; evidencia Nexo para distinguir estado ausente de estado desconocido; migración/bootstrap separados del flujo ordinario.
+- Se añadieron esos criterios a la matriz D1. Solo documentación; no se modificó runtime/tests/workflows/datos y no se ejecutaron tests/CI.
+- `scripts/assistants.mjs` (blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`) y `scripts/simulate.mjs` (blob `623d316c7a1efd10cc2f06a3080c0d9f06087596`) confirman estáticamente las aristas conocidas; esto no demuestra su ejecución en el POCO ni cierra callers dinámicos/externos.
+- Siguiente paso: mantener D1-DESIGN OPEN y contrastar únicamente cualquier nuevo informe de Gemini para H2/H4/H8; no repetir el censo ni implementar el corte.
 
 ## Salvaguardas de evidencia CV-24–CV-26 (2026-10-25)
 
