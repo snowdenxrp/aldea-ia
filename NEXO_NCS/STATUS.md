@@ -1,16 +1,37 @@
 # PUERTA CANÓNICA DE CONTINUIDAD — «CONTINÚA» (2026-10-25)
 
-## Punteros activos verificados — 2026-10-25 17:00 local
+## Punteros activos verificados — revisión posterior a H8
 
-HEAD de referencia al iniciar esta reconciliación documental: `17440bb18f62e872f05b58fb18fa97b6a964e11e`. Los commits documentales posteriores avanzaron la rama; este hash es histórico, no el HEAD actual. Verificar el HEAD al retomar.
+- Rama: `ncs-clean-architecture`.
+- HEAD consultado en GitHub inmediatamente antes de esta actualización: `e1bc5470b2a2e39d7ae57b8d0dfe0af1fa0f7305`. Volver a consultar el HEAD antes de continuar; este valor es un pin de observación, no una garantía de que la rama no avance.
+- Este bloque es el índice operativo. Las entradas rotuladas «REGISTRO HISTÓRICO» más abajo preservan contexto y no sustituyen los pins listados aquí.
 
-Para evitar que referencias cronológicas antiguas se confundan con el estado activo, los artefactos vigentes verificados son:
-- Matriz de aceptación bootstrap: [NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md), último commit `96d99a7ad11b18bd95d66aea9827e06385fd980a`, blob actual `89558fb688f10c0cfc95c12430114a5837e124cc`.
-- Matriz de corte mínimo y cierre D1: [NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md](BUILD/NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md), actualización documental commit `5912311d088d22b2f258403e063d123f380ba8fd`, blob actual `a15c5ec173683fdd68246f076ba59d85feece5fa`. Añade criterios explícitos para que fallos/ausencia del store Nexo no alteren la persistencia Lúmina, distingue estado Nexo ausente de desconocido y exige migración/bootstrap mediante ruta separada y autorizada.
-- Perfil de entorno D3: [NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md), último commit `1e88bd39baef678c6c71bf63a306933ee2375d15`, blob actual `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
-- Handoff de continuidad: [NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md), último commit `4e786d09b2e2aa49dd8f35ae5a2f2d707896da4f`, blob actual `17ac954d52947086c3df9fdfd5244b18ca81caaa`.
+### Artefactos activos para la continuidad
 
-Los commits/blobs más antiguos que aparecen en las secciones cronológicas inferiores se conservan como evidencia histórica del estado de aquellos momentos; no deben presentarse como pins activos si el artefacto ha avanzado. Esta actualización solo corrige navegación/evidencia documental, no modifica decisiones ni estado canónico.
+- **Corte y cierre D1:** [matriz de responsabilidad y cierre](BUILD/NCS_M0_D1_MINIMUM_RESPONSIBILITY_CUT_AND_CLOSURE_MATRIX_2026-10-25.md) — blob `a15c5ec173683fdd68246f076ba59d85feece5fa`.
+- **Callers y hueco de raíz:** [inventario acotado](BUILD/NCS_M0_CALLER_INVENTORY_AND_ROOT_PATH_GAP_2026-10-25.md) — blob `e79f8672c5c8b858fffe2015cc18544007449756`.
+- **Contrato de raíz vs. CLI:** [matriz de conformidad](BUILD/NCS_M0_ROOT_CONTRACT_VS_EXISTING_CLI_CONFORMANCE_2026-10-25.md) — blob `3dec849623f168bb76435a2a618210926cee98db`.
+- **Bootstrap:** [matriz de aceptación de alternativas](BUILD/NCS_M0_D2_BOOTSTRAP_OPTIONS_ACCEPTANCE_MATRIX_2026-10-25.md) — blob `89558fb688f10c0cfc95c12430114a5837e124cc`; no se ha seleccionado A/B/C/D.
+- **Entorno/quiescencia:** [perfil D3 requerido](BUILD/NCS_M0_D3_DEPLOYMENT_ENVIRONMENT_PROFILE_REQUIRED_2026-10-23.md) — blob `7a790ee242d3c32e7bad50f7dfd52ba49f03e989`.
+- **Handoff:** [reconciliación D1 para el siguiente chat](BUILD/NCS_NEXT_CHAT_HANDOFF_2026-10-25_CLAUDE_D1_RECONCILIATION.md) — blob `17ac954d52947086c3df9fdfd5244b18ca81caaa`.
+- **Coordinación IA:** [protocolo de equipo y tarea activa](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md) — blob `d7db844310afbc6235492bcba022d0e288fb3cae`.
+- **Visión maestra / Core:** [MASTER README](MASTER/README.md) — blob `97fbfc63004432de3d2e99e66f534d4e0d8ed774`; [CORE README](CORE/README.md) — blob `82db0ac21edcb9a9bdcbb2760da8f48c7ad3ca36`.
+
+### Siguiente bloqueo real
+
+La evidencia del repositorio no identifica un caller de provisioning operativo que conecte la raíz explícita ratificada `--root <directory>` con las stores canónicas y una autoridad operacional demostrada. No inventar el caller, un wrapper ni una política de fallback. La pregunta pendiente es si existe un despliegue real fuera de la evidencia del repo; si no se puede demostrar, conservar `UNKNOWN/BLOCKED` y no certificar la opción A.
+
+### Gates canónicos — no cambian por esta actualización
+
+- M0: `INCOMPLETO`.
+- D0/D1-DESIGN/D2/D3: `OPEN`.
+- D1-IMPLEMENTATION: `NO AUTORIZADA`.
+- Authorization: `NOT_EVALUATED`.
+- Raíz legítima: `PENDING/UNKNOWN`.
+- Efectos protegidos: `STOP`.
+- Bootstrap A/B/C/D: ninguna opción seleccionada.
+
+Esta actualización solo reconcilia el índice de continuidad con los artefactos leídos en la rama. No se ejecutaron código, tests o CI; no se modificaron runtime, tests, workflows, instalación ni dispositivo.
 
 ## Continuación documental verificada — cotejo H2/H4/H8 (2026-10-25, hora local)
 
