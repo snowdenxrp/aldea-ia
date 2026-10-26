@@ -178,3 +178,30 @@ Especificación nueva, creada y leída de vuelta desde GitHub: [NEXO_ANDROID_PRO
 - Orden sugerido: preferencias/privacidad/quiet hours/retención; recordatorios deterministas; calendario y notificaciones; avatar/panel; wake word local; fuentes contextuales después, con permisos y contratos separados.
 - Todo lo anterior es DISEÑO DOCUMENTADO, no implementación ni pruebas. No se ejecutaron tests/CI ni se modificaron runtime/tests/workflows.
 - En el chat siguiente, primero ruta canónica STATUS → MASTER → CORE → handoff; luego leer esta especificación. Mantener este trabajo de producto separado del cierre NCS M0 y de la autoridad inicial/efectos protegidos.
+
+
+## Continuación documental posterior — actualización STATUS y cierre de H8 (2026-10-25)
+
+### Evidencia de rama
+- HEAD observado antes de esta actualización: `02fe6ecbff4a92be3d49881740e8dcb7b2a4cf0f` (la rama puede avanzar; volver a consultarlo al retomar).
+- `NEXO_NCS/STATUS.md` fue reordenado para que los pins activos y el siguiente bloqueo aparezcan arriba, antes de la cronología. Blob tras esa edición: `c54aeff01f65ebc786852f5742377328f8df6bb0`.
+- Commit de actualización del índice: `02fe6ecbff4a92be3d49881740e8dcb7b2a4cf0f`.
+- Los tres encabezados históricos ambiguos se etiquetaron en commit `8932c33241e3c7193257e154b1f19248226f5ec5`; la historia no se borró.
+
+### Conclusión documental que no debe repetirse
+- H2: los identificadores reutilizados no demuestran colisión semántica local; las referencias cruzadas deben cualificarse por familia/documento.
+- H4: existe el crosswalk intake 1–5 → D3 E1/E3/E2/E2-E5-E6/E4, pero la cobertura es parcial y escalonada. No equivale a completar E1–E6.
+- H8: los encabezados ambiguos se normalizaron; preservar bloques históricos, no volver a realizar la misma limpieza salvo evidencia concreta de un nuevo conflicto.
+- Gemini no ha aportado, en los comentarios consultados, una revisión nueva con evidencia independiente. No describir el cotejo de ChatGPT como validación independiente de Gemini.
+
+### Próxima acción — raíz/caller y admisión, no nueva auditoría general
+El bloqueo de diseño es que el repo inspeccionado no demuestra un caller operativo de provisioning que conecte `--root <directory>` con las stores canónicas y con autoridad operacional suficiente. El CLI inspeccionado todavía admite rutas separadas legacy y bootstrap independiente; esto es una brecha documental de conformidad, no permiso para parchear.
+
+Pedir revisión independiente solo sobre esta afirmación concreta: ¿hay en los artefactos fuente citados evidencia de un caller operativo/deployment que cierre la brecha, o el repo solo contiene entrypoints de CLI sin provisioning operativo seleccionado? La respuesta debe citar archivo, blob/HEAD, líneas y separar hecho observado, inferencia y UNKNOWN. No repetir el censo de callers ya registrado.
+
+Si el repo no puede probar un despliegue real, la pregunta no se resuelve por otra búsqueda interna: se mantiene `UNKNOWN/BLOCKED` y el propietario tendría que aportar la evidencia externa mínima ya listada en el inventario: (1) invocador real, (2) raíz física y derivación de rutas, (3) actores que escriben/lanzan y autoridad para detenerlos, (4) condición observable de admisión cerrada, (5) política de corte parcial/release/readmisión.
+
+### Límites canónicos
+- M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`.
+- Authorization `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+- No tests/CI, cambios runtime/tests/workflows, instalación o modificación de dispositivo. No inventar caller, wrapper, flags ni política de fallback.
