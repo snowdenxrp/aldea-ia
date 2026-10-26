@@ -4,8 +4,8 @@
 - La rama `ncs/m1-fix-chat-context-generation-limit` está divergida de `ncs-clean-architecture`; no es un parche limpio.
 - `MainActivity.kt` en ambas ramas mantiene el mismo flujo central de envío del prompt y presentación directa del stream.
 - El script histórico de corrección nativa `apply-native-diagnostics.py` y los documentos históricos de auditoría/regresión no están en el árbol canónico inspeccionado. No se ejecutó el script; no se ha demostrado que sus cambios estén integrados ni que la APK instalada corresponda a ellos.
-- Artefacto de comparación: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `71422c8b88f6cd06d0e3d4b5018e9bf2f6cd23e6`.
-- Bloqueo M1 actualizado: commit `2c88171962b59d90dd75fa28eb856f5e2712279a`. Handoff actualizado: commit `2da0c176d655d6b7b0f97877b900700be05bd989`.
+- Artefacto de comparación: [M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md](M1_ANDROID/M1_HISTORIC_FIX_BRANCH_RECONCILIATION_2026-10-26.md), commit `86db80ff52566c48e774888b02a93ac387255ec1`.
+- Bloqueo M1 actualizado: commit `2c88171962b59d90dd75fa28eb856f5e2712279a`. Handoff actualizado: commit `59583e40b34068212ef0b9b3f9da04bc89373481`.
 - Resultado: corrección integrada `UNKNOWN / NO EVIDENCIADA`; síntoma de respuestas repetidas permanece abierto. No hacer cherry-pick ni aplicar el script por inferencia.
 - Continuidad autorizada solo documental: no tests/CI, build, APK, instalación, cambios runtime ni dispositivo.
 
