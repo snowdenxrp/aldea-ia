@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — MATRIZ DE RECONCILIACIÓN Y OBSERVABILIDAD (2026-10-26)
+
+- Documento de diseño añadido: [Matriz de reconciliación y observabilidad de commit](BUILD/NCS_M0_COMMIT_RECONCILIATION_OBSERVABILITY_MATRIX_2026-10-26.md), commit `5d5f8655163bc0632c68f2cd4d69a993860bdba9`.
+- La matriz separa el error de la operación del estado durable demostrado; define evidencia mínima por escenario, códigos de diagnóstico candidatos, pruebas de aceptación y decisiones pendientes de ratificación.
+- Recalca que un `COMMIT.UNKNOWN`, un fallo de cleanup o un log ausente no pueden convertirse por inferencia en `SAFE_COMMIT`. La reconciliación debe probar snapshot íntegro, revisión y correspondencia con la operación; semántica final pendiente.
+- Solo documentación. No se ejecutaron tests ni CI; runtime/tests/workflows sin cambios. Causa exacta del run `40270739196` sigue `UNKNOWN`. Contrato de rutas A/B/C y política de cleanup/observabilidad no ratificados.
+
+Gates sin cambio: M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; authorization `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — RESULTADO DE COMMIT, RECONCILIACIÓN Y OBSERVABILIDAD (2026-10-26)
 
 - Revisión estática read-only documentada: [Resultado de commit, reconciliación y brechas de observabilidad](BUILD/NCS_M0_COMMIT_OUTCOME_RECONCILIATION_OBSERVABILITY_2026-10-26.md), commit `26c8db311f2b22eb738be0b1922e7daffaca6bd9`.
