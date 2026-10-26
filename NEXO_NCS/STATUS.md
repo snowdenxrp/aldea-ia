@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — PROPUESTA DE LÍNEA DE META M0 (2026-10-26)
+
+- Propuesta docs-only creada: [Línea de meta y criterios de aceptación M0](BUILD/NCS_M0_EXIT_CRITERIA_PROPOSAL_2026-10-26.md), commit `554134f6aa3b4c634528f0341d2d2b2819846f62`.
+- Define cinco grupos de aceptación: alcance/arquitectura; persistencia/admisión; outcomes ambiguos; autoridad/efectos; reproducibilidad/evidencia.
+- No ratificada: no declara M0 completo ni cambia los gates canónicos. No modifica runtime/tests/workflows/dispositivo.
+- La alternativa A/B del contrato `COMMIT.UNKNOWN` sigue pendiente de decisión explícita del owner. M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`; reconciliación no integrada; causa primaria del run `40270739196` `UNKNOWN`.
+- CI para el commit de la propuesta estaba `in_progress` al registrar esta actualización; no se afirma su resultado.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — MATRIZ DE ACEPTACIÓN UNKNOWN (2026-10-26)
 
 - Nueva [Matriz de aceptación para outcomes UNKNOWN](BUILD/NCS_M0_UNKNOWN_OUTCOME_ACCEPTANCE_TEST_MATRIX_2026-10-26.md), commit `b10bb770d5351e9a008df3460c20d1ad390855ee`.
