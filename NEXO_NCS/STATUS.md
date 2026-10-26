@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — PROPUESTA DE POLÍTICA DE RUTAS (2026-10-26)
+
+- Documento añadido en commit `6ce96764c620c5645bec31eb618290d902919b6d`: [Propuesta de política para rutas de persistencia](BUILD/NCS_M0_PERSISTENCE_PATH_POLICY_PROPOSAL_2026-10-26.md).
+- Convierte en criterios evaluables las decisiones abiertas de rutas relativas, URL `file:`, caracteres codificados, enlaces simbólicos, errores de cleanup y soporte multiplataforma.
+- Es una propuesta no ratificada: no selecciona oficialmente A/B/C ni autoriza cambios de runtime.
+- Incluye pruebas de aceptación propuestas; no ejecutadas. Runtime/tests/workflows sin cambios; CI no ejecutado.
+- Gates sin cambio: M0 INCOMPLETO; D0/D1-DESIGN/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP; bootstrap A/B/C/D sin seleccionar.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — INVENTARIO DE FRONTERAS DE PERSISTENCIA (2026-10-26)
 
 - HEAD consultado antes de esta actualización: `6c4bc757d076857cfe385106d6a734c8c1ee6761`; inventario añadido en commit `4dd4a6e7990eaa0b4ac770f3d97c3969c34384ed`.
