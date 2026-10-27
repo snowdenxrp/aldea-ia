@@ -215,3 +215,33 @@ No demuestra:
 3. Vincular cualquier conclusión futura de comportamiento a una ejecución de tests/CI autorizada y al SHA exacto.
 
 No se modificó runtime ni tests; esta actualización es documental. D1 sigue OPEN, D1-IMPLEMENTATION NO AUTORIZADA y los efectos protegidos permanecen STOP.
+
+
+## 13. Matriz estática de cobertura de tests para PREPARED → reconciliación → resultado terminal (2026-10-27)
+
+Inspección de texto de tests en la rama; **no se ejecutaron**:
+
+| Test | Blob SHA | Cobertura visible en el archivo |
+|---|---|---|
+| `tests/nexo/chronicle-runtime.test.mjs` | `0bf35f0dc1aadb121a8b2145b4963bacd5641c04` | Dependencias y estado canónico antes de PREPARED; commit PREPARED desconocido/conflictivo/malformado; confirmación de revisión; fallo de handoff de lock; lineage; reconciliación desconocida; recuperación sin redispatch; postcondition y resultado terminal; conflictos/errores de outcome. |
+| `tests/nexo/continuity-migration.test.mjs` | `0bef1b93c6268042f14830c97e084d0a543e05f4` | No permite lineage sin PREPARED; rechaza finalización basada solo en afirmación del caller; reconstrucción de settlement Chronicle sin outcome; evidencia/identidad discordante; forma canónica del outcome; recuperación de obligaciones PREPARED y settlement observado. |
+
+### Anclas concretas encontradas en el texto
+
+- En `chronicle-runtime.test.mjs`: caso nominal con orden explícito `prepare → dispatch → lineage → reconcile → outcome` (aprox. líneas 500–560); PREPARED conflictivo/desconocido/malformado y revisión inválida (aprox. 550–700); lineage/reconciliación desconocidos y handoff inseguro (aprox. 700–820); recuperación y replay de outcome sin redispatch (aprox. 880–980); pruebas del adapter real y postcondition (aprox. 1050–1450); rutas de bootstrap en el tramo posterior.
+- En `continuity-migration.test.mjs`: validación de lineage/PREPARED (aprox. 100–210); reconstrucción y binding de evidencia de settlement/outcome Chronicle (aprox. 300–535); formas y respuestas de `recordOutcome`, incluida recuperación (aprox. 640–760).
+
+### Qué cubre y qué no prueba
+
+- La **presencia estática** de estos casos da evidencia de que los archivos contienen aserciones específicas para los contratos citados. No acredita que pasen hoy, que se ejecuten en CI, ni que correspondan al mismo SHA del runtime actual.
+- La matriz es parcial: no se ha establecido aquí que todas las ramas, todos los entrypoints, todos los adaptadores ni todas las condiciones de filesystem estén cubiertos.
+- Las pruebas con owners/adapters simulados verifican contratos del runtime frente a esos dobles; no prueban por sí solas durabilidad física, concurrencia con escritores externos no cooperantes, raíz de instancia legítima o autoridad constitucional.
+- La inspección textual identificó una batería amplia sobre postcondition y replay, pero todavía debe revisarse el diff entre SHA de tests y runtime, y confirmarse la selección real de tests/CI antes de hacer afirmaciones de cobertura ejecutada.
+
+### Próximo paso preciso
+
+1. Comparar el blob SHA del test con el SHA actual de `owner-backed-runtime.mjs` y sus imports para evitar atribuir cobertura a una implementación distinta.
+2. Identificar los nombres exactos de test/runner y workflows que ejecutarían esta batería; documentar selección y evidencia CI existente, sin disparar una ejecución nueva.
+3. Mantener separadas cobertura textual, resultado de test ejecutado y evidencia CI vinculada a commit.
+
+Esta sección es un mapa estático de cobertura declarada, no un informe de ejecución ni cierre de D1.
