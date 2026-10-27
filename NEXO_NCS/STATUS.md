@@ -2414,3 +2414,13 @@ El propietario confirmó que se mantiene STOP mientras no exista una base legít
 Registro detallado: [NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md](BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md), sección 11.
 
 Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; primera creación y efectos protegidos STOP. No se autorizaron implementación, tests, CI, instalación ni configuración de la YubiKey; no se ejecutaron tests/CI.
+
+
+### P-01 — ataque documental de evidencia Genesis Trust Foundation (2026-10-27)
+
+- Nuevo artefacto: [NCS_M0_P01_GENESIS_FOUNDATION_EVIDENCE_ATTACK_2026-10-27.md](BUILD/NCS_M0_P01_GENESIS_FOUNDATION_EVIDENCE_ATTACK_2026-10-27.md), commit `e13d48c8eb6bc7bbedcfa52987acd41f1a474955`.
+- Convierte los campos STEP 7 en preguntas de falsación y evidencia exigible; no selecciona hardware, ceremonia, proveedor ni protocolo de bootstrap.
+- Conclusión: Genesis Trust Foundation sigue `DESIGN CANDIDATE — ATTACK REQUIRED`; no se ha demostrado una base técnica independiente que pueda producir `ESTABLISHED`.
+- La YubiKey y el canal telefónico permanecen candidatos con funciones distintas; ninguno equivale por sí solo a una raíz reconocida.
+- Estado sin cambios: M0 `INCOMPLETO`; P-01/P01-A/P01-G `OPEN / UNKNOWN`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`.
+- Solo documentación; no runtime/tests/workflows/configuración/dispositivo; no tests/CI/Actions.
