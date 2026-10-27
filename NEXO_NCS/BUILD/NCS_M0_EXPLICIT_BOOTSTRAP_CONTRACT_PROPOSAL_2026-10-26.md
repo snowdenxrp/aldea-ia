@@ -168,3 +168,23 @@ El propietario eligió **Opción A de alcance: estudiar y delimitar la inicializ
 4. Mantener pruebas, runtime, workflows y configuración ejecutable sin cambios hasta autorización específica posterior.
 
 **Estado:** elección de alcance hecha por el propietario; separación arquitectónica todavía no demostrada; contrato final no ratificado; implementación no autorizada por esta elección. Gates intactos: M0 INCOMPLETO, autoridad raíz PENDING/UNKNOWN, autorización NOT_EVALUATED, efectos protegidos STOP y reconciliación general no integrada.
+
+## Primer mapa estático dirigido de consumidores — resultado parcial (2026-10-27)
+
+**Alcance:** lectura de archivos concretos de la rama `ncs-clean-architecture`; no se ejecutaron pruebas ni se intentó despachar efectos. El mapa es parcial y no equivale a un análisis exhaustivo de todos los consumidores.
+
+### Evidencia observada
+
+- `src/nexo/core/continuity-snapshot.mjs` declara que el snapshot es operacional y que no representa autoridad. Es evidencia de intención del contrato de datos, no prueba por sí sola de cómo todos los consumidores usan ese estado.
+- `src/nexo/core/continuity-service.mjs` expone `openNexoContinuityOwner`. La opción `allowEmptyInitialization` es `false` por defecto; cuando no existe el store, el servicio puede inicializar desde `legacyMemory` o, si el llamador lo permite explícitamente, con un snapshot vacío.
+- `scripts/simulate.mjs` comprueba si falta el archivo de mundo, carga estado estricto si existe, y llama a `openNexoContinuityOwner` con `allowEmptyInitialization: !stateExists`. Después persiste el mundo simulado mediante `persistState`. Por tanto, la ausencia de un archivo de mundo actualmente participa en la decisión de permitir la inicialización del store de continuidad en este script; esto debe analizarse como acoplamiento existente, no asumirse como un contrato seguro.
+- El snapshot vacío contiene `effectJournal: []`. `src/nexo/core/continuity-owner.mjs` usa el store para operaciones de misión, outcomes, ejecución y observaciones del journal; sus comentarios dicen que registrar un outcome no liquida el journal ni autoriza efectos. `src/nexo/core/owner-backed-runtime.mjs` y `src/nexo/runtime.js` consumen datos del journal para el flujo de ejecución/reconciliación.
+- `src/nexo/adapters/conditional-commit-persist-state.mjs` delega a `persistState` para un commit condicional existente y no constituye por sí mismo el contrato de inicialización explícita.
+
+### Evaluación provisional
+
+La intención del snapshot de continuidad es no autoritativa, pero el store incluye un journal operacional conectado al flujo de ejecución/reconciliación. Eso **no demuestra** que inicializar el store conceda autoridad, pero tampoco permite concluir aún que la inicialización sea inocua o esté completamente separada de los efectos protegidos. Además, `scripts/simulate.mjs` liga la ausencia del archivo de mundo con `allowEmptyInitialization`; esa relación debe ser trazada hasta sus consumidores y límites reales.
+
+### Siguiente paso exacto
+
+Completar un mapa de llamadas de `openNexoContinuityOwner` y del inicializador del store, incluyendo scripts de reparación/entrada y el origen de los argumentos `owner`/store. Para cada ruta, establecer si la inicialización solo permite almacenar continuidad o puede abrir una ruta a planificación, dispatch, reconciliación o efectos. Si esa frontera no se puede demostrar estáticamente con contratos existentes, mantener Opción A como alcance elegido pero **STOP/UNKNOWN para implementación**. No ejecutar tests/CI ni modificar runtime/tests/workflows/configuración sin autorización específica.
