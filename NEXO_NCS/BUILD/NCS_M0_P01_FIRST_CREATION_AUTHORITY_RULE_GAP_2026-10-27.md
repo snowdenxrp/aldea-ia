@@ -71,3 +71,21 @@ M0 no pasa a completo por haber creado esta nota ni por tener un contrato candid
 ## 8. Punto exacto para continuar
 
 Leer STATUS.md, esta nota y NCS_M0_P01_EXACT_CANDIDATE_OBJECT_AND_FIELD_CONSUMER_MAP_2026-10-27.md. Si el propietario no ha decidido la regla y ningún contrato canónico ya aceptado la cubre, detener la inferencia y presentar una sola decisión concreta sobre la legitimidad de la primera creación. No reabrir el censo de callers, no implementar y no pedir a otras IAs que elijan autoridad por el propietario.
+
+
+## 9. Cruce adicional con la investigación histórica de autoridad (2026-10-27)
+
+Se contrastó esta brecha con `docs/nexo/NEXO_AUTHORITY_FOUNDATION_BOOTSTRAP_NO_ROOT_DISASTER_RECOVERY_RESEARCH_V1_2026-09-24.md` (blob consultado: `34555b7d26e142372823ef9f9eafe91107707d2e`).
+
+Ese artefacto, marcado expresamente **RESEARCH ONLY**, sí contiene principios históricos relevantes para autoridad constitucional y recuperación:
+
+- autoridad no se deriva circularmente del estado recuperado, snapshot, clave, epoch ni declaración del propio sistema;
+- sin una raíz externa válida o contrato de recuperación previamente establecido, el sistema permanece no autoritativo;
+- una autoridad humana/organizativa solo es una raíz válida si forma parte de un proceso de gobernanza definido explícitamente;
+- la investigación no selecciona el mecanismo concreto ni demuestra una frontera implementada.
+
+**Límite de aplicabilidad:** esos principios refuerzan que el archivo Continuity no puede legitimarse a sí mismo. Sin embargo, el documento trata principalmente de continuidad de autoridad, publicación autoritativa y recuperación; no establece explícitamente una política normativa para la primera escritura de almacenamiento M0 local, estrictamente no autoritativo. Por tanto, no cierra P01-A/P01-G ni autoriza la creación inicial.
+
+La búsqueda de esta ronda fue acotada a términos de primera creación, bootstrap, raíz y escrituras locales en el repositorio. No equivale a una búsqueda exhaustiva de todas las decisiones externas, conversaciones ni documentos históricos. El resultado correcto sigue siendo: **principio general de autoridad corroborado; regla específica de primera creación local no localizada en las fuentes consultadas; PENDING/UNKNOWN**.
+
+No se altera la línea de meta ni los gates. Sin cambios ejecutables, tests, workflows o configuración; no se ejecutaron tests/CI/Actions.
