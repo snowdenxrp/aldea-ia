@@ -2516,3 +2516,11 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - No se encontró en los registros consultados una decisión aceptada que limite la garantía solo a escritores cooperativos ni una que demuestre exclusión frente a todo proceso local no cooperativo. El protocolo D3 existente debe reutilizarse, no duplicarse.
 - Resultado: la cobertura de exclusión para el destino Continuity real sigue PENDING/UNKNOWN; primera creación STOP. No hace falta repetir inventarios ni pedir otra selección de canal humano. La brecha precisa es el alcance aceptado de la garantía de exclusión y la evidencia que lo soporte.
 - Solo documentación; sin cambios ejecutables, tests, workflows, configuración ni dispositivo; tests/CI/Actions no ejecutados. Gates intactos: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+
+
+### Continuity bootstrap — límite de aplicabilidad de D3 (2026-10-27)
+
+- Se amplió [NCS_M0_CONTINUITY_BOOTSTRAP_EXCLUSION_MODEL_RECONCILIATION_2026-10-27.md](BUILD/NCS_M0_CONTINUITY_BOOTSTRAP_EXCLUSION_MODEL_RECONCILIATION_2026-10-27.md), commit `620941a83fab5a90324e925b6d146c7084436acc`.
+- Reutilización del protocolo `NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md`: sirve como criterio para quiescencia en migración/cutover legacy; está pendiente/no ejecutado y no demuestra quiescencia real ni define la publicación exclusiva del bootstrap inicial.
+- No duplicar D3 ni ampliar su alcance por analogía. P01-C/D siguen OPEN/UNKNOWN hasta determinar la garantía de exclusión exigida para la primera publicación del archivo Continuity y la evidencia capaz de demostrarla en el entorno objetivo.
+- Estado canónico intacto: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; no runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
