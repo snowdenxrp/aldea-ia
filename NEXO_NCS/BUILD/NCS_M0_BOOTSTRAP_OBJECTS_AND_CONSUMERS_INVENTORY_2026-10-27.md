@@ -453,3 +453,35 @@ P-02/P-HIST-08 solo pueden pasar de abiertos a resueltos después de que el prop
 Esto es una matriz propuesta de salida para revisión; no ratifica opciones, no cierra P-02/P-HIST-08, no autoriza implementación y no añade una nueva línea de meta.
 
 Estado: documental únicamente; D1/D2 OPEN; M0 INCOMPLETO; no se ejecutaron pruebas/CI/Actions.
+
+
+## 21. Orden de resolución documental de P-01…P-10 (2026-10-27)
+
+**Objetivo:** establecer un orden de trabajo que reduzca retrabajo y respete dependencias conceptuales. Esta sección no cambia el registro canónico, no convierte la secuencia en decisiones ratificadas y no cierra ninguna P.
+
+### Secuencia propuesta
+
+1. **P-01 — Bootstrap de raíz:** documentar el procedimiento explícito y la evidencia exigida para quiescencia/publicación. Mantener creación implícita cerrada. No interpretar el bootstrap como autoridad constitucional.
+2. **P-02 — Fronteras Nexo/Lúmina:** decidir el alcance de `assistants.mjs`, `simulate.mjs` y rutas relacionadas, apoyándose en §20. Sin frontera de dominio no se debe elegir el refactor mínimo.
+3. **P-03 — Alcance de admisión:** fijar qué consultas, previews, snapshots y lecturas persistentes quedan dentro de la sección de admisión; alinear API, CLI y proceso hijo Chronicle.
+4. **P-04 — Propiedad/composición de locks:** describir las primitivas existentes por cada actor y ruta antes de decidir un protocolo común; no asumir que un lock local cubre invocaciones directas o escritores no cooperativos.
+5. **P-05 y P-06 — Incertidumbre de liberación y stale/timeout:** tratarlos conjuntamente en diseño, sin fusionar sus decisiones. P-05 debe definir evidencia de que el actor anterior ya no puede escribir; P-06 debe definir política de edad/timeout sin tratar edad o PID como autorización suficiente.
+6. **P-07 — Rutas reservadas y alias de filesystem:** especificar modelo aceptado/rechazado y límites de garantías después de aclarar las fronteras de estado y locks.
+7. **P-08 — Compatibilidad API/CLI:** mapear cada consumidor conocido contra la raíz única y las decisiones de bootstrap/admisión ya acordadas; ningún fallback silencioso.
+8. **P-09 — Consumidores/aristas pendientes:** cerrar solo las aristas concretas contra un snapshot de árbol identificado. Mantener UNKNOWN cuando no se pueda demostrar exhaustividad o descartar una ruta de bypass.
+9. **P-10 — Matriz de evidencia final:** para cada criterio aplicable, enlazar contrato, decisión, test, SHA exacto, workflow/run/job y resultado. Una prueba presente en el árbol no equivale a ejecución; una ejecución sin vínculo con el SHA evaluado no demuestra ese snapshot.
+
+### Dependencias y control de orden
+
+- P-01 y P-02 son entradas de diseño; no se presume que una resuelva la otra.
+- P-03 depende de una frontera de dominio suficientemente definida en P-02 y debe ser coherente con el protocolo de bootstrap de P-01.
+- P-04 informa el diseño de P-05/P-06; no autoriza por sí mismo una primitiva nueva.
+- P-07 y P-08 deben respetar las decisiones previas sobre dominio, bootstrap, admisión y locks.
+- P-09 se realiza contra contratos y snapshot identificados, no mediante un nuevo censo histórico general.
+- P-10 es consolidación final de evidencia, no sustituto de resolver los puntos previos.
+
+### Criterio de parada
+
+Si una decisión de propietario, una precondición legítima, una garantía del filesystem, un límite de concurrencia o una evidencia necesaria no está disponible, marcar el elemento correspondiente `PENDING/UNKNOWN` y detener la inferencia dependiente. No elegir una opción por descarte. No implementar ni ejecutar pruebas/CI como parte de esta secuencia sin autorización explícita independiente.
+
+Estado: propuesta de orden documental; P-01…P-10 continúan abiertos según el registro canónico.
