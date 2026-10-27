@@ -1,3 +1,12 @@
+## DELTA — HANDOFF COMPLETO PARA EL SIGUIENTE CHAT (2026-10-27)
+
+- Nuevo handoff: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_CONTINUITY_AND_BOOTSTRAP.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_CONTINUITY_AND_BOOTSTRAP.md), commit `7f15dd8d5bd86936a5a49805fbad55af2f45b623`.
+- Consolida estado canónico, límites de autorización, documentos existentes que deben reutilizarse, trabajo PB-08/Chronicle realizado, evidencia no ejecutada, investigaciones cerradas y el punto exacto de continuación.
+- Continuidad inmediata: cerrar documentalmente el modelo de exclusión/bootstrap de Continuity con los artefactos existentes de finish-line/P-01 y el delta de inventario. No repetir censo de 188 archivos ni clasificación Chronicle; no perseguir `executeProtectedTransition` como objetivo principal; no volver a STEP 7 ni a la YubiKey.
+- Estado sin cambio: M0 INCOMPLETO; D0/D1-DESIGN/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz PENDING/UNKNOWN; primera creación y efectos protegidos STOP. Esta sesión fue lectura estática/documentación: no runtime/tests/workflows/configuración/dispositivo, no tests/CI/Actions.
+
+---
+
 ## DELTA — INVENTARIO DE COLECCIONES DE CONTINUITY Y CARRERA DE BOOTSTRAP (2026-10-27)
 
 - Actualizado [NCS_M0_PERPLEXITY_DELTA_REVIEW_2026-10-27.md](BUILD/NCS_M0_PERPLEXITY_DELTA_REVIEW_2026-10-27.md), commit `457dcc6930ffa60875f364fa069bf17d072ce542`.
