@@ -1,3 +1,13 @@
+## DELTA — RECUPERACIÓN DEL CHAT Y HANDOFF ACTUALIZADO (2026-10-27)
+
+- Nuevo handoff: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_RECOVERY_AND_BOOTSTRAP_CLOSE.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_RECOVERY_AND_BOOTSTRAP_CLOSE.md), commit `4fb6f2fbbb68204b2d6c5dc5225a6dea544e1dd9`.
+- Recupera el contenido de la conversación, registra la revisión documental PB-08/Chronicle sin convertirla en tarea principal y fija el punto canónico de continuación: cerrar documentalmente el modelo de exclusión/bootstrap de Continuity usando finish-line/P-01 y el inventario Perplexity ya existentes.
+- No repetir censo de 188 archivos, clasificación de Chronicle, investigación STEP 7 ni análisis de YubiKey. Esta última queda aparcada hasta que el propietario la retome.
+- Primera acción del siguiente chat: leer STATUS → AI_TEAM_PROTOCOL_AND_ACTIVE_TASK → el handoff nuevo; revalidar HEAD y continuar desde la sección 6 del handoff.
+- Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados. Estado canónico intacto.
+
+---
+
 ## DELTA — HANDOFF COMPLETO PARA EL SIGUIENTE CHAT (2026-10-27)
 
 - Nuevo handoff: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_CONTINUITY_AND_BOOTSTRAP.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_CONTINUITY_AND_BOOTSTRAP.md), commit `7f15dd8d5bd86936a5a49805fbad55af2f45b623`.
