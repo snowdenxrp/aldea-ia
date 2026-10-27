@@ -1,3 +1,12 @@
+## DELTA — CALLERS RECONCILIADOS CON MANIFIESTO D1; EXCEPCIONES SIGUEN SIENDO SOLO DE DISEÑO (2026-10-27)
+
+- Inventario §19, commit `462f1a63377c058415e5ce32cfa090c18b5d5f0b`: el manifiesto D1 existente ya clasifica `scripts/assistants.mjs` y `scripts/simulate.mjs` como `EXPLICIT_EXCEPTION — DESIGN ONLY`; el registro mantiene P-HIST-08 y P-02 abiertos.
+- Esto resuelve la clasificación del hallazgo §18 sin repetir el censo: no son consumidores desconocidos nuevos, pero su exclusión no equivale a bloqueo de runtime, inaccesibilidad ni aislamiento Nexo/Lúmina probado. No se declara vulnerabilidad por esta observación aislada.
+- Pendiente: conservar explícita la diferencia entre exclusión del alcance M0, comportamiento ejecutable actual y evidencia requerida para afirmar aislamiento/inaccesibilidad. No cerrar P-02/P-HIST-08 sin decisión del propietario.
+- No se ejecutaron pruebas/CI/Actions ni se modificó runtime/workflows. Gates canónicos sin cambios: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — DOS CALLERS DIRECTOS FUERA DE LAS RAÍCES EXPLÍCITAS DEL IMPORT-GRAPH TEST (2026-10-27)
 
 - Inventario §18, commit `9fc9d55e4e55f071b2ec19515d34e5a6c9049f38`: cruce estático confirma que `scripts/simulate.mjs` (blob `1b5e39b681486f583c1779770c52dd913227dfa1`) y `scripts/assistants.mjs` (blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`) llaman directamente a `openNexoContinuityOwner`, pero no son raíces explícitas de `auditNexoImportGraph` en `entrypoint.test.mjs`.
