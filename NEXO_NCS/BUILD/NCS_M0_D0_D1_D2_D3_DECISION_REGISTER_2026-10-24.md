@@ -213,3 +213,12 @@ Conservar U como clasificación actual hasta que el propietario confirme el alca
 - M0: INCOMPLETO; D1-DESIGN: OPEN; D1-IMPLEMENTATION: NO AUTORIZADA.
 - `authorization: NOT_EVALUATED`; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
 - Documentación únicamente; sin runtime, tests, workflows, configuración ejecutable, ejecución de pruebas o CI.
+
+
+### 10.6 Decisión expresa del propietario — P01-B (2026-10-27)
+
+- **Decisión del propietario:** alternativa **C — no seleccionar todavía**. Confirmación explícita recibida en la conversación del 2026-10-27: «Ok entonces es C».
+- **Alcance exacto:** no ratifica A ni B; no congela el alcance de aislamiento; mantiene la pregunta abierta y el gate `STOP` hasta resolverla con el alcance M0 y el manifiesto D1 vigente.
+- **Clasificación:** decisión de alcance del propietario registrada documentalmente; no es implementación, evidencia de comportamiento ni autorización para ejecutar bootstrap.
+- **Consecuencia:** B2/P01-B permanece sin PASS; P-01 sigue `OPEN / UNKNOWN`; M0 `INCOMPLETO`; D1-IMPLEMENTATION `NO AUTORIZADA`; primera creación `STOP`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`.
+- **No realizado:** no se eligió protocolo, no se modificaron runtime/tests/workflows/configuración ejecutable, no se ejecutaron pruebas, CI ni GitHub Actions.
