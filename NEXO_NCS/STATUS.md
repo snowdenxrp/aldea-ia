@@ -1,3 +1,15 @@
+# ACTUALIZACIÓN PRIORITARIA — ESPECIFICACIÓN DE ACEPTACIÓN PERSISTENCIA/UNKNOWN (2026-10-26)
+
+- Especificación documental añadida: [NCS M0 — Especificación de aceptación para persistencia y UNKNOWN](BUILD/NCS_M0_PERSISTENCE_UNKNOWN_ACCEPTANCE_SPEC_2026-10-26.md), commit `87c46097b0ff450ed06dd616ec59a8d71d621697`.
+- Consolida criterios propuestos R1–R6: estado corrupto/ilegible, clasificación robusta de errores, semántica de `COMMITTED/UNKNOWN/persisted`, integración con consumidor, límites F1/F2/F3 y reconciliación autorizada.
+- La propuesta no implementa código, no modifica tests/workflows, no ejecuta CI y no cierra M0. No autoriza integrar `executeProtectedTransition` ni activar efectos.
+- Revisiones externas recibidas de Claude, Perplexity y Qwen: se usan como fuentes de hallazgos a validar, no como sustituto de pruebas reproducibles. Coincidencia principal: el motor `executeProtectedTransition` no tiene consumidor estático de producción en el alcance inspeccionado; el runtime real tiene sus propios mecanismos de owner/effect journal. La integración del motor sigue siendo decisión abierta.
+- Confirmación de lectura estática: el adaptador `conditional-commit-persist-state.mjs` llama a `persistState` sin `loadCurrentState` explícito; `scripts/simulate.mjs` contiene tanto `loadState()` tolerante como `loadStateStrict()`. Aceptación propuesta: la ruta de commit condicional no debe convertir estado ilegible/corrupto en revisión cero ni sobrescribirlo silenciosamente.
+- La ruta de `error?.code` en el adaptador puede arrojar si el valor lanzado tiene un getter hostil; requiere prueba antes de cualquier corrección. Un resultado UNKNOWN tampoco debe interpretarse como prueba de que no hubo persistencia.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada. No se ejecutaron tests ni CI en este avance.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — PROPUESTA DE LÍNEA DE META M0 (2026-10-26)
 
 - Paquete de revisión independiente preparado para Claude, Perplexity y Qwen: [órdenes de revisión IA](BUILD/NCS_M0_INDEPENDENT_AI_REVIEW_ORDERS_2026-10-26.md), commit `7dd2912f96fe0888721bc500a6d05c2f2a20106e`. **Preparado, no enviado:** no hay evidencia de que esas IAs hayan recibido o respondido las órdenes. Alcance docs-only; sin cambios de runtime/tests/workflows.
