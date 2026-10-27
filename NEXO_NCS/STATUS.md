@@ -1,3 +1,13 @@
+## DELTA — LECTORES CHRONICLE Y LÍMITES DE LA API PÚBLICA (2026-10-27)
+
+- Ampliado el inventario existente, §10: [Inventario de bootstrap y consumidores](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `89689aa1fb29e1d52c6556aaf3e21702571ca875`.
+- Fuentes adicionales: `application/index.mjs` blob `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3`; `adapters/chronicle-effect.mjs` blob `6daf742eb0048724557151a728bf807613a854e9`; `core/chronicle-settlement-contract.mjs` blob `4d04930cbf67b5943916cc497dd44b14c87e27bd`; `scripts/nexo.mjs` blob `e471eb478a09aa8a9a8323795583e198cdf0a127`.
+- La API pública consultada expone `runNexoChronicleAppend` como caso de uso mutador Chronicle; adapter/store hacen lectura local para idempotencia/observación y append. El contrato estructural de settlement no es autenticación, atribución causal ni garantía de durabilidad.
+- La ausencia de una exportación pública de lectura Chronicle no demuestra ausencia de imports internos/externos. La validación de rutas contra raíz legítima, los consumidores privados y las pruebas de caminos éxito/conflicto/UNKNOWN siguen abiertos. No se cierra D1.
+- Sin cambios ejecutables ni tests/CI/Actions. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — MATRIZ DE CONSUMIDORES Y ARISTAS DE BOOTSTRAP (2026-10-27)
 
 - Inventario ampliado con matriz de consumidores concretos de `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`, entradas Chronicle, locks y `owner.json`: [Inventario de bootstrap y consumidores, §9](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `5a1676df7d95270ae52dc587fb2edda8084014fd`.
