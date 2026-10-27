@@ -1,3 +1,11 @@
+## DELTA — DECISIÓN EXPRESA DEL PROPIETARIO P01-B REGISTRADA (2026-10-27)
+
+- Registrada en el registro existente [NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md), sección 10.6, la elección expresa del propietario: **C — no seleccionar todavía** para P01-B/B2.
+- C no ratifica A ni B, no congela el contrato de aislamiento y no autoriza implementación/bootstrap. P01-B permanece sin PASS; M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; D1-IMPLEMENTATION `NO AUTORIZADA`; primera creación y efectos protegidos `STOP`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`.
+- Cambio exclusivamente documental. Runtime, tests, workflows, configuración ejecutable y dispositivo sin cambios; pruebas/CI/Actions no ejecutados.
+
+---
+
 ## DELTA — ENCARGO FOCALIZADO PARA CLAUDE Y GEMINI (2026-10-27)
 
 - Preparado el paquete [NCS_M0_RESTRICTED_BOOTSTRAP_CONTRACT_INDEPENDENT_REVIEW_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_CONTRACT_INDEPENDENT_REVIEW_2026-10-27.md), commit `a027be9b1a9eb20cc350c8414ae34ff7433ab990`.
