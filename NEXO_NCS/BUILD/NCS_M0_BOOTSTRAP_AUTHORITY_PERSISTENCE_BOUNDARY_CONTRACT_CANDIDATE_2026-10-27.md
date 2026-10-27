@@ -101,3 +101,39 @@ Hasta resolverlas mediante MASTER/CORE y los contratos propietarios existentes, 
 - `NEXO_NCS/STATUS.md` — estado y handoff de continuidad.
 
 No se ejecutaron código, tests, CI ni Actions al redactar esta propuesta.
+
+
+## 9. Reconciliación con decisiones previas existentes (lectura canónica, 2026-10-27)
+
+Esta sección se añade para evitar que el candidato se interprete como sustituto de decisiones previas. La revisión directa de los documentos existentes encontró dos ejes distintos, compatibles entre sí:
+
+- **Opción A — alcance del estado local M0:** solo estudiar inicialización de almacenamiento interno acotado y estrictamente no autoritativo; no establece/modifica raíz, autoridad constitucional, estado protegido ni efectos. Es la elección de alcance del propietario registrada al final de `NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md` y en `NEXO_NCS/STATUS.md`.
+- **Opción B — separación de operaciones de persistencia:** el bootstrap explícito es una operación separada del commit condicional normal; el commit normal no inicializa silenciosamente. Está registrada en `NCS_M0_ABSENT_STATE_INITIALIZATION_DECISION_2026-10-26.md` y en la propuesta de bootstrap.
+
+No son opciones rivales: Opción A define **qué clase de estado** se puede considerar en M0; Opción B define **cómo se separa la operación de creación** del commit normal. Este candidato no cambia ninguna de las dos.
+
+### 9.1 Límite de la autoridad durante bootstrap
+
+La Opción A no concede autoridad constitucional y tampoco puede utilizarse para crear o modificar la raíz. La ausencia del archivo no prueba autorización. La Opción B requiere que las precondiciones de creación se definan antes de implementación. La legitimidad técnica de iniciar un archivo local sigue sin tener una ruta independiente demostrada; por ello, este candidato no decide que el bootstrap ya esté autorizado.
+
+Se deben mantener separadas estas preguntas:
+
+1. ¿Qué estado puede crear M0 sin ser autoridad? — acotado por Opción A.
+2. ¿Qué operación puede crear el estado ausente y cómo se evita sobrescribir estado existente? — Opción B y su contrato de persistencia.
+3. ¿Qué precondición legítima permite solicitar esa operación? — **UNKNOWN/PENDING**; no la resuelve ni la Opción A ni la B.
+4. ¿Qué habilita admisión, dispatch o efectos protegidos? — contrato constitucional/autoridad y enforcement correspondientes; siguen STOP/UNKNOWN.
+
+No crear un `BootstrapAuthority` paralelo ni extender por analogía el contrato de Constitution Authority Context. El mapa de funciones raíz identifica el owner semántico de reconocimiento constitucional, pero declara no demostrados el reconocimiento inicial independiente y el enforcement protegido actual. La frontera Genesis Trust Foundation permanece candidata y sujeta a ataque, no implementada.
+
+### 9.2 Fuerza normativa del apartado B2
+
+B2 y la tabla de fases de este documento son **propuestas para ataque**, no una decisión nueva del propietario ni una descripción del comportamiento ya existente. Su finalidad es expresar el aislamiento que debe demostrarse para Opción A. La ruta Chronicle inspeccionada actualmente puede continuar desde inicialización hasta admisión/dispatch; por eso la implementación no satisface todavía esa separación según la evidencia estática disponible.
+
+No se autoriza por este texto a cambiar runtime ni se determina aún una solución de implementación. Si el análisis canónico encuentra una distinción necesaria entre bootstrap de continuidad y bootstrap del estado de simulación, debe documentarse por alcance y evidencia; no extrapolar una garantía de una ruta a todas las demás.
+
+### 9.3 Resultado de la reconciliación
+
+- No se encontró contradicción que invalide la decisión de alcance A ni la decisión operacional B.
+- Sí se encontró un riesgo de confusión de lenguaje: “autoridad para inicializar almacenamiento no autoritativo” no es lo mismo que “autoridad constitucional para producir efectos”. Ambas deben tener semántica explícita; no se debe deducir una de la otra.
+- La línea de meta de M0 debe declarar explícitamente qué garantías de bootstrap local quedan dentro del alcance, qué autoridad queda fuera y cómo se impide que la inicialización alcance rutas de efecto.
+- Este candidato sigue **NO RATIFICADO / STOP ANTES DE IMPLEMENTAR**.
