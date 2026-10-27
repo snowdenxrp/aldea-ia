@@ -1,3 +1,12 @@
+## DELTA — P-01 CRUZADO CONTRA LA LÍNEA DE META M0 (2026-10-27)
+
+- Inventario §23, commit `3e41901569e0af3ce5dfb25973c0a4934e8bfd8c`: mapea criterios existentes de la línea de meta M0 a evidencia disponible, estado probatorio y faltantes concretos para P-01.
+- No crea otra línea de meta. Resultado: alcance Opción A elegido, pero P-01 no pasa; la ruta Chronicle puede continuar desde bootstrap hacia admisión/PREPARED/dispatch y mutación Chronicle; quiescencia general, creación exclusiva ante todos los escritores y protocolo de UNKNOWN no están demostrados.
+- Tests/CI: no verificados para el SHA exacto requerido; YAML de workflow no prueba ejecución. Se requiere contrato congelado y autorización separada antes de pruebas.
+- P-01 permanece OPEN/UNKNOWN; M0 INCOMPLETO; D1/D2/D3 siguen en estados canónicos; implementación no autorizada. Sin cambios ejecutables, tests, CI o Actions.
+
+---
+
 ## DELTA — P-01: MATRIZ DIRIGIDA DE INICIALIZACIÓN Y CONSUMIDORES (2026-10-27)
 
 - Inventario §22, commit `8b289845961653d8f85b32aa92d233e4a532d042`: relaciona el servicio de Continuity, snapshot, store y los tres callers estáticos relevantes con los límites de evidencia de cada uno.
