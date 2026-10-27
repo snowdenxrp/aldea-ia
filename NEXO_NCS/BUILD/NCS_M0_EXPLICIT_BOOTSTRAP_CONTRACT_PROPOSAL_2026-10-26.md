@@ -273,3 +273,21 @@ Estos criterios delimitan el comportamiento que tendría que demostrarse antes d
 
 **Estado de estos criterios:** propuesta documental, no ratificada como contrato de implementación; BA-01–BA-10 no se han ejecutado ni verificado. No se modificaron runtime, tests, workflows ni configuración, y no se ejecutó CI.
 
+## Decisión de diseño pendiente: bootstrap de datos no autoritativos frente a bootstrap protegido (2026-10-27)
+
+La Opción A limita el objetivo a almacenamiento local M0 **no autoritativo y acotado**. El contrato vigente de Constitution Authority Context, sin embargo, reconoce el régimen constitucional para una vinculación posterior de Policy; no define la legitimidad de crear un archivo local inicial. No se debe resolver esa diferencia usando por analogía el contrato constitucional ni inventando una autoridad paralela.
+
+### Alternativas que requieren una decisión explícita
+
+| Alternativa | Qué significaría | Condición para avanzar | Riesgo / estado |
+|---|---|---|---|
+| D1 — Bootstrap estrictamente de datos no autoritativos | Permitir una operación local de creación solo si un contrato demuestra que el dato creado no establece raíz, identidad, permiso, confianza ni habilita operación/efecto alguno. | Delimitar normativamente que esta operación no es bootstrap protegido; demostrar aislamiento end-to-end y que todos los consumidores tratan el estado como no autoritativo. | No está demostrado que el estado de continuidad actual cumpla esa separación; Chronicle y simulación siguen rutas posteriores. PENDING. |
+| D2 — Bootstrap sujeto a autoridad constitucional | Considerar la creación inicial como operación gobernada por una regla constitucional y exigir un resultado de autoridad establecido desde una base de confianza independiente. | El owner canónico debe definir explícitamente el alcance de esta operación y existir una ruta técnica verificable que lo aplique. | La ruta actual de Constitution Authority Context no se encontró implementada en la auditoría documental; no puede consumirse todavía. PENDING. |
+| D3 — Mantener STOP | No implementar bootstrap ni cambiar runtime hasta resolver D1 o D2 con el propietario. | Ninguna nueva condición: es el estado seguro mientras D1/D2 sigan abiertas. | Impide avanzar a implementación del bootstrap, pero evita convertir una decisión de alcance en una afirmación de autoridad. Estado actual. |
+
+### Recomendación de ingeniería (no decisión del propietario)
+
+Mantener **D3 — STOP** como estado operativo y estudiar D1 como hipótesis de diseño, porque coincide con el alcance elegido de Opción A; no dar D1 por aceptada. El siguiente artefacto de diseño debería precisar las propiedades negativas que hacen que el archivo sea no autoritativo (qué decisiones no puede influir, qué interfaces no puede habilitar y qué consumidores deben bloquear ante ausencia/UNKNOWN). Después se revisaría la matriz de consumidores contra esas propiedades. Si no se puede demostrar que la inicialización no abre una ruta de operación, D1 no satisface Opción A y deberá permanecer bloqueada; no se debe degradar silenciosamente a D2 ni crear un owner alternativo.
+
+Esta recomendación no cambia decisiones canónicas, no concede permiso para modificar runtime y no autoriza la creación de estado. D1/D2 requieren una decisión contractual explícita antes de implementar. Los gates siguen M0 INCOMPLETO, autoridad raíz PENDING/UNKNOWN, autorización NOT_EVALUATED y efectos protegidos STOP.
+
