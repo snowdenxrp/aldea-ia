@@ -111,3 +111,36 @@ Resolución:
 - Mantener autoridad para bootstrap local en UNKNOWN/PENDING.
 - No crear otro owner/raíz para cerrar la brecha.
 - La próxima decisión de diseño debe definir si la inicialización local cae bajo una regla constitucional ya existente y demostrable, o requiere una delimitación explícita aprobada por el propietario. Hasta entonces, no implementación ni tests/CI.
+
+
+## Revisión independiente de brecha normativa (2026-10-27)
+
+Claude realizó una revisión documental de solo lectura y reportó **BRECHA CONFIRMADA** en el alcance revisado (HEAD que Claude identificó: `058bf0e`; no revisó STATUS completo ni todo BUILD/RESEARCH, y no ejecutó runtime/tests/CI). El hallazgo coincide con la delimitación anterior de este documento: no se encontró una regla canónica que designe explícitamente quién autoriza crear el primer estado persistente local.
+
+### Evidencia reportada por la revisión
+
+- `NCS_M0_ABSENT_STATE_INITIALIZATION_DECISION_2026-10-26.md`: la ausencia del archivo no autoriza inicialización; la autoridad requerida debe definirse antes de implementar.
+- `NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`: bootstrap explícito/separado; protocolo P-01 sigue UNKNOWN/BLOCKED.
+- `NCS_M0_E_INITIAL_SCOPE_OWNER_DECISION_2026-10-21.md`: permite persistencia interna acotada sujeta a contratos y pruebas, pero no crea autoridad; los stores locales no son anclas de autoridad.
+- `NCS_M0_AUTHORITY_SOURCE_VS_BOOTSTRAP_RECOGNITION_2026-10-20.md`: el propietario humano es la fuente normativa conceptual; el reconocimiento técnico verificable y el enforcement no están demostrados.
+- Constitution Authority Context: cubre el reconocimiento del régimen para una vinculación posterior de Policy, no concede por sí mismo autoridad para inicialización/commit; no se debe ampliar su alcance por analogía.
+- `MASTER/README.md` y `CORE/README.md`: según la revisión, no designan una regla de inicialización local.
+
+Esta lista registra el resultado comunicado por Claude; no equivale a una auditoría exhaustiva de todo el repositorio.
+
+### Distinción necesaria
+
+La brecha se refiere a la autorización de la **primera creación local de estado persistente**. No demuestra que toda escritura interna acotada requiera establecer la raíz constitucional, ni demuestra que esta creación pueda autorizarse sin delimitación. Antes de decidir, debe quedar explícito si el estado creado es exclusivamente almacenamiento interno no autoritativo, sin capacidad de establecer confianza, cambiar estado protegido ni habilitar efectos; o si la operación propuesta toca el estado constitucional/genesis, en cuyo caso la raíz y su reconocimiento independiente siguen bloqueados.
+
+### Decisión pendiente del propietario
+
+Delimitar cuál de estos alcances se pretende autorizar, sin confundirlos:
+
+1. **Inicialización local no autoritativa y acotada:** solo si se demuestra que no crea ni modifica raíz, autoridad constitucional, estado protegido o efectos; la autorización de alcance debe quedar explícita y no puede derivarse de la mera ausencia del archivo.
+2. **Inicialización de estado que establece o condiciona la confianza/autoridad constitucional:** permanece STOP/UNKNOWN hasta que exista una base de reconocimiento independiente y un contrato aplicable explícito.
+
+No se adopta automáticamente ninguna de las dos rutas. No se amplía Constitution Authority Context, no se crea `BootstrapAuthority` paralelo, y no se implementa nada hasta resolver el alcance y la autoridad requeridos.
+
+### Estado de evidencia
+
+Revisión documental únicamente. No se modificaron runtime, tests, workflows ni configuración ejecutable; no se ejecutaron pruebas ni CI. Gates intactos: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
