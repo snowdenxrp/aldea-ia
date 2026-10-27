@@ -1,3 +1,14 @@
+# MAPA ESTÁTICO AMPLIADO — RUTAS DE BOOTSTRAP Y OPERACIÓN (2026-10-27)
+
+- **Chronicle:** `scripts/nexo-chronicle-session.mjs` expone `--initialize-continuity`; `src/nexo/application/chronicle-append.mjs` puede inicializar continuidad y continuar dentro de la misma invocación hasta `PREPARED` y el handler `chronicle_append`, que muta el almacén Chronicle. Ruta confirmada estáticamente; separación de inicialización/despacho no demostrada; autorización sigue `NOT_EVALUATED`.
+- **Simulación:** `scripts/simulate.mjs` habilita inicialización vacía de continuidad cuando falta el archivo de mundo, luego avanza y persiste el mundo. En el `main` inspeccionado no se vio despacho Chronicle, pero sí persistencia de simulación. No confundirla con autoridad constitucional.
+- **Reparaciones:** el runtime del producto bloquea `runNexoRuntimeRepairSession` con `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, coherente con la exclusión de reparaciones de M0. Los módulos dedicados `nexo-repair-entrypoint`/`nexo-repair-dispatch` siguen existiendo y pueden ejecutar reparaciones si se invocan con un owner y una obligación PREPARED; su existencia no demuestra que el runtime del producto los llame. Mantenerlos fuera del alcance M0 o verificar callers separados.
+- **Consultas:** `src/nexo/application/continuity-queries.mjs` lee sin inicializar; no es un bootstrap y describe el plan como información que no autoriza despacho.
+- Este es un mapa de las rutas inspeccionadas, no un grafo global exhaustivo. No se consultaron tests/CI ni se ejecutó código.
+- Próximo punto: resolver la frontera de invocación del bootstrap Chronicle y la regla para inicialización acoplada a ausencia del archivo de mundo; no hacer cambios de runtime hasta que esas garantías se expresen en un contrato canónico verificable.
+- Detalle y matriz: [Propuesta de contrato de bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md).
+
+---
 # EVIDENCIA ADICIONAL — EL HANDLER DE CHRONICLE ES UNA MUTACIÓN PERSISTENTE (2026-10-27)
 
 - `src/nexo/adapters/chronicle-effect.mjs`: el handler `chronicle_append` invoca `store.append(...)` y puede devolver `completed` cuando el almacén confirma `committed`/`already_present`.
