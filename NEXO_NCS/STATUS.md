@@ -1,3 +1,16 @@
+# DELTA — RECONCILIACIÓN DEL CANDIDATO CON DECISIONES CANÓNICAS A/B (2026-10-27)
+
+- Revisé el contrato candidato contra `NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md`, `NCS_M0_ABSENT_STATE_INITIALIZATION_DECISION_2026-10-26.md`, `STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md` y `STEP_7_MINIMUM_GENESIS_TRUST_FOUNDATION_CONTRACT_2026-10-08.md`.
+- Se aclaró en la sección 9 del [contrato candidato](BUILD/NCS_M0_BOOTSTRAP_AUTHORITY_PERSISTENCE_BOUNDARY_CONTRACT_CANDIDATE_2026-10-27.md), actualización commit `5f14ed2542afb095fb493056496cc2ab3d4839b1`, que **Opción A y Opción B son ejes compatibles**: A delimita el alcance del estado local (estrictamente no autoritativo); B separa la inicialización explícita del commit condicional normal.
+- Cuatro preguntas permanecen separadas: (1) qué estado local puede crear M0; (2) cómo se separa y protege la operación de creación; (3) qué precondición legítima permite solicitarla — aún `UNKNOWN/PENDING`; (4) qué autoriza efectos — permanece bajo los contratos de autoridad/enforcement y STOP.
+- El mapa Trust Function/Root Role declara que el reconocimiento inicial independiente y la aplicación protegida real no están demostrados. Genesis Trust Foundation sigue candidato sujeto a ataque; no se creó `BootstrapAuthority` ni se amplió el contrato constitucional por analogía.
+- B2 (bootstrap no debe cruzar silenciosamente al despacho) permanece propuesta para ataque, no decisión ratificada ni garantía implementada. La ruta Chronicle continúa siendo brecha estática identificada.
+- No se ejecutaron código/tests/CI/Actions ni se modificó runtime, tests, workflows o configuración ejecutable.
+- Próximo paso: revisión adversarial acotada de esta reconciliación contra el resto del contrato candidato y definir criterios de salida finitos para M0; no repetir la auditoría Chronicle ni crear otro contrato de autoridad.
+- Gates sin cambios: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; exclusión global de reparaciones `UNKNOWN`.
+
+---
+
 # DELTA DE CONTINUIDAD — CONTRATO CANDIDATO DE FRONTERAS M0 (2026-10-27)
 
 - Se creó [NCS_M0_BOOTSTRAP_AUTHORITY_PERSISTENCE_BOUNDARY_CONTRACT_CANDIDATE_2026-10-27.md](BUILD/NCS_M0_BOOTSTRAP_AUTHORITY_PERSISTENCE_BOUNDARY_CONTRACT_CANDIDATE_2026-10-27.md), commit `a8ff210d4d9758d86db62c8bee69e90fe1c26490`.
