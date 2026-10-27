@@ -105,3 +105,31 @@ Por tanto, este informe NO afirma que el cuerpo de `executeProtectedTransition` 
 - Siguiente paso: trazar únicamente el registro/uso de capacidades de efecto (comenzando por `createNexoChronicleEffectContracts`) hacia su caller real, y verificar si existe una precondición de frontera aceptada. No cambiar código ni repetir auditorías históricas.
 
 No se ejecutaron tests/CI/Actions ni se modificó runtime.
+
+
+## 9. Ruta concreta de efecto encontrada — Chronicle append (2026-10-27)
+
+La lectura posterior sí encontró una ruta de aplicación concreta para el efecto Chronicle. Esto reemplaza la hipótesis anterior de que el análisis debía seguir buscando un caller directo de `executeProtectedTransition`: la ruta real examinada usa otra composición.
+
+### Grafo estático observado
+
+1. `src/nexo/application/chronicle-append.mjs` importa `createNexoChronicleEffectContracts`, `createEffectAdapter` y `executeNexoStepWithContinuityOwner` (blob `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`).
+2. En las líneas 280–401, preflight de ambos stores precede a cualquier inicialización; se crea el contrato Chronicle, se abre el owner de Continuity con `effectVerifiers`, se registra la misión si falta y luego se construye un adapter con `contracts.handlers` y `contracts.verifiers`. Finalmente se llama `executeNexoStepWithContinuityOwner`.
+3. `src/nexo/core/owner-backed-runtime.mjs` (blob `a7a014489209273ce78d0103afa785728d4c467c`) acepta solo `chronicle_append` como acción no-repair demostrada en este runtime; comprueba capacidad de handler/reconciliación, estado de misión y dependencias; confirma `recordPrepared` antes de llamar `adapter.executePrepared`; después registra linaje y reconcilia, sin autorizar redispatch cuando el resultado es incierto.
+4. `src/nexo/adapters/chronicle-effect.mjs` (blob `6daf742eb0048724557151a728bf807613a854e9`) provee handler, verifier y postcondition del append local de Chronicle.
+
+### Relación con EffectBoundary
+
+En los tres módulos de la ruta indicada no aparece una llamada a `createCorePorts` ni a `effectBoundary.prepare`. Esto es un hecho estático de esos módulos, no prueba de que no exista una frontera externa en otra capa.
+
+La ruta demuestra que hay un **efecto de persistencia Chronicle** y una composición PREPARED → dispatch → lineage → reconciliation. No demuestra por sí sola que el puerto `effectBoundary.prepare` sea el mecanismo contractual requerido para ese append: el contrato de STEP 3B/3C se refiere a commit condicional del estado del Core y excluye explícitamente efectos externos. La clasificación de Chronicle append como “efecto protegido” sujeto a ese puerto debe derivarse de un contrato aceptado, no del nombre del puerto ni de una analogía.
+
+### Estado de la pregunta y próximo paso
+
+- Caller operativo dentro del código de aplicación: **identificado estáticamente** para Chronicle append.
+- Integración de esa ruta con el puerto `effectBoundary.prepare`: **no observada en los módulos citados**.
+- Obligación contractual de que Chronicle append consuma ese puerto: **UNKNOWN**.
+- Bypass explotable o incumplimiento de contrato: **no demostrado**.
+- Próximo paso documental: localizar el contrato vigente que clasifica el append Chronicle y define el punto de enforcement para efectos persistentes/protegidos. Si no existe o no es aceptado, registrar la brecha de contrato y no modificar runtime por inferencia.
+
+No se ejecutaron tests/CI/Actions; no se modificó runtime.
