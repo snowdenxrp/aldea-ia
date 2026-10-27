@@ -1,3 +1,14 @@
+# DELTA DE CONTINUIDAD — CONTRATO CANDIDATO DE FRONTERAS M0 (2026-10-27)
+
+- Se creó [NCS_M0_BOOTSTRAP_AUTHORITY_PERSISTENCE_BOUNDARY_CONTRACT_CANDIDATE_2026-10-27.md](BUILD/NCS_M0_BOOTSTRAP_AUTHORITY_PERSISTENCE_BOUNDARY_CONTRACT_CANDIDATE_2026-10-27.md), commit `a8ff210d4d9758d86db62c8bee69e90fe1c26490`.
+- Es un **candidato de diseño, no ratificado, STOP BEFORE CODE**. Traduce los hallazgos del mapa estático en obligaciones falsables para aislamiento de bootstrap, autoridad actual, separación Nexo/Lúmina, persistencia, concurrencia, STOP/reparación y línea de meta de M0. Reutiliza los gates existentes; no inventa un trust root ni un gate universal.
+- Importante: el gate STEP 7 existente sigue diciendo que no se implemente `Constitution Authority Context` hasta definir/atacar primero la frontera de Trust Foundation. Este documento no reemplaza ni anula ese gate.
+- Próximo trabajo: adversarial review del candidato contra MASTER/CORE y contratos propietarios existentes, resolver contradicciones concretas y definir una línea de meta finita para M0. No volver a auditar Chronicle desde cero y no implementar antes de ratificar requisitos.
+- No se ejecutaron código/tests/CI/Actions; no se modificó runtime, tests, workflows ni configuración ejecutable.
+- Gates vigentes: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; exclusión global de reparaciones `UNKNOWN`.
+
+---
+
 # DELTA DE CONTINUACIÓN — MAPA DE CONSUMIDORES Y CARRERA DE BOOTSTRAP (2026-10-27)
 
 - Se amplió el mapa estático existente con una lectura dirigida de las cinco colecciones, los tests relevantes (solo lectura) y la secuencia exacta de `initialize()`: [NCS_M0_STATIC_CONSUMER_MAP_QWEN_CONSOLIDATION_2026-10-27.md](BUILD/NCS_M0_STATIC_CONSUMER_MAP_QWEN_CONSOLIDATION_2026-10-27.md), nuevo commit `4e2f70ea83029ad08a6581e256e53293a4905d7e`.
