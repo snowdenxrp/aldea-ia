@@ -1,3 +1,13 @@
+## DELTA — CLASIFICACIÓN DEL OBJETO Y ALCANCE DE AUTORIDAD P-01 (2026-10-27)
+
+- Nueva nota: `NEXO_NCS/BUILD/NCS_M0_P01_OBJECT_CLASSIFICATION_AND_AUTHORITY_SCOPE_2026-10-27.md`, commit `5f4bc79705dc4a0c653ffadf845494ddb0641415`.
+- Inventario actualizado en sección 30, commit `8c1cbf9dc7e419eea6dd5d3150c9677656f81a25`.
+- Hallazgo: no debe suponerse que el almacenamiento operativo M0 requiere automáticamente establecer una raíz constitucional; tampoco debe suponerse que la intención no autoritativa legitima su creación o prueba aislamiento. Primero hay que clasificar el objeto real y sus consumidores; luego determinar la regla legítima aplicable.
+- Sin cambio de gates: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; P01-A/B/G OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+- Solo documentación; sin cambios ejecutables ni tests/CI/Actions.
+
+---
+
 ## DELTA — CRUCE P-01 CON LÍNEA DE META M0 (2026-10-27)
 
 - Nueva reconciliación: `NEXO_NCS/BUILD/NCS_M0_FINISH_LINE_P01_DEPENDENCY_CROSSWALK_2026-10-27.md`, commit `d1c4ba548c30f9cb8a1982428b31e06da78c5e2b`.
