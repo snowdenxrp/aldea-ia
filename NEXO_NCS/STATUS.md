@@ -2405,3 +2405,12 @@ No se selecciona ninguna opción de bootstrap: A = offline bootstrap + external 
 **Gates permanecen intactos:** M0 `INCOMPLETO`; D0/D1-DESIGN/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; `ROOT_READY` no habilitado. Tests/CI no ejecutados; runtime/dispositivo sin cambios.
 
 **Continuidad para Gemini:** leer primero STATUS, después `AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md`, la directiva ratificada y los artefactos BUILD ya existentes. Producir solo el perfil documental y la matriz claim/evidencia; reutilizar investigaciones previas y no repetir auditorías cerradas. Registrar incógnitas como `UNKNOWN/BLOCKED`, no crear mecanismos ni elegir A/B/C/D por inferencia. Cualquier futura ejecución/implementación requiere autorización separada.
+
+
+### P-01 — decisión del propietario de mantener STOP (2026-10-27)
+
+El propietario confirmó que se mantiene STOP mientras no exista una base legítima de primera creación definida y técnicamente reconocida. La YubiKey previamente considerada sigue siendo candidata de hardware criptográfico, no evidencia por sí sola de raíz legítima, enrolamiento, reconocimiento por la frontera protegida ni permiso para inicializar Continuity. El canal del teléfono para aprobación constitucional tampoco se eleva a raíz técnica ni legitima la primera creación local.
+
+Registro detallado: [NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md](BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md), sección 11.
+
+Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; primera creación y efectos protegidos STOP. No se autorizaron implementación, tests, CI, instalación ni configuración de la YubiKey; no se ejecutaron tests/CI.
