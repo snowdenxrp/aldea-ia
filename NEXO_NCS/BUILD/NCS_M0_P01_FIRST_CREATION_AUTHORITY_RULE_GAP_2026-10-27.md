@@ -106,3 +106,19 @@ El mapa de roles STEP 7 confirma que la ceremonia de reconocimiento inicial y la
 **Conclusión de aplicabilidad:** esta decisión histórica no debe perderse, pero tampoco ampliarse por analogía. Se refiere a investigar un canal candidato para aprobación constitucional; no autoriza ese canal como raíz técnica ni define la primera creación de Continuity local no autoritativo. La brecha P-01 específica permanece PENDING/UNKNOWN. No hace falta volver a pedir al propietario que seleccione de nuevo el teléfono como candidato; lo pendiente es el contrato/procedimiento que haga verificable cualquier uso autorizado de un canal y si tal procedimiento cubre este objeto local.
 
 No se infiere aprobación de contenido constitucional, commissioning, confianza del dispositivo, autoridad raíz ni permiso de escritura. Sin cambios ejecutables, tests, workflows o configuración; no se ejecutaron tests/CI/Actions.
+
+
+## 11. Decisión explícita del propietario: mantener STOP (2026-10-27)
+
+El propietario confirmó: **“Mantenemos stop”**, al preguntar si la base reconocida pendiente era la YubiKey ya considerada.
+
+Interpretación acotada y vinculante para la continuidad documental:
+- La primera creación del objeto Continuity M0 permanece bloqueada mientras la base legítima aplicable no esté definida y técnicamente reconocida.
+- La YubiKey sigue siendo una candidata de hardware criptográfico considerada previamente; su elección o posesión no demuestra por sí sola configuración, enrolamiento, legitimidad de la raíz, reconocimiento por la frontera protegida ni permiso para inicializar Continuity.
+- El canal del teléfono para transmitir aprobación de contenido constitucional sigue siendo candidato histórico; no se eleva a raíz técnica ni a autoridad de primera creación.
+- No se crea una autoridad paralela para bootstrap ni se interpreta el alcance local no autoritativo como autorización de escritura.
+- No se cambia la política por ausencia, conveniencia, presión de continuidad ni por esta anotación.
+
+**Estado:** regla legítima de primera creación PENDING/UNKNOWN; primera creación STOP; raíz legítima PENDING/UNKNOWN; authorization: NOT_EVALUATED; efectos protegidos STOP; M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN.
+
+Esta ratificación conserva la condición de parada; no autoriza implementación, pruebas, CI, instalación, configuración de la YubiKey ni acciones sobre el dispositivo.
