@@ -323,3 +323,18 @@ Abrir manualmente el historial de cada workflow y elegir una ejecución cuya ram
 Para cada ejecución, registrar `run_id`, `head_sha`, evento, conclusión del job, pasos concretos ejecutados y SHA/blob de los archivos de test/runtime que realmente estaban en ese commit. Si no hay una ejecución que coincida con los SHA relevantes, el estado correcto sigue siendo **CI NO VERIFICADO**, no “falló” ni “pasó”.
 
 No se inició, canceló ni reintentó ningún workflow; no se ejecutaron pruebas ni se modificó código ejecutable.
+
+
+## 17. Separar “workflow contiene pruebas” de “criterio de cierre demostrado” (2026-10-27)
+
+Revisión estática, sin ejecutar las pruebas, de los tres archivos seleccionados por el workflow de aceptación:
+
+- `tests/nexo/entrypoint.test.mjs`, blob `ff1bd2e9d292e21e00049b354249aee684837bbc`: contiene comprobaciones de entrypoints/imports y uso de procesos hijos, pero esta lectura no demuestra por sí sola que recorra exhaustivamente todas las aristas estáticas/dinámicas, aliases, reexports, subprocesses y rutas indirectas de la rama.
+- `tests/nexo/protected-transition.test.mjs`, blob `65353fe9e20898fb13f225ee004240b6c54687f1`: contiene referencias a `authorityGate` y autorización; no se infiere que demuestre la autoridad constitucional independiente ni que cubra todos los caminos reales de efectos.
+- `tests/nexo/chronicle-runtime.test.mjs`, blob `0bf35f0dc1aadb121a8b2145b4963bacd5641c04`: incluye escenarios de runtime/resultado y procesos hijos; su presencia no sustituye la prueba de inventario completo de callers ni demuestra que todos los callers pasen por una misma frontera autorizada.
+
+### Conclusión limitada
+
+El workflow selecciona una regresión útil, pero **la selección de tests y su existencia no bastan para declarar satisfechos los criterios B.5–B.7 de la línea de meta**. Hace falta contrastar el contenido completo de las pruebas con el contrato D1 congelado y, cuando esté autorizado, ejecutar la comprobación reproducible de no-bypass ligada al SHA evaluado. Esta nota no declara que falte definitivamente una prueba: registra que su exhaustividad y correspondencia no están demostradas por la evidencia reunida hasta ahora.
+
+Estados: inventario estático parcial; tests no ejecutados; CI no vinculado a SHA de runtime/tests; D1-DESIGN OPEN; implementación no autorizada; efectos protegidos STOP.
