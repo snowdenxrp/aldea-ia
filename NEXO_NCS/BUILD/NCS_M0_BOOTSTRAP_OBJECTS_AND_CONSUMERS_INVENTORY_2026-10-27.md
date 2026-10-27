@@ -383,3 +383,31 @@ Comparación estática de las dos raíces de `auditNexoImportGraph` (documentada
 - Acción siguiente, documental y acotada: comparar estos dos consumidores con el alcance de D1 y el censo existente; si el censo ya los clasifica, reutilizar esa clasificación. No repetir el inventario global, no declarar bypass sin evidencia y no cambiar runtime/tests.
 
 Estado: hallazgo de cobertura/alcance estático pendiente de clasificación D1; no se ejecutaron pruebas ni CI.
+
+
+## 19. Clasificación D1 reutilizada: excepciones de diseño, no barreras de runtime (2026-10-27)
+
+Se contrastó el hallazgo de §18 con el manifiesto D1 existente (blob `d49996d00ed46e71d6acf777dc8134ac55571570`) y el registro de decisiones (blob `7dfd8058bad81c4cb70eb16c2c71e2d0f870d973`). No se rehizo el censo.
+
+### Clasificación ya documentada
+
+- `scripts/assistants.mjs` y `scripts/simulate.mjs` están marcados como `EXPLICIT_EXCEPTION — DESIGN ONLY`: quedan fuera de la ruta de instancia Nexo ordinaria mientras se define/verifica una frontera separada.
+- El manifiesto dice expresamente que esta exclusión **no es protección de runtime** y no demuestra inaccesibilidad ni admisión de raíz.
+- El registro mantiene P-HIST-08 y P-02 abiertos: contrato de integración/exclusión explícita y fronteras Nexo/Lúmina para ambos consumidores pendientes; no se debe asumir que sus accesos actuales están bloqueados.
+- El manifiesto también señala que `assistants.mjs` ejecuta su ruta operacional al cargar el módulo, abre Continuity, persiste estado Lúmina/mundo y tiene una rama opcional de reparación; el wrapper de reparación bloquea esa acción concreta bajo Option A, pero no bloquea toda la ruta ordinaria.
+- `simulate.mjs` tiene guardia de ejecución directa para `main()`, pero contiene helpers exportados y usa la ruta legacy fija de Continuity, vinculada a estado/memoria de simulación. Tampoco se ha demostrado que comparta la raíz canónica de la instancia Nexo.
+
+### Resolución del hallazgo de §18
+
+Los dos consumidores no son una incógnita nueva del inventario: ya están clasificados como excepciones de diseño. La incógnita pendiente es de cierre: confirmar que esa exclusión sigue siendo la decisión de alcance de M0 y definir/evidenciar su frontera de estado Nexo/Lúmina; no convertirla en una afirmación de bloqueo técnico. No se reabre el censo ni se deduce vulnerabilidad solo por el hecho de que el test de import graph no los use como raíces.
+
+### Siguiente paso documental
+
+Reutilizar P-HIST-08/P-02 y el manifiesto existente para anotar la condición exacta de salida de ambas excepciones, distinguiendo:
+1. exclusión del alcance operativo ordinario M0;
+2. comportamiento ejecutable actualmente presente;
+3. evidencia necesaria para afirmar inaccesibilidad o aislamiento real.
+
+No cerrar P-02/P-HIST-08 ni cambiar el alcance en nombre del propietario. No modificar runtime/tests/workflows ni ejecutar pruebas.
+
+Estado: D1-DESIGN OPEN; D1-IMPLEMENTATION NO AUTORIZADA; excepciones documentales, no barreras técnicas demostradas.
