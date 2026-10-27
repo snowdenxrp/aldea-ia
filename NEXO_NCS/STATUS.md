@@ -1,3 +1,13 @@
+## DELTA — P01-A / P01-G: FRONTERA DE LEGITIMIDAD REVISADA (2026-10-27)
+
+- Nueva revisión: `NEXO_NCS/BUILD/NCS_M0_P01_ROOT_LEGITIMACY_BOUNDARY_REVIEW_2026-10-27.md`, commit `2e3d496a93e16f9e8861ff4ec6af91de4abc6baa`.
+- Inventario actualizado con sección 27, commit `cf62a4a47c3f45911fe87ff188372937fda430b3`.
+- STEP 7 confirma que Constitution Authority Context debe establecerse desde una Trust Foundation ya reconocida; el gate existente es STOP BEFORE CODE. En los artefactos examinados no hay una frontera implementada que legitime la primera creación del almacenamiento M0.
+- Conclusión limitada a la evidencia documental inspeccionada: P01-A/P01-G OPEN/UNKNOWN. No crear autoridad paralela ni seleccionar filesystem/lock para compensar la legitimidad ausente.
+- Gates intactos; solo documentación. No se cambiaron runtime/tests/workflows/configuración ni se ejecutaron pruebas/CI/Actions.
+
+---
+
 ## DELTA — ESTADO DE DECISIONES P-01 RECONCILIADO (2026-10-27)
 
 - Nueva nota: `NEXO_NCS/BUILD/NCS_M0_P01_DECISION_STATE_RECONCILIATION_2026-10-27.md`, commit `59fa87ba1569915fb88d9cd571e0298e04bb1139`.
