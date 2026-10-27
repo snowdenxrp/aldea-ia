@@ -144,3 +144,27 @@ No se adopta automáticamente ninguna de las dos rutas. No se amplía Constituti
 ### Estado de evidencia
 
 Revisión documental únicamente. No se modificaron runtime, tests, workflows ni configuración ejecutable; no se ejecutaron pruebas ni CI. Gates intactos: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+
+## Decisión del propietario sobre el alcance — Opción A (2026-10-27)
+
+El propietario eligió **Opción A de alcance: estudiar y delimitar la inicialización explícita de almacenamiento local M0 exclusivamente no autoritativo y acotado**. Esta elección resuelve qué alcance se quiere perseguir; no afirma que la arquitectura actual ya garantice la separación y no convierte esta propuesta en contrato implementado.
+
+### Límites obligatorios de esta ruta
+
+- La inicialización solo podrá crear almacenamiento interno M0 que no establezca ni modifique la raíz de confianza, la autoridad constitucional ni estado protegido.
+- La operación no autentica al propietario, no concede permisos, no habilita ejecución ni efectos protegidos, y no puede ser consumida como prueba de autoridad por otros componentes.
+- La ausencia del archivo no es prueba de autorización. La creación inicial debe seguir siendo explícita y distinta del commit condicional normal.
+- Un archivo existente, incluso corrupto o inválido, debe preservarse; no se trata como ausente.
+- Errores de inspección, creación o persistencia no se reinterpretan como ausencia ni como prueba de que no hubo mutación. UNKNOWN bloquea la continuación y no habilita reintento automático.
+- La concurrencia debe resolverse con una garantía efectiva de creación exclusiva frente a los escritores relevantes; un lock cooperativo no basta si existen escritores que no lo respetan.
+- Debe demostrarse por inspección del grafo de consumidores que el estado inicial no confiere autoridad ni habilita efectos protegidos. Si esa separación no se puede demostrar, la ruta queda STOP/UNKNOWN.
+
+### Trabajo pendiente antes de cualquier implementación
+
+1. Mapear de forma dirigida los lectores/consumidores del estado inicial y sus efectos, sin repetir auditorías históricas no relacionadas.
+2. Identificar evidencia concreta de que ningún consumidor convierte el estado local inicial en raíz, autoridad, permiso o habilitación de efectos.
+3. Precisar el esquema inicial y la semántica de resultados usando contratos existentes; no inventar un mecanismo paralelo de autoridad.
+4. Mantener pruebas, runtime, workflows y configuración ejecutable sin cambios hasta autorización específica posterior.
+
+**Estado:** elección de alcance hecha por el propietario; separación arquitectónica todavía no demostrada; contrato final no ratificado; implementación no autorizada por esta elección. Gates intactos: M0 INCOMPLETO, autoridad raíz PENDING/UNKNOWN, autorización NOT_EVALUATED, efectos protegidos STOP y reconciliación general no integrada.
