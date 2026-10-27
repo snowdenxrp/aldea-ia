@@ -1,3 +1,13 @@
+## DELTA — TRAZABILIDAD B.5–B.7 REFINADA; CONSULTA DIRECTA DE ACTIONS BLOQUEADA POR EL CONECTOR (2026-10-27)
+
+- Inventario §17 actualizado en commit `ba9a20ce519be4f10f92062fa5b6548ff8ff6984`. Corrección importante: `tests/nexo/entrypoint.test.mjs` sí implementa un recorrido recursivo de imports/re-exports estáticos desde dos raíces y guardas explícitas de módulos legacy; no describirlo como prueba superficial.
+- Límite demostrado por inspección del código: ese recorrido usa regex para imports/exports estáticos y dos raíces declaradas; no prueba por sí solo `import()` dinámico, resolución por alias/loader, todos los callers del repositorio ni cada ruta indirecta potencial. Los tests de protected transition y Chronicle respaldan propiedades locales, no legitimidad constitucional global.
+- Se intentó consultar solo lectura el historial con `mcp__GitHub__fetch` hacia endpoints públicos REST de Actions y la página del workflow; el conector rechazó esas URLs con `INVALID_ARGUMENT` (“not an allowed public GitHub repository or search endpoint”). Por tanto, la documentación oficial de GitHub describe una API existente, pero esa consulta no produjo datos de ejecuciones en esta sesión. No usarla como evidencia de run, y no lanzar/repetir workflows.
+- Siguiente tarea: cruzar las dos raíces de `auditNexoImportGraph` con el censo de callers ya existente y enumerar solo las rutas fuera de alcance. No rehacer el censo ni cambiar tests/runtime.
+- Sin ejecución de tests/CI/Actions ni cambios ejecutables. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — COBERTURA DE TESTS NO EQUIVA A CRITERIOS DE CIERRE (2026-10-27)
 
 - Inventario §17, commit `e57a316fdfa14abcafdbdc51d8bed3caa1808822`: inspección estática de `entrypoint.test.mjs`, `protected-transition.test.mjs` y `chronicle-runtime.test.mjs` identifica cobertura útil, pero no demuestra exhaustividad del grafo de callers/no-bypass ni autoridad constitucional independiente.
