@@ -1,0 +1,59 @@
+# NCS M0 — matriz de decisiones pendientes de P-01 (2026-10-27)
+
+## Propósito y límites
+
+Separar las preguntas que todavía bloquean P-01 para que resolver una no se use como evidencia de las demás. Esta matriz reutiliza la línea de meta M0 aceptada como base, el registro D0–D3, la decisión de inicialización de estado ausente, el contrato candidato de bootstrap y el inventario de consumidores §§22–23.
+
+Es una **matriz de preparación documental**, no una decisión nueva del propietario, contrato ratificado, diseño ejecutable ni autorización. No selecciona una implementación de filesystem, no define una nueva autoridad, no crea estados de runtime y no autoriza modificar código, tests, workflows/configuración ni ejecutar pruebas/CI.
+
+## Estado canónico de entrada
+
+- M0: `INCOMPLETO`.
+- P-01: `OPEN / UNKNOWN`.
+- D0/D1/D2/D3: `OPEN`; D1-IMPLEMENTATION: `NO AUTORIZADA`.
+- Alcance elegido: Opción A, almacenamiento local M0 estrictamente no autoritativo y acotado. La separación no está demostrada.
+- Autoridad de la primera creación: `PENDING/UNKNOWN`.
+- `authorization: NOT_EVALUATED`; efectos protegidos: `STOP`.
+- No se crean `BootstrapAuthority`, raíz paralela, IDs, colas, retries, tombstones, fences o wrappers especulativos.
+
+## Matriz de decisiones independientes
+
+| ID | Pregunta que debe resolverse | Evidencia existente | Brecha concreta | Estado |
+|---|---|---|---|---|
+| P01-A — objeto y alcance | ¿Qué objeto/archivo exacto se crearía y por qué es exclusivamente almacenamiento local no autoritativo? | Opción A elegida; contrato candidato §§149–170; registro D0–D3 §11. | El objeto y sus propiedades negativas no están ratificados en un contrato final. Hay que demostrar que no se usa como trust anchor, raíz, identidad, permiso, policy binding ni habilitación de efectos. | `OPEN / UNKNOWN` |
+| P01-B — separación operacional | ¿La invocación de bootstrap termina antes de admisión, PREPARED, dispatch, reconciliación o mutaciones de dominio? | Inventario §§22–23; BA-01–BA-03, BA-08–BA-10. | Chronicle permite estructuralmente continuar a admisión/ejecución y mutación en la misma invocación; simulación acopla ausencia de estado con inicialización y persistencia. | `NO PASS` |
+| P01-C — procedimiento y quiescencia | ¿Qué procedimiento explícito se sigue para creación inicial, y qué demuestra que escritores anteriores o legacy no pueden reanudar escrituras durante la operación? | Línea de meta §§3.C.9–3.C.12; protocolo D3 legacy; opciones de bootstrap/recovery existentes. | No hay entorno operativo identificado ni prueba de quiescencia general. La exclusión legacy de M0 no prueba que los escritores estén detenidos en un entorno real. | `PENDING / UNKNOWN` |
+| P01-D — creación exclusiva y concurrencia | ¿Qué propiedad efectiva evita que dos inicializadores o escritores relevantes creen/reemplacen el objeto de forma conflictiva? | `continuity-store.mjs` documenta resultados `committed/conflict/failed/unknown`; el contrato candidato exige cobertura de todos los escritores relevantes. | El lock cooperativo no demuestra exclusión frente a escritores no cooperativos. No hay evidencia verificada de garantías del filesystem ni de todos los escritores relevantes. | `PENDING / UNKNOWN` |
+| P01-E — clasificación de estado previo | ¿Cómo se distingue ausencia real de existencia válida, corrupción, esquema inválido, error de lectura y conflicto? | Decisión de inicialización de estado ausente; criterios BA-04–BA-06. | El requisito documental es claro, pero no hay implementación/ensayo end-to-end autorizado que demuestre preservación del estado inválido y que no se confunda error con ausencia. | `CONTRACT REQUIRED / UNVERIFIED` |
+| P01-F — resultado ambiguo y reconciliación | ¿Qué resultado se expone si una creación puede haber mutado el almacenamiento pero no se puede confirmar, y quién está autorizado a reconciliarlo? | Decisión de estado ausente; BA-07; resultados locales del store. | `UNKNOWN` debe bloquear y no disparar retry automático. No existe evidencia de un protocolo general autorizado de reconciliación para esta primera creación. | `PENDING / UNKNOWN` |
+| P01-G — autoridad aplicable | ¿Qué regla canónica legitima la creación inicial sin inferir autoridad de ausencia, caller, lock o snapshot? | Constitution Authority Context y mapas STEP 7 existentes; contrato candidato §§86–112 y §§278–292. | El contexto constitucional existente no define explícitamente la legitimidad de inicialización local y su reconocimiento independiente no está implementado/probado. No se puede ampliar por analogía ni inventar owner paralelo. | `PENDING / UNKNOWN` |
+| P01-H — prueba y trazabilidad | ¿Qué evidencia final demostraría cada propiedad sobre el SHA exacto? | Línea de meta §§3.5–3.8 y §§3.E.16–20; workflows conocidos; BA-01–BA-10. | No se ejecutaron las pruebas BA ni se verificó CI ligado al SHA exacto. Los YAML no demuestran que haya ocurrido una ejecución. Requiere contrato congelado y autorización separada. | `NOT RUN / NOT VERIFIED` |
+
+## Orden de dependencia documental propuesto
+
+El siguiente orden evita confundir preguntas distintas; es una **secuencia de análisis propuesta**, no una aprobación de decisiones:
+
+1. **P01-A / P01-G — delimitar objeto y autoridad aplicable.** Si no se puede demostrar que el objeto es estrictamente no autoritativo y existe una base canónica aplicable a la creación, mantener STOP/UNKNOWN. No crear un owner paralelo.
+2. **P01-B — definir aislamiento operacional.** Usar las rutas conocidas y la línea de meta para especificar que el bootstrap aislado no admite misión, crea PREPARED, despacha, reconcilia ni muta datos de dominio en la misma invocación.
+3. **P01-C / P01-D — resolver procedimiento, quiescencia y exclusión.** La decisión de procedimiento no demuestra exclusión de escritores; un lock no demuestra quiescencia; quiescencia observada no demuestra creación atómica.
+4. **P01-E / P01-F — definir estados previos y resultado ambiguo.** Preservar cualquier objeto existente inválido; no transformar error en ausencia; `UNKNOWN` bloquea sin retry automático y solo se reconcilia por una ruta que tenga autorización explícita.
+5. **P01-H — pruebas y evidencia ligada al SHA.** Solo después de contrato congelado y autorización independiente para cambios/tests/CI. La inspección estática no sustituye pruebas end-to-end ni evidencia operacional.
+
+## Invariantes que no se pueden intercambiar
+
+- **Autoridad** responde quién/qué legitima la creación; **aislamiento operacional** responde qué puede ocurrir en la misma invocación.
+- **Creación exclusiva** responde cómo se evita una creación conflictiva entre escritores; **quiescencia** responde si los actores relevantes pueden seguir escribiendo.
+- **Clasificación de estado** distingue ausente de inválido; **reconciliación de UNKNOWN** resuelve un resultado indeterminado después de una operación posiblemente mutante.
+- Un resultado `committed` de un store no acredita autoridad constitucional ni prueba aislamiento de consumidores.
+- Un test verde no acredita una garantía operacional de quiescencia si no observa el entorno y los escritores pertinentes.
+- La ausencia de un archivo nunca constituye por sí sola permiso de inicialización.
+
+## Criterio de salida de P-01
+
+P-01 no puede declararse resuelto hasta que cada dimensión aplicable tenga: (a) decisión/contrato canónico explícito, (b) evidencia adecuada al tipo de afirmación, (c) dependencias P-02/P-03 resueltas o excluidas de manera explícita y aceptada, y (d) trazabilidad de cualquier verificación al árbol/SHA correspondiente. Una dimensión sin evidencia suficiente permanece `PENDING/UNKNOWN`; no se permite inferir un PASS global a partir de resultados parciales.
+
+## Próxima acción permitida en el estado actual
+
+Continuar solo con reconciliación documental de la matriz contra el registro canónico de decisiones y los contratos existentes, o preparar un handoff autocontenido. No modificar runtime/tests/workflows/configuración, ni ejecutar pruebas/CI/Actions, sin autorización específica separada.
+
+**Estado final de este artefacto:** documental; no ratifica D1/D2, no cierra P-01, no declara M0 completo y no cambia ningún gate canónico.
