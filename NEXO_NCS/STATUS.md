@@ -1,3 +1,13 @@
+## DELTA — CRUCE DE INVESTIGACIÓN HISTÓRICA DE AUTORIDAD P-01 (2026-10-27)
+
+- Actualizado `NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md` para contrastar la brecha con la investigación histórica `docs/nexo/NEXO_AUTHORITY_FOUNDATION_BOOTSTRAP_NO_ROOT_DISASTER_RECOVERY_RESEARCH_V1_2026-09-24.md`.
+- Resultado acotado: la investigación corrobora que la autoridad constitucional no puede derivarse circularmente del estado recuperado y que la recuperación humana requiere gobernanza explícita; está marcada RESEARCH ONLY y no define la legitimidad de la primera escritura local no autoritativa de Continuity. La brecha específica P01-A/P01-G sigue PENDING/UNKNOWN.
+- Búsqueda documental limitada por términos; no se afirma ausencia global ni se reabren auditorías cerradas.
+- Gates intactos: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+- Solo documentación. Sin cambios ejecutables, tests, workflows o configuración; no se ejecutaron tests/CI/Actions.
+
+---
+
 ## DELTA — BRECHA DE REGLA LEGÍTIMA P-01 (2026-10-27)
 
 - Nuevo artefacto: NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md, commit 940f1f8f1ebd21bb131e44ccdd967f0d723a4a5e.
