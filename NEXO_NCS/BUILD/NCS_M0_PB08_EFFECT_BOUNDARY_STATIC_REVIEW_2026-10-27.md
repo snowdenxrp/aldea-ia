@@ -133,3 +133,20 @@ La ruta demuestra que hay un **efecto de persistencia Chronicle** y una composic
 - Próximo paso documental: localizar el contrato vigente que clasifica el append Chronicle y define el punto de enforcement para efectos persistentes/protegidos. Si no existe o no es aceptado, registrar la brecha de contrato y no modificar runtime por inferencia.
 
 No se ejecutaron tests/CI/Actions; no se modificó runtime.
+
+
+## 10. Reutilización de contratos M0 existentes — no duplicar la investigación (2026-10-27)
+
+El cruce documental posterior localizó dos artefactos que ya responden la clasificación de Chronicle y el contrato genérico de efectos:
+
+- `NEXO_NCS/BUILD/NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md`, blob `49d4a8063d1a8cd3d3f56fb1d7fa1969c111900c`: clasifica `chronicle_append` como mutación persistente local, no como efecto externo de Lúmina ni autorización constitucional; documenta CLI, API, caso de uso, mutaciones de ambos stores y límites de atomicidad entre stores.
+- `NEXO_NCS/BUILD/NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md`, blob `01fb7295267e9c2a780199a6f965e8fb7a8edaf2`: define el orden PREPARED → dispatch → lineage → reconciliación → settlement → outcome y bloquea acciones sin contrato de reconciliación verificado.
+- `NEXO_NCS/BUILD/NCS_M0_EFFECT_RECONCILIATION_SETTLEMENT_CONTRACT_2026-10-18.md`, blob `47eff923b940ac6618701654ee473c7d4bc0e599`: mantiene la implementación no autorizada hasta tener un verificador confiable específico de la acción.
+
+### Disposición
+
+Estos documentos son la fuente de continuidad existente; la presente traza no debe convertirse en una auditoría paralela. El resultado nuevo es solo una corroboración del camino estático desde `chronicle-append.mjs` hacia el runtime owner-backed.
+
+No hay base para introducir `effectBoundary.prepare` en la transición genérica ni en Chronicle append por analogía. La pregunta de PB-08 se mantiene separada de la autorización constitucional: Chronicle es una mutación persistente local; la autoridad permanece `NOT_EVALUATED`. El siguiente trabajo debe volver al objetivo M0 y reutilizar los criterios de salida ya escritos en el contrato genérico, sin recrear contratos ni reabrir STEP 7.
+
+No se ejecutaron tests/CI/Actions ni se modificó runtime.
