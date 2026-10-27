@@ -1,3 +1,15 @@
+## DELTA — INVENTARIO DE COLECCIONES DE CONTINUITY Y CARRERA DE BOOTSTRAP (2026-10-27)
+
+- Actualizado [NCS_M0_PERPLEXITY_DELTA_REVIEW_2026-10-27.md](BUILD/NCS_M0_PERPLEXITY_DELTA_REVIEW_2026-10-27.md), commit `457dcc6930ffa60875f364fa069bf17d072ce542`.
+- Trazadas las cinco colecciones del snapshot: `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`. Se registraron sus consumidores estáticos y si influyen en planificación, admisión/PREPARED/dispatch/reconciliación. El dato de Continuity sigue siendo operacional; no acredita autoridad.
+- Confirmado estáticamente: `openNexoContinuityOwner` migra `legacyMemory` si el store falta aunque `allowEmptyInitialization` sea falso; la bandera solo permite snapshot vacío cuando no hay memoria heredada. Se identificaron tres callers directos ya conocidos: Chronicle, `scripts/assistants.mjs` y `scripts/simulate.mjs`.
+- Lectura estática de tests: migración cubre proyección de las cinco colecciones, no-fallback ante corrupción y bloqueo de estado ausente sin flag; prueba Chronicle cubre dos invocaciones cooperantes y retry explícito. Ningún test se ejecutó. No se afirma cobertura frente a escritor que ignore el lock.
+- Riesgo inferido/UNKNOWN: `continuity-store.initialize` hace lock cooperativo → `access(filePath)` → escritura temporal → `rename(tempPath, filePath)`. El código no demuestra publicación final exclusiva frente a un escritor no cooperativo; la tienda limita explícitamente sus garantías a escritores cooperativos y rutas de confianza. No se reprodujo carrera ni se afirma exploit.
+- Próximo cierre documental: reutilizar la propuesta de bootstrap explícito y delimitar el modelo de exclusión que requiere el alcance M0. No inventar la política, no implementar ni ejecutar pruebas sin decisión/autorización específica.
+- Solo documentación; runtime/tests/workflows/configuración/dispositivo sin cambios; tests/CI/Actions no ejecutados. Gates canónicos intactos: M0 INCOMPLETO; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+
+---
+
 ## DELTA — PB-08: RUTA CHRONICLE Y RECONCILIACIÓN CON CONTRATOS EXISTENTES (2026-10-27)
 
 - Actualizado [NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md](BUILD/NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md), commit `fee438d00cc92d05be7ee4ddc9c0a3b03829b3d6`.
