@@ -202,3 +202,8 @@ El CLI expone `--initialize-continuity`. `runNexoChronicleAppend` preflighta amb
 ### Aclaración de las dos opciones ya elegidas
 
 La elección de **Opción B** registrada anteriormente se refiere al eje de mecanismo de persistencia: inicialización explícita separada del commit condicional normal. La elección posterior de **Opción A** se refiere al eje de alcance: almacenamiento local M0 estrictamente no autoritativo. Son ejes distintos y compatibles; ninguna elección demuestra que la implementación actual cumpla las condiciones.
+### Confirmación del límite de despacho (misma inspección estática)
+
+`src/nexo/adapters/chronicle-effect.mjs` registra el handler `chronicle_append`; el handler llama a `store.append(...)` y devuelve `completed` cuando el store confirma `committed` o `already_present`. `executeNexoStepWithContinuityOwner` comprueba capacidades, persiste `PREPARED` y después invoca `adapter.executePrepared`, que llega al handler. Por tanto, la ruta anterior no es solo una admisión de misión: puede mutar el almacén Chronicle tras el bootstrap de continuidad. El runtime registra `authorization: NOT_EVALUATED` en la respuesta pública, y la revisión no encontró en esta ruta una evaluación de autoridad que detenga ese despacho.
+
+Este es un hallazgo estático de la ruta de Chronicle, no una afirmación de que todos los efectos de Nexo sean alcanzables ni de que el código se haya ejecutado. La prueba de ejecución real y el estado global de CI no se consultaron.
