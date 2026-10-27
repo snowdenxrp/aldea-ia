@@ -75,3 +75,25 @@ Resolver la exclusión no resuelve la autoridad; resolver autoridad no prueba ex
 - Tests/CI/Actions: no ejecutados.
 
 Este documento registra el límite de la evidencia y la dependencia pendiente; no cambia la línea de meta M0 ni concede autorización.
+
+
+## 9. Cruce con el alcance M0 aceptado y el protocolo D3 existente
+
+Se contrastó el modelo con:
+- `NCS_M0_P01_SCOPE_VS_INITIALIZATION_DECISION_RECONCILIATION_2026-10-27.md`;
+- `NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`, §11;
+- `NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md`, §8 y aceptación del propietario en §9;
+- `NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md`, como protocolo existente a reutilizar, no recrear.
+
+### Resultado del cruce
+
+- Está aceptado que la migración/cutover legacy queda fuera del alcance operativo inicial de M0 mientras no exista un entorno objetivo identificado y verificable. Esto excluye esa capacidad de M0 por ahora; **no demuestra que los procesos legacy estén detenidos ni que no puedan reanudar escrituras**.
+- La opción A limita el alcance a almacenamiento local M0 estrictamente no autoritativo, y la opción B exige bootstrap explícito separado del commit normal. Ninguna fija por sí sola la cobertura de escritores no cooperativos que podrían acceder al mismo destino.
+- La línea de meta exige un protocolo de bootstrap aprobado y evidencia de las propiedades dentro del alcance. El protocolo D3 existente es la fuente canónica para quiescencia/cutover; no debe duplicarse. Su aplicabilidad operacional queda pendiente de entorno objetivo y decisión de si el cutover forma parte de una fase posterior.
+- No se localizó en estas fuentes una aceptación explícita que limite la garantía de exclusión solo a escritores cooperativos ni una garantía aceptada de exclusión frente a todo proceso local no cooperativo.
+
+### Conclusión limitada
+
+La decisión existente **no cierra** la pregunta sobre escritores no cooperativos. La exclusión de cutover legacy de M0 reduce el alcance funcional, pero no puede transformarse en una afirmación de quiescencia o aislamiento del archivo Continuity actual. La cobertura exigible sigue PENDING/UNKNOWN; primera creación STOP. No hace falta pedir una nueva decisión sobre el canal humano ni reabrir el inventario: la brecha concreta es el alcance de la garantía de exclusión para el destino real y sus escritores relevantes.
+
+No se modificaron runtime, tests, workflows ni configuración; no se ejecutaron tests/CI/Actions.
