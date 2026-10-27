@@ -1,3 +1,15 @@
+# ACTUALIZACIÓN PRIORITARIA — REVISIÓN INDEPENDIENTE CONFIRMA BRECHA DE AUTORIDAD DE BOOTSTRAP (2026-10-27)
+
+- Claude realizó una revisión documental de solo lectura y reportó **BRECHA CONFIRMADA**: en el alcance revisado no encontró una regla canónica que designe quién autoriza crear el primer estado persistente local. Claude identificó HEAD `058bf0e`; no revisó STATUS completo ni todo BUILD/RESEARCH y no ejecutó runtime/tests/CI. El resultado coincide con la delimitación documentada en la propuesta de bootstrap.
+- La fuente normativa constitucional está definida conceptualmente como el propietario humano en la Constitución; eso no demuestra que exista una ruta técnica independiente que reconozca esa autoridad, ni resuelve por sí mismo la autorización de una creación local concreta.
+- La opción B elegida por el propietario sigue significando **separar inicialización explícita de commit condicional normal**. No equivale a autorizar un mecanismo de bootstrap ni a establecer una raíz.
+- Se actualizó [la propuesta de contrato para bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md), commit `0c9cd2a1f567c43574df067e407ec47afab1d039`, para registrar el informe independiente, sus límites y la decisión aún pendiente.
+- **Siguiente decisión exacta:** delimitar si se pretende inicializar exclusivamente almacenamiento interno no autoritativo y acotado —sin establecer/modificar raíz, autoridad constitucional, estado protegido ni efectos— o si el estado inicial participa en la confianza/autoridad constitucional. La primera ruta requiere una delimitación explícita de alcance y evidencia de que no habilita efectos; la segunda sigue STOP/UNKNOWN hasta que exista base independiente y contrato aplicable.
+- No ampliar por analogía Constitution Authority Context; no crear `BootstrapAuthority` paralelo; no inferir autoridad por ausencia de archivo. No se eligió una ruta automáticamente.
+- Solo documentación. Sin cambios de runtime/tests/workflows/configuración; sin pruebas ni CI. Gates intactos: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — ALCANCE CONSTITUCIONAL NO CUBRE BOOTSTRAP LOCAL (2026-10-26)
 
 - Se leyó directamente el contrato [Minimum Core Constitution Authority Context](BUILD/STEP_7_MINIMUM_CORE_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_2026-10-08.md). Su propósito explícito es reconocer el régimen constitucional para una vinculación posterior de Policy; no define autorización para crear el primer archivo de estado persistente.
