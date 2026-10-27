@@ -596,3 +596,10 @@ Revisa los cuatro artefactos STEP 7 relevantes. El Constitution Authority Contex
 Documento: `NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_DECISION_BOUNDARY_2026-10-27.md`, commit `9b18cc275e84e834f31a8f1dcaa9bb6d569915fa`.
 
 Separa la propiedad negativa del objeto (estrictamente no autoritativo) de la legitimidad de invocar su primera creación. La elección de alcance A no es permiso de inicialización; la autorización normativa tampoco prueba aislamiento, exclusión de escritores o semántica de persistencia. Registra la brecha de decisión sin escoger una opción, crear una raíz paralela o alterar gates.
+
+
+## 29. Cruce de dependencias de P-01 con la línea de meta M0 (2026-10-27)
+
+Documento: `NEXO_NCS/BUILD/NCS_M0_FINISH_LINE_P01_DEPENDENCY_CROSSWALK_2026-10-27.md`, commit `d1c4ba548c30f9cb8a1982428b31e06da78c5e2b`.
+
+Aclara que P01-A/G y las dimensiones operacionales de bootstrap siguen bloqueando M0_BUILD_COMPLETE porque §3.C.9 exige protocolo aprobado para primera creación y §§3.A/3.E requieren decisiones y evidencia. El gate PROTECTED_EFFECTS_AUTHORIZED permanece separado y STOP. No se encontró una decisión aceptada que excluya el bootstrap de la línea de meta; no se infiere tal exclusión.
