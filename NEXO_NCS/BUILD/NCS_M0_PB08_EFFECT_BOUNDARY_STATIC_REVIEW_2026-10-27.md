@@ -53,3 +53,28 @@ Seguir solo la relación de callers de `executeProtectedTransition` dentro del �
 M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; primera creación y efectos protegidos `STOP`.
 
 No se modificaron runtime, tests, workflows, configuración ejecutable ni dispositivo. No se ejecutaron tests/CI/Actions.
+
+
+## 7. Seguimiento de callers — revisión acotada (2026-10-27)
+
+Se hizo una lectura estática acotada de seis módulos de integración/consumo en el HEAD observado de la rama (`b79898ca1e3f36f6096069a197fe5234e29c2d39`). En el texto de esos seis archivos no aparece una referencia literal a `executeProtectedTransition`, `protected-transition` ni `effectBoundary.prepare`:
+
+| Archivo | Blob SHA |
+|---|---|
+| `src/nexo/core/owner-backed-runtime.mjs` | `a7a014489209273ce78d0103afa785728d4c467c` |
+| `src/nexo/application/index.mjs` | `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3` |
+| `src/nexo/application/chronicle-append.mjs` | `5a20044bcddbaee79d0117934eefaea5f3b2c3bc` |
+| `src/nexo/application/continuity-queries.mjs` | `e1915e94e53e71d37a37952fead37ba62bdae79a` |
+| `src/nexo/core/continuity-operations.mjs` | `cc295e3bf9fe1c0c4ae7e0de172d0d22e8d9b3c5` |
+| `src/nexo/core/continuity-service.mjs` | `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c` |
+
+Esto es **evidencia negativa limitada a los seis archivos enumerados**, no un barrido completo del árbol ni prueba de que no haya callers indirectos, importación dinámica, uso desde otros módulos o integración externa. El test `tests/nexo/protected-transition.test.mjs` sí importa directamente la transición, pero eso demuestra uso de prueba, no integración de producción.
+
+### Interpretación actualizada
+
+- Hecho: la transición no consume `effectBoundary.prepare` antes del commit en su propio cuerpo; los seis módulos seleccionados tampoco la referencian textualmente.
+- Inferencia limitada: la integración de esta transición con los módulos de runtime/consumo inspeccionados no queda demostrada por esos archivos.
+- UNKNOWN: callers en otros módulos, alcance de producción, uso indirecto/dinámico y si otra frontera protege los efectos externos.
+- Decisión: PB-08 permanece OPEN/UNKNOWN; no hay base para declarar la frontera demostrada ni para afirmar un bypass universal.
+
+No se modificó runtime/tests/workflows y no se ejecutaron pruebas/CI.
