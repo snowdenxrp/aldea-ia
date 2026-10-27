@@ -245,3 +245,31 @@ Inspección de texto de tests en la rama; **no se ejecutaron**:
 3. Mantener separadas cobertura textual, resultado de test ejecutado y evidencia CI vinculada a commit.
 
 Esta sección es un mapa estático de cobertura declarada, no un informe de ejecución ni cierre de D1.
+
+
+## 14. Selección del runner y vínculo con los blobs actuales (2026-10-27)
+
+Fuentes consultadas en la misma rama:
+
+| Archivo | Blob SHA | Dato verificable por inspección |
+|---|---|---|
+| `package.json` | `e45dc6d215db53ea2758009cd501f565634e3610` | El script `test` encadena explícitamente `node tests/nexo/chronicle-runtime.test.mjs`. No enumera `tests/nexo/continuity-migration.test.mjs` en la cadena mostrada. |
+| `src/nexo/runtime.js` | `9d3d5109753e8ba96fc287c269da275112645523` | Exporta `executeNexoStepWithContinuityOwner` desde `src/nexo/core/owner-backed-runtime.mjs`. |
+| `src/nexo/core/owner-backed-runtime.mjs` | `a7a014489209273ce78d0103afa785728d4c467c` | Implementa la secuencia runtime descrita en §12. |
+| `tests/nexo/chronicle-runtime.test.mjs` | `0bf35f0dc1aadb121a8b2145b4963bacd5641c04` | Importa el runtime público y contiene casos de contrato descritos en §13. |
+| `tests/nexo/continuity-migration.test.mjs` | `0bef1b93c6268042f14830c97e084d0a543e05f4` | Contiene casos de migración/reconstrucción/settlement; su inclusión en la cadena `npm test` no está demostrada por el script inspeccionado. |
+
+### Consecuencia
+
+- Hay una ruta declarada en `package.json` para ejecutar `chronicle-runtime.test.mjs` a través de `npm test`, pero esto **no demuestra que se haya ejecutado**, que esté verde ni que CI utilice ese script.
+- La cobertura de `continuity-migration.test.mjs` es visible en el archivo, pero su selección automática por el script `test` no se acredita aquí. Puede existir otra ruta de ejecución; no se afirma que el archivo nunca se ejecute.
+- No se pudo identificar una ruta de workflow CI a partir de los dos nombres convencionales consultados (`.github/workflows/ci.yml` y `.github/workflows/tests.yml` no están presentes en esa rama con esos nombres). Esto no prueba ausencia de workflows: no se enumeró el directorio completo.
+- Los SHA de blob identifican contenidos individuales; para atribuir un resultado de test a una versión exacta debe existir un run/commit de CI verificable y una relación explícita con el árbol de ese commit.
+
+### Pendiente mínimo de evidencia CI
+
+1. Identificar el workflow realmente configurado en la rama y su comando de test.
+2. Verificar si `continuity-migration.test.mjs` está seleccionado por otra ruta o requiere inclusión explícita.
+3. Registrar un run existente y su SHA exacto si está disponible; no disparar un run nuevo en este trabajo.
+
+No se ejecutaron tests, `npm test`, CI ni Actions. No se modificó `package.json`, workflows ni código ejecutable.
