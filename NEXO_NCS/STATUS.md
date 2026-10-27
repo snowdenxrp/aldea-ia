@@ -1,3 +1,13 @@
+## DELTA — ESTADO DE DECISIONES P-01 RECONCILIADO (2026-10-27)
+
+- Nueva nota: `NEXO_NCS/BUILD/NCS_M0_P01_DECISION_STATE_RECONCILIATION_2026-10-27.md`, commit `59fa87ba1569915fb88d9cd571e0298e04bb1139`.
+- Inventario actualizado con sección 26, commit `870aea69f71beeafb30173f00bcdb2b462198d65`.
+- A (alcance acotado no autoritativo) y B (inicialización explícita separada del commit normal) están aceptadas como decisiones de diseño en sus respectivos ámbitos. Eso no cierra P01-C: protocolo operacional, quiescencia, exclusión efectiva, resultado observable y reconciliación permanecen pendientes.
+- Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+- Solo documentación; no runtime/tests/workflows/configuración, ni pruebas/CI/Actions ejecutados.
+
+---
+
 ## DELTA — ENLACES DOCUMENTALES P-01 VERIFICADOS (2026-10-27)
 
 - Nota de enlace creada: `NEXO_NCS/BUILD/NCS_M0_P01_DOCUMENTATION_LINKAGE_CHECKPOINT_2026-10-27.md`, commit `06fd872814b77f5fdd3c5426fda9d1e2a93c3aa1`.
