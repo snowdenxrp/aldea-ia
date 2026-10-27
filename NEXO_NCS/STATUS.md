@@ -1,3 +1,13 @@
+# CONTINUIDAD PARA SIGUIENTE CHAT — HANDOFF BOOTSTRAP DELTA (2026-10-27)
+
+- **Siguiente chat: empezar por este handoff detallado:** [`BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_BOOTSTRAP_DELTA.md`](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_BOOTSTRAP_DELTA.md), commit `51a7392efca84b29b0ac5acef4015657cd233277`.
+- Leer después [la revisión de delta Perplexity](BUILD/NCS_M0_PERPLEXITY_DELTA_REVIEW_2026-10-27.md), commit `c361694c28c7f108c054e09dad963eba5fc6e235`; no rehacer el análisis Chronicle ya documentado.
+- Punto exacto: completar el mapa estático de consumidores de todas las colecciones de continuidad; lectura estática de tests pertinentes (sin ejecutar); acotar el riesgo de inicialización frente a escritores no cooperativos. Detalles, matriz y límites en el handoff.
+- Esta actualización es solo documental. No se ejecutaron tests/CI/Actions; no se cambió runtime, tests, workflows ni configuración ejecutable. No se consultaron logs/historial de Actions.
+- Gates sin cambios: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reparaciones excluidas de M0.
+  
+---
+
 # MAPA ESTÁTICO AMPLIADO — RUTAS DE BOOTSTRAP Y OPERACIÓN (2026-10-27)
 
 - **Chronicle:** `scripts/nexo-chronicle-session.mjs` expone `--initialize-continuity`; `src/nexo/application/chronicle-append.mjs` puede inicializar continuidad y continuar dentro de la misma invocación hasta `PREPARED` y el handler `chronicle_append`, que muta el almacén Chronicle. Ruta confirmada estáticamente; separación de inicialización/despacho no demostrada; autorización sigue `NOT_EVALUATED`.
