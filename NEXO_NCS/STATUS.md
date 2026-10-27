@@ -1,3 +1,12 @@
+## DELTA — ORDEN PROPUESTO PARA RESOLVER P-01…P-10 SIN REPETIR CENSOS (2026-10-27)
+
+- Inventario §21, commit `8606cb600f4d155fdaa7542bdcb47ef68f74aa27`: establece una secuencia documental propuesta para P-01…P-10 basada en el registro canónico existente.
+- Orden: P-01 bootstrap y P-02 fronteras de dominio como entradas de diseño; P-03 admisión; P-04 locks; P-05/P-06 incertidumbre y stale; P-07 rutas reservadas; P-08 compatibilidad API/CLI; P-09 aristas pendientes contra snapshot concreto; P-10 matriz final de evidencia.
+- Dependencias descritas como orden de trabajo, no como nuevas decisiones ratificadas. Si falta decisión del propietario o evidencia, conservar PENDING/UNKNOWN y detener la inferencia dependiente.
+- No se cerró ni renumeró P-01…P-10. Sin cambios ejecutables, tests, CI o Actions; gates canónicos intactos.
+
+---
+
 ## DELTA — CONDICIONES DE SALIDA PROPUESTAS PARA P-02 / P-HIST-08 (2026-10-27)
 
 - Inventario §20, commit `51af570188b453c6547a95626cf9c6721964ba05`: concreta criterios documentales para las excepciones `assistants.mjs` y `simulate.mjs`, reutilizando P-02/P-HIST-08 y el manifiesto D1 existentes.
