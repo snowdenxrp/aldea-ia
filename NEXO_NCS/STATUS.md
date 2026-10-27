@@ -1,3 +1,15 @@
+## DELTA — INVENTARIO DE OBJETOS DE BOOTSTRAP Y CONSUMIDORES (2026-10-27)
+
+- Nuevo documento: [NCS M0 — Inventario estático de objetos de bootstrap y consumidores](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `6d99174afcc2b38aba6754c1e1c02def83b7bf57`.
+- Contraste estático realizado con blobs concretos de `nexo-chronicle-session.mjs`, `chronicle-append.mjs`, `continuity-service.mjs`, `continuity-store.mjs`, `chronicle-store.mjs`, decisión de estado ausente, contrato de raíz y manifiesto D1.
+- Se separan: stores operacionales Continuity/Chronicle; locks por-store y sus `owner.json`; temporales; y el lock compartido de instancia que solo aparece como propuesta de diseño. `continuity.json`/`chronicle.json` son nombres del layout propuesto, no rutas forzadas por las factories actuales.
+- Conclusión limitada: Continuity participa en admisión/reconstrucción y Chronicle en append; por ello no está probado que sean «sin consecuencias operativas». Tampoco está demostrado que constituyan raíz constitucional. Alcance local sigue `UNKNOWN/PENDING`.
+- Se conserva la opción B como separación de operaciones aceptada en diseño; la precondición legítima para crear el primer estado sigue sin definirse/verificarse. Las banderas de inicialización no son autoridad; la ruta Chronicle puede continuar más allá de crear stores en la misma invocación según inspección estática.
+- Siguiente paso acotado: mapear los consumidores ya conocidos a objetos/colecciones y añadir solo aristas no resueltas; no repetir el censo D1 completo.
+- Sin cambios de runtime, tests, workflows ni configuración ejecutable; no se ejecutaron pruebas, CI ni Actions. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — ALCANCE DE BOOTSTRAP Y AUTORIDAD LOCAL SEPARADOS (2026-10-27)
 
 - Registro de decisiones ampliado con la sección 11: [D0–D3 Decision Register](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md), commit `21d476930a99e63d2c9326b673dfca2f34710333`.
