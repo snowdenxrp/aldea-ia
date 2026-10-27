@@ -582,3 +582,10 @@ P-01 continúa OPEN/UNKNOWN. Este índice no ratifica contrato ni autoriza imple
 Documento: `NEXO_NCS/BUILD/NCS_M0_P01_DECISION_STATE_RECONCILIATION_2026-10-27.md`, commit `59fa87ba1569915fb88d9cd571e0298e04bb1139`.
 
 Alinea la matriz P01-A…P01-H con las decisiones ya aceptadas: alcance A no autoritativo/acotado, commit normal sin auto-inicialización y separación conceptual de bootstrap. Aclara que la aceptación del principio no cierra el protocolo operacional de P01-C: quiescencia, exclusión, resultado observable y reconciliación siguen pendientes. No amplía autoridad ni cambia gates.
+
+
+## 27. Revisión de legitimidad de la primera creación (2026-10-27)
+
+Documento: `NEXO_NCS/BUILD/NCS_M0_P01_ROOT_LEGITIMACY_BOUNDARY_REVIEW_2026-10-27.md`, commit `2e3d496a93e16f9e8861ff4ec6af91de4abc6baa`.
+
+Revisa los cuatro artefactos STEP 7 relevantes. El Constitution Authority Context requiere una Trust Foundation ya reconocida; el mapa de roles no demuestra que esa frontera esté implementada; el contrato mínimo de Genesis Trust Foundation es una propuesta; y el gate de contraefectos exige STOP BEFORE CODE. No hay base documental suficiente para tratar la legitimidad de la primera creación como resuelta. P01-A/P01-G siguen OPEN/UNKNOWN; no se propone una autoridad alternativa ni una primitiva de filesystem.
