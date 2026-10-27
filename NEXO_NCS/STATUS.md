@@ -1,3 +1,13 @@
+## DELTA — MATRIZ DE CONSUMIDORES Y ARISTAS DE BOOTSTRAP (2026-10-27)
+
+- Inventario ampliado con matriz de consumidores concretos de `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`, entradas Chronicle, locks y `owner.json`: [Inventario de bootstrap y consumidores, §9](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `5a1676df7d95270ae52dc587fb2edda8084014fd`.
+- Evidencia adicional de fuentes de la rama: `continuity-snapshot.mjs` blob `56cbd1753f1fa3fb67c3592e5a5664b58d96c4c3`; `continuity-operations.mjs` blob `cc295e3bf9fe1c0c4ae7e0de172d0d22e8d9b3c5`; `continuity-queries.mjs` blob `e1915e94e53e71d37a37952fead37ba62bdae79a`; `orchestrator.js` blob `de257324cabfaae69219f71e598bb83c1aafc0a1`.
+- Aristas todavía abiertas: admisión → runtime/adapter; legacy memory → snapshot Continuity; journal → dispatch/settlement/reconciliation; queries → snapshot dentro del alcance D2; locks locales → límites de escritores no cooperantes. No se declara cerrado el grafo D1.
+- La evidencia apoya que el estado es operacionalmente significativo; no acredita autoridad constitucional ni que cada efecto real quede reflejado por el journal. La proyección legacy conserva las cinco colecciones y requiere contrato de legitimidad/separación Nexo-Lúmina.
+- Sin cambios de runtime/tests/workflows/configuración ejecutable; no se ejecutaron tests, CI ni Actions. Gates sin cambios: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — INVENTARIO DE OBJETOS DE BOOTSTRAP Y CONSUMIDORES (2026-10-27)
 
 - Nuevo documento: [NCS M0 — Inventario estático de objetos de bootstrap y consumidores](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `6d99174afcc2b38aba6754c1e1c02def83b7bf57`.
