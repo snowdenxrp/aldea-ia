@@ -589,3 +589,10 @@ Alinea la matriz P01-A…P01-H con las decisiones ya aceptadas: alcance A no aut
 Documento: `NEXO_NCS/BUILD/NCS_M0_P01_ROOT_LEGITIMACY_BOUNDARY_REVIEW_2026-10-27.md`, commit `2e3d496a93e16f9e8861ff4ec6af91de4abc6baa`.
 
 Revisa los cuatro artefactos STEP 7 relevantes. El Constitution Authority Context requiere una Trust Foundation ya reconocida; el mapa de roles no demuestra que esa frontera esté implementada; el contrato mínimo de Genesis Trust Foundation es una propuesta; y el gate de contraefectos exige STOP BEFORE CODE. No hay base documental suficiente para tratar la legitimidad de la primera creación como resuelta. P01-A/P01-G siguen OPEN/UNKNOWN; no se propone una autoridad alternativa ni una primitiva de filesystem.
+
+
+## 28. Frontera de decisión para la primera creación (2026-10-27)
+
+Documento: `NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_DECISION_BOUNDARY_2026-10-27.md`, commit `9b18cc275e84e834f31a8f1dcaa9bb6d569915fa`.
+
+Separa la propiedad negativa del objeto (estrictamente no autoritativo) de la legitimidad de invocar su primera creación. La elección de alcance A no es permiso de inicialización; la autorización normativa tampoco prueba aislamiento, exclusión de escritores o semántica de persistencia. Registra la brecha de decisión sin escoger una opción, crear una raíz paralela o alterar gates.
