@@ -89,3 +89,20 @@ Ese artefacto, marcado expresamente **RESEARCH ONLY**, sí contiene principios h
 La búsqueda de esta ronda fue acotada a términos de primera creación, bootstrap, raíz y escrituras locales en el repositorio. No equivale a una búsqueda exhaustiva de todas las decisiones externas, conversaciones ni documentos históricos. El resultado correcto sigue siendo: **principio general de autoridad corroborado; regla específica de primera creación local no localizada en las fuentes consultadas; PENDING/UNKNOWN**.
 
 No se altera la línea de meta ni los gates. Sin cambios ejecutables, tests, workflows o configuración; no se ejecutaron tests/CI/Actions.
+
+
+## 10. Reconciliación con la selección histórica del canal humano (2026-10-27)
+
+Se revisaron también:
+
+- `NEXO_NCS/BUILD/STEP_7_CURRENT_PHONE_CANDIDATE_THREAT_MODEL_2026-10-08.md` (blob `e3ec6533495438e20fdbf6e0b989eaaad86b829c`);
+- `NEXO_NCS/BUILD/STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md` (blob `b93a2fd8e730d54bbe43493db137dc1b4d13d964`);
+- `NEXO_NCS/BUILD/STEP_7_MINIMUM_GENESIS_TRUST_FOUNDATION_CONTRACT_2026-10-08.md` (blob `e65df41ff98f7e53a8574ca5295a947023cb8b30`).
+
+El registro histórico sí conserva una elección del propietario para examinar su teléfono/canal actual como **candidato** de canal humano y una hipótesis acotada para transmitir aprobación del contenido constitucional exacto. El mismo threat model dice explícitamente que C0 sigue UNESTABLISHED, que no se seleccionó mecanismo ni base de enrollment y que la elección del dispositivo no declara confiables al teléfono, sistema operativo, cuenta o aplicación.
+
+El mapa de roles STEP 7 confirma que la ceremonia de reconocimiento inicial y la frontera de enforcement siguen sin establecerse. El contrato mínimo Genesis Trust Foundation continúa como candidato de diseño y prohíbe que el objeto candidato se autentique a sí mismo.
+
+**Conclusión de aplicabilidad:** esta decisión histórica no debe perderse, pero tampoco ampliarse por analogía. Se refiere a investigar un canal candidato para aprobación constitucional; no autoriza ese canal como raíz técnica ni define la primera creación de Continuity local no autoritativo. La brecha P-01 específica permanece PENDING/UNKNOWN. No hace falta volver a pedir al propietario que seleccione de nuevo el teléfono como candidato; lo pendiente es el contrato/procedimiento que haga verificable cualquier uso autorizado de un canal y si tal procedimiento cubre este objeto local.
+
+No se infiere aprobación de contenido constitucional, commissioning, confianza del dispositivo, autoridad raíz ni permiso de escritura. Sin cambios ejecutables, tests, workflows o configuración; no se ejecutaron tests/CI/Actions.
