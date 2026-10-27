@@ -91,3 +91,29 @@ Tampoco está demostrado que esos archivos sean la raíz constitucional o establ
 ## 8. Continuidad para la siguiente sesión
 
 Leer primero `NEXO_NCS/STATUS.md`, luego este inventario y el manifiesto D1 existente. Continuar con el paso 6.1: mapear consumidores concretos a los objetos ya identificados y registrar únicamente aristas sin resolver. No repetir el inventario de entrypoints ni declarar el grafo cerrado por esta tabla. No implementar ni ejecutar pruebas sin autorización separada.
+
+
+## 9. Matriz de consumidores concretos — actualización dirigida (2026-10-27)
+
+Consulta estática adicional de los blobs indicados; no se ejecutaron los módulos.
+
+| Objeto / colección | Consumidor directo confirmado en el snapshot consultado | Relación observable | Límite / arista todavía abierta |
+|---|---|---|---|
+| Snapshot completo Continuity | `src/nexo/core/continuity-snapshot.mjs` (`56cbd1753f1fa3fb67c3592e5a5664b58d96c4c3`) | Declara exactamente `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`; describe el objeto como continuidad operacional. | La descripción del módulo no demuestra que todos los consumidores downstream respeten una separación de autoridad. |
+| `missions` | `src/nexo/core/continuity-operations.mjs` (`cc295e3bf9fe1c0c4ae7e0de172d0d22e8d9b3c5`); `src/nexo/application/chronicle-append.mjs` (`5a20044bcddbaee79d0117934eefaea5f3b2c3bc`) | Operación registra misión; Chronicle busca la misión por ID y admite una nueva si no existe. | Faltan todos los consumers indirectos de misiones/pasos y una prueba de que cada ruta de admisión esté dentro de la frontera de autoridad aprobada. |
+| `attempts` | `src/nexo/core/continuity-operations.mjs` (`cc295e3bf9fe1c0c4ae7e0de172d0d22e8d9b3c5`) | Registra resultados de intentos; la misma operación puede añadir una entrada `doNotRepeat`. `src/nexo/orchestrator.js` (`de257324cabfaae69219f71e598bb83c1aafc0a1`) expone conteos de señales de memoria al construir misiones. | El mapa no prueba exhaustividad de toda lectura de intentos ni corrección ante todo estado de fallo. |
+| `doNotRepeat` | `src/nexo/orchestrator.js` (`de257324cabfaae69219f71e598bb83c1aafc0a1`) | `repeatBlocked` puede excluir pasos cuyo action/target coincide con una restricción de memoria. | Es una influencia directa sobre planificación, no una autorización. Falta cerrar otras entradas de planificación y el límite Nexo/Lúmina en todos los callers. |
+| `executions` | `src/nexo/core/continuity-operations.mjs` (`cc295e3bf9fe1c0c4ae7e0de172d0d22e8d9b3c5`) | Registra resultado de adapter con clave de idempotencia y preserva primer resultado para la misma identidad. | No demuestra que cada efecto externo tenga registro correlacionado ni que un registro sea prueba de efecto real. |
+| `effectJournal` | `src/nexo/core/continuity-operations.mjs` (`cc295e3bf9fe1c0c4ae7e0de172d0d22e8d9b3c5`); `src/nexo/application/continuity-queries.mjs` (`e1915e94e53e71d37a37952fead37ba62bdae79a`) | Operaciones validan obligaciones y estados; consulta de estado informa conteos de entradas, obligaciones PREPARED y estados observados. | La consulta es de lectura, pero muestra que el journal participa en el estado operativo. Falta enumerar todos los consumidores que condicionan dispatch/settlement/reconciliation. |
+| Entradas Chronicle | `src/nexo/core/chronicle-store.mjs` (`59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`); ruta `src/nexo/application/chronicle-append.mjs` (`5a20044bcddbaee79d0117934eefaea5f3b2c3bc`) | El store carga entradas y la ruta de append crea/usa contratos de efecto para persistir contenido. | No se cierra aquí el conjunto de lectores Chronicle ni se demuestra que el registro represente un efecto externo verificado. |
+| Lock y `owner.json` por-store | `src/nexo/core/continuity-store.mjs` (`9ffd28930abdbe29f5b041711cc29b74dc99fbae`); `src/nexo/core/chronicle-store.mjs` (`59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`) | Coordinan participantes que adquieren el mismo lock derivado de la ruta. | El escritor no cooperante, los procesos externos y la semántica exacta del filesystem objetivo quedan fuera de lo probado. No equivale al lock de instancia propuesto. |
+
+### Aristas no resueltas resultantes
+
+1. **Admisión → runtime/adapter:** el caller Chronicle puede pasar de store bootstrap a admisión y `executeNexoStepWithContinuityOwner` en la misma invocación. La presencia de `authorization: NOT_EVALUATED` no resuelve la legitimidad de esa transición.
+2. **Legacy memory → Continuity:** la proyección conserva las cinco colecciones de `memory.nexo`; la ausencia del archivo más una memoria legacy no nula puede tomar la ruta de proyección aunque `allowEmptyInitialization` no sea la causa de la inicialización. La legitimidad de importar esa memoria y la separación Nexo/Lúmina requieren una regla explícita.
+3. **Journal → reconciliación/dispatch:** el journal afecta obligaciones y estados operativos, pero no es raíz de confianza. Debe mantenerse separado el significado de registro, verificación de resultado y autoridad para iniciar un efecto.
+4. **Query → snapshot:** `continuity-queries.mjs` lee directamente el store y deriva conteos operativos. La inclusión de todas las lecturas/preview en la frontera de admisión sigue dependiendo de D2.
+5. **Lock local → creación:** el lock protege solo a participantes cooperantes. No se ha demostrado la garantía frente a escritores ajenos al protocolo ni la atomicidad de la creación entre los dos stores.
+
+**Cierre de esta actualización:** la matriz aclara consumidores directos de las cinco colecciones y varias aristas; no cierra D1 ni autoriza a reclasificar el bootstrap como inocuo/no autoritativo. Se mantienen UNKNOWN donde falta evidencia. Ningún test/CI/Actions ejecutado; no se cambió código ejecutable.
