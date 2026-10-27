@@ -1,3 +1,13 @@
+## DELTA — PB-08: RUTA CHRONICLE Y RECONCILIACIÓN CON CONTRATOS EXISTENTES (2026-10-27)
+
+- Actualizado [NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md](BUILD/NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md), commit `fee438d00cc92d05be7ee4ddc9c0a3b03829b3d6`.
+- Ruta estática de Chronicle identificada: `src/nexo/application/chronicle-append.mjs` crea los contratos de handler/verifier y llama `executeNexoStepWithContinuityOwner`; el runtime owner-backed confirma PREPARED antes de dispatch y sigue con lineage/reconciliation/outcome. Esto es mutación persistente local, no prueba de autorización constitucional.
+- Reconciliado con contratos ya existentes: `NCS_M0_E_CHRONICLE_APPEND_SCOPE_AND_MUTATION_BOUNDARY_2026-10-21.md`, `NCS_M0_GENERIC_EFFECT_CONTRACT_GATE_2026-10-18.md` y `NCS_M0_EFFECT_RECONCILIATION_SETTLEMENT_CONTRACT_2026-10-18.md`. No se debe duplicar esa investigación ni introducir `effectBoundary.prepare` por analogía en la transición genérica.
+- PB-08 permanece OPEN/UNKNOWN respecto a la obligación de consumir ese puerto; no se demuestra bypass ni incumplimiento. El resultado refina el alcance, no crea nuevo contrato ni cambia gates.
+- Solo documentación; runtime/tests/workflows/configuración/dispositivo sin cambios; tests/CI/Actions no ejecutados. M0 INCOMPLETO; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
+
+---
+
 ## DELTA — PB-08: TRAZA ACOTADA DE INTEGRACIÓN (2026-10-27)
 
 - Se amplió [NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md](BUILD/NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md), commit `c42debfc241c3785e2e68c696165532606d8d2b7`.
