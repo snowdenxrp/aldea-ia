@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — DECISIÓN DE INICIALIZACIÓN EXPLÍCITA (2026-10-26)
+
+- Decisión del propietario: adoptar la opción B, inicialización explícita separada del commit condicional normal. La ausencia de archivo no autoriza bootstrap automático; un archivo existente corrupto debe preservarse; conflictos concurrentes no deben sobrescribirse; UNKNOWN no admite reintento automático.
+- Registro: [Decisión sobre inicialización de estado ausente](BUILD/NCS_M0_ABSENT_STATE_INITIALIZATION_DECISION_2026-10-26.md), commit `64d3b9423a6682d68a68b29f0bab9b904eb959cf`.
+- Contrato técnico propuesto, no ratificado ni implementado: [Propuesta de contrato para bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md), commit `abbe4804435013ab0f0d8322909d7632b9d51aeb`.
+- Hallazgo estático que requiere regresión: `persistState` usa por defecto `loadState` tolerante y el adaptador no pasa `loadCurrentState`; no se ha demostrado que el commit real preserve un archivo corrupto. Véanse los blobs registrados en la propuesta.
+- Próximo paso: definir autoridad, esquema inicial, creación exclusiva/concurrencia, semántica de resultados y durabilidad antes de autorizar implementación. G1–G4 siguen pendientes de ejecución.
+- Solo documentación añadida; no runtime/tests/workflows/configuración, no tests ni CI ejecutados. Estado canónico sin cierre: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — DISEÑO DE REGRESIÓN G1–G4 (2026-10-26)
 
 - Plan de pruebas concretas creado: [Diseño de regresión para persistencia/UNKNOWN](BUILD/NCS_M0_PERSISTENCE_UNKNOWN_REGRESSION_TEST_DESIGN_2026-10-26.md), commit `c65dc2b6cbe0d189085d05d6ad96144db5cbe5f8`.
