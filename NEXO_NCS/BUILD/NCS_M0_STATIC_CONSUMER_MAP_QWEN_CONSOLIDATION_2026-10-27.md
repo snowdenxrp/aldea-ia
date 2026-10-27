@@ -84,9 +84,11 @@ Los módulos `scripts/nexo-repair-entrypoint.mjs`, `scripts/nexo-repair-preparat
 
 ## 7. Persistencia y locks: límite de garantía
 
-`src/nexo/core/continuity-store.mjs`, blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`, usa bloqueo cooperativo, comprueba estado/revisión y publica mediante temporal + `rename`. Esas medidas coordinan a escritores que respetan el protocolo. No prueban por sí solas exclusión frente a escritores no cooperativos, transacción atómica entre Continuity y Chronicle ni durabilidad universal ante fallos de energía/sistema de archivos.
+`src/nexo/core/continuity-store.mjs`, blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`, usa bloqueo cooperativo y publica mediante un temporal determinista `${filePath}.tmp` con `writeFile` + `rename`. En `initialize()`, tras adquirir el lock, el flujo hace `access(filePath)`; si recibe `ENOENT`, construye el envelope y llama a `writeEnvelope`. El check de existencia y el `rename` no son una primitiva indivisible de creación exclusiva.
 
-La posibilidad de que un escritor no cooperativo interfiera sigue siendo riesgo inferido/UNKNOWN en el alcance revisado, no fallo reproducido. No se ejecutaron pruebas de carrera.
+**Riesgo delimitado:** un escritor que no respete el lock podría crear/cambiar el destino después de `access()` y antes de `rename()`. En plataformas donde `rename` reemplaza un destino existente, eso podría sustituir el archivo concurrente. El temporal fijo también implica que la coordinación de su nombre depende del lock cooperativo. Es una inferencia basada en secuencia estática y semántica de plataforma pendiente de fijar; no es fallo reproducido ni prueba de que un escritor externo exista. El contrato del store declara expresamente que `storeRevision` coordina escritores cooperativos, no es una barrera global.
+
+El código no demuestra una transacción atómica entre Continuity y Chronicle ni durabilidad universal ante fallos de energía/sistema de archivos. No se hicieron pruebas de carrera ni se validaron semánticas en ejecución sobre el dispositivo de destino.
 
 ## 8. Consolidación de la revisión adversarial Qwen
 
