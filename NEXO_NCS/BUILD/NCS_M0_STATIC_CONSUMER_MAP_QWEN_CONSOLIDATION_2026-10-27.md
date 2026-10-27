@@ -128,3 +128,59 @@ Ajustes al criterio:
 5. Gemini no es necesario para esta consolidación documental; se reservará para una pregunta adversarial concreta si queda una discrepancia no resuelta.
 
 **Resultado:** el mapa estático mejora la precisión de la evidencia y el inventario; no cierra las propiedades de seguridad ni cambia ningún gate.
+
+
+## 10. Delta de consumidores y límites de inicialización (lectura estática adicional, 2026-10-27)
+
+Esta sección continúa el handoff de bootstrap delta. No sustituye las secciones anteriores ni cambia los gates. Fuentes leídas directamente en `ncs-clean-architecture`; no se ejecutaron código, tests ni CI.
+
+### 10.1 Proyección completa y consumidores con influencia operacional
+
+`src/nexo/core/continuity-snapshot.mjs` declara exactamente cinco colecciones en `COLLECTIONS` y `projectNexoContinuitySnapshot(memory)` copia cada una mediante `structuredClone(memory.nexo[key])`:
+
+| Colección | Consumidor/función inspeccionada | Influencia estática observada | Límite |
+|---|---|---|---|
+| `missions` | `continuity-operations.mjs`: `recordNexoMissionInSnapshot`, `reconstructNexoMissionFromSnapshot`; `continuity-owner.mjs`; `chronicle-append.mjs); `assistants.mjs) | Define identidad, pasos, acciones y targets reconstruidos; Chronicle busca/admite misión y el runtime selecciona su paso | No es validación constitucional ni autorización de efecto |
+| `attempts` | `recordNexoOutcomeInSnapshot`, `reconstructNexoMissionFromSnapshot`, owner/runtime | Afecta reconstrucción de resultados; una completion claim sin identidad/evidencia/contrato suficiente bloquea el paso; los replays no deben sobrescribir el primer intento | El campo `evidence.source` es una etiqueta, no autenticación independiente de procedencia |
+| `doNotRepeat` | `src/nexo/orchestrator.js`: `repeatBlocked` dentro de `buildNexoMission`; operaciones de continuidad | Puede cambiar la planificación futura y bloquear acciones por action/target | Restricción de planificación, no autoridad ni permiso |
+| `executions` | `recordNexoExecutionInSnapshot`; `recordExecutionLineage`/owner; reconstrucción | Conserva identidad idempotente y primer resultado; los conflictos de identidad/resultados pueden bloquear o devolver conflicto; señales de reconstrucción incluyen su cantidad | Linaje no equivale a verdad del efecto externo ni settlement del journal |
+| `effectJournal` | `recordPrepared`, settlement/reconciliation en owner; `reconstructNexoMissionFromSnapshot`; runtime | PREPARED sin resolver, estados desconocidos, entradas huérfanas o desajustes de binding bloquean la misión/paso y pueden llevar a reconciliación sin redispatch; un settlement Chronicle válido participa en recuperación terminal | No es raíz de autoridad; que el runtime aplique bloqueos conservadores no demuestra un gate constitucional previo a la admisión/bootstrap |
+
+El archivo `src/nexo/orchestrator.js` consume `memory.nexo.doNotRepeat` explícitamente para filtrar pasos. También devuelve contadores de `attempts`, `doNotRepeat` y `executions` en señales de misión; los contadores por sí solos no son evidencia de autorización. La inspección cubre consumidores relevantes conocidos, no todos los usos posibles en todos los branches/procesos.
+
+### 10.2 Tests leídos, sin ejecución
+
+- `tests/nexo/continuity-migration.test.mjs`: el texto del test cubre proyección de las cinco colecciones desde `legacyMemory`, exclusión de `runs/lessons/patterns`, preferencia por el store canónico existente, rechazo de corrupción sin fallback, estado inicial UNKNOWN por defecto, inicialización vacía opt-in, PREPARED no asentado por linaje, rechazo de revisión ambiental ausente/desajustada y bloqueos de reconstrucción para intentos incoherentes/no verificados. **Esto describe aserciones presentes en el archivo; no afirma que pasen.**
+- `tests/nexo/assistants-runtime-cli.test.mjs`: el texto del test prepara rutas temporales aisladas, llama el CLI de asistentes y comprueba el gate de reparación Opción A (`NEXO_M0_OPTION_A_EFFECT_EXCLUDED`), `dispatchAttempted: false`, `persisted: false`, ausencia de journal de efecto y que la planificación de misión puede persistir. **No se ejecutó**; además, el test usa `spawnSync`, así que leerlo estáticamente no es ejecutar la ruta.
+- `tests/nexo/chronicle-runtime.test.mjs`, alrededor de 1285–1315: el caso de bootstrap concurrente invoca dos veces `runNexoChronicleAppend`, hace un retry, afirma máximo un dispatch, una entrada Chronicle y replay sin cambios de bytes. **No se ejecutó** y solo cubre el escenario/coordinación que el test construye; no acredita exclusión frente a escritores que ignoren el lock ni autoridad constitucional.
+
+### 10.3 Carrera de inicialización: afirmación ajustada
+
+En `src/nexo/core/continuity-store.mjs`, `initialize(snapshot)`:
+1. adquiere el lock mediante `mkdir(lockPath)`; es una coordinación cooperativa por path;
+2. ejecuta `access(filePath)`; si existe devuelve `conflict / NEXO_CONTINUITY_STORE_ALREADY_EXISTS`; si el error no es `ENOENT`, devuelve `failed / NEXO_CONTINUITY_STORE_ACCESS_FAILED`;
+3. ante `ENOENT`, llama a `writeEnvelope`, que escribe el nombre temporal estable `${filePath}.tmp` y luego ejecuta `rename(tempPath, filePath)`;
+4. si la escritura/publicación lanza error, intenta leer el destino: si coincide con el envelope pretendido puede reportar commit recuperado; si no puede determinar el resultado, devuelve UNKNOWN/fallo según la rama;
+5. finalmente libera el lock; si la liberación falla, devuelve `failed` aunque exponga el estado de persistencia conocido, y la capa de servicio no entrega un owner utilizable como si la inicialización hubiera sido normal.
+
+**Qué queda más preciso:** dentro de escritores que respetan el mismo lock, el lock serializa la secuencia de inicialización y el segundo inicializador debería observar el archivo ya existente y tomar la rama conflict. Esa es la intención/flujo estático; el test concurrente no se ejecutó.
+
+**Riesgo residual:** el archivo declara expresamente que `storeRevision` coordina escritores cooperativos, no es una barrera global; también declara que `filePath` no es una frontera sandbox y exige impedir que procesos no confiables modifiquen paths/locks. Un escritor que ignore el lock puede competir después de `access` y antes de `rename`. En un sistema de archivos donde `rename` sustituya un destino existente, el writer podría reemplazar el archivo creado/cambiado durante esa ventana. El temporal estable `.tmp` también depende de que los escritores cooperen. El resultado exacto depende de plataforma, permisos, filesystem y timing; no se reprodujo la carrera ni se verificó el comportamiento del dispositivo Android. Estado: **riesgo estático plausible / resultado de ejecución UNKNOWN**, no “vulnerabilidad explotada” ni fallo reproducido.
+
+No se observó una primitiva create-exclusive (p. ej. open con `wx`/`O_EXCL`) que cubra conjuntamente la comprobación y publicación de destino. Esto no implica que deba añadirse una primitiva concreta sin contrato y análisis de compatibilidad; únicamente delimita qué garantía no se puede atribuir al código inspeccionado.
+
+### 10.4 Matriz de propiedades actualizada
+
+| Propiedad | Evidencia disponible | Estado y cierre requerido |
+|---|---|---|
+| Aislamiento bootstrap Chronicle | Ruta estática puede inicializar, admitir misión y continuar a runtime/append en una invocación | **Brecha estática identificada**; contrato debe separar bootstrap de admisión/dispatch y persistencia de dominio |
+| Autoridad constitucional | No se identificó gate constitucional en la ruta de bootstrap revisada; `NOT_EVALUATED` no bloquea | **PENDING/UNKNOWN**; definición normativa + evidencia del gate en el límite correcto |
+| Separación Nexo/Lúmina | `legacyMemory` proviene de `state.nexoMemory`/ `persisted.nexoMemory`; continuidad influye en planificación y la ruta assistants persiste estado de Lúmina | **Acoplamiento estático confirmado en rutas revisadas**; contrato/namespace/sandbox y prueba autorizada futura |
+| Reparación excluida de M0 | Gate local y aserciones escritas en test de CLI; módulos de reparación siguen presentes | **Bloqueo local confirmado estáticamente; exclusión global UNKNOWN** |
+| Concurrencia de inicialización | Lock cooperativo, check `access`, temporal estable y `rename`; test concurrente está escrito pero no ejecutado | **Cooperación local descrita; writer no cooperativo y plataforma UNKNOWN** |
+| Persistencia/durabilidad | Rename publica el envelope; no hay garantía de transacción multi-store ni fsync/power-loss en el contrato del archivo | **No afirmar atomicidad multi-store ni durabilidad universal** |
+| D3/STOP | Hay bloqueos locales conservadores, pero no se ha demostrado un gate global en todas las rutas | **STOP vigente; gate global UNKNOWN** |
+
+### 10.5 Conclusión de esta delta
+
+El mapa ahora explica mejor cómo las cinco colecciones influyen en reconstrucción, planificación, linaje y recuperación, y distingue la serialización entre writers cooperativos del caso de writers no cooperativos. No se declara el inventario global completo. No se cambia ningún gate, no se ratifica un contrato, no se modifica código/tests/workflows/configuración ejecutable y no se ejecuta nada.
