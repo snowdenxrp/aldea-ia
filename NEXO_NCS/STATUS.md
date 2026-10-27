@@ -1,3 +1,14 @@
+## DELTA — CRUCE P-01 CON LÍNEA DE META M0 (2026-10-27)
+
+- Nueva reconciliación: `NEXO_NCS/BUILD/NCS_M0_FINISH_LINE_P01_DEPENDENCY_CROSSWALK_2026-10-27.md`, commit `d1c4ba548c30f9cb8a1982428b31e06da78c5e2b`.
+- Inventario indexado en sección 29, commit `ef42e2513c8eb079f9feb557b06cf66d439bed64`.
+- Conclusión: P01-A/G y el protocolo operacional de bootstrap siguen bloqueando M0_BUILD_COMPLETE porque la línea de meta exige un protocolo aprobado de primera creación y evidencia asociada. El gate de efectos protegidos es independiente y permanece STOP.
+- No existe en los artefactos examinados una decisión aceptada que excluya bootstrap del alcance M0; no se introduce esa exclusión por inferencia.
+- Estado canónico sin cambios: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+- Solo documentación; no se modificaron runtime/tests/workflows/configuración y no se ejecutaron tests/CI/Actions.
+
+---
+
 ## DELTA — FRONTERA DE DECISIÓN DE PRIMERA CREACIÓN (2026-10-27)
 
 - Nueva nota: `NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_DECISION_BOUNDARY_2026-10-27.md`, commit `9b18cc275e84e834f31a8f1dcaa9bb6d569915fa`.
