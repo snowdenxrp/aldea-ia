@@ -146,3 +146,40 @@ Fuentes adicionales de la misma rama:
 4. **Configuración de ruta:** sigue pendiente el contrato aprobado para validar que ambas rutas de store pertenecen a la raíz de instancia legítima y no se escapan de su ámbito.
 
 No se cierra D1 con esta sección. La clasificación sigue siendo parcial, basada en los archivos citados; no se ejecutaron módulos, tests, CI ni Actions.
+
+
+## 11. Cadena de observación Chronicle: append, verificación y atribución (2026-10-27)
+
+Fuentes estáticas de la rama `ncs-clean-architecture`:
+
+| Archivo | Blob SHA | Función relevante |
+|---|---|---|
+| `src/nexo/adapters/chronicle-effect.mjs` | `6daf742eb0048724557151a728bf807613a854e9` | Construye handler, verifier y postcondition para la acción `chronicle_append`. |
+| `src/nexo/adapters/chronicle-observation.mjs` | `82c7531fcb143f38a5f121ffcc5b5ab44a9d419f` | Vuelve a leer el store y compara la clave de operación y el contenido esperado. |
+| `src/nexo/core/chronicle-store.mjs` | `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a` | `append` persiste `operationKey` + `content`; `loadCurrent` devuelve revisión y entradas. |
+| `src/nexo/core/chronicle-settlement-contract.mjs` | `4d04930cbf67b5943916cc497dd44b14c87e27bd` | Valida la forma de un settlement local sin elevarla a autenticación, atribución causal o garantía de durabilidad. |
+
+### Secuencia que muestra el código
+
+1. El handler valida la forma de la operación y llama `store.append({ operationKey: missionId + ":" + stepId, content })`.
+2. Si el store informa `committed` o `already_present`, el handler devuelve `status: completed` pero conserva `verified: false`.
+3. El verifier llama a `observeChronicleOperation`, que vuelve a cargar el store y comprueba si hay exactamente una entrada con la clave y el contenido esperado.
+4. La observación devuelve `applied` cuando encuentra una coincidencia exacta, `not_applied` si no encuentra ninguna, y `unknown` para entradas duplicadas, conflicto de contenido, estado inválido o fallo de lectura.
+5. La observación declara `causalAttribution: not_established`; por tanto, la coincidencia persistida acredita el estado local observado, no que esta invocación concreta causó la entrada ni que represente un efecto externo.
+
+### Consecuencia para la clasificación
+
+- **Resultado del handler ≠ verificación posterior:** `completed` con `verified: false` no debe describirse como efecto verificado.
+- **Observación local ≠ autoridad:** una entrada coincidente no autoriza el efecto que se registró ni demuestra una raíz constitucional legítima.
+- **Ausencia observada ≠ permiso para repetir:** `not_applied` es una observación en una revisión concreta; no resuelve por sí misma carreras posteriores ni concede autorización de redispatch.
+- **UNKNOWN debe permanecer UNKNOWN:** un store ilegible o con forma inesperada no debe convertirse en éxito inferido.
+- Esta cadena es específica del adapter Chronicle inspeccionado. No demuestra que otros adapters ni todas las rutas de efecto compartan las mismas garantías.
+
+### Evidencia aún necesaria
+
+1. Pruebas de contrato vinculadas al SHA exacto que demuestren las transiciones handler → verifier → postcondition en éxito, contenido conflictivo, ausencia, duplicado y fallo de lectura.
+2. Confirmación de que la máquina de estados de `executeNexoStepWithContinuityOwner` no confunde `completed` con `verified` antes de la postcondition.
+3. Definición separada de qué evidencia basta para autorizar un efecto y qué evidencia basta para afirmar que el efecto ocurrió.
+4. Contrato de raíz/rutas y admisión previa a la primera lectura persistente, aún abierto en D1/D2.
+
+Esta sección registra semántica estática observada; no se ejecutó el flujo. No cierra D1, no ratifica B2 y no autoriza cambios de implementación.
