@@ -81,3 +81,20 @@ Este contrato debe respetar la regla activa de integración MASTER + AB + P/P112
 ### Resultado de la revisión
 
 La opción B queda aceptada como **separación de operaciones**, pero la fuente concreta de autoridad para el bootstrap permanece **UNKNOWN/PENDING**. No existe evidencia suficiente para escoger o inventar un mecanismo de autoridad. El contrato de inicialización no debe considerarse listo para implementación hasta resolver ese owner canónico. La decisión no cambia los gates de M0.
+
+
+## Revisión de owner canónico en MASTER/CORE (2026-10-26)
+
+Se localizó un contrato NCS existente que define el owner semántico más próximo para la legitimidad constitucional: [Minimum Core Constitution Authority Context Contract](STEP_7_MINIMUM_CORE_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_2026-10-08.md). Su frontera reconoce el régimen constitucional para una evaluación posterior de Policy, derivado de una base de confianza ya reconocida; no nace de datos del caller y no concede ejecución.
+
+La auditoría de reutilización [Constitution Authority Context Reuse Audit](STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md) declara cerrado el examen y concluye que no se encontró una ruta implementada actual que establezca ese contexto. El contrato de Trust Function / Root Role Map también afirma que el reconocimiento inicial independiente y la aplicación protegida real siguen sin implementarse o probarse.
+
+### Resolución precisa
+
+- **Owner semántico localizado:** Constitution Authority Context de Core, para reconocer el régimen constitucional.
+- **Base de confianza que debe establecerlo:** todavía no demostrada como mecanismo independiente y vigente en la implementación.
+- **Resultado para el bootstrap de persistencia:** no se puede usar directamente el contrato de persistencia como autoridad ni dar por resuelto el bootstrap. La opción B sigue siendo solo separación de operaciones; el gate de autoridad continúa bloqueado.
+- **No duplicar autoridad:** no crear un `BootstrapAuthority` paralelo. El bootstrap de persistencia debe consumir el resultado de la frontera constitucional reconocida cuando esa frontera exista y su contrato cubra explícitamente esta operación; no debe construir ni inferir ese resultado.
+- **Siguiente paso de diseño:** comprobar si el contrato constitucional existente incluye, o debe delimitar explícitamente, la legitimidad de la operación de inicialización local de estado. No ampliar silenciosamente su alcance. Si no la cubre, registrar la dependencia como UNKNOWN/PENDING para una decisión del propietario.
+
+Esto reduce la pregunta abierta: ya no es «¿qué owner semántico inventamos?», sino «¿cómo se establece independientemente el contexto constitucional existente, y cubre su alcance la inicialización local?». La respuesta de implementación sigue siendo UNKNOWN.
