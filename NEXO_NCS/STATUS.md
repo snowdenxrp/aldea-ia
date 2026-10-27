@@ -1,3 +1,12 @@
+## DELTA — P-01: MATRIZ DIRIGIDA DE INICIALIZACIÓN Y CONSUMIDORES (2026-10-27)
+
+- Inventario §22, commit `8b289845961653d8f85b32aa92d233e4a532d042`: relaciona el servicio de Continuity, snapshot, store y los tres callers estáticos relevantes con los límites de evidencia de cada uno.
+- Resultado: la Opción A de alcance (almacenamiento local M0 estrictamente no autoritativo) está elegida, pero la separación arquitectónica no está demostrada. La ruta Chronicle puede continuar desde inicialización a admisión/ejecución dentro de la misma invocación; `simulate.mjs` enlaza la ausencia de estado de simulación con inicialización; `assistants.mjs` es un flujo compuesto Nexo/Lúmina/world-state.
+- P-01 sigue OPEN/UNKNOWN: protocolo concreto, quiescencia, autoridad aplicable y creación exclusiva ante todos los escritores relevantes no están demostrados. Preservar corrupto/inválido; errores o resultados ambiguos → UNKNOWN/STOP; sin retry automático.
+- No crear autoridad paralela ni ampliar Constitution Authority Context por analogía. No se cerró P-01 ni se autorizó implementación. Sin cambios ejecutables/tests/CI/Actions.
+
+---
+
 ## DELTA — ORDEN PROPUESTO PARA RESOLVER P-01…P-10 SIN REPETIR CENSOS (2026-10-27)
 
 - Inventario §21, commit `8606cb600f4d155fdaa7542bdcb47ef68f74aa27`: establece una secuencia documental propuesta para P-01…P-10 basada en el registro canónico existente.
