@@ -188,3 +188,17 @@ La intención del snapshot de continuidad es no autoritativa, pero el store incl
 ### Siguiente paso exacto
 
 Completar un mapa de llamadas de `openNexoContinuityOwner` y del inicializador del store, incluyendo scripts de reparación/entrada y el origen de los argumentos `owner`/store. Para cada ruta, establecer si la inicialización solo permite almacenar continuidad o puede abrir una ruta a planificación, dispatch, reconciliación o efectos. Si esa frontera no se puede demostrar estáticamente con contratos existentes, mantener Opción A como alcance elegido pero **STOP/UNKNOWN para implementación**. No ejecutar tests/CI ni modificar runtime/tests/workflows/configuración sin autorización específica.
+
+## Hallazgo prioritario de consumidores: inicialización y despacho en una misma invocación (2026-10-27)
+
+**Archivo:** `src/nexo/application/chronicle-append.mjs`; entrada CLI en `scripts/nexo-chronicle-session.mjs`.
+
+El CLI expone `--initialize-continuity`. `runNexoChronicleAppend` preflighta ambos almacenes, permite continuar si falta continuidad y `initializeContinuity` es verdadero, llama a `openNexoContinuityOwner` con `allowEmptyInitialization: initializeContinuity` y, después de la inicialización, sigue hacia la admisión de misión y `executeNexoStepWithContinuityOwner`. El resultado público mantiene `authorization: NOT_EVALUATED`, pero ese valor no impide por sí solo la continuación del flujo.
+
+**Conclusión acotada:** se confirma una ruta de código donde la inicialización del almacén de continuidad y el avance hacia una operación de Chronicle con despacho ocurren dentro de la misma invocación. Esto no prueba que se conceda autoridad constitucional; sí significa que la separación operacional exigida por la Opción A no está demostrada y que `--initialize-continuity` no debe considerarse, por sí solo, una operación aislada y no habilitante.
+
+**Bloqueo para implementación:** antes de cambios ejecutables debe resolverse, con contrato existente y alcance explícito, cómo separar el acto de inicialización de cualquier admisión/despacho posterior. No basta con renombrar la bandera ni con confiar en `authorization: NOT_EVALUATED`; no se propone aún una solución de runtime. Mantener M0 INCOMPLETO, autoridad PENDING/UNKNOWN, autorización NOT_EVALUATED y efectos protegidos STOP.
+
+### Aclaración de las dos opciones ya elegidas
+
+La elección de **Opción B** registrada anteriormente se refiere al eje de mecanismo de persistencia: inicialización explícita separada del commit condicional normal. La elección posterior de **Opción A** se refiere al eje de alcance: almacenamiento local M0 estrictamente no autoritativo. Son ejes distintos y compatibles; ninguna elección demuestra que la implementación actual cumpla las condiciones.
