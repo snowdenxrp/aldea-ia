@@ -1,3 +1,12 @@
+## DELTA — BRECHA DE REGLA LEGÍTIMA P-01 (2026-10-27)
+
+- Nuevo artefacto: NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md, commit 940f1f8f1ebd21bb131e44ccdd967f0d723a4a5e.
+- Reconciliación limitada: la opción A de alcance y la opción B de separación del bootstrap no legitiman por sí solas la primera creación del archivo Continuity. STEP 7 requiere una Trust Foundation reconocida y conserva STOP BEFORE CODE; no se encontró una regla explícita aceptada en los artefactos revisados, sin afirmar ausencia en fuentes no consultadas.
+- No se crea autoridad paralela ni se amplía por analogía el contexto constitucional. La regla legítima sigue PENDING/UNKNOWN; se reutiliza la línea de meta M0 existente.
+- Gates intactos: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+- Solo documentación; sin cambios ejecutables ni tests/CI/Actions.
+
+---
 ## DELTA — OBJETO CANDIDATO EXACTO P-01 Y MAPA DE CAMPOS (2026-10-27)
 
 - Nuevo artefacto: `NEXO_NCS/BUILD/NCS_M0_P01_EXACT_CANDIDATE_OBJECT_AND_FIELD_CONSUMER_MAP_2026-10-27.md`, commit `1be36c02ed93b2c833f3be014d3a25ea05ebfab0`.
