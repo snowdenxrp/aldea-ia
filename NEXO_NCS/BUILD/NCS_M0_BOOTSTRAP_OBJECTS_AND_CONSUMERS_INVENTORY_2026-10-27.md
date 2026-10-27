@@ -411,3 +411,45 @@ Reutilizar P-HIST-08/P-02 y el manifiesto existente para anotar la condición ex
 No cerrar P-02/P-HIST-08 ni cambiar el alcance en nombre del propietario. No modificar runtime/tests/workflows ni ejecutar pruebas.
 
 Estado: D1-DESIGN OPEN; D1-IMPLEMENTATION NO AUTORIZADA; excepciones documentales, no barreras técnicas demostradas.
+
+
+## 20. Condiciones de salida para las excepciones P-02 / P-HIST-08 (2026-10-27)
+
+Base documental reutilizada:
+- Registro de decisiones `NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`, blob `7dfd8058bad81c4cb70eb16c2c71e2d0f870d973`, filas P-HIST-08 y P-02.
+- Manifiesto D1 `NCS_M0_D1_ENTRYPOINT_MANIFEST_AND_EDGE_CLASSIFICATION_2026-10-24.md`, blob `d49996d00ed46e71d6acf777dc8134ac55571570`, incluidas las excepciones de diseño y sus límites.
+- No se modifica ni se cierra ninguna decisión de propietario.
+
+### A. `scripts/assistants.mjs` — integración compuesta Nexo + Lúmina
+
+**Clasificación actual:** excepción de diseño; su exclusión no es una barrera de runtime. La ruta operacional observada toca Continuity, memoria de aprendizaje Lúmina y estado del mundo; no hay evidencia de atomicidad multi-store.
+
+**Condiciones documentales mínimas para salir de la excepción:**
+1. Decisión explícita sobre el alcance: permanecer fuera de la ruta ordinaria M0 o integrar únicamente una suboperación Nexo mediante una API de instancia admitida. No convertir estado del mundo ni memoria Lúmina en estado de raíz Nexo por conveniencia.
+2. Contrato de propiedad por cada estado/store: quién lo posee, qué operación puede leer/escribirlo y qué persistencia queda fuera de la instancia Nexo.
+3. Si se decide integración de la suboperación Nexo, evidencia de que esa suboperación recibe la admisión de instancia/root definida y no puede evitarla por import/reexport o llamada directa path-based.
+4. Contrato de fallos entre stores explícitamente no-atómico, salvo que se diseñe y acepte por separado una garantía transaccional real. No inferir atomicidad a partir del orden secuencial.
+5. Test arquitectónico dirigido a la decisión ratificada y ejecución ligada al SHA evaluado antes de afirmar bloqueo/aislamiento probado.
+
+**Evidencia actual:** la decisión previa propone integración compuesta y mantener world-state/memoria Lúmina fuera de la raíz Nexo; sigue siendo propuesta, no autorización de implementación ni prueba ejecutable de aislamiento.
+
+### B. `scripts/simulate.mjs` — simulación y estado legacy
+
+**Clasificación actual:** excepción de diseño; abre Continuity por ruta legacy y enlaza inicialización/memoria legacy con el estado de simulación. No se demuestra raíz canónica compartida.
+
+**Condiciones documentales mínimas para salir de la excepción:**
+1. Decisión explícita: mantenerla fuera del alcance operativo ordinario M0, o especificar una integración independiente de simulación con frontera de instancia.
+2. Definir si la simulación puede inicializar estado Continuity ausente; la ausencia de archivo de mundo no debe interpretarse como prueba de autoridad ni de legitimidad del root.
+3. Definir propiedad y semántica de migración del estado legacy y de `legacyMemory`; no fusionar automáticamente el estado del mundo con la memoria Nexo.
+4. Si se integra, probar que todas las rutas exportadas y la ruta CLI respetan la frontera elegida; el guard de ejecución directa no cubre automáticamente helpers exportados ni llamadas importadas.
+5. Test y ejecución vinculados al SHA exacto antes de afirmar aislamiento, ausencia de bypass o consistencia entre stores.
+
+**Evidencia actual:** el manifiesto documenta la excepción y el uso de ruta legacy; no demuestra que esté bloqueada técnicamente ni que la integración esté aceptada.
+
+### C. Regla común de cierre
+
+P-02/P-HIST-08 solo pueden pasar de abiertos a resueltos después de que el propietario decida el alcance de cada excepción, el contrato de estados/dependencias esté escrito, el inventario de aristas relevante coincida con esa decisión y exista evidencia de prueba acorde con la afirmación. Si solo existe una decisión de excluirlos, registrar `OUT OF SCOPE BY DECISION` (una vez ratificada), no `BLOCKED AT RUNTIME`. Si falta la decisión o la evidencia, mantener `OPEN / UNKNOWN`.
+
+Esto es una matriz propuesta de salida para revisión; no ratifica opciones, no cierra P-02/P-HIST-08, no autoriza implementación y no añade una nueva línea de meta.
+
+Estado: documental únicamente; D1/D2 OPEN; M0 INCOMPLETO; no se ejecutaron pruebas/CI/Actions.
