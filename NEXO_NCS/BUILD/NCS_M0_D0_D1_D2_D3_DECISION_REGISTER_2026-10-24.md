@@ -169,3 +169,47 @@ Usar la alternativa C como estado actual; después, decidir entre A y B con el a
 - Raíz legítima: PENDING/UNKNOWN.
 - Efectos protegidos: STOP.
 - Cambio de esta sección: documentación únicamente; no modifica runtime, tests, workflows ni configuración ejecutable y no afirma ejecución de pruebas o CI.
+
+
+## 11. Separar autorización de almacenamiento local y autoridad constitucional — 2026-10-27
+
+Esta sección convierte en una pregunta de alcance explícita la brecha descrita en el contrato de bootstrap. No introduce un owner, una raíz, un estado de runtime ni un mecanismo nuevo. No ratifica ninguna alternativa.
+
+### 11.1 Distinción normativa
+
+La existencia de dos preguntas diferentes debe mantenerse visible:
+
+1. **Qué se crea:** almacenamiento local inicial estrictamente no autoritativo, o estado que pueda establecer/modificar confianza, genesis o contexto constitucional.
+2. **Qué legitima la operación:** la precondición reconocida para crear ese almacenamiento. La ausencia del archivo, un lock, un estado inicial válido o una bandera del caller no pueden constituir por sí mismos esa legitimidad.
+
+El contrato Constitution Authority Context existente identifica el owner semántico de reconocimiento constitucional, pero la documentación revisada no demuestra que cubra expresamente la autorización para crear el primer archivo local. No ampliar su alcance por analogía ni inventar un owner paralelo.
+
+### 11.2 Alternativas de alcance pendientes
+
+| Alternativa | Alcance | Consecuencia necesaria |
+|---|---|---|
+| L — almacenamiento interno no autoritativo | M0 puede definir un flujo de creación de almacenamiento local que no establece confianza, no modifica estado constitucional y no habilita efectos. | El propietario debe aceptar explícitamente ese límite; el protocolo de creación, no-sobrescritura, conflicto y UNKNOWN sigue pendiente de diseño/evidencia. No se infiere autoridad de la ausencia. |
+| C — estado constitucional/genesis o capacidad de autoridad | La creación toca estado que establece o afecta la raíz, la confianza o el contexto constitucional. | No procede hasta demostrar la base de confianza y la frontera protegida independiente, y definir el alcance contractual aprobado. El estado sigue UNKNOWN/PENDING y STOP. |
+| U — alcance no demostrado | No se puede demostrar que el objeto creado es estrictamente no autoritativo ni que queda separado del estado constitucional. | Tratar como UNKNOWN/BLOCKED; no inicializar ni implementar una suposición. |
+
+### 11.3 Recomendación técnica no vinculante
+
+Conservar U como clasificación actual hasta que el propietario confirme el alcance pretendido y el contrato identifique los objetos/archivos concretos cubiertos. No convertir la alternativa L en permiso de ejecución: solo delimita un posible alcance de diseño. La autorización técnica para crear almacenamiento y la autoridad constitucional son conceptos distintos, pero ambos requieren contratos y evidencias apropiados para su propio alcance.
+
+### 11.4 Evidencia que falta para cerrar la pregunta
+
+- Identificar exactamente qué archivos/objetos crea el bootstrap M0 y qué consumidores pueden leerlos.
+- Demostrar que esos objetos no son usados como trust anchor, autoridad, genesis, policy binding ni habilitación de efectos; si no se demuestra, mantener U.
+- Determinar si existe una regla canónica ya aprobada que legitime esa creación local; no deducirla del propietario conceptual ni de la presencia de Constitution Authority Context.
+- Mantener separados los contratos de creación exclusiva, concurrencia, preservación de estado corrupto, resultado UNKNOWN y durabilidad.
+- Solo después de decisión explícita, contrato congelado y autorización separada: preparar pruebas/implementación. Esta sección no afirma ejecución de pruebas o CI.
+
+### 11.5 Estado
+
+- Alcance de bootstrap local: UNKNOWN/PENDING.
+- Authority para primera creación local: UNKNOWN/PENDING.
+- No se crea `BootstrapAuthority` ni una raíz paralela.
+- P-01…P-10 siguen abiertos conforme a sus estados previos; esta sección no los cierra.
+- M0: INCOMPLETO; D1-DESIGN: OPEN; D1-IMPLEMENTATION: NO AUTORIZADA.
+- `authorization: NOT_EVALUATED`; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP.
+- Documentación únicamente; sin runtime, tests, workflows, configuración ejecutable, ejecución de pruebas o CI.
