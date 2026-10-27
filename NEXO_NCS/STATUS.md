@@ -1,3 +1,13 @@
+## DELTA — CRUCE CHRONICLE CON OWNER-BACKED RUNTIME (2026-10-27)
+
+- Ampliado el inventario existente, §11–12: [Inventario de bootstrap y consumidores](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `bddf1e096bc282f3f426a3d1aa3a8011c5136c36`.
+- Fuentes de la cadena: `chronicle-effect.mjs` blob `6daf742eb0048724557151a728bf807613a854e9`; `chronicle-observation.mjs` blob `82c7531fcb143f38a5f121ffcc5b5ab44a9d419f`; `owner-backed-runtime.mjs` blob `a7a014489209273ce78d0103afa785728d4c467c`.
+- Hallazgo estático acotado: el runtime exige confirmación de PREPARED y revisión incrementada antes del dispatch; después exige reconciliación y confirmación del resultado terminal. UNKNOWN no se promueve a completado. Esto describe el módulo inspeccionado, no demuestra autorización constitucional, cierre de entrypoints ni efecto externo real.
+- Próximo paso acotado: cruzar los tests existentes con PREPARED, recuperación, postcondition y resultado terminal para registrar cobertura documental y brechas; no ejecutar tests ni CI sin autorización separada.
+- Sin cambios ejecutables y sin tests/CI/Actions. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — LECTORES CHRONICLE Y LÍMITES DE LA API PÚBLICA (2026-10-27)
 
 - Ampliado el inventario existente, §10: [Inventario de bootstrap y consumidores](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `89689aa1fb29e1d52c6556aaf3e21702571ca875`.
