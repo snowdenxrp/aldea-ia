@@ -1,3 +1,13 @@
+## DELTA — MATRIZ DOCUMENTAL DE VERIFICACIÓN DE LA FRONTERA PROTEGIDA (2026-10-27)
+
+- Nuevo artefacto: [NCS_M0_PROTECTED_BOUNDARY_VERIFICATION_MATRIX_2026-10-27.md](BUILD/NCS_M0_PROTECTED_BOUNDARY_VERIFICATION_MATRIX_2026-10-27.md), commit `b84f11d6f18a8926991447f1a2c479d1e9a24268`.
+- Define PB-01…PB-09 como etiquetas documentales para verificar que la primera creación no continúe hacia operaciones protegidas, que APIs directas no eludan wrappers, que Chronicle hijo no pierda admisión y que los fallos/release incierto permanezcan cerrados.
+- La matriz no legitima primera creación, no demuestra una frontera implementada ni cambia estados. Primer paso siguiente: revisión estática focalizada PB-01/PB-02/PB-08 con ruta, SHA/blob, líneas y callers exactos; si falta evidencia, UNKNOWN. Reutilizar el mapa P-01 y ledgers D1; no repetir el censo general.
+- Solo documentación: sin cambios runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
+- Estado canónico sin cambio: M0 INCOMPLETO; D0/D1-DESIGN/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz legítima PENDING/UNKNOWN; primera creación y efectos protegidos STOP.
+
+---
+
 ## DELTA — CANAL HUMANO HISTÓRICO Y LÍMITE DE APLICABILIDAD P-01 (2026-10-27)
 
 - Reconciliado el registro histórico de STEP 7: el teléfono/canal actual fue seleccionado como candidato para investigar transmisión de aprobación constitucional; C0 continúa UNESTABLISHED y no hay mecanismo/enrollment seleccionado. No debe pedirse al propietario que vuelva a escoger el candidato ya elegido.
