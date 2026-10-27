@@ -1,3 +1,13 @@
+## DELTA — RECONCILIACIÓN DE HALLAZGOS DE PERPLEXITY SOBRE BOOTSTRAP (2026-10-27)
+
+- Nuevo artefacto documental: [NCS_M0_PERPLEXITY_FINDINGS_RECONCILIATION_2026-10-27.md](BUILD/NCS_M0_PERPLEXITY_FINDINGS_RECONCILIATION_2026-10-27.md), commit `edfb7b6eca3506de1047aec91cefd28cf689de07`.
+- Contraste directo de fuentes: la decisión de estado ausente declara una regla aceptada de no sobrescritura si otro escritor gana la inicialización, pero su incorporación/verificación canónica sigue pendiente y no define el conjunto de escritores cubiertos.
+- Corrección de precisión: el protocolo D3 de quiescencia está marcado como propuesta no aprobada/no implementada/no ejecutada; no presentarlo como procedimiento aprobado ni extenderlo por analogía al bootstrap inicial.
+- `assistants.mjs`/`simulate.mjs` permanecen sin contrato de exclusión/bloqueo demostrado (P-HIST-08); no asumir que están bloqueados. La contradicción señalada por Perplexity requiere reconciliar la cita exacta del documento “decisiones vs gates” antes de llamarla contradicción definitiva entre decisiones aceptadas.
+- Exclusión requerida frente a escritores no cooperativos: sigue UNKNOWN. Carrera `access`→`rename`: riesgo inferido, no reproducido. Sin runtime/tests/workflows/dispositivo modificados; tests/CI/Actions no ejecutados. Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP.
+
+---
+
 ## DELTA — PAQUETE DE REVISIÓN INDEPENDIENTE SOBRE EXCLUSIÓN DE CONTINUITY (2026-10-27)
 
 - Preparada la solicitud [NCS_M0_INDEPENDENT_REVIEW_REQUEST_CONTINUITY_EXCLUSION_2026-10-27.md](BUILD/NCS_M0_INDEPENDENT_REVIEW_REQUEST_CONTINUITY_EXCLUSION_2026-10-27.md), commit `745043f65ecb3e4f7ca26bfc6a0e03b793ad5fc8`.
