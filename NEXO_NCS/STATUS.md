@@ -1,3 +1,12 @@
+## DELTA — ENLACES DOCUMENTALES P-01 VERIFICADOS (2026-10-27)
+
+- Nota de enlace creada: `NEXO_NCS/BUILD/NCS_M0_P01_DOCUMENTATION_LINKAGE_CHECKPOINT_2026-10-27.md`, commit `06fd872814b77f5fdd3c5426fda9d1e2a93c3aa1`.
+- Inventario actualizado con sección 25, commit `70f379157da723096da9a4f9201b3febe66586a9`; indexa la nota de enlace y aclara el estado del intento previo.
+- La Opción A de alcance y la Opción B de procedimiento son ejes diferentes. P-01 sigue OPEN/UNKNOWN; M0 INCOMPLETO; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; efectos protegidos STOP.
+- Solo documentación: no se cambiaron runtime/tests/workflows/configuración ni se ejecutaron pruebas, CI o Actions.
+
+---
+
 ## DELTA — P-01: MATRIZ DE DECISIONES INDEPENDIENTES (2026-10-27)
 
 - Nuevo artefacto: `NEXO_NCS/BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md`, commit `422342da2ce830fe736c9b675435508f4a24fe5a`. Divide P-01 en ocho dimensiones: objeto/no autoridad; aislamiento operacional; procedimiento/quiescencia; creación exclusiva; clasificación de estado; UNKNOWN/reconciliación; autoridad canónica; y pruebas/SHA.
