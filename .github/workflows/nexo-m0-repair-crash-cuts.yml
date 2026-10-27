@@ -1,0 +1,56 @@
+name: Nexo M0 — repair settlement crash cuts
+
+on:
+  push:
+    branches: [ncs-clean-architecture]
+    paths:
+      - "scripts/nexo-repair-preparation.mjs"
+      - "scripts/nexo-repair-dispatch.mjs"
+      - "scripts/nexo-repair-entrypoint.mjs"
+      - "scripts/nexo-repair-session.mjs"
+      - "scripts/nexo-runtime-session.mjs"
+      - "scripts/assistants.mjs"
+      - "scripts/nexo-repair-settlement.mjs"
+      - "scripts/nexo-repair-mission-verification.mjs"
+      - "scripts/nexo-continuity.mjs"
+      - "src/nexo/core/**"
+      - "src/assistants/debugger.js"
+      - "src/nexo/adapters/persisted-repair-observation.mjs"
+      - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
+      - "tests/nexo/continuity-migration.test.mjs"
+      - "tests/nexo/repair-owner-lifecycle.test.mjs"
+      - "tests/nexo/repair-session.test.mjs"
+      - "tests/nexo/assistants-runtime-cli.test.mjs"
+      - "tests/nexo/repair-mission-verification.test.mjs"
+      - ".github/workflows/nexo-m0-repair-crash-cuts.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  repair-crash-cuts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Run repair settlement crash-cut regression
+        run: node tests/nexo/repair-settlement-crash-cuts.test.mjs
+      - name: Run Nexo continuity owner migration regression
+        run: node tests/nexo/continuity-migration.test.mjs
+      - name: Run owner-backed repair lifecycle integration regression
+        run: node tests/nexo/repair-owner-lifecycle.test.mjs
+      - name: Run canonical owner-backed repair session regression
+        run: node tests/nexo/repair-session.test.mjs
+      - name: Check runtime bridge and opt-in assistant entrypoint syntax
+        run: node --check scripts/nexo-runtime-session.mjs && node --check scripts/assistants.mjs
+      - name: Run isolated assistants runtime CLI regression
+        run: node tests/nexo/assistants-runtime-cli.test.mjs
+      - name: Run persisted repair mission goal verification regression
+        run: node tests/nexo/repair-mission-verification.test.mjs
