@@ -485,3 +485,37 @@ Estado: documental únicamente; D1/D2 OPEN; M0 INCOMPLETO; no se ejecutaron prue
 Si una decisión de propietario, una precondición legítima, una garantía del filesystem, un límite de concurrencia o una evidencia necesaria no está disponible, marcar el elemento correspondiente `PENDING/UNKNOWN` y detener la inferencia dependiente. No elegir una opción por descarte. No implementar ni ejecutar pruebas/CI como parte de esta secuencia sin autorización explícita independiente.
 
 Estado: propuesta de orden documental; P-01…P-10 continúan abiertos según el registro canónico.
+
+
+## 22. P-01 — matriz dirigida de inicialización y consumidores (2026-10-27)
+
+**Pregunta acotada:** ¿la inicialización explícita de almacenamiento Continuity puede separarse, en las rutas observadas, de admisión, PREPARED, dispatch o mutación Chronicle? Esta matriz consolida referencias estáticas ya inspeccionadas; no es un análisis exhaustivo del árbol ni una prueba de runtime.
+
+| Ruta/consumidor | Evidencia estática identificada | Qué permite afirmar | Qué NO permite afirmar |
+|---|---|---|---|
+| `src/nexo/core/continuity-service.mjs` → `openNexoContinuityOwner` | Blob `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`; `allowEmptyInitialization` por defecto es `false`; si hay `legacyMemory`, proyecta esa memoria; si no hay memoria y no se permite vacío, devuelve `NEXO_CONTINUITY_INITIAL_STATE_UNKNOWN`; en caso permitido llama a `store.initialize(snapshot)`. | La inicialización se expone como decisión explícita del caller; la ausencia no se convierte automáticamente en snapshot vacío por el valor por defecto del servicio. | No demuestra legitimidad de la creación ni que el snapshot creado sea inofensivo para todos los consumidores. |
+| `src/nexo/core/continuity-snapshot.mjs` | Blob `56cbd1753f1fa3fb67c3592e5a5664b58d96c4c3`; el snapshot tiene `missions`, `attempts`, `doNotRepeat`, `executions` y `effectJournal`; la proyección declara que no persiste ni concede autoridad. | El contrato expresa intención de que el snapshot no sea una credencial de autoridad. | El comentario no demuestra el uso de todos los consumidores ni la separación de la ruta de ejecución. |
+| `src/nexo/core/continuity-store.mjs` | Blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`; `initialize(snapshot)` gestiona inicialización y resultados `committed/conflict/failed/unknown`. | Existe una primitiva de inicialización con resultados explícitos y tratamiento de resultado indeterminado en el contrato local. | No demuestra que la creación sea exclusiva frente a todo escritor relevante ni que su invocación esté autorizada por un owner canónico. |
+| `src/nexo/application/chronicle-append.mjs` | Blob `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`; la ruta acepta `initializeContinuity` y `initializeChronicle`, preflight de ambos stores, abre el owner y luego continúa a admisión/ejecución en la misma operación cuando las precondiciones locales pasan. | La inicialización no está demostrada como una invocación aislada del resto del flujo Chronicle en esta ruta. Esto bloquea afirmar que la separación Opción A ya está demostrada. | No demuestra por sí solo que se haya producido un efecto real en una ejecución concreta; la conclusión es de estructura estática. |
+| `scripts/simulate.mjs` | El manifiesto D1 y §§18–20 documentan apertura de Continuity con `allowEmptyInitialization` condicionado por ausencia de estado de simulación, seguido de persistencia del mundo. | Existe acoplamiento estático entre ausencia de estado de simulación e inicialización Continuity en esa ruta. | No demuestra que el estado inicial conceda autoridad; tampoco demuestra que el comando esté bloqueado técnicamente. |
+| `scripts/assistants.mjs` | El manifiesto D1 y §§19–20 documentan apertura de Continuity, registro de misión y escrituras de memoria Lúmina/estado del mundo en el mismo flujo compuesto. | La excepción de diseño no equivale a aislamiento de runtime y la inicialización no puede declararse inocua sin delimitar el alcance compuesto. | No demuestra atomicidad multi-store ni una ruta protegida autorizada. |
+
+### Resultado de P-01 en este punto
+
+- **Alcance elegido por el propietario:** Opción A — estudiar únicamente almacenamiento local M0 estrictamente no autoritativo y acotado.
+- **Protocolo concreto:** pendiente; P-01 continúa OPEN/UNKNOWN.
+- **Separación arquitectónica:** no demostrada. En particular, la ruta Chronicle puede estructuralmente seguir desde inicialización a admisión/ejecución dentro de la misma invocación, y los consumidores de snapshot incluyen el journal operacional.
+- **Autoridad de bootstrap:** no definida ni inferible desde la ausencia, el lock, el snapshot inicial o los datos del caller. No crear `BootstrapAuthority` paralelo ni ampliar Constitution Authority Context por analogía.
+- **Concurrencia/creación exclusiva:** requisito pendiente de demostración para todos los escritores relevantes; el lock cooperativo no es suficiente si hay escritores no cooperativos.
+- **Estado existente corrupto/inválido:** preservar; no reinterpretarlo como ausencia.
+- **Error o resultado ambiguo:** UNKNOWN/STOP, sin reintento automático ni afirmación de ausencia de mutación sin evidencia.
+
+### Criterio de salida documental antes de proponer implementación
+
+1. Identificar qué archivo/objeto concreto se pretende crear y demostrar que no establece ni condiciona confianza, autoridad constitucional ni estado protegido.
+2. Cerrar el mapa de consumidores del estado inicial para las rutas que podrían alcanzar admisión, PREPARED, dispatch o Chronicle; toda arista relevante no resuelta permanece UNKNOWN/BLOCKED.
+3. Especificar el esquema inicial y resultados usando contratos canónicos existentes, sin crear autoridad paralela.
+4. Resolver P-01 (procedimiento/quiescencia/creación concurrente) y sus dependencias con P-02/P-03 antes de declarar el contrato listo.
+5. Obtener autorización específica posterior antes de modificar runtime/tests/workflows o ejecutar pruebas/CI.
+
+Este resultado es una reconciliación estática dirigida, no un pase de criterios de aceptación. No cambia la decisión de alcance, no cierra P-01, no autoriza implementación y no afirma que se ejecutaran tests.
