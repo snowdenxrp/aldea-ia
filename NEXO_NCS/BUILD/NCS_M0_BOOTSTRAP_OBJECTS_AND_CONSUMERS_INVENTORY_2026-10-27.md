@@ -117,3 +117,32 @@ Consulta estática adicional de los blobs indicados; no se ejecutaron los módul
 5. **Lock local → creación:** el lock protege solo a participantes cooperantes. No se ha demostrado la garantía frente a escritores ajenos al protocolo ni la atomicidad de la creación entre los dos stores.
 
 **Cierre de esta actualización:** la matriz aclara consumidores directos de las cinco colecciones y varias aristas; no cierra D1 ni autoriza a reclasificar el bootstrap como inocuo/no autoritativo. Se mantienen UNKNOWN donde falta evidencia. Ningún test/CI/Actions ejecutado; no se cambió código ejecutable.
+
+
+## 10. Lectores de Chronicle y límites de la API pública (actualización dirigida, 2026-10-27)
+
+Fuentes adicionales de la misma rama:
+
+| Archivo | Blob SHA | Observación estática |
+|---|---|---|
+| `src/nexo/application/index.mjs` | `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3` | Exporta `runNexoChronicleAppend` como único caso de uso mutador de Chronicle; las otras exportaciones enumeradas son consultas de Continuity y previews de misión. |
+| `src/nexo/adapters/chronicle-effect.mjs` | `6daf742eb0048724557151a728bf807613a854e9` | Usa el store de Chronicle mediante `loadCurrent` y `append` para observar/validar la operación y verificar la entrada. |
+| `src/nexo/core/chronicle-settlement-contract.mjs` | `4d04930cbf67b5943916cc497dd44b14c87e27bd` | El contrato dice explícitamente que el registro estructural de settlement no es autenticación, atribución causal ni garantía de durabilidad. |
+| `scripts/nexo.mjs` | `e471eb478a09aa8a9a8323795583e198cdf0a127` | Router CLI independiente; enruta `chronicle-append` al hijo y expone status/mission status/plan/previews basados en Continuity. |
+
+### Qué puede afirmarse
+
+- En la API pública consultada, el mutador Chronicle expuesto es `runNexoChronicleAppend`; el store ofrece `loadCurrent`, `initialize` y `append`.
+- El adapter Chronicle lee el estado actual para resolver idempotencia/observación y luego opera sobre el store. La entrada persistida incluye `operationKey` y `content`; el contrato de settlement local no acredita por sí solo que el efecto sea auténtico, causalmente atribuible ni durable ante pérdida de energía.
+- No se encontró en las exportaciones públicas inspeccionadas un endpoint separado de lectura/listado de Chronicle. Esta afirmación se limita a `application/index.mjs` y `scripts/nexo.mjs`; no es una búsqueda exhaustiva de todos los consumidores internos o externos del repositorio.
+- Las consultas de status/plan/preview enumeradas en la API pública leen Continuity, no se deben etiquetar como lectores Chronicle solo porque pertenecen a la misma aplicación.
+- El contrato del store advierte que `filePath` es configuración confiable, no sandbox; no se afirma resistencia a symlink/path attacks ni rollback protection.
+
+### Aristas que quedan abiertas
+
+1. **Adapter → observación → append → settlement:** falta evidencia de ejecución/CI vinculada a un SHA exacto para comprobar los caminos de éxito, conflicto y resultado desconocido; el código estático no sustituye esas pruebas.
+2. **API pública vs consumidores privados:** la ausencia de exportación de lectura Chronicle no prueba que no existan imports internos directos del store ni consumidores fuera del repositorio.
+3. **Persistencia local vs veracidad:** una entrada Chronicle o un settlement estructural no deben promoverse a prueba de efecto externo ni a autoridad constitucional.
+4. **Configuración de ruta:** sigue pendiente el contrato aprobado para validar que ambas rutas de store pertenecen a la raíz de instancia legítima y no se escapan de su ámbito.
+
+No se cierra D1 con esta sección. La clasificación sigue siendo parcial, basada en los archivos citados; no se ejecutaron módulos, tests, CI ni Actions.
