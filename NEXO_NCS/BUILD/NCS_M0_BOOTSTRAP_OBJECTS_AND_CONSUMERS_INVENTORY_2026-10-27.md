@@ -610,3 +610,14 @@ Aclara que P01-A/G y las dimensiones operacionales de bootstrap siguen bloqueand
 Documento: `NEXO_NCS/BUILD/NCS_M0_P01_OBJECT_CLASSIFICATION_AND_AUTHORITY_SCOPE_2026-10-27.md`, commit `5f4bc79705dc4a0c653ffadf845494ddb0641415`.
 
 Separa almacenamiento operativo M0 no autoritativo de estado de raíz/Constitución/Policy y de objetos aún no clasificados. El hallazgo crítico: que el objeto pretenda ser no autoritativo no prueba aislamiento ni legitima su primera creación; que el contrato constitucional revisado no cubra expresamente bootstrap local tampoco prueba que toda escritura local requiera raíz constitucional. La clasificación del objeto y la regla de primera creación siguen abiertas y no deben resolverse por analogía.
+
+
+## 31. Objeto candidato exacto y mapa de campos/consumidores (2026-10-27)
+
+Documento: `NEXO_NCS/BUILD/NCS_M0_P01_EXACT_CANDIDATE_OBJECT_AND_FIELD_CONSUMER_MAP_2026-10-27.md`, commit `1be36c02ed93b2c833f3be014d3a25ea05ebfab0`.
+
+Estrecha el candidato primario a **el archivo Continuity ausente identificado por el `filePath` real de una invocación de `openNexoContinuityOwner`**, con envelope `NEXO_CONTINUITY_STORE`, versión 1, revisión y snapshot. No afirma que exista una ruta literal canónica común: `continuity.json` es parte del layout propuesto, mientras las factories actuales reciben rutas configurables. Separa este candidato del directorio de instancia, Chronicle, locks/owner records, temporales y estado de mundo/Lúmina/legacy memory.
+
+Mapea de forma conservadora los usos conocidos de `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`, revisión y entradas Chronicle. `doNotRepeat`, reconstrucción/linaje y journal pueden influir en control de flujo/recuperación; eso impide afirmar que la persistencia no tenga consecuencias operativas, aunque no la convierte en raíz de autoridad. La ruta Chronicle puede continuar tras inicializar; `simulate`/`assistants` mantienen acoplamientos estáticos ya registrados.
+
+No se cierra P01-A/G ni se selecciona un protocolo de primera creación. Path de instalación, snapshot inicial exacto, separación negativa end-to-end, regla legítima, exclusión/quiescencia y UNKNOWN siguen pendientes. Solo documentación; sin runtime/tests/workflows/configuración ni ejecución de tests/CI/Actions.
