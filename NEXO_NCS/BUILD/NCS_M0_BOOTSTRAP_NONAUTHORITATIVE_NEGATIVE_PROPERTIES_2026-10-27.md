@@ -1,0 +1,73 @@
+# NCS M0 — Propiedades negativas exigidas para bootstrap no autoritativo
+
+**Fecha:** 2026-10-27  
+**Rama objetivo:** `ncs-clean-architecture`  
+**Estado:** análisis de diseño; no es contrato ratificado ni implementación.  
+**Base:** Opción A de alcance elegida por el propietario; Opción B de mecanismo sigue siendo bootstrap explícito separado del commit condicional normal. D3/STOP sigue siendo el estado operativo.
+
+## 1. Propósito y límite
+
+Este documento convierte D1 —bootstrap de datos estrictamente no autoritativos— en propiedades negativas verificables: no solo qué puede hacer la inicialización, sino qué **no debe poder causar**.
+
+No decide quién autoriza la creación inicial. No declara que el almacenamiento de continuidad actual sea no autoritativo de extremo a extremo. No habilita runtime, pruebas, workflows, configuración, reparación ni efectos protegidos.
+
+## 2. Propiedades negativas propuestas
+
+| ID | Propiedad que debe mantenerse falsa | Evidencia exigida para aceptar D1 | Estado actual |
+|---|---|---|---|
+| NBP-01 | La existencia, ausencia o inicialización de un archivo local **no establece** identidad del propietario, raíz de confianza, autoridad constitucional, permiso ni aprobación. | Contratos de todos los consumidores que distingan estado de datos de autoridad; prueba de que ninguna ruta deriva autoridad de la mera presencia del archivo. | No demostrado globalmente. |
+| NBP-02 | El resultado “inicializado” **no habilita por sí solo** admisión, PREPARED, dispatch, reconciliación, reparación ni mutación de dominio. | Frontera de invocación independiente y trazado completo desde entrypoints hasta adaptadores/efectos; pruebas de integración con almacenamiento real que comprueben que no se invocan adaptadores. | Contradicho por la ruta estática Chronicle actual: la misma invocación puede continuar a admisión, PREPARED y `chronicle_append`. |
+| NBP-03 | El bootstrap no puede combinarse con una misión, acción, contenido de dispatch ni solicitud de reparación para continuar la operación. | Contrato de entrada que rechace payloads mixtos antes de cualquier persistencia/dispatch y pruebas end-to-end. | No implementado ni probado; BA-03 propuesto. |
+| NBP-04 | La falta de continuidad no se convierte en permiso para crearla ni continuar una operación normal. | Las rutas normales bloquean antes de admisión/dispatch si falta el store; el bootstrap es una invocación separada. | No satisfecho en la ruta Chronicle cuando se usa `--initialize-continuity`; simulación también liga la inicialización a ausencia del archivo de mundo. |
+| NBP-05 | Archivo existente inválido, error de lectura, error de I/O o resultado ambiguo no se interpreta como ausencia ni como prueba de que no hubo escritura. | Contrato IO que distinga ausente/existente/inválido/conflicto/UNKNOWN; bytes existentes preservados; pruebas de fallo real. | Gap histórico documentado en el contrato de persistencia; cobertura real no verificada en esta ronda. |
+| NBP-06 | El estado inicial no se consume como señal suficiente para decidir reconciliación o repetir un efecto. | Trazar todos los lectores de `effectJournal` y sus gates; demostrar que UNKNOWN bloquea y no genera reintento automático. | No demostrado de forma exhaustiva; snapshot contiene `effectJournal` y runtime/owner lo consumen. |
+| NBP-07 | Un inicializador concurrente no sobrescribe la creación ganadora ni un archivo preexistente. | Creación exclusiva atómica o equivalente que cubra a todos los escritores relevantes, no solo locks cooperativos; prueba concurrente. | No verificado globalmente. |
+| NBP-08 | La inicialización de continuidad no habilita indirectamente reparación mientras las reparaciones estén fuera de M0. | Mapa de entrypoints/callers de reparación y evidencia de que no se crea/injecta un owner/PREPARED suficiente para despacharlas. | La integración de reparación del runtime del producto está bloqueada por `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; los módulos dedicados existen y su invocabilidad no está globalmente descartada. |
+| NBP-09 | `authorization: NOT_EVALUATED` no se interpreta como aprobación ni como enforcement. | Todos los gates reales identificados; tests que prueben bloqueo cuando la autorización no se evalúa. | La ruta Chronicle puede continuar pese a ese valor; por tanto el valor no es un gate efectivo en esa ruta. |
+| NBP-10 | El alcance “local/no autoritativo” no se utiliza para ocultar persistencia con consecuencias operativas. | Inventario de cada destino persistente y clasificación de su consumidor/efecto; estado inicial limitado a almacenamiento acotado definido por contrato. | No demostrado: Chronicle y simulación persisten cambios tras la inicialización. |
+
+## 3. Evaluación frente a la evidencia disponible
+
+### Chronicle
+
+Lectura estática de `scripts/nexo-chronicle-session.mjs`, `src/nexo/application/chronicle-append.mjs`, `src/nexo/core/owner-backed-runtime.mjs` y `src/nexo/adapters/chronicle-effect.mjs` muestra una ruta en la que `--initialize-continuity` permite inicializar el store y continuar dentro de la misma invocación hacia admisión, PREPARED y el handler que llama a `store.append(...)`.
+
+**Resultado:** NBP-02 y NBP-04 no se pueden aceptar para la ruta actual. Esto es una conclusión de código estático; no significa que se haya ejecutado la ruta ni que se haya concedido autoridad constitucional.
+
+### Simulación
+
+Lectura estática de `scripts/simulate.mjs` muestra que la ausencia del archivo de mundo participa en `allowEmptyInitialization: !stateExists`; después el flujo avanza la simulación y persiste el estado del mundo.
+
+**Resultado:** NBP-04 y NBP-10 no están demostradas. La escritura de simulación no se etiqueta como autoridad constitucional, pero sí es trabajo persistente posterior al bootstrap dentro de la misma invocación.
+
+### Continuidad y journal
+
+`continuity-snapshot.mjs` declara el snapshot operacional y no autoritativo, pero el snapshot incluye `effectJournal`; el owner/runtime consumen ese journal en los flujos de ejecución/reconciliación.
+
+**Resultado:** la etiqueta del snapshot no basta para demostrar NBP-01 ni NBP-06. Se necesita trazar consumidores y gates completos; una intención declarada en comentarios no prueba aislamiento end-to-end.
+
+### Cobertura del inventario
+
+Los llamadores directos observados en las rutas revisadas son Chronicle y simulación. El mapa actual es dirigido, no exhaustivo: el índice de búsqueda de GitHub dio resultados vacíos para símbolos conocidos y esos resultados no se consideran evidencia negativa. No se ha descartado toda carga dinámica ni todo consumidor indirecto.
+
+**Resultado:** no se puede certificar globalmente D1 con el inventario actual.
+
+## 4. Regla de decisión propuesta
+
+D1 solo sería aceptable si **todas** las propiedades negativas aplicables se demuestran con contratos y evidencia end-to-end. Una sola propiedad incumplida o UNKNOWN mantiene STOP. La etiqueta “operacional”, la ausencia de archivo, un snapshot vacío, `persisted: false` o `authorization: NOT_EVALUATED` no sustituyen la evidencia.
+
+La siguiente secuencia documental es:
+
+1. Mantener D3/STOP mientras NBP-01–NBP-10 no estén demostradas.
+2. Delimitar el grafo de consumidores y destinos persistentes, empezando por las dos rutas confirmadas (Chronicle y simulación), sin declarar exhaustividad prematura.
+3. Registrar cada propiedad como **demostrada / refutada / UNKNOWN**, con ruta concreta y evidencia.
+4. Si Chronicle sigue combinando bootstrap y dispatch en la misma invocación, D1 falla para esa ruta; no maquillar el fallo con un nombre nuevo ni tratar `NOT_EVALUATED` como gate.
+5. Solo después de resolver el alcance y obtener autorización específica podría plantearse una propuesta de cambio ejecutable y sus pruebas. Este documento no la autoriza.
+
+## 5. Evidencia y límites de esta actualización
+
+- Solo análisis documental y lectura estática; no se ejecutó código.
+- No se modificaron runtime, tests, workflows ni configuración ejecutable.
+- No se ejecutaron tests ni CI.
+- No se contactó a otras IAs.
+- Gates conservados: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
