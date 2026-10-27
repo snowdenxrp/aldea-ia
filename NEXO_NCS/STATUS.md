@@ -1,3 +1,13 @@
+# BLOQUEO PRIORITARIO — BOOTSTRAP DE CONTINUIDAD CONECTADO A RUTA DE CHRONICLE (2026-10-27)
+
+- Confirmado por lectura estática de `scripts/nexo-chronicle-session.mjs` y `src/nexo/application/chronicle-append.mjs`: existe la bandera `--initialize-continuity`; si falta continuidad y se activa, `runNexoChronicleAppend` puede inicializar el store, admitir una misión y continuar hasta `executeNexoStepWithContinuityOwner` en la misma invocación.
+- La respuesta mantiene `authorization: NOT_EVALUATED`, pero eso no detiene automáticamente el flujo. No se concluye que se otorgue autoridad constitucional; sí que la separación operacional exigida por Opción A no está demostrada.
+- Opción B previa = mecanismo de persistencia (bootstrap explícito separado del commit condicional). Opción A actual = alcance no autoritativo del estado local. Son ejes distintos; ambos siguen vigentes.
+- Antes de cualquier cambio ejecutable, resolver cómo impedir que la operación de inicialización por sí misma continúe hacia admisión/despacho. No bastan el nombre de la bandera ni una etiqueta NOT_EVALUATED. No se implementó solución.
+- Detalle: [Propuesta de contrato de bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md), sección “Hallazgo prioritario de consumidores”.
+- Solo lectura y documentación. No cambios de runtime/tests/workflows/configuración; no tests/CI. Gates: M0 INCOMPLETO; autoridad raíz PENDING/UNKNOWN; autorización NOT_EVALUATED; efectos protegidos STOP.
+
+---
 # ACTUALIZACIÓN PRIORITARIA — MAPA PRELIMINAR DE CONSUMIDORES: SEPARACIÓN AÚN NO DEMOSTRADA (2026-10-27)
 
 - Lectura estática dirigida encontró que `continuity-snapshot.mjs` declara datos operacionales sin autoridad, pero el snapshot incluye `effectJournal`, consumido por el owner/runtime para operaciones y reconciliación. Esto no prueba una concesión de autoridad, pero impide dar por demostrada la inocuidad del bootstrap sin completar el grafo de consumidores.
