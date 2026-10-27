@@ -97,3 +97,16 @@ Se contrastó el modelo con:
 La decisión existente **no cierra** la pregunta sobre escritores no cooperativos. La exclusión de cutover legacy de M0 reduce el alcance funcional, pero no puede transformarse en una afirmación de quiescencia o aislamiento del archivo Continuity actual. La cobertura exigible sigue PENDING/UNKNOWN; primera creación STOP. No hace falta pedir una nueva decisión sobre el canal humano ni reabrir el inventario: la brecha concreta es el alcance de la garantía de exclusión para el destino real y sus escritores relevantes.
 
 No se modificaron runtime, tests, workflows ni configuración; no se ejecutaron tests/CI/Actions.
+
+
+## 10. Aplicabilidad del protocolo D3: reutilizable como criterio, no como prueba de bootstrap
+
+La lectura estática de `NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md` confirma que es una propuesta pendiente para migración/cutover legacy en una instalación concreta. Exige inventario de launchers/writers, control que impida nuevos lanzamientos, inspección con cobertura suficiente, huellas antes/después y bloqueo ante UNKNOWN. También advierte que una instantánea de procesos no elimina la carrera con un lanzamiento posterior.
+
+Su aplicabilidad aquí es limitada:
+- **Sí se reutiliza** como criterio de evidencia para quiescencia cuando la operación implique migración/cutover legacy.
+- **No demuestra** quiescencia en una instalación real: el protocolo está sin aprobar y no ejecutado.
+- **No se traslada automáticamente** como solución a la creación inicial aislada del archivo Continuity, porque su objeto principal es la migración/cutover y no define el mecanismo de publicación exclusiva del destino.
+- **No cierra P01-C/D** ni resuelve escritores no cooperativos en el bootstrap actual.
+
+Por tanto, no se crea otro protocolo D3 ni se amplía su alcance por analogía. La pregunta pendiente se mantiene concreta: qué garantía de exclusión exige el alcance aceptado para la primera publicación del objeto Continuity y qué evidencia puede demostrarla en el entorno real. Hasta que esa garantía y el owner legítimo de primera creación estén resueltos, STOP/UNKNOWN.
