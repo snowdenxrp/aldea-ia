@@ -1,3 +1,12 @@
+# EVIDENCIA ADICIONAL — EL HANDLER DE CHRONICLE ES UNA MUTACIÓN PERSISTENTE (2026-10-27)
+
+- `src/nexo/adapters/chronicle-effect.mjs`: el handler `chronicle_append` invoca `store.append(...)` y puede devolver `completed` cuando el almacén confirma `committed`/`already_present`.
+- `src/nexo/core/owner-backed-runtime.mjs`: el flujo persiste `PREPARED` y luego llama a `adapter.executePrepared`. Unido al hallazgo previo, esto confirma que la invocación que inicializa continuidad puede continuar hasta una mutación persistente de Chronicle; la respuesta pública sigue declarando `authorization: NOT_EVALUATED`, y no se identificó una evaluación de autoridad que detenga esa ruta.
+- Es evidencia estática del camino de código, no prueba de ejecución real ni afirmación sobre todos los efectos de Nexo. No se consultaron tests ni CI.
+- Implicación: no tratar `--initialize-continuity` como una inicialización inocua/aislada; la separación de Opción A sigue sin demostrarse y la implementación continúa STOP/UNKNOWN.
+- Detalle: [Propuesta de contrato de bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md).
+
+---
 # BLOQUEO PRIORITARIO — BOOTSTRAP DE CONTINUIDAD CONECTADO A RUTA DE CHRONICLE (2026-10-27)
 
 - Confirmado por lectura estática de `scripts/nexo-chronicle-session.mjs` y `src/nexo/application/chronicle-append.mjs`: existe la bandera `--initialize-continuity`; si falta continuidad y se activa, `runNexoChronicleAppend` puede inicializar el store, admitir una misión y continuar hasta `executeNexoStepWithContinuityOwner` en la misma invocación.
