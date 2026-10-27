@@ -78,3 +78,30 @@ Esto es **evidencia negativa limitada a los seis archivos enumerados**, no un ba
 - Decisión: PB-08 permanece OPEN/UNKNOWN; no hay base para declarar la frontera demostrada ni para afirmar un bypass universal.
 
 No se modificó runtime/tests/workflows y no se ejecutaron pruebas/CI.
+
+
+## 8. Reconciliación contractual — límite de la conclusión (2026-10-27)
+
+Se contrastó el hallazgo estático con los contratos históricos de STEP 3B y STEP 3C, que ya están en el repositorio y no requieren reabrir investigaciones anteriores.
+
+### Evidencia documental
+
+- `NEXO_NCS/BUILD/STEP_3B_PROTECTED_TRANSITION_2026-10-08.md`, blob `591e4c52a1e29f919700ab40d6142ce3c9dfd5dc`: define la composición como validación semántica final seguida de commit condicional y outcome; su límite de seguridad dice expresamente que no implementa efectos externos irreversibles.
+- `NEXO_NCS/BUILD/STEP_3C_INTEGRATION_GATE_2026-10-08.md`, blob `6428f74dc9886eb81006b92231409668d33b8182`: exige que la transición sea asíncrona en la frontera real de persistencia y que solo `ConditionalCommit` invoque la persistencia canónica.
+- `NEXO_NCS/PROOF/STEP_3C_RUNTIME_VERIFICATION_2026-10-08.md`, blob `249d52cfa7d3a50b0e84e2e24b6142368c34f2a8`: registra una ejecución histórica PASS en commit `de859aa0b466c9aaa7818ee2c15e3f2261868cf3`, run `37740178286`, job `113188835156`. Ese resultado prueba solo la frontera local de persistencia en aquel commit; no es prueba de CI para el HEAD actual ni de efectos externos.
+- La definición actual de `createCorePorts` (blob `3b66d07e67df09b058b37716716573f6c17a2099`) expone `effectBoundary.prepare` como puerto separado con fallback `NOT_IMPLEMENTED`; por sí sola no especifica en qué operación debe consumirse.
+
+### Corrección de alcance
+
+La ausencia de una llamada a `effectBoundary.prepare` dentro de `executeProtectedTransition` es un hecho estático. **No basta para clasificarla como defecto**: STEP 3B/3C describe esta transición como frontera de commit de estado y declara fuera de alcance la implementación de efectos externos. Para afirmar que esa transición debe consumir el puerto EffectBoundary hace falta un contrato aceptado que vincule ambos, o una ruta concreta de efectos que requiera ese enforcement.
+
+Por tanto, este informe NO afirma que el cuerpo de `executeProtectedTransition` deba invocar `effectBoundary.prepare`, que exista un bypass de efectos, ni que se deba añadir esa llamada. La pregunta correcta pendiente es más acotada: ¿qué ruta concreta de NCS prepara/ejecuta un efecto externo y qué contrato aceptado exige que esa ruta consuma la frontera? Si no se encuentra una ruta y contrato concretos, el resultado permanece UNKNOWN; no se inventa integración.
+
+### Estado actualizado
+
+- PB-08: OPEN/UNKNOWN.
+- Hecho estático: puerto EffectBoundary separado; no consumido por la transición genérica.
+- No demostrado: obligación contractual de consumirlo allí, caller operativo, alcance de producción o bypass.
+- Siguiente paso: trazar únicamente el registro/uso de capacidades de efecto (comenzando por `createNexoChronicleEffectContracts`) hacia su caller real, y verificar si existe una precondición de frontera aceptada. No cambiar código ni repetir auditorías históricas.
+
+No se ejecutaron tests/CI/Actions ni se modificó runtime.
