@@ -1,3 +1,13 @@
+## DELTA — PAQUETE DE REVISIÓN INDEPENDIENTE SOBRE EXCLUSIÓN DE CONTINUITY (2026-10-27)
+
+- Preparada la solicitud [NCS_M0_INDEPENDENT_REVIEW_REQUEST_CONTINUITY_EXCLUSION_2026-10-27.md](BUILD/NCS_M0_INDEPENDENT_REVIEW_REQUEST_CONTINUITY_EXCLUSION_2026-10-27.md), commit `745043f65ecb3e4f7ca26bfc6a0e03b793ad5fc8`.
+- Encargo acotado para revisión independiente: comprobar si el alcance aceptado ya determina la cobertura de escritores no cooperativos, separar hechos/inferencias/UNKNOWN y devolver criterios mínimos verificables sin elegir una política ni proponer implementación.
+- La solicitud es un paquete listo para compartir; no se afirma que Perplexity, Qwen, Claude u otro modelo lo hayan recibido o revisado. El conector Codex Tasks devolvió cero entornos y cero tareas registradas; no se creó ni envió ninguna tarea remota.
+- No reabrir inventarios/auditorías cerradas, STEP 7 ni YubiKey. No modificar runtime ni ejecutar tests/CI/Actions.
+- Estado canónico intacto: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP.
+
+---
+
 ## DELTA — RECUPERACIÓN DEL CHAT Y HANDOFF ACTUALIZADO (2026-10-27)
 
 - Nuevo handoff: [NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_RECOVERY_AND_BOOTSTRAP_CLOSE.md](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_RECOVERY_AND_BOOTSTRAP_CLOSE.md), commit `4fb6f2fbbb68204b2d6c5dc5225a6dea544e1dd9`.
