@@ -325,16 +325,39 @@ Para cada ejecución, registrar `run_id`, `head_sha`, evento, conclusión del jo
 No se inició, canceló ni reintentó ningún workflow; no se ejecutaron pruebas ni se modificó código ejecutable.
 
 
-## 17. Separar “workflow contiene pruebas” de “criterio de cierre demostrado” (2026-10-27)
+## 17. Trazabilidad de pruebas frente a criterios B.5–B.7 (2026-10-27)
 
-Revisión estática, sin ejecutar las pruebas, de los tres archivos seleccionados por el workflow de aceptación:
+Esta sección refina la evaluación inicial tras inspeccionar los cuerpos de prueba, no solo su presencia en el workflow. Es una revisión estática; no ejecuta pruebas ni declara criterios satisfechos.
 
-- `tests/nexo/entrypoint.test.mjs`, blob `ff1bd2e9d292e21e00049b354249aee684837bbc`: contiene comprobaciones de entrypoints/imports y uso de procesos hijos, pero esta lectura no demuestra por sí sola que recorra exhaustivamente todas las aristas estáticas/dinámicas, aliases, reexports, subprocesses y rutas indirectas de la rama.
-- `tests/nexo/protected-transition.test.mjs`, blob `65353fe9e20898fb13f225ee004240b6c54687f1`: contiene referencias a `authorityGate` y autorización; no se infiere que demuestre la autoridad constitucional independiente ni que cubra todos los caminos reales de efectos.
-- `tests/nexo/chronicle-runtime.test.mjs`, blob `0bf35f0dc1aadb121a8b2145b4963bacd5641c04`: incluye escenarios de runtime/resultado y procesos hijos; su presencia no sustituye la prueba de inventario completo de callers ni demuestra que todos los callers pasen por una misma frontera autorizada.
+### B.5 — Inventario reproducible de entrypoints/callers y aristas
 
-### Conclusión limitada
+- `tests/nexo/entrypoint.test.mjs`, blob `ff1bd2e9d292e21e00049b354249aee684837bbc`, contiene `auditNexoImportGraph`: recorre recursivamente imports y re-exports relativos desde `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`; rechaza dependencias de una lista explícita de módulos legacy y afirma que el grafo alcanza `chronicle-append.mjs` y consultas públicas, sin llegar a `src/nexo/runtime.js`.
+- Es cobertura arquitectónica concreta, no ausencia de cobertura. El parser visible usa una expresión regular para imports/exports estáticos y rutas relativas. No demuestra cobertura de `import()` dinámico, resolución por alias/loader, procesos externos que no sean los escenarios expresamente probados, todos los callers del repositorio ni todas las rutas indirectas que el contrato D1 incluya.
+- El grafo parte de dos raíces declaradas en esa prueba; por tanto, no equivale a un censo completo de todos los entrypoints/callers del sistema.
 
-El workflow selecciona una regresión útil, pero **la selección de tests y su existencia no bastan para declarar satisfechos los criterios B.5–B.7 de la línea de meta**. Hace falta contrastar el contenido completo de las pruebas con el contrato D1 congelado y, cuando esté autorizado, ejecutar la comprobación reproducible de no-bypass ligada al SHA evaluado. Esta nota no declara que falte definitivamente una prueba: registra que su exhaustividad y correspondencia no están demostradas por la evidencia reunida hasta ahora.
+**Estado B.5:** evidencia parcial útil; inventario transitivo completo de todos los callers y aristas no demostrado.
 
-Estados: inventario estático parcial; tests no ejecutados; CI no vinculado a SHA de runtime/tests; D1-DESIGN OPEN; implementación no autorizada; efectos protegidos STOP.
+### B.6 — Prueba arquitectónica de no-bypass ejecutada y ligada al SHA
+
+- La prueba de entrypoint incluye guardas de import graph y rechaza comandos genéricos como `execute`, `run`, `simulate`, `shell`, `http`, `effect` y `repair` en la interfaz de entrada comprobada.
+- `tests/nexo/protected-transition.test.mjs`, blob `65353fe9e20898fb13f225ee004240b6c54687f1`, prueba resultados del gate inyectado, incluido STOP y validación contra campos de autorización/raíz/Constitución proporcionados por el caller. Eso comprueba el contrato del componente probado; no acredita que cada caller real llegue a él ni que el gate inyectado sea la raíz constitucional legítima.
+- `tests/nexo/chronicle-runtime.test.mjs`, blob `0bf35f0dc1aadb121a8b2145b4963bacd5641c04`, comprueba múltiples estados desconocidos y precondiciones de PREPARED/dispatch/resultado. Su alcance es el runtime y los escenarios incluidos en esa suite.
+- No se ha recuperado una ejecución de Actions ligada a los SHA exactos de estos tests y del runtime. Su contenido no demuestra que se hayan ejecutado o pasado.
+
+**Estado B.6:** tests presentes y relevantes; ejecución ligada al SHA evaluado y prueba arquitectónica exhaustiva de no-bypass siguen sin verificarse.
+
+### B.7 — Separación entre admisión técnica, stores, identidad y autoridad constitucional
+
+- `chronicle-runtime.test.mjs` comprueba expresamente que algunos resultados públicos UNKNOWN expongan `authorization: NOT_EVALUATED`, `dispatchAttempted: false` y `redispatchAuthorized: false`.
+- `protected-transition.test.mjs` comprueba que ciertos campos de autoridad/raíz/Constitución suministrados por el caller no se conviertan en contexto de política confiable.
+- Estas aserciones respaldan propiedades locales de los módulos cubiertos; no demuestran por sí mismas una raíz legítima, una política constitucional operativa ni una frontera común aplicada a todos los entrypoints.
+
+**Estado B.7:** separación local con evidencia de test; garantía global y legitimidad constitucional no demostradas.
+
+### Conclusión y siguiente paso acotado
+
+La revisión confirma cobertura arquitectónica real en `entrypoint.test.mjs`; la descripción anterior se corrige para no insinuar que solo contiene comprobaciones superficiales. El gap que permanece es más específico: alcance del grafo frente al inventario D1 completo, cobertura de aristas dinámicas/indirectas según el contrato, y evidencia de ejecución de los SHA relevantes.
+
+Siguiente trabajo documental: cruzar las raíces y exclusiones de `auditNexoImportGraph` con el inventario de callers ya existente y registrar únicamente aristas fuera de su alcance. No repetir el censo completo ni modificar tests/runtime para resolverlo sin autorización separada.
+
+Estados: revisión estática; tests no ejecutados en esta etapa; CI no vinculado a SHA de runtime/tests; D1-DESIGN OPEN; D1-IMPLEMENTATION NO AUTORIZADA; efectos protegidos STOP.
