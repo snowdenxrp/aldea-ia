@@ -1,3 +1,12 @@
+## DELTA — INTAKE DE ENTORNO REUTILIZADO SIN REPETIR DATOS CONOCIDOS (2026-10-27)
+
+- Se contrastó el borrador con el perfil D3 existente y la especificación P-05. El perfil ya registra POCO X7 Pro/Android como primer entorno de prototipo; ese dato no se vuelve a pedir ni se confunde con prueba de que el bootstrap M0 vaya a ejecutarse allí.
+- Añadida la sección 8 a [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md), commit `f35057abdad04c9dc2c712191fee2b70b1b4bdd7`. Precisa que las lagunas reales son: confirmar el entorno objetivo de esta operación concreta, capacidad verificable de impedir escritores/relanzadores (E2), inventario de lanzamiento (E3) y solo después almacenamiento relevante (E4).
+- No se solicita E1–E6 completos de golpe ni se vuelve a preguntar por la plataforma general del prototipo. No se inventa un supervisor, modo de lanzamiento ni autoridad operacional. Si E2/E3 no se pueden demostrar, P01-C/P01-D continúan UNKNOWN y el bootstrap STOP.
+- Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; sin cambios ejecutables ni tests/CI/Actions.
+
+---
+
 ## DELTA — RECONCILIACIÓN DE MATRIZ P-01 CON EL BORRADOR DE ENTORNO RESTRINGIDO (2026-10-27)
 
 - Actualizada la matriz [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `ce527bd12e8b581edf16851612b930675dbd192e`, para enlazar el borrador del contrato y dejar explícito el estado conservador de P01-A…P01-H.
