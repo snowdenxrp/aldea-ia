@@ -46,6 +46,24 @@ Lectura estática de `scripts/simulate.mjs` muestra que la ausencia del archivo 
 
 **Resultado:** la etiqueta del snapshot no basta para demostrar NBP-01 ni NBP-06. Se necesita trazar consumidores y gates completos; una intención declarada en comentarios no prueba aislamiento end-to-end.
 
+### Qué protege el runtime y qué no demuestra
+
+La lectura de `src/nexo/core/owner-backed-runtime.mjs` también muestra controles reales que deben conservarse en el diagnóstico, sin confundirlos con aislamiento del bootstrap:
+
+- Antes de un dispatch nuevo, el runtime comprueba que el handler y el verificador de reconciliación estén disponibles, y exige que la escritura de `PREPARED` quede confirmada con revisión coherente.
+- Si la escritura de `PREPARED` resulta `UNKNOWN` o no queda confirmada, el runtime devuelve sin dispatch. Si el adapter ya pudo ejecutarse y el resultado es incierto, la ruta prohíbe redispatch automático.
+- Para una entrada PREPARED existente, el runtime intenta la vía de reconciliación; la incertidumbre mantiene bloqueada la ejecución nueva.
+
+Estos controles reducen riesgos de dispatch duplicado en la ruta de runtime inspeccionada, pero **no demuestran NBP-01–NBP-04**: el caller Chronicle puede crear el owner y luego entrar a ese runtime en la misma invocación; los controles de PREPARED no son una regla canónica de autoridad para crear el primer estado ni una frontera exclusiva de bootstrap.
+
+El handler `chronicle_append` invoca `store.append(...)`. Es una mutación persistente del almacén Chronicle; esta observación no debe ampliarse sin evidencia a “efecto externo irreversible” ni a ejecución de una transición protegida. El punto demostrado es más estrecho: la inicialización y una operación mutante pueden compartir el mismo recorrido de aplicación.
+
+### Resultado de la revisión del límite
+
+- **Existe evidencia de controles locales de ejecución:** confirmación de PREPARED, bloqueo ante resultado incierto y prohibición de redispatch automático en los casos inspeccionados.
+- **No existe evidencia suficiente de aislamiento del bootstrap:** falta una frontera que termine la operación tras inicializar, y la ruta Chronicle puede continuar hacia una escritura.
+- **No se infiere ausencia global de otros callers:** el inventario sigue siendo dirigido y la búsqueda indexada no es evidencia negativa.
+
 ### Cobertura del inventario
 
 Los llamadores directos observados en las rutas revisadas son Chronicle y simulación. El mapa actual es dirigido, no exhaustivo: el índice de búsqueda de GitHub dio resultados vacíos para símbolos conocidos y esos resultados no se consideran evidencia negativa. No se ha descartado toda carga dinámica ni todo consumidor indirecto.
