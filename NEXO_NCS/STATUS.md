@@ -1,3 +1,12 @@
+## DELTA — PB-08: REVISIÓN ESTÁTICA DE EFFECTBOUNDARY (2026-10-27)
+
+- Nuevo artefacto: [NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md](BUILD/NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md), commit `9f76af9cc02c49aca2fd94e8ff9135aa086874bb`.
+- Hallazgo estático acotado: `createCorePorts` expone `effectBoundary.prepare` con fallback `NOT_IMPLEMENTED`, pero `executeProtectedTransition` no lo invoca antes de `conditionalCommit.commit` (blob de transición `39a602b80cda8f3939b2ffed7e726d06c21b077f`, L79-L205; commit en L194). No se concluye que sea un bypass de producción ni un efecto externo alcanzable; faltan caller/alcance y reconciliación contractual.
+- PB-08 sigue OPEN/UNKNOWN; no se modifica código ni se propone parche por inferencia. Siguiente paso documental: rastrear solo callers de `executeProtectedTransition` en NCS y contrastar con STEP 3/EffectBoundary.
+- Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados. Gates canónicos sin cambio: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; authorization NOT_EVALUATED; raíz PENDING/UNKNOWN; efectos protegidos STOP.
+
+---
+
 ## DELTA — MATRIZ DOCUMENTAL DE VERIFICACIÓN DE LA FRONTERA PROTEGIDA (2026-10-27)
 
 - Nuevo artefacto: [NCS_M0_PROTECTED_BOUNDARY_VERIFICATION_MATRIX_2026-10-27.md](BUILD/NCS_M0_PROTECTED_BOUNDARY_VERIFICATION_MATRIX_2026-10-27.md), commit `b84f11d6f18a8926991447f1a2c479d1e9a24268`.
