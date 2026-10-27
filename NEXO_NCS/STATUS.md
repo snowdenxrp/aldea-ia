@@ -1,3 +1,12 @@
+# ACTUALIZACIÓN PRIORITARIA — MAPA PRELIMINAR DE CONSUMIDORES: SEPARACIÓN AÚN NO DEMOSTRADA (2026-10-27)
+
+- Lectura estática dirigida encontró que `continuity-snapshot.mjs` declara datos operacionales sin autoridad, pero el snapshot incluye `effectJournal`, consumido por el owner/runtime para operaciones y reconciliación. Esto no prueba una concesión de autoridad, pero impide dar por demostrada la inocuidad del bootstrap sin completar el grafo de consumidores.
+- `continuity-service.mjs` permite inicialización vacía solo mediante `allowEmptyInitialization: true` (por defecto `false`); `scripts/simulate.mjs` pasa ese valor según la ausencia del archivo de mundo y abre el owner de continuidad. Esta relación debe trazarse antes de aceptar la separación como segura.
+- Referencia y detalle: [Propuesta de contrato de bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md), sección “Primer mapa estático dirigido de consumidores”.
+- Próximo paso: completar el mapa de llamadas a `openNexoContinuityOwner`/inicializador y sus consumidores de dispatch/reconciliación. Opción A sigue elegida como alcance, pero la separación no está demostrada: implementación STOP/UNKNOWN.
+- Solo lectura y documentación; no runtime/tests/workflows/configuración; no tests/CI.
+
+---
 # ACTUALIZACIÓN PRIORITARIA — EL PROPIETARIO ELIGE OPCIÓN A PARA EL ALCANCE DE BOOTSTRAP LOCAL (2026-10-27)
 
 - El propietario eligió **Opción A de alcance**: estudiar la inicialización explícita de almacenamiento local M0 exclusivamente no autoritativo y acotado. Esto no debe confundirse con opciones A/B/C/D de otros registros de bootstrap.
