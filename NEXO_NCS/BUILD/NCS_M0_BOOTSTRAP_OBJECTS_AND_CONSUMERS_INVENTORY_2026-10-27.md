@@ -547,3 +547,22 @@ Este resultado es una reconciliación estática dirigida, no un pase de criterio
 P-01 permanece **OPEN / UNKNOWN**. La línea de meta aceptada no se modifica. La elección de alcance Opción A y la preferencia de separar bootstrap de commit condicional no equivalen a ratificar el protocolo final ni a autorizar implementación. Mantener D1/D2/D3 en sus estados canónicos; no declarar M0_BUILD_COMPLETE ni PROTECTED_EFFECTS_AUTHORIZED.
 
 Este cruce es documental. No se modificaron runtime, tests, workflows ni configuración; no se ejecutaron pruebas, CI o Actions.
+
+
+## 24. Matriz de decisiones independientes de P-01 (2026-10-27)
+
+Artefacto autocontenido: `NEXO_NCS/BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md`, commit `422342da2ce830fe736c9b675435508f4a24fe5a`.
+
+La matriz separa ocho dimensiones para impedir que un resultado parcial se convierta en un PASS global:
+
+- P01-A objeto exacto y alcance no autoritativo.
+- P01-B aislamiento operacional del bootstrap.
+- P01-C procedimiento explícito y quiescencia.
+- P01-D creación exclusiva frente a todos los escritores relevantes.
+- P01-E clasificación de ausente/válido/inválido/error/conflicto.
+- P01-F resultado ambiguo y reconciliación autorizada de UNKNOWN.
+- P01-G autoridad canónica aplicable a la primera creación.
+- P01-H pruebas y trazabilidad al SHA exacto.
+
+**Conclusión:** las dimensiones no son intercambiables. En particular, exclusión de escritores no equivale a quiescencia; un resultado committed no acredita autoridad; UNKNOWN no permite retry automático; y la inspección estática no demuestra propiedades end-to-end. P-01 sigue OPEN/UNKNOWN. Esta matriz no ratifica D1/D2 ni autoriza implementación, tests o CI.
+
