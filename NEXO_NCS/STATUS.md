@@ -1,3 +1,13 @@
+## DELTA — MATRIZ ESTÁTICA DE TESTS Y SELECCIÓN DEL RUNNER (2026-10-27)
+
+- Inventario ampliado en §13–14: [NCS M0 bootstrap objects and consumers inventory](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `492d15a159fbed0f9e07cb02c8865e9e002ea8d2`.
+- Blobs inspeccionados: `chronicle-runtime.test.mjs` `0bf35f0dc1aadb121a8b2145b4963bacd5641c04`; `continuity-migration.test.mjs` `0bef1b93c6268042f14830c97e084d0a543e05f4`; `package.json` `e45dc6d215db53ea2758009cd501f565634e3610`; `runtime.js` `9d3d5109753e8ba96fc287c269da275112645523`; `owner-backed-runtime.mjs` `a7a014489209273ce78d0103afa785728d4c467c`.
+- Hallazgo de selección: el script `test` de `package.json` sí enumera `chronicle-runtime.test.mjs`, pero no enumera `continuity-migration.test.mjs` en la cadena inspeccionada. Esto no prueba que ningún otro runner ejecute este último. Los workflows CI reales aún no se han enumerado ni verificado.
+- Siguiente paso: identificar workflow real y selección de tests; verificar si existe un run previo con SHA exacto. No ejecutar tests/CI ni cambiar workflows.
+- Sin cambios ejecutables. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — CRUCE CHRONICLE CON OWNER-BACKED RUNTIME (2026-10-27)
 
 - Ampliado el inventario existente, §11–12: [Inventario de bootstrap y consumidores](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `bddf1e096bc282f3f426a3d1aa3a8011c5136c36`.
