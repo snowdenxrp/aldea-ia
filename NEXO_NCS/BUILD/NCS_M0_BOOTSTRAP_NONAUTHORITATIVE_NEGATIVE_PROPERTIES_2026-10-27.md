@@ -64,6 +64,17 @@ El handler `chronicle_append` invoca `store.append(...)`. Es una mutación persi
 - **No existe evidencia suficiente de aislamiento del bootstrap:** falta una frontera que termine la operación tras inicializar, y la ruta Chronicle puede continuar hacia una escritura.
 - **No se infiere ausencia global de otros callers:** el inventario sigue siendo dirigido y la búsqueda indexada no es evidencia negativa.
 
+### Reparación: separación entre bloqueo del runtime de producto y módulos dedicados
+
+La lectura estática dirigida de `scripts/nexo-runtime-session.mjs`, `scripts/nexo-repair-entrypoint.mjs`, `scripts/nexo-repair-preparation.mjs` y `scripts/nexo-repair-dispatch.mjs` permite precisar el alcance:
+
+- La sesión de reparación expuesta por el runtime de producto devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, con `dispatchAttempted: false`; esa entrada está bloqueada para M0.
+- Los módulos dedicados de reparación siguen presentes. `runNexoRepairOnce({ owner, ... })` recibe un owner como dependencia, inspecciona `effectJournal`, y puede seguir preparación, observación del estado persistido, dispatch y settlement si se cumplen sus contratos. El dispatcher restringe las acciones a las tres acciones de reparación reconocidas y usa carga estricta del estado persistido más `persistState` condicional.
+- El código revisado no demuestra que el bootstrap Chronicle invoque directamente esos módulos de reparación. Tampoco demuestra que sean inaccesibles desde cualquier otro caller: el entrypoint dedicado acepta un owner suministrado por el llamador.
+- El owner de continuidad no sustituye autoridad constitucional. Para acciones de reparación, la reconciliación genérica devuelve `NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED` con `authorization: NOT_EVALUATED`; el flujo dedicado usa contratos específicos de reparación.
+
+**Clasificación:** integración de reparación en la sesión de runtime M0 = bloqueada en el código inspeccionado; existencia de módulos dedicados = confirmada; ausencia de todos los callers posibles = UNKNOWN. La política de exclusión M0 sigue vigente. No se ejecutaron esos módulos.
+
 ### Cobertura del inventario
 
 Los llamadores directos observados en las rutas revisadas son Chronicle y simulación. El mapa actual es dirigido, no exhaustivo: el índice de búsqueda de GitHub dio resultados vacíos para símbolos conocidos y esos resultados no se consideran evidencia negativa. No se ha descartado toda carga dinámica ni todo consumidor indirecto.
