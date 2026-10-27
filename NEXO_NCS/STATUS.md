@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — EL PROPIETARIO ELIGE OPCIÓN A PARA EL ALCANCE DE BOOTSTRAP LOCAL (2026-10-27)
+
+- El propietario eligió **Opción A de alcance**: estudiar la inicialización explícita de almacenamiento local M0 exclusivamente no autoritativo y acotado. Esto no debe confundirse con opciones A/B/C/D de otros registros de bootstrap.
+- La decisión delimita el objetivo de diseño, pero **no demuestra que la arquitectura actual mantenga la separación** ni ratifica un contrato de implementación.
+- Condiciones: no crear/modificar raíz o autoridad constitucional; no autenticar al propietario ni conceder permisos; no cambiar estado protegido ni habilitar efectos; preservar cualquier archivo existente incluso si es corrupto; no convertir errores de lectura/I/O en ausencia; UNKNOWN bloquea y no se reintenta automáticamente; demostrar exclusión frente a escritores concurrentes.
+- Próximo paso: mapa estático dirigido de consumidores del estado inicial y comprobación de que ningún consumidor deriva autoridad o habilita efectos. Si no se demuestra, STOP/UNKNOWN.
+- Referencia: [Propuesta de contrato para bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md).
+- Solo documentación. No cambios de runtime/tests/workflows/configuración; no tests/CI. Gates intactos: M0 INCOMPLETO; raíz PENDING/UNKNOWN; autorización NOT_EVALUATED; efectos protegidos STOP; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — REVISIÓN INDEPENDIENTE CONFIRMA BRECHA DE AUTORIDAD DE BOOTSTRAP (2026-10-27)
 
 - Claude realizó una revisión documental de solo lectura y reportó **BRECHA CONFIRMADA**: en el alcance revisado no encontró una regla canónica que designe quién autoriza crear el primer estado persistente local. Claude identificó HEAD `058bf0e`; no revisó STATUS completo ni todo BUILD/RESEARCH y no ejecutó runtime/tests/CI. El resultado coincide con la delimitación documentada en la propuesta de bootstrap.
