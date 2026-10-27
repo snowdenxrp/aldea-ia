@@ -1,3 +1,12 @@
+## DELTA — ENCARGO FOCALIZADO PARA CLAUDE Y GEMINI (2026-10-27)
+
+- Preparado el paquete [NCS_M0_RESTRICTED_BOOTSTRAP_CONTRACT_INDEPENDENT_REVIEW_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_CONTRACT_INDEPENDENT_REVIEW_2026-10-27.md), commit `a027be9b1a9eb20cc350c8414ae34ff7433ab990`.
+- Actualizado [AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md), commit `d3908a77a856607a5622c3c13a96d383f95f5a61`, para que la tarea activa sea una revisión documental acotada del contrato restringido: Claude revisa consistencia contractual; Gemini busca contraejemplos. El encargo no repite censos ni auditorías cerradas.
+- **No enviado automáticamente:** las herramientas de Codex Tasks reportan cero entornos remotos registrados y cero tareas; no se ha afirmado que Claude/Gemini hayan trabajado. El paquete está listo para entregar en sus aplicaciones, y sus respuestas se integrarán cuando se proporcionen.
+- Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; sin cambios ejecutables; tests/CI/Actions no ejecutados.
+
+---
+
 ## DELTA — INTAKE DE ENTORNO REUTILIZADO SIN REPETIR DATOS CONOCIDOS (2026-10-27)
 
 - Se contrastó el borrador con el perfil D3 existente y la especificación P-05. El perfil ya registra POCO X7 Pro/Android como primer entorno de prototipo; ese dato no se vuelve a pedir ni se confunde con prueba de que el bootstrap M0 vaya a ejecutarse allí.
