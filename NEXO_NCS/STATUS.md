@@ -1,3 +1,13 @@
+## DELTA — CANAL HUMANO HISTÓRICO Y LÍMITE DE APLICABILIDAD P-01 (2026-10-27)
+
+- Reconciliado el registro histórico de STEP 7: el teléfono/canal actual fue seleccionado como candidato para investigar transmisión de aprobación constitucional; C0 continúa UNESTABLISHED y no hay mecanismo/enrollment seleccionado. No debe pedirse al propietario que vuelva a escoger el candidato ya elegido.
+- Esa selección no es autorización de raíz, no declara confiable el dispositivo y no define la primera creación de Continuity local no autoritativo. El mapa STEP 7 mantiene sin resolver la ceremonia de reconocimiento inicial y el enforcement protegido.
+- Brecha ampliada en `NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md`; no se infiere consentimiento constitucional, commissioning ni permiso de escritura.
+- Gates intactos: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+- Solo documentación; sin cambios ejecutables, tests, workflows o configuración; no se ejecutaron tests/CI/Actions.
+
+---
+
 ## DELTA — CRUCE DE INVESTIGACIÓN HISTÓRICA DE AUTORIDAD P-01 (2026-10-27)
 
 - Actualizado `NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md` para contrastar la brecha con la investigación histórica `docs/nexo/NEXO_AUTHORITY_FOUNDATION_BOOTSTRAP_NO_ROOT_DISASTER_RECOVERY_RESEARCH_V1_2026-09-24.md`.
