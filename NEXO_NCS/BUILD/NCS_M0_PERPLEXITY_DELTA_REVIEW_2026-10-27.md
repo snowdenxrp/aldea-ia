@@ -9,7 +9,7 @@
 
 El informe Perplexity aporta una corrección importante al inventario de la rama: `scripts/assistants.mjs` es un tercer caller directo de `openNexoContinuityOwner`, además de Chronicle y simulación. La ruta de `legacyMemory` inicializa continuidad desde `persisted.nexoMemory` cuando el store Nexo no existe, sin depender de `allowEmptyInitialization`. La continuidad alimenta la planificación y puede compartir invocación con persistencia de estado de Lúmina.
 
-También se hizo una comprobación de lectura acotada de los archivos `main` relevantes para distinguir la superficie de automatización del código de la rama auditada. No se consultó historial de Actions ni se verificó si el workflow ha corrido.
+También se hizo una comprobación de lectura acotada de los archivos de `main` relevantes para distinguir la superficie de automatización del código de la rama auditada. No se consultó historial de Actions ni se verificó si el workflow ha corrido.
 
 ## 2. Hallazgos de rama confirmados estáticamente en este contraste
 
@@ -55,7 +55,7 @@ Una lectura puntual de `main` encontró diferencias relevantes respecto del comm
 - En `main`, `scripts/simulate.mjs` no abre el store separado de continuidad y su payload de persistencia no incluye `nexoMemory`.
 - El workflow, por tanto, **no puede describirse como ejecución confirmada de los tres callers de la rama auditada**. El propio YAML sincroniza `main` antes de ejecutar.
 
-**Límite:** esto solo confirma el contenido estático leído en los archivos de `main) durante esta comprobación. No confirma que el workflow haya corrido, qué commit exacto ejecutó en una ejecución concreta, ni su resultado. No se consultó historial de Actions ni logs. La presencia del workflow es una superficie automatizada relevante, pero su alcance runtime real permanece parcialmente UNKNOWN.
+**Límite:** esto solo confirma el contenido estático leído en los archivos de `main` durante esta comprobación. No confirma que el workflow haya corrido, qué commit exacto ejecutó en una ejecución concreta, ni su resultado. No se consultó historial de Actions ni logs. La presencia del workflow es una superficie automatizada relevante, pero su alcance runtime real permanece parcialmente UNKNOWN.
 
 Fuentes:
 - [Workflow de simulación](https://github.com/snowdenxrp/aldea-ia/blob/e477bdefb4db82456997c106ce7ff65673e15f67/.github/workflows/lumina-simulation.yml)
@@ -89,7 +89,7 @@ La preocupación sobre un escritor no cooperativo entre la comprobación de exis
 1. Corregir el mapa de callers de dos a tres para la rama `ncs-clean-architecture`.
 2. Añadir `legacyMemory` como camino de inicialización independiente de la bandera de bootstrap vacío.
 3. Extender el inventario de consumidores a las cinco colecciones de continuidad y a los puntos de planificación, dispatch y reconciliación.
-4. Mantener separadas tres preguntas: contenido de la rama NCS, contenido de `main), y evidencia de ejecuciones reales de Actions.
+4. Mantener separadas tres preguntas: contenido de la rama NCS, contenido de `main`, y evidencia de ejecuciones reales de Actions.
 5. Si se autoriza en una etapa posterior, leer estáticamente los tests de carrera y de CLI citados, sin ejecutarlos, y registrar exactamente qué propiedades cubren.
 6. No consultar ni inferir el historial de Actions como si ya estuviera comprobado. El estado de ejecuciones permanece UNKNOWN.
 
@@ -100,6 +100,6 @@ La preocupación sobre un escritor no cooperativo entre la comprobación de exis
 - No se modificaron archivos de runtime, tests, workflows ni configuración ejecutable.
 - No se habilitaron reparaciones ni efectos.
 - D3/STOP sigue vigente. Opción A sigue siendo investigación de almacenamiento local estrictamente no autoritativo, no un contrato aceptado.
-- M0 permanece `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN); autorización `NOT_EVALUATED); efectos protegidos `STOP`.
+- M0 permanece `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`.
 
 Una propiedad no se considera demostrada por el nombre de una bandera, por un comentario, por la presencia de un test, ni por la existencia de un workflow. Se requiere evidencia que cubra la ruta y el fallo concreto que la propiedad pretende excluir.
