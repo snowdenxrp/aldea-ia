@@ -1,3 +1,12 @@
+## DELTA — OBJETO CANDIDATO EXACTO P-01 Y MAPA DE CAMPOS (2026-10-27)
+
+- Nuevo artefacto: `NEXO_NCS/BUILD/NCS_M0_P01_EXACT_CANDIDATE_OBJECT_AND_FIELD_CONSUMER_MAP_2026-10-27.md`, commit `1be36c02ed93b2c833f3be014d3a25ea05ebfab0`.
+- El candidato primario queda delimitado por clase/frontera: archivo Continuity ausente identificado por el `filePath` real de `openNexoContinuityOwner`, envelope `NEXO_CONTINUITY_STORE` v1, revisión y snapshot. No se inventa una ruta universal: `continuity.json` es un nombre de layout propuesto, no una ruta forzada por las factories actuales.
+- Se separan directorio de instancia, Continuity, Chronicle, locks/owner records, temporales y estado de mundo/Lúmina/legacy memory. El uso conocido de `doNotRepeat`, reconstrucción/linaje y journal puede influir en control de flujo/recuperación; no acredita autoridad, pero impide asumir que el archivo carece de consecuencias operativas.
+- P01-A/B/G y la legitimidad de la primera creación siguen OPEN/UNKNOWN; no se escogió protocolo ni se creó estado. Solo documentación; sin cambios ejecutables ni tests/CI/Actions.
+
+---
+
 ## DELTA — CLASIFICACIÓN DEL OBJETO Y ALCANCE DE AUTORIDAD P-01 (2026-10-27)
 
 - Nueva nota: `NEXO_NCS/BUILD/NCS_M0_P01_OBJECT_CLASSIFICATION_AND_AUTHORITY_SCOPE_2026-10-27.md`, commit `5f4bc79705dc4a0c653ffadf845494ddb0641415`.
