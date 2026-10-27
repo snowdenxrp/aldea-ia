@@ -1,3 +1,12 @@
+## DELTA — RECONCILIACIÓN DE MATRIZ P-01 CON EL BORRADOR DE ENTORNO RESTRINGIDO (2026-10-27)
+
+- Actualizada la matriz [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `ce527bd12e8b581edf16851612b930675dbd192e`, para enlazar el borrador del contrato y dejar explícito el estado conservador de P01-A…P01-H.
+- El avance es de especificación documental: no se ha identificado ni demostrado un entorno real, no se ha elegido un mecanismo y no se cierra ningún criterio P-01.
+- Próximo paso: comprobar consistencia documental contra el protocolo activo y los owners canónicos relevantes; resolver solo contradicciones concretas. No repetir el inventario general ni reabrir auditorías históricas. Cualquier prueba dinámica, implementación o cambio ejecutable requiere autorización separada.
+- Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados.
+
+---
+
 ## DELTA — BORRADOR DE CONTRATO VERIFICABLE DEL ENTORNO RESTRINGIDO DE BOOTSTRAP (2026-10-27)
 
 - Nuevo borrador documental: [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md), commit `cdcc405303ecfeb1305336b696bb378bd4607081`.
