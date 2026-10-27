@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — REVISIÓN DE AUTORIDAD PARA BOOTSTRAP (2026-10-26)
+
+- Se contrastó la propuesta de bootstrap con la regla activa MASTER + AB + P/P112 y el análisis de contr efectos futuros; no se reabrieron auditorías históricas.
+- Actualizada la [propuesta de contrato para bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md), commit `704385ff2e5ac36da317ec4ceae19b0db99d5e84`.
+- Resultado: opción B sigue aceptada como separación entre bootstrap explícito y commit normal. La fuente/owner concreto de autoridad para el bootstrap continúa `UNKNOWN/PENDING`. La investigación histórica menciona `BootstrapAuthority`, pero es una propuesta de investigación, no un objeto NCS aprobado; no se adopta ni se inventa una raíz paralela.
+- Contr efectos considerados: riesgo de autoridad circular o duplicada, autoautorización, ampliación de alcance y acoplamiento futuro. La ausencia del archivo no puede demostrar autoridad. Si la autoridad raíz, el alcance o las precondiciones no se pueden establecer, bootstrap debe detenerse.
+- Próximo paso válido: localizar el owner canónico ya establecido en MASTER/CORE para autoridad raíz/inicialización; si no existe una definición aplicable, mantener la cuestión pendiente para decisión explícita del propietario. No implementar ni ejecutar tests/CI mientras la autoridad contractual siga sin resolver.
+- Solo documentación; no cambios de runtime/tests/workflows/configuración y no tests/CI. Gates intactos: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — DECISIÓN DE INICIALIZACIÓN EXPLÍCITA (2026-10-26)
 
 - Decisión del propietario: adoptar la opción B, inicialización explícita separada del commit condicional normal. La ausencia de archivo no autoriza bootstrap automático; un archivo existente corrupto debe preservarse; conflictos concurrentes no deben sobrescribirse; UNKNOWN no admite reintento automático.
