@@ -519,3 +519,31 @@ Estado: propuesta de orden documental; P-01…P-10 continúan abiertos según el
 5. Obtener autorización específica posterior antes de modificar runtime/tests/workflows o ejecutar pruebas/CI.
 
 Este resultado es una reconciliación estática dirigida, no un pase de criterios de aceptación. No cambia la decisión de alcance, no cierra P-01, no autoriza implementación y no afirma que se ejecutaran tests.
+
+
+## 23. Cruce de P-01 contra la línea de meta M0 (2026-10-27)
+
+**Fuente de aceptación:** `NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md`, blob `e37a98ecfe1dcdccfef3cb0c5c98e0f2cb7d1287`. Se conserva como línea de meta aceptada como base; este cruce no crea una segunda línea de meta ni cambia sus criterios.
+
+| Criterio de la línea de meta | Evidencia reutilizable | Estado probatorio para P-01 | Falta para PASS |
+|---|---|---|---|
+| §3.1–3.3: alcance, decisiones del propietario y contratos D0–D3 coherentes | Decisión de alcance Opción A en el contrato candidato; registro canónico D0–D3 | **PARCIAL**: el alcance del almacenamiento local está elegido; el contrato final de bootstrap y las decisiones de implementación siguen abiertos. | Resolver P-01 y dependencias P-02/P-03; identificar exclusiones/capacidades afectadas aceptadas, sin convertir recomendaciones en decisiones. |
+| §3.5–3.6: inventario reproducible de callers/no-bypass y prueba arquitectónica ejecutada | Manifiesto D1; §§18–22 de este inventario; test estático de grafo descrito en §17 | **PARCIAL / NO EJECUTADO EN ESTA REVISIÓN**: hay evidencia estática dirigida y límites identificados, no prueba exhaustiva del grafo ni ejecución ligada a un SHA de implementación. | Congelar contrato y snapshot de árbol; resolver aristas dinámicas/indirectas relevantes; obtener autorización separada para pruebas y vincular resultado al SHA exacto. |
+| §3.7–3.8: separación entre admisión, stores, identidad y autoridad; reparación/dispatch excluidos o bloqueados | Contrato de bootstrap §§149–170 y §§194–247; owner-backed runtime y matriz de consumidores | **NO PASS**: la ruta Chronicle puede continuar a admisión/PREPARED/dispatch y mutación Chronicle después de inicializar Continuity en la misma invocación; `authorization: NOT_EVALUATED` no es un freno. | Resolver y documentar la frontera de bootstrap aislado; no asumir autoridad; verificar las rutas del alcance con pruebas autorizadas. |
+| §3.C.9–3.C.10: protocolo de bootstrap/recovery y estados parciales/corruptos | Contrato candidato §§149–170; opciones históricas de bootstrap y recuperación; store con resultados committed/conflict/failed/unknown | **NO PASS**: existen requisitos y manejo local de resultados, pero no hay protocolo ratificado con garantías demostradas de quiescencia, creación concurrente y estado parcial. | Decisión de procedimiento, límites del filesystem, writers relevantes, reconciliación autorizada de UNKNOWN y preservación de datos inválidos. |
+| §3.C.12: no borrar objetos reemplazados ni re-admitir mientras actor anterior pueda escribir | Opciones D2 de release/recovery y protocolo de quiescencia legacy | **UNKNOWN / NO DEMOSTRADO** para P-01: la documentación define preguntas, pero no hay entorno objetivo ni prueba de quiescencia para todos los escritores. | Si aplica a la capacidad dentro de alcance, identificar entorno/actores y evidencia operacional verificable; si se excluye, decisión explícita y limitación aceptada. |
+| §3.E.16 y §3.E.18: regresiones en CI y trazabilidad test/SHA/job/run | Inventario §15–§16; workflow YAMLs identificados y límites de recuperación de runs | **NO VERIFICADO**: los YAML declaran selección de tests; no se ha vinculado una ejecución al SHA exacto que demuestre estos criterios. | Tras contrato congelado y autorización de pruebas, ejecutar/verificar CI sobre el SHA que contiene contrato aplicable, implementación y tests; registrar run/job/steps/resultados. |
+| §3.E.20: acta final criterio por criterio | Línea de meta M0 y este cruce documental | **PENDIENTE**: esta tabla es una preevaluación de P-01, no el acta de aceptación M0. | Solo redactar el acta final después de evaluar todos los criterios aplicables y obtener las aprobaciones requeridas. |
+
+### Clasificación final de la preevaluación P-01
+
+- **Reutilizable:** alcance Opción A; línea de meta M0; contrato candidato; manifiesto D1; inventario estático de consumidores; criterios BA-01…BA-10 ya documentados.
+- **Parcial:** identificación de callers directos conocidos y contratos locales de inicialización/resultados.
+- **No demostrado:** separación de bootstrap respecto de admisión/dispatch; quiescencia general; creación exclusiva frente a todos los escritores; tratamiento autorizado de UNKNOWN; ausencia de bypass global.
+- **No ejecutado/verificado en este checkpoint:** pruebas nuevas, pruebas arquitectónicas sobre un contrato congelado y CI ligado al SHA exacto.
+
+### Decisión de continuidad
+
+P-01 permanece **OPEN / UNKNOWN**. La línea de meta aceptada no se modifica. La elección de alcance Opción A y la preferencia de separar bootstrap de commit condicional no equivalen a ratificar el protocolo final ni a autorizar implementación. Mantener D1/D2/D3 en sus estados canónicos; no declarar M0_BUILD_COMPLETE ni PROTECTED_EFFECTS_AUTHORIZED.
+
+Este cruce es documental. No se modificaron runtime, tests, workflows ni configuración; no se ejecutaron pruebas, CI o Actions.
