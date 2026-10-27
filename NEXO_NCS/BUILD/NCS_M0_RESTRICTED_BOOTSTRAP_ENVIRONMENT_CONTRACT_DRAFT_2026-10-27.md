@@ -104,3 +104,19 @@ No se repite el inventario general ni se vuelve a abrir STEP 7, Chronicle/PB-08 
 - Tests/CI/Actions: no ejecutados.
 
 **Siguiente paso documental:** reconciliar este contrato con la decisión del propietario y los apartados aplicables de la matriz P-01; resolver únicamente contradicciones concretas y actualizar la matriz con el estado de cada precondición. No declarar el entorno “definido” en sentido operacional hasta que el entorno real se identifique y exista evidencia autorizada. Cualquier implementación o prueba dinámica requiere autorización separada y explícita.
+
+
+## 8. Reutilización del intake de entorno ya existente — sin repetir preguntas contestadas
+
+El perfil D3 existente ya registra que el primer entorno de prototipo previsto es el **POCO X7 Pro con Android**, y que una futura PC no debe asumirse disponible ni asignársele una configuración todavía desconocida. Este dato se reutiliza; no se vuelve a preguntar qué plataforma se pretende usar para el prototipo.
+
+**Límite importante:** conocer la plataforma del prototipo no demuestra que la primera publicación de Continuity de NCS M0 vaya a ejecutarse en ese dispositivo, ni determina el modo real de lanzamiento, la capacidad para impedir relanzamientos o la evidencia de exclusión. Por tanto, no se presenta ese dato como entorno objetivo de bootstrap ya identificado.
+
+Para el entorno concreto de esta operación, las únicas lagunas de intake inmediato que permanecen son las ya enumeradas en el perfil D3:
+
+- **E1, solo la parte pendiente:** confirmar si esta operación de bootstrap M0 se refiere al prototipo del POCO/Android o a otro entorno concreto; no repetir la elección general de plataforma del prototipo.
+- **E2:** quién o qué tiene control verificable para detener todos los escritores/launchers relevantes e impedir su reinicio durante la ventana.
+- **E3:** modo real de lanzamiento y procesos, wrappers, supervisores o consumidores capaces de escribir/relanzar; lo no conocido permanece desconocido.
+- **E4:** solo después de fijar el entorno y lanzamiento, identificar las propiedades relevantes del almacenamiento y posibles escritores externos.
+
+No se exige resolver ahora todo E1–E6 ni compartir rutas privadas, secretos o credenciales. Si E2/E3 no se pueden establecer, el contrato no debe rellenar la brecha con un mecanismo supuesto: P01-C/P01-D siguen `UNKNOWN` y la publicación sigue `STOP`.
