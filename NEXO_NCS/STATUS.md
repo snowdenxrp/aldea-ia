@@ -1,3 +1,11 @@
+## DELTA — COBERTURA DE TESTS NO EQUIVA A CRITERIOS DE CIERRE (2026-10-27)
+
+- Inventario §17, commit `e57a316fdfa14abcafdbdc51d8bed3caa1808822`: inspección estática de `entrypoint.test.mjs`, `protected-transition.test.mjs` y `chronicle-runtime.test.mjs` identifica cobertura útil, pero no demuestra exhaustividad del grafo de callers/no-bypass ni autoridad constitucional independiente.
+- Esta es una limitación de evidencia, no una afirmación de que las pruebas definitivamente no cubran esos casos. Falta mapear cada criterio B.5–B.7 del documento de línea de meta al test/assertion exacto y a una ejecución ligada al SHA.
+- No se ejecutaron tests ni CI. No se alteró runtime/workflows. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — LIMITACIÓN DE CONSULTA DE HISTORIAL DE ACTIONS DOCUMENTADA (2026-10-27)
 
 - Inventario §16, commit `5c67bb47d011b2762411c5e865c1ec03bbee51e8`: los path filters de ambos workflows M0 no incluyen `NEXO_NCS/STATUS.md` ni `NEXO_NCS/BUILD/**`; los checkpoints documentales no son evidencia de disparo de CI.
