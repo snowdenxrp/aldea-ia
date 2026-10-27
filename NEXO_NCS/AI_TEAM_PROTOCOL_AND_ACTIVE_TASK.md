@@ -467,3 +467,18 @@ Trabajo documental solamente, conforme a la ratificación del propietario del 20
 ### Estado y límites
 
 Esta adición registra un criterio de evidencia pendiente; no certifica completitud del inventario, no cierra P-01/P-05 ni cambia la selección de bootstrap. M0 sigue `INCOMPLETO`; D0/D1-DESIGN/D2/D3 siguen `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`; A/B/C/D sin seleccionar. No se ejecutaron tests/CI ni código, y no se modificaron runtime, workflows ni dispositivo.
+
+
+## Nueva tarea activa — revisión independiente del contrato restringido (2026-10-27)
+
+**Encargo vigente:** revisar el borrador `NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md` sin repetir el censo de repositorio ni reabrir auditorías cerradas.
+
+**Paquete listo para entregar a Claude y Gemini:** [NCS_M0_RESTRICTED_BOOTSTRAP_CONTRACT_INDEPENDENT_REVIEW_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_CONTRACT_INDEPENDENT_REVIEW_2026-10-27.md), commit `a027be9b1a9eb20cc350c8414ae34ff7433ab990`.
+
+- **Claude:** consistencia contractual, predicados de exclusión, estado previo y resultado indeterminado; contradicciones textuales y correcciones mínimas.
+- **Gemini:** red-team documental de contraejemplos para escritores, relanzamientos, sustitución del destino y resultados inciertos.
+- Ambos encargos son de solo lectura. Sin cambios de archivos, comandos, tests, CI, Actions, selección A/B/C/D ni autorización de implementación.
+- **Estado de envío:** preparado, todavía no enviado. Este protocolo no puede activar ni afirmar que las aplicaciones externas trabajaron; el propietario debe pegar el encargo en cada aplicación y devolver aquí las respuestas.
+- Al recibirlas, ChatGPT integra los resultados y clasifica cada punto como nuevo, ya cubierto, inferencia, contradicción real o UNKNOWN. Si no aparece discrepancia material, se registra y se continúa; no se inventa otra tarea.
+
+El dato de plataforma ya conocido (POCO X7 Pro/Android como primer prototipo) no debe preguntarse otra vez como si fuera desconocido. La ubicación exacta de la operación de bootstrap y los controles reales de writers/launchers siguen sin demostrarse.
