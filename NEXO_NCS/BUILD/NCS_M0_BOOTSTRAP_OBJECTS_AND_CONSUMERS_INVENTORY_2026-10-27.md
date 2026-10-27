@@ -575,3 +575,10 @@ Checkpoint de enlace: `NEXO_NCS/BUILD/NCS_M0_P01_DOCUMENTATION_LINKAGE_CHECKPOIN
 Se registra la relación entre la matriz P01-A…P01-H y la nota de reconciliación de Opción A (alcance) frente a Opción B (procedimiento). La sección también corrige el registro: el intento previo de añadir esta sección no quedó guardado; esta sección 25 sí se debe verificar por lectura después del commit.
 
 P-01 continúa OPEN/UNKNOWN. Este índice no ratifica contrato ni autoriza implementación, tests o CI.
+
+
+## 26. Reconciliación del estado de decisiones P-01 (2026-10-27)
+
+Documento: `NEXO_NCS/BUILD/NCS_M0_P01_DECISION_STATE_RECONCILIATION_2026-10-27.md`, commit `59fa87ba1569915fb88d9cd571e0298e04bb1139`.
+
+Alinea la matriz P01-A…P01-H con las decisiones ya aceptadas: alcance A no autoritativo/acotado, commit normal sin auto-inicialización y separación conceptual de bootstrap. Aclara que la aceptación del principio no cierra el protocolo operacional de P01-C: quiescencia, exclusión, resultado observable y reconciliación siguen pendientes. No amplía autoridad ni cambia gates.
