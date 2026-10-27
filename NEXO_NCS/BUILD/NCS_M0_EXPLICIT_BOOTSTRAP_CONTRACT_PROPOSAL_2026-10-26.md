@@ -98,3 +98,16 @@ La auditoría de reutilización [Constitution Authority Context Reuse Audit](STE
 - **Siguiente paso de diseño:** comprobar si el contrato constitucional existente incluye, o debe delimitar explícitamente, la legitimidad de la operación de inicialización local de estado. No ampliar silenciosamente su alcance. Si no la cubre, registrar la dependencia como UNKNOWN/PENDING para una decisión del propietario.
 
 Esto reduce la pregunta abierta: ya no es «¿qué owner semántico inventamos?», sino «¿cómo se establece independientemente el contexto constitucional existente, y cubre su alcance la inicialización local?». La respuesta de implementación sigue siendo UNKNOWN.
+
+
+## Delimitación de alcance: ¿cubre este contrato el bootstrap local? (2026-10-26)
+
+Lectura directa del contrato constitucional vigente: su propósito expreso es que Core reconozca el régimen constitucional que gobierna una **vinculación posterior de Policy**. Sus no-objetivos separan Policy, admisión, ejecución, commit y efecto externo. No define por sí mismo una autorización para crear el primer archivo de estado persistente ni una operación de bootstrap local.
+
+Por ello, el contrato constitucional identifica el owner semántico de legitimidad constitucional, pero **no cubre explícitamente el caso de uso de inicialización local**. No se debe inferir esa cobertura por analogía: hacerlo ampliaría su alcance sin decisión contractual.
+
+Resolución:
+- Mantener la opción B como separación de operaciones.
+- Mantener autoridad para bootstrap local en UNKNOWN/PENDING.
+- No crear otro owner/raíz para cerrar la brecha.
+- La próxima decisión de diseño debe definir si la inicialización local cae bajo una regla constitucional ya existente y demostrable, o requiere una delimitación explícita aprobada por el propietario. Hasta entonces, no implementación ni tests/CI.
