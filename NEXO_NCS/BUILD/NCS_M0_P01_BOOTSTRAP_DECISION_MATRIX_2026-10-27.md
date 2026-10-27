@@ -57,3 +57,27 @@ P-01 no puede declararse resuelto hasta que cada dimensión aplicable tenga: (a)
 Continuar solo con reconciliación documental de la matriz contra el registro canónico de decisiones y los contratos existentes, o preparar un handoff autocontenido. No modificar runtime/tests/workflows/configuración, ni ejecutar pruebas/CI/Actions, sin autorización específica separada.
 
 **Estado final de este artefacto:** documental; no ratifica D1/D2, no cierra P-01, no declara M0 completo y no cambia ningún gate canónico.
+
+
+---
+
+## Delta documental — contrato de precondiciones del entorno restringido (2026-10-27)
+
+Referencia nueva: [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md](NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md), creado tras la decisión explícita del propietario de permitir un entorno restringido.
+
+Este delta registra progreso de especificación, **no cierre de criterios**:
+
+| Criterio | Qué aporta el borrador | Estado conservador tras el borrador |
+|---|---|---|
+| P01-A — objeto y alcance | Exige identificar el `filePath` efectivo y no atribuir al store autoridad por su nombre o existencia. | `OPEN / UNKNOWN`: finalidad/no autoridad canónica del objeto sigue sin ratificar. |
+| P01-B — separación operacional | Exige que bootstrap no continúe en la misma invocación hacia admisión, PREPARED, dispatch, reparación/reconciliación o mutación de dominio. | `NO PASS`: no hay demostración end-to-end. |
+| P01-C — procedimiento y quiescencia | Exige demostrar exclusión durante la ventana y no reanudación de procesos previos/legacy. | `PENDING / UNKNOWN`: no se identificó ni demostró el entorno real o su barrera. |
+| P01-D — creación exclusiva y concurrencia | Exige no sobrescritura frente a todas las clases relevantes, sin equiparar lock cooperativo con exclusión global. | `PENDING / UNKNOWN`: no se eligió ni demostró un mecanismo. |
+| P01-E — estado previo | Exige distinguir ausencia real de objeto existente, corrupción, inaccesibilidad y error de inspección. | `CONTRACT REQUIRED / UNVERIFIED`: sin prueba end-to-end autorizada. |
+| P01-F — UNKNOWN/reconciliación | Exige STOP/UNKNOWN sin retry automático y una vía de reconciliación autorizada antes de resolver el resultado. | `PENDING / UNKNOWN`: vía autorizada no demostrada. |
+| P01-G — autoridad | Prohíbe derivar autoridad de ausencia, caller, lock, path o snapshot; exige la frontera canónica aplicable. | `PENDING / UNKNOWN`. |
+| P01-H — prueba/trazabilidad | Define metadatos mínimos para enlazar evidencia al entorno, objeto/path, contrato y SHA exactos. | `NOT RUN / NOT VERIFIED`: no se ejecutaron pruebas ni CI. |
+
+El borrador identifica qué se debe demostrar, pero no identifica por sí solo una instalación/entorno concreto ni ofrece evidencia operacional. No se cierra P-01, D0–D3 ni ningún gate por este delta. Si se descubre una contradicción con un contrato canónico existente, resolver únicamente esa discrepancia; no repetir el inventario general.
+
+Límites intactos: sin cambios de runtime/tests/workflows/configuración ejecutable/dispositivo; sin ejecución de tests/CI/Actions; primera creación de Continuity y efectos protegidos en `STOP`; `authorization: NOT_EVALUATED`.
