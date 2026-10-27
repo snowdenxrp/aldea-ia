@@ -1,3 +1,13 @@
+## DELTA — FRONTERA DE DECISIÓN DE PRIMERA CREACIÓN (2026-10-27)
+
+- Nueva nota: `NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_DECISION_BOUNDARY_2026-10-27.md`, commit `9b18cc275e84e834f31a8f1dcaa9bb6d569915fa`.
+- Inventario actualizado con sección 28, commit `d5cc0461eab4cd8943f4ec4e2632c2d87a3d2f27`.
+- Distinción central: que el objeto sea no autoritativo no demuestra por sí solo la legitimidad de su primera creación; una autorización normativa tampoco demuestra aislamiento, quiescencia, exclusión de escritores ni persistencia correcta. Las dos condiciones descritas son brechas de decisión, no opciones ratificadas.
+- P01-A/P01-G siguen OPEN/UNKNOWN; M0 INCOMPLETO; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
+- Solo documentación; sin cambios ejecutables ni ejecución de pruebas/CI/Actions.
+
+---
+
 ## DELTA — P01-A / P01-G: FRONTERA DE LEGITIMIDAD REVISADA (2026-10-27)
 
 - Nueva revisión: `NEXO_NCS/BUILD/NCS_M0_P01_ROOT_LEGITIMACY_BOUNDARY_REVIEW_2026-10-27.md`, commit `2e3d496a93e16f9e8861ff4ec6af91de4abc6baa`.
