@@ -361,3 +361,25 @@ La revisión confirma cobertura arquitectónica real en `entrypoint.test.mjs`; l
 Siguiente trabajo documental: cruzar las raíces y exclusiones de `auditNexoImportGraph` con el inventario de callers ya existente y registrar únicamente aristas fuera de su alcance. No repetir el censo completo ni modificar tests/runtime para resolverlo sin autorización separada.
 
 Estados: revisión estática; tests no ejecutados en esta etapa; CI no vinculado a SHA de runtime/tests; D1-DESIGN OPEN; D1-IMPLEMENTATION NO AUTORIZADA; efectos protegidos STOP.
+
+
+## 18. Cruce de raíces de entrypoint con callers directos de Continuity (2026-10-27)
+
+Comparación estática de las dos raíces de `auditNexoImportGraph` (documentadas en §17) contra los consumidores directos previamente identificados. Se verificaron las referencias actuales en la rama `ncs-clean-architecture`:
+
+| Archivo | Blob actual | Referencia a `openNexoContinuityOwner` | Relación con raíces del test |
+|---|---|---|---|
+| `scripts/nexo.mjs` | ver test de entrypoint | raíz de auditoría | Raíz explícita |
+| `scripts/nexo-chronicle-session.mjs` | ver test de entrypoint | raíz de auditoría | Raíz explícita |
+| `src/nexo/application/chronicle-append.mjs` | `5a20044bcddbaee79d0117934eefaea5f3b2c3bc` | import en línea 1; uso en línea 326 | El test afirma que llega transitivamente a este caso de uso desde las raíces |
+| `scripts/simulate.mjs` | `1b5e39b681486f583c1779770c52dd913227dfa1` | import en línea 3; uso en línea 262 | No es una raíz explícita de `auditNexoImportGraph`; su cobertura por esa función no está demostrada |
+| `scripts/assistants.mjs` | `d31c6dba86159ee0403f0cc1c236b89863e4d5cb` | import en línea 9; uso en línea 50 | No es una raíz explícita de `auditNexoImportGraph`; su cobertura por esa función no está demostrada |
+
+### Interpretación estricta
+
+- Esto identifica dos consumidores directos que quedan fuera de las raíces explícitas de la guardia de import graph. No significa automáticamente que sean vulnerabilidades ni que estén dentro del alcance congelado de D1; esa clasificación depende del contrato y del mapa de callers existente.
+- El workflow de aceptación incluye `entrypoint.test.mjs`, pero eso no incorpora automáticamente `scripts/simulate.mjs` ni `scripts/assistants.mjs` al recorrido recursivo: la función sigue las dependencias de las raíces dadas, no busca todos los consumidores del repositorio.
+- El workflow de repair/crash-cuts incluye pruebas específicas para rutas de reparación, pero su selección no sustituye clasificar cada caller ni demostrar que todos convergen en una frontera autorizada.
+- Acción siguiente, documental y acotada: comparar estos dos consumidores con el alcance de D1 y el censo existente; si el censo ya los clasifica, reutilizar esa clasificación. No repetir el inventario global, no declarar bypass sin evidencia y no cambiar runtime/tests.
+
+Estado: hallazgo de cobertura/alcance estático pendiente de clasificación D1; no se ejecutaron pruebas ni CI.
