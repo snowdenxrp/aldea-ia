@@ -2483,3 +2483,17 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - La YubiKey y el canal telefónico permanecen candidatos con funciones distintas; ninguno equivale por sí solo a una raíz reconocida.
 - Estado sin cambios: M0 `INCOMPLETO`; P-01/P01-A/P01-G `OPEN / UNKNOWN`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`.
 - Solo documentación; no runtime/tests/workflows/configuración/dispositivo; no tests/CI/Actions.
+
+
+---
+
+## DELTA — MODELO DE EXCLUSIÓN/BOOTSTRAP DE CONTINUITY (2026-10-27)
+
+- Nuevo artefacto documental: [NCS_M0_CONTINUITY_BOOTSTRAP_EXCLUSION_MODEL_RECONCILIATION_2026-10-27.md](BUILD/NCS_M0_CONTINUITY_BOOTSTRAP_EXCLUSION_MODEL_RECONCILIATION_2026-10-27.md), commit `19387e23df26eddf626f58695c3118df9defbb24`.
+- Reutiliza la propuesta de bootstrap explícito, matriz P01-A…P01-H, mapa de objeto/consumidores, delta de inventario y cruce de línea de meta; no repite el censo general ni la investigación de Chronicle/PB-08.
+- Delimitación: el lock actual solo sustenta coordinación entre escritores cooperativos. No demuestra exclusión de escritores no cooperativos ni quiescencia del entorno. La carrera entre `access(filePath)` y `rename(tempPath, filePath)` sigue siendo riesgo inferido/UNKNOWN; no se reprodujo y no se afirma exploit.
+- Requisito documental: el protocolo futuro debe declarar y demostrar cobertura de todos los escritores relevantes dentro de un alcance aceptado; no se puede escoger por inferencia si el alcance debe cubrir todo proceso local no cooperativo o un entorno operativo más estrecho con precondiciones verificables.
+- Mantener separados: legitimidad de primera creación (P01-A/G), aislamiento de la invocación (P01-B), procedimiento/quiescencia y exclusión (P01-C/D), clasificación de estado y UNKNOWN/reconciliación (P01-E/F), y pruebas ligadas al SHA (P01-H).
+- Próximo paso: verificar solo si los artefactos de alcance ya aceptados fijan la cobertura de escritores no cooperativos. Si no, registrar esa dimensión como pendiente; no elegir mecanismo ni implementar.
+- Solo documentación; runtime/tests/workflows/configuración/dispositivo sin cambios; tests/CI/Actions no ejecutados.
+- Estado canónico intacto: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP.
