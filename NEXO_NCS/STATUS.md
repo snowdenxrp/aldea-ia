@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — MAPA DE COBERTURA R1–R4 (2026-10-26)
+
+- Mapa de cobertura estática creado: [Cobertura existente frente a R1–R4](BUILD/NCS_M0_PERSISTENCE_UNKNOWN_TEST_COVERAGE_CROSSWALK_2026-10-26.md), commit `1da22af739a10db928944e9eb3a02390d02ed209`.
+- Corrección importante de precisión: `simulation-restart-persistence.test.mjs` ya prueba `loadStateStrict` para archivo ausente, JSON inválido, revisión ausente y esquema inválido. Sin embargo, esto no prueba que el adaptador condicional utilice ese loader ni que preserve un archivo corrupto cuando se invoca el commit condicional real.
+- La prueba `conditional-commit-persist-state.test.mjs` ya cubre la ruta feliz con archivo real, conflicto de revisión y clasificación UNKNOWN con stubs; `simulation-restart-persistence.test.mjs` cubre fallos inyectados antes del reemplazo. Siguen faltando la integración adaptador+archivo corrupto, getter hostil en `error.code` y error posterior al reemplazo.
+- La nueva matriz evita duplicar cobertura existente y separa tests presentes de pruebas faltantes. La revisión fue estática: no se ejecutaron tests ni CI, no hubo cambios de runtime/tests/workflows.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — ESPECIFICACIÓN DE ACEPTACIÓN PERSISTENCIA/UNKNOWN (2026-10-26)
 
 - Especificación documental añadida: [NCS M0 — Especificación de aceptación para persistencia y UNKNOWN](BUILD/NCS_M0_PERSISTENCE_UNKNOWN_ACCEPTANCE_SPEC_2026-10-26.md), commit `87c46097b0ff450ed06dd616ec59a8d71d621697`.
