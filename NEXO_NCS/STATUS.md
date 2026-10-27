@@ -1,3 +1,13 @@
+## DELTA — BORRADOR DE CONTRATO VERIFICABLE DEL ENTORNO RESTRINGIDO DE BOOTSTRAP (2026-10-27)
+
+- Nuevo borrador documental: [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_DRAFT_2026-10-27.md), commit `cdcc405303ecfeb1305336b696bb378bd4607081`.
+- Traduce la decisión ya tomada por el propietario en precondiciones explícitas: entorno/objeto efectivo, clases de escritores, exclusión y no reanudación, aislamiento de la invocación, clasificación de estado previo, no sobrescritura, tratamiento de UNKNOWN y evidencia ligada al SHA exacto.
+- Reutiliza la matriz P-01, el mapa de objeto/consumidores, la reconciliación de exclusión, la propuesta de bootstrap y la línea de meta. No repite el censo general ni reabre STEP 7 o Chronicle/PB-08.
+- Importante: el contrato es un borrador para revisión documental, no un entorno real identificado ni una demostración de precondiciones. Escritores relevantes desconocidos o evidencia ambigua implican STOP/UNKNOWN. No selecciona primitiva de filesystem, lock, supervisor o protocolo de quiescencia.
+- Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; P01-A/B/C/D/E/F/G/H siguen abiertos o no verificados; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados.
+
+---
+
 ## DELTA — DECISIÓN DEL PROPIETARIO: ENTORNO RESTRINGIDO PARA PRIMERA PUBLICACIÓN DE CONTINUITY (2026-10-27)
 
 - Decisión registrada en [NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md](BUILD/NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md), commit documental `7aac3b961c99fd01765b4ac51cd32e86da66effc`.
