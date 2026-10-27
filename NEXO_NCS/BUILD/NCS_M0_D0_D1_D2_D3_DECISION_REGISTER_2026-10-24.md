@@ -129,3 +129,43 @@ Para evitar colisiones dentro de este documento, los identificadores de la tabla
 La línea de meta M0 define la taxonomía normativa A–E. La tabla de §4 de este registro se denomina ahora grupos de evidencia G1–G5 y no redefine ni sustituye los criterios A–E. Las referencias futuras deben nombrar explícitamente “criterio de aceptación A–E” o “grupo de evidencia G1–G5”.
 
 Este cambio solo corrige trazabilidad documental; no modifica el contenido de decisiones O-01…O-11, no cierra P-01…P-10, no cambia el estado canónico ni autoriza implementación.
+
+
+## 10. Pregunta de alcance pendiente para B2 — 2026-10-27
+
+Esta sección registra una pregunta de decisión que surgió al reconciliar el contrato candidato de bootstrap con la línea de meta M0. **No constituye ratificación del propietario ni autoriza implementación.** No se renumeran ni se cierran P-01…P-10.
+
+### 10.1 Pregunta exacta
+
+¿Debe exigirse que toda inicialización explícita de estado local no autoritativo permanezca aislada de la admisión de misiones, la preparación de efectos (PREPARED), el dispatch y las mutaciones de Chronicle durante la misma invocación, o se limita esta obligación a los caminos que pueden alcanzar operaciones protegidas?
+
+### 10.2 Alternativas de diseño por decidir
+
+| Alternativa | Alcance propuesto | Ventaja | Coste / riesgo pendiente |
+|---|---|---|---|
+| A — aislamiento general de bootstrap | Toda ruta de inicialización explícita crea únicamente el estado local permitido y termina sin admitir misión, preparar efectos, despachar ni mutar Chronicle en esa invocación. | Contrato uniforme, fácil de expresar como invariante y de atacar con pruebas. | Puede ampliar el cambio requerido y alterar flujos actuales; debe comprobarse que no contradiga necesidades legítimas del prototipo M0. |
+| B — aislamiento según alcance de efecto | La separación estricta se exige a cada ruta que pueda alcanzar operaciones protegidas; otras rutas solo quedan fuera si se delimitan expresamente y no se atribuye a ellas una capacidad protegida. | Permite acotar el contrato a los caminos relevantes para el alcance aprobado. | Exige un grafo de rutas suficiente; cualquier arista no resuelta queda UNKNOWN/BLOCKED, nunca implícitamente exenta. |
+| C — no seleccionar todavía | Mantener B2 como propuesta no ratificada y conservar el gate STOP hasta resolver la pregunta con el alcance de M0 y el manifiesto D1. | Evita convertir una inferencia técnica en decisión del propietario. | No permite congelar este fragmento del contrato ni pasar a implementación. |
+
+### 10.3 Recomendación técnica no vinculante
+
+Usar la alternativa C como estado actual; después, decidir entre A y B con el alcance M0 explícito y el manifiesto D1 vigente delante. No deducir una decisión a partir de la implementación actual ni de una prueba verde. Si se elige B, el conjunto de rutas excluidas debe quedar enumerado y aceptado conforme al criterio A.17 de la línea de meta; una ruta desconocida no puede contarse como excluida por silencio.
+
+### 10.4 Evidencia necesaria después de una decisión
+
+- Identificar el alcance exacto de bootstrap y las rutas que podrían continuar hacia admisión, PREPARED, dispatch o Chronicle.
+- Vincular la decisión a los criterios de aceptación A.3, A.5–A.8 y C.9–C.13, según aplicabilidad; conservar la separación entre autoridad constitucional y permiso para crear almacenamiento.
+- Solo tras contrato congelado y autorización separada: diseñar y ejecutar pruebas adversariales en el SHA exacto. Esta sección no declara que existan ni que se hayan ejecutado.
+- Si la pregunta no puede resolverse con evidencia suficiente, conservar UNKNOWN/BLOCKED y no implementar una suposición.
+
+### 10.5 Estado
+
+- B2: PROPUESTA; NO RATIFICADA.
+- P-01…P-10: siguen en sus estados previamente registrados; esta sección no los cierra ni los renumera.
+- M0: INCOMPLETO.
+- D1-DESIGN: OPEN.
+- D1-IMPLEMENTATION: NO AUTORIZADA.
+- `authorization: NOT_EVALUATED`.
+- Raíz legítima: PENDING/UNKNOWN.
+- Efectos protegidos: STOP.
+- Cambio de esta sección: documentación únicamente; no modifica runtime, tests, workflows ni configuración ejecutable y no afirma ejecución de pruebas o CI.
