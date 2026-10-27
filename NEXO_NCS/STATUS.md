@@ -1,3 +1,12 @@
+## DELTA — P-01: MATRIZ DE DECISIONES INDEPENDIENTES (2026-10-27)
+
+- Nuevo artefacto: `NEXO_NCS/BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md`, commit `422342da2ce830fe736c9b675435508f4a24fe5a`. Divide P-01 en ocho dimensiones: objeto/no autoridad; aislamiento operacional; procedimiento/quiescencia; creación exclusiva; clasificación de estado; UNKNOWN/reconciliación; autoridad canónica; y pruebas/SHA.
+- Inventario §24 indexa la matriz, commit `256703c664db7721ff5af8cce10f34334799b16b`.
+- La matriz separa preguntas que no se sustituyen entre sí: creación exclusiva ≠ quiescencia; store committed ≠ autoridad; UNKNOWN ≠ retry; evidencia estática ≠ prueba end-to-end.
+- P-01 continúa OPEN/UNKNOWN; M0 INCOMPLETO; D1/D2/D3 sin cambio; implementación NO AUTORIZADA; raíz PENDING/UNKNOWN; efectos protegidos STOP. No se modificaron runtime/tests/workflows/configuración ni se ejecutaron pruebas/CI/Actions.
+
+---
+
 ## DELTA — P-01 CRUZADO CONTRA LA LÍNEA DE META M0 (2026-10-27)
 
 - Inventario §23, commit `3e41901569e0af3ce5dfb25973c0a4934e8bfd8c`: mapea criterios existentes de la línea de meta M0 a evidencia disponible, estado probatorio y faltantes concretos para P-01.
