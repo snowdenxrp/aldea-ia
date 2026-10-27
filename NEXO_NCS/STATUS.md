@@ -1,3 +1,13 @@
+## DELTA — CONDICIONES DE SALIDA PROPUESTAS PARA P-02 / P-HIST-08 (2026-10-27)
+
+- Inventario §20, commit `51af570188b453c6547a95626cf9c6721964ba05`: concreta criterios documentales para las excepciones `assistants.mjs` y `simulate.mjs`, reutilizando P-02/P-HIST-08 y el manifiesto D1 existentes.
+- `assistants.mjs`: decidir exclusión M0 o integración compuesta con solo la suboperación Nexo bajo admisión de instancia; separar explícitamente estado del mundo/memoria Lúmina y no prometer atomicidad multi-store sin contrato.
+- `simulate.mjs`: decidir exclusión o frontera propia; definir inicialización de Continuity ausente y tratamiento de ruta legacy/legacyMemory sin inferir autoridad a partir de estado de simulación.
+- Regla de cierre: una exclusión ratificada se registra como `OUT OF SCOPE BY DECISION`, no como bloqueo técnico. Sin decisión del propietario o evidencia de prueba vinculada al SHA, mantener `OPEN / UNKNOWN`. La matriz es propuesta documental, no ratificación ni autorización de implementación.
+- Sin cambios ejecutables ni tests/CI/Actions. Gates canónicos intactos.
+
+---
+
 ## DELTA — CALLERS RECONCILIADOS CON MANIFIESTO D1; EXCEPCIONES SIGUEN SIENDO SOLO DE DISEÑO (2026-10-27)
 
 - Inventario §19, commit `462f1a63377c058415e5ce32cfa090c18b5d5f0b`: el manifiesto D1 existente ya clasifica `scripts/assistants.mjs` y `scripts/simulate.mjs` como `EXPLICIT_EXCEPTION — DESIGN ONLY`; el registro mantiene P-HIST-08 y P-02 abiertos.
