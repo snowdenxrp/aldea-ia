@@ -1,3 +1,11 @@
+## DELTA — DOS CALLERS DIRECTOS FUERA DE LAS RAÍCES EXPLÍCITAS DEL IMPORT-GRAPH TEST (2026-10-27)
+
+- Inventario §18, commit `9fc9d55e4e55f071b2ec19515d34e5a6c9049f38`: cruce estático confirma que `scripts/simulate.mjs` (blob `1b5e39b681486f583c1779770c52dd913227dfa1`) y `scripts/assistants.mjs` (blob `d31c6dba86159ee0403f0cc1c236b89863e4d5cb`) llaman directamente a `openNexoContinuityOwner`, pero no son raíces explícitas de `auditNexoImportGraph` en `entrypoint.test.mjs`.
+- `src/nexo/application/chronicle-append.mjs` (blob `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`) sí está afirmado como alcanzado transitivamente por el test desde sus raíces. Este contraste no declara vulnerabilidad ni decide si simulate/assistants están dentro del alcance D1; esa clasificación debe reutilizar el censo y contrato existentes.
+- Siguiente paso: contrastar únicamente estos dos callers con el alcance D1 ya documentado, sin rehacer el inventario completo. Sin tests/CI/Actions ni cambios ejecutables. Gates intactos.
+
+---
+
 ## DELTA — TRAZABILIDAD B.5–B.7 REFINADA; CONSULTA DIRECTA DE ACTIONS BLOQUEADA POR EL CONECTOR (2026-10-27)
 
 - Inventario §17 actualizado en commit `ba9a20ce519be4f10f92062fa5b6548ff8ff6984`. Corrección importante: `tests/nexo/entrypoint.test.mjs` sí implementa un recorrido recursivo de imports/re-exports estáticos desde dos raíces y guardas explícitas de módulos legacy; no describirlo como prueba superficial.
