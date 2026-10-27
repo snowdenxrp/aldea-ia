@@ -273,3 +273,33 @@ Fuentes consultadas en la misma rama:
 3. Registrar un run existente y su SHA exacto si está disponible; no disparar un run nuevo en este trabajo.
 
 No se ejecutaron tests, `npm test`, CI ni Actions. No se modificó `package.json`, workflows ni código ejecutable.
+
+
+## 15. Corrección de selección de tests: workflows específicos sí existen (2026-10-27)
+
+La búsqueda adicional encontró los workflows reales en esta rama; por tanto, la incertidumbre de §14 se resuelve parcialmente. La conclusión de §14 sobre la ausencia de selección en el script general `package.json` sigue siendo cierta, pero no implicaba ausencia de otra ruta de ejecución.
+
+| Workflow | Blob SHA inspeccionado | Selección relevante |
+|---|---|---|
+| `.github/workflows/nexo-m0-acceptance.yml` | `60323063fe6656eb7e7710825f327fa7e39526c3` | Trigger `push` filtrado a `ncs-clean-architecture` y paths; también `workflow_dispatch`. Ejecuta `chronicle-runtime.test.mjs` y, en el paso “Crash cuts and owner recovery”, `continuity-migration.test.mjs`. |
+| `.github/workflows/nexo-m0-repair-crash-cuts.yml` | `35e93581fd33912165f7adfb9656952e76c567fa` | Trigger `push` a la misma rama con paths específicos; también `workflow_dispatch`. Ejecuta `continuity-migration.test.mjs` como paso independiente y pruebas de reparación relacionadas. |
+
+Fuentes directas:
+- [Workflow de aceptación M0](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/.github/workflows/nexo-m0-acceptance.yml)
+- [Workflow de crash cuts y reparación](https://github.com/snowdenxrp/aldea-ia/blob/ncs-clean-architecture/.github/workflows/nexo-m0-repair-crash-cuts.yml)
+
+### Límites de la evidencia actual
+
+- Queda demostrada **la selección declarada por los archivos YAML**; no queda demostrado que un run se haya disparado para los SHA de tests/runtime inspeccionados ni que haya pasado.
+- El endpoint de runs consultado para el commit documental del checkpoint no devolvió runs asociados; ese resultado no es un historial exhaustivo, porque la operación disponible filtra runs asociados a pull requests y devuelve solo la primera página.
+- El estado combinado de checks para el commit documental también devolvió una lista vacía. Como el commit solo cambia documentación, esto no prueba fallo de tests ni ausencia de ejecución para commits anteriores.
+- Búsquedas de texto no produjeron un run ID verificable. No atribuir los runs históricos de otros workflows Nexo a estos dos workflows.
+- Para cerrar la evidencia de ejecución hace falta consultar el historial de Actions de cada workflow y vincular un run a su `head_sha`; después, comprobar jobs, pasos y conclusión. No se disparó ni reintentó ningún workflow.
+
+### Estado actualizado de cobertura
+
+1. `chronicle-runtime.test.mjs`: selección declarada en ambos flujos pertinentes, con alcance exacto condicionado por triggers/path filters.
+2. `continuity-migration.test.mjs`: selección declarada tanto en el workflow de aceptación M0 como en el workflow de crash cuts.
+3. Tests ejecutados/CI verde para SHA exacto: **NO VERIFICADO en esta revisión**.
+
+Esta sección corrige y precisa §14; no cambia los gates de NCS ni autoriza ejecución.
