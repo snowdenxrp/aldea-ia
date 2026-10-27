@@ -621,3 +621,14 @@ Estrecha el candidato primario a **el archivo Continuity ausente identificado po
 Mapea de forma conservadora los usos conocidos de `missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`, revisión y entradas Chronicle. `doNotRepeat`, reconstrucción/linaje y journal pueden influir en control de flujo/recuperación; eso impide afirmar que la persistencia no tenga consecuencias operativas, aunque no la convierte en raíz de autoridad. La ruta Chronicle puede continuar tras inicializar; `simulate`/`assistants` mantienen acoplamientos estáticos ya registrados.
 
 No se cierra P01-A/G ni se selecciona un protocolo de primera creación. Path de instalación, snapshot inicial exacto, separación negativa end-to-end, regla legítima, exclusión/quiescencia y UNKNOWN siguen pendientes. Solo documentación; sin runtime/tests/workflows/configuración ni ejecución de tests/CI/Actions.
+
+
+## 32. Brecha de regla legítima para la primera creación P-01 (2026-10-27)
+
+Documento: NEXO_NCS/BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md, commit 940f1f8f1ebd21bb131e44ccdd967f0d723a4a5e.
+
+Reconciliación limitada de los contratos ya aceptados y los artefactos STEP 7: el alcance A no demuestra aislamiento; la separación B no define por sí misma quién/qué legitima la primera creación; el Constitution Authority Context depende de una Trust Foundation reconocida; el gate STEP 7 mantiene STOP BEFORE CODE. No se encontró en los artefactos revisados una regla aceptada explícita para la primera creación local de Continuity, sin afirmar que no pueda existir en otra fuente no revisada.
+
+Separa tres afirmaciones que no se sustituyen: (1) el store no es raíz constitucional por sí mismo; (2) bootstrap separado del commit normal es principio aceptado; (3) la regla legítima de primera creación sigue PENDING/UNKNOWN. No crea BootstrapAuthority, owner, credencial, ID, gate universal ni raíz paralela. Reutiliza la línea de meta M0 existente.
+
+Sin cambio de gates: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP. Solo documentación; no runtime/tests/workflows/configuración ni ejecución de tests/CI/Actions.
