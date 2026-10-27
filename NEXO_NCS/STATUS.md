@@ -1,3 +1,15 @@
+## DELTA — WORKFLOWS M0 IDENTIFICADOS; EJECUCIÓN AÚN NO VINCULADA A SHA (2026-10-27)
+
+- Corrección documentada en el inventario §15, commit `4059f658038c09cdf78607af625c8ebd5fde43e9`: sí existen workflows dedicados en esta rama.
+- `.github/workflows/nexo-m0-acceptance.yml` (blob `60323063fe6656eb7e7710825f327fa7e39526c3`) selecciona `chronicle-runtime.test.mjs` y `continuity-migration.test.mjs` bajo triggers/path filters específicos.
+- `.github/workflows/nexo-m0-repair-crash-cuts.yml` (blob `35e93581fd33912165f7adfb9656952e76c567fa`) también ejecuta `continuity-migration.test.mjs` y regresiones de reparación.
+- Por tanto, §14 queda precisado: la ausencia de `continuity-migration.test.mjs` en el script general `package.json` no implica que falte de todos los runners.
+- No se encontró en esta revisión un run ID verificable asociado al SHA exacto de los tests/runtime. El status combinado del commit documental no tenía checks; esto no permite inferir resultado de commits de implementación.
+- Próximo paso: verificar historial de Actions, `head_sha`, jobs, pasos y conclusión de un run existente; no disparar ni reintentar workflows.
+- Sin cambios ejecutables ni ejecución de tests/CI/Actions. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — MATRIZ ESTÁTICA DE TESTS Y SELECCIÓN DEL RUNNER (2026-10-27)
 
 - Inventario ampliado en §13–14: [NCS M0 bootstrap objects and consumers inventory](BUILD/NCS_M0_BOOTSTRAP_OBJECTS_AND_CONSUMERS_INVENTORY_2026-10-27.md), commit `492d15a159fbed0f9e07cb02c8865e9e002ea8d2`.
