@@ -1,3 +1,14 @@
+# DELTA DE CONTINUACIÓN — MAPA DE CONSUMIDORES Y CARRERA DE BOOTSTRAP (2026-10-27)
+
+- Se amplió el mapa estático existente con una lectura dirigida de las cinco colecciones, los tests relevantes (solo lectura) y la secuencia exacta de `initialize()`: [NCS_M0_STATIC_CONSUMER_MAP_QWEN_CONSOLIDATION_2026-10-27.md](BUILD/NCS_M0_STATIC_CONSUMER_MAP_QWEN_CONSOLIDATION_2026-10-27.md), nuevo commit `4e2f70ea83029ad08a6581e256e53293a4905d7e`.
+- Consumidores: `missions` afecta reconstrucción/admisión de pasos; `attempts` afecta reconstrucción de resultados y bloqueos; `doNotRepeat` filtra planificación; `executions` conserva linaje/idempotencia pero no prueba verdad externa; `effectJournal` condiciona PREPARED/reconciliación/recuperación. Esto describe influencia operacional, no autoridad constitucional.
+- Tests leídos estáticamente: `continuity-migration.test.mjs`, `assistants-runtime-cli.test.mjs`, y el caso concurrente de `chronicle-runtime.test.mjs`. Ninguno fue ejecutado; las aserciones del archivo no son resultados de CI.
+- Precisión de concurrencia: el lock serializa escritores cooperativos; el flujo de inicialización usa `access(filePath)`, luego `.tmp` estable y `rename`. Un escritor no cooperativo puede competir en esa ventana; efecto real depende de filesystem/plataforma y permanece UNKNOWN, no reproducido. El propio store excluye garantías globales/sandbox/durabilidad universal.
+- Gates sin cambios: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reparaciones excluidas de M0. No se ejecutaron código/tests/CI/Actions ni se modificó runtime/tests/workflows/configuración ejecutable.
+- Punto siguiente: no rehacer Chronicle ni el informe Perplexity. Revisar únicamente contradicciones documentales concretas y preparar, sin implementar, un contrato canónico que separe aislamiento, autoridad, persistencia y concurrencia. Mantener writers no cooperativos, plataforma objetivo y alcance global como UNKNOWN hasta evidencia adecuada.
+
+---
+
 # CONTINUIDAD PARA SIGUIENTE CHAT — HANDOFF BOOTSTRAP DELTA (2026-10-27)
 
 - **Siguiente chat: empezar por este handoff detallado:** [`BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_BOOTSTRAP_DELTA.md`](BUILD/NCS_M0_HANDOFF_NEXT_CHAT_2026-10-27_BOOTSTRAP_DELTA.md), commit `51a7392efca84b29b0ac5acef4015657cd233277`.
