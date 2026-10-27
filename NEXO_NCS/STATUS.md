@@ -1,3 +1,12 @@
+## DELTA — PB-08: TRAZA ACOTADA DE INTEGRACIÓN (2026-10-27)
+
+- Se amplió [NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md](BUILD/NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md), commit `c42debfc241c3785e2e68c696165532606d8d2b7`.
+- En seis módulos de integración/consumo identificados por ruta y blob no aparece referencia literal a `executeProtectedTransition`, `protected-transition` ni `effectBoundary.prepare`. Es evidencia negativa limitada a esos seis archivos, no una búsqueda exhaustiva ni prueba de ausencia de integración indirecta.
+- Resultado: integración de la transición con esos módulos no demostrada; PB-08 OPEN/UNKNOWN. Próximo paso: inspeccionar los restantes módulos NCS pertinentes solo si el grafo/árbol de imports lo justifica; no repetir el censo general.
+- Solo documentación; no runtime/tests/workflows/configuración/dispositivo; no tests/CI/Actions. Gates intactos.
+
+---
+
 ## DELTA — PB-08: REVISIÓN ESTÁTICA DE EFFECTBOUNDARY (2026-10-27)
 
 - Nuevo artefacto: [NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md](BUILD/NCS_M0_PB08_EFFECT_BOUNDARY_STATIC_REVIEW_2026-10-27.md), commit `9f76af9cc02c49aca2fd94e8ff9135aa086874bb`.
