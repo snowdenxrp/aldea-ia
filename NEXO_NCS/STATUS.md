@@ -1,3 +1,16 @@
+# DELTA — REVISIÓN ADVERSARIAL CONTRA LA LÍNEA DE META M0 EXISTENTE (2026-10-27)
+
+- Nuevo documento: [Revisión adversarial del contrato candidato frente a línea de meta y decisiones canónicas](BUILD/NCS_M0_CANDIDATE_CONTRACT_ADVERSARIAL_RECONCILIATION_2026-10-27.md), commit `555f0c7f50939fa0fb1ddb676d1ab64b28b68b0d`.
+- Hallazgo principal: **no crear otra línea de meta M0**. Ya existe `NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md`, cuya base de cierre fue aceptada por el propietario; los criterios A1–A7 del contrato candidato deben mapearse como sub-obligaciones a los criterios A–E existentes, no reemplazarlos.
+- Revisión cruzada realizada contra el registro D0–D3, el manifiesto D1, el contrato de raíz de instancia, las decisiones de bootstrap A/B y los contratos STEP 7 de Constitution Authority Context / Trust Foundation.
+- No se halló contradicción que invalide las decisiones de alcance A u operacional B. Sí permanecen dependencias críticas: protocolo de bootstrap/quiescencia, cierre del grafo D1, definición de B2 como obligación de diseño y evidencia independiente de Trust Foundation. La inicialización de estado local no concede autoridad constitucional.
+- B2 sigue candidato pendiente, no regla ratificada. La ruta Chronicle es una brecha estática identificada, no una prueba de ejecución ni una autorización para reparar.
+- No se ejecutaron runtime/tests/CI/Actions ni se modificó runtime, tests, workflows o configuración ejecutable.
+- Siguiente acción: resolver solo decisiones abiertas del registro D0–D3 y enlazar obligaciones a la línea de meta existente; no repetir el censo D1 sin cambio de fuente y no crear un segundo acta/línea de cierre.
+- Gates intactos: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; exclusión global de repair `UNKNOWN`.
+
+---
+
 # DELTA — RECONCILIACIÓN DEL CANDIDATO CON DECISIONES CANÓNICAS A/B (2026-10-27)
 
 - Revisé el contrato candidato contra `NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md`, `NCS_M0_ABSENT_STATE_INITIALIZATION_DECISION_2026-10-26.md`, `STEP_7_TRUST_FUNCTION_ROOT_ROLE_MAP_2026-10-08.md` y `STEP_7_MINIMUM_GENESIS_TRUST_FOUNDATION_CONTRACT_2026-10-08.md`.
