@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — OWNER CONSTITUCIONAL EXISTENTE LOCALIZADO (2026-10-26)
+
+- Se localizó el owner semántico ya documentado: [Minimum Core Constitution Authority Context Contract](BUILD/STEP_7_MINIMUM_CORE_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_2026-10-08.md). Core debe reconocer el régimen constitucional desde una base de confianza ya reconocida; los datos del caller no lo establecen ni conceden ejecución.
+- La [auditoría de reutilización](BUILD/STEP_7_CONSTITUTION_AUTHORITY_CONTEXT_REUSE_AUDIT_2026-10-08.md) está cerrada y concluye que no se encontró una ruta implementada actual que establezca ese contexto. El mapa de funciones raíz confirma que el reconocimiento independiente inicial y la aplicación protegida real siguen sin demostrarse.
+- Actualizada la [propuesta de bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md), commit `dccf1b8ecd15d460de93efb0bc00c5f7614c8abb`.
+- Conclusión: owner semántico encontrado, mecanismo independiente no encontrado/demostrado. No crear `BootstrapAuthority` paralelo. No dar por resuelta la autoridad del bootstrap de persistencia; falta comprobar si el alcance del contrato constitucional cubre explícitamente la inicialización local.
+- Próximo paso: delimitar esa correspondencia contractual, sin ampliar silenciosamente la autoridad. No implementar ni ejecutar pruebas/CI mientras la base independiente y el alcance sigan sin establecerse.
+- Solo documentación; no runtime/tests/workflows/configuración ni tests/CI. Gates: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — REVISIÓN DE AUTORIDAD PARA BOOTSTRAP (2026-10-26)
 
 - Se contrastó la propuesta de bootstrap con la regla activa MASTER + AB + P/P112 y el análisis de contr efectos futuros; no se reabrieron auditorías históricas.
