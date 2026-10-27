@@ -66,3 +66,18 @@ Los nombres son ilustrativos, no contratos existentes ni constantes ya implement
 ## Límites de evidencia y ejecución
 
 Esta es una propuesta documental. No modifica código, pruebas, workflows ni configuración; no ejecuta tests o CI; no demuestra integración de producción; no cierra M0. Los gates canónicos permanecen: M0 INCOMPLETO, autoridad raíz PENDING/UNKNOWN, autorización NOT_EVALUATED, efectos protegidos STOP y reconciliación general no integrada.
+
+
+## Evidencia arquitectónica y límites de adopción (revisión 2026-10-26)
+
+Este contrato debe respetar la regla activa de integración MASTER + AB + P/P112 y el análisis de contr efectos futuros:
+
+- **MASTER / Core:** la autoridad debe venir de una relación de owner/authority reconocida por una frontera protegida; declarar autoridad en la entrada del llamador no la establece. La cadena protegida distingue política/admisión, coordinación y ejecución. La inicialización del archivo no puede decidir por sí misma autorización para ejecutar ni autoridad raíz.
+- **AB/P congelado:** los hallazgos existentes exigen que evidencia protegida ausente siga UNKNOWN, que una afirmación no se convierta en autoridad por circularidad y que la coordinación no amplifique la envolvente de autoridad. Se consultan como restricciones, no se reabre la auditoría histórica.
+- **Investigación de bootstrap:** existe un concepto de investigación llamado `BootstrapAuthority`, descrito como autoridad mínima para identidad, inicialización protegida, estado de seguridad y establecimiento de raíz. Es una propuesta de investigación, no un contrato NCS aprobado ni una implementación. No se adopta aquí ni se crea un nuevo objeto/abstracción sin identificar su owner canónico y validar su correspondencia con MASTER/CORE.
+- **Regla de UNKNOWN:** si no se puede establecer la autoridad raíz vigente, el alcance, el esquema requerido o una precondición de creación, la inicialización protegida no procede. La ausencia del archivo no puede servir como su propia prueba de autoridad.
+- **Contr efecto futuro:** introducir una autoridad especial solo para bootstrap podría convertirse en una segunda raíz, una dependencia circular o una autoridad paralela al owner canónico. Antes de adoptar tal mecanismo hay que demostrar cómo se establece independientemente, qué alcance tiene y cómo se evita que se autoautorice. No se añade ningún ID, cola, retry, tombstone, fence ni wrapper como solución especulativa.
+
+### Resultado de la revisión
+
+La opción B queda aceptada como **separación de operaciones**, pero la fuente concreta de autoridad para el bootstrap permanece **UNKNOWN/PENDING**. No existe evidencia suficiente para escoger o inventar un mecanismo de autoridad. El contrato de inicialización no debe considerarse listo para implementación hasta resolver ese owner canónico. La decisión no cambia los gates de M0.
