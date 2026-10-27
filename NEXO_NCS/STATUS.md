@@ -1,3 +1,15 @@
+## DELTA — LIMITACIÓN DE CONSULTA DE HISTORIAL DE ACTIONS DOCUMENTADA (2026-10-27)
+
+- Inventario §16, commit `5c67bb47d011b2762411c5e865c1ec03bbee51e8`: los path filters de ambos workflows M0 no incluyen `NEXO_NCS/STATUS.md` ni `NEXO_NCS/BUILD/**`; los checkpoints documentales no son evidencia de disparo de CI.
+- La herramienta de runs disponible en esta sesión solo consulta runs asociados a un commit y declara filtro de pull requests/primera página. No hay acción expuesta de solo lectura para listar historial por workflow/archivo. No se inventó run ID ni se usó una acción de re-ejecución.
+- Enlaces de inspección manual de historial, solo lectura:
+  - https://github.com/snowdenxrp/aldea-ia/actions/workflows/nexo-m0-acceptance.yml
+  - https://github.com/snowdenxrp/aldea-ia/actions/workflows/nexo-m0-repair-crash-cuts.yml
+- Criterio: registrar `run_id`, `head_sha`, evento, conclusión, pasos ejecutados y blobs de test/runtime. Sin esa relación, `CI NO VERIFICADO`; no inferir éxito ni fallo.
+- Sin ejecución de tests/CI/Actions y sin cambios ejecutables. Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; autoridad `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — WORKFLOWS M0 IDENTIFICADOS; EJECUCIÓN AÚN NO VINCULADA A SHA (2026-10-27)
 
 - Corrección documentada en el inventario §15, commit `4059f658038c09cdf78607af625c8ebd5fde43e9`: sí existen workflows dedicados en esta rama.
