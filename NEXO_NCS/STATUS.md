@@ -2507,3 +2507,12 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Próximo paso: verificar solo si los artefactos de alcance ya aceptados fijan la cobertura de escritores no cooperativos. Si no, registrar esa dimensión como pendiente; no elegir mecanismo ni implementar.
 - Solo documentación; runtime/tests/workflows/configuración/dispositivo sin cambios; tests/CI/Actions no ejecutados.
 - Estado canónico intacto: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP.
+
+
+### Continuidad del modelo de exclusión — cruce de alcance M0 (2026-10-27)
+
+- Se amplió [NCS_M0_CONTINUITY_BOOTSTRAP_EXCLUSION_MODEL_RECONCILIATION_2026-10-27.md](BUILD/NCS_M0_CONTINUITY_BOOTSTRAP_EXCLUSION_MODEL_RECONCILIATION_2026-10-27.md), commit `11444b20cfa4ab07edf717bef8238102ae3890d1`.
+- Cruce con la decisión de alcance y la línea de meta: el cutover/migración legacy está fuera del alcance operativo inicial de M0 mientras no exista entorno objetivo verificable; eso no prueba que los procesos legacy estén detenidos ni que no puedan reanudar escrituras.
+- No se encontró en los registros consultados una decisión aceptada que limite la garantía solo a escritores cooperativos ni una que demuestre exclusión frente a todo proceso local no cooperativo. El protocolo D3 existente debe reutilizarse, no duplicarse.
+- Resultado: la cobertura de exclusión para el destino Continuity real sigue PENDING/UNKNOWN; primera creación STOP. No hace falta repetir inventarios ni pedir otra selección de canal humano. La brecha precisa es el alcance aceptado de la garantía de exclusión y la evidencia que lo soporte.
+- Solo documentación; sin cambios ejecutables, tests, workflows, configuración ni dispositivo; tests/CI/Actions no ejecutados. Gates intactos: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; efectos protegidos STOP.
