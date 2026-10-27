@@ -1,3 +1,13 @@
+# ACTUALIZACIÓN PRIORITARIA — ALCANCE CONSTITUCIONAL NO CUBRE BOOTSTRAP LOCAL (2026-10-26)
+
+- Se leyó directamente el contrato [Minimum Core Constitution Authority Context](BUILD/STEP_7_MINIMUM_CORE_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_2026-10-08.md). Su propósito explícito es reconocer el régimen constitucional para una vinculación posterior de Policy; no define autorización para crear el primer archivo de estado persistente.
+- Conclusión de alcance: el owner semántico está localizado, pero su contrato **no cubre explícitamente** la inicialización local. No se infiere esa cobertura por analogía ni se amplía silenciosamente el contrato.
+- Actualizada la [propuesta de bootstrap explícito](BUILD/NCS_M0_EXPLICIT_BOOTSTRAP_CONTRACT_PROPOSAL_2026-10-26.md), commit `72c09754ea7da4cfdd10b3d65ea2afc63b494dc9`.
+- Siguiente decisión de diseño: establecer si la inicialización local está gobernada por una regla constitucional existente y demostrable o si hace falta una delimitación explícita aprobada por el propietario. No crear una segunda raíz/owner para cerrar la brecha.
+- Sin cambios de runtime/tests/workflows/configuración; sin pruebas ni CI. Gates intactos: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — OWNER CONSTITUCIONAL EXISTENTE LOCALIZADO (2026-10-26)
 
 - Se localizó el owner semántico ya documentado: [Minimum Core Constitution Authority Context Contract](BUILD/STEP_7_MINIMUM_CORE_CONSTITUTION_AUTHORITY_CONTEXT_CONTRACT_2026-10-08.md). Core debe reconocer el régimen constitucional desde una base de confianza ya reconocida; los datos del caller no lo establecen ni conceden ejecución.
