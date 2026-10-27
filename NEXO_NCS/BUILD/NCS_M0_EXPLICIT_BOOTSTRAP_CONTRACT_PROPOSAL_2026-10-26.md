@@ -246,3 +246,30 @@ No se encontró evidencia suficiente para certificar exhaustividad global de con
 
 **Siguiente paso verificable:** antes de tocar runtime, convertir esta frontera en un contrato de aceptación para el bootstrap de Opción A: una invocación de bootstrap no debe seguir hacia admisión, dispatch, reconciliación ni mutaciones de dominio; una llamada normal con estado ausente debe detenerse; y la inicialización debe poder distinguirse de un commit condicional normal. Esto sigue siendo un criterio propuesto, no una implementación ni una decisión adicional de autoridad. La fuente de autoridad para crear el primer estado continúa UNKNOWN/PENDING; por tanto, este criterio no habilita todavía el bootstrap.
 
+## Criterios verificables de aislamiento para Opción A — propuesta (2026-10-27)
+
+Estos criterios delimitan el comportamiento que tendría que demostrarse antes de aceptar una implementación. No seleccionan una fuente de autoridad, no ratifican un API y no autorizan cambios ejecutables.
+
+| ID | Escenario | Criterio de aceptación propuesto | Fallo que mantiene STOP |
+|---|---|---|---|
+| BA-01 | Invocación normal; estado de continuidad ausente | Bloquear antes de admisión, creación de PREPARED, dispatch, reconciliación o mutación de dominio. | La ausencia provoca inicialización implícita o se continúa la operación. |
+| BA-02 | Invocación explícita de bootstrap aislado | La invocación solo intenta inicializar el almacenamiento operacional M0 acotado y termina sin admitir misión ni llamar adaptadores de efecto. | Bootstrap y operación de dominio se ejecutan en una misma invocación. |
+| BA-03 | Bootstrap y payload de misión/acción en la misma solicitud | Rechazar la combinación antes de persistencia o dispatch; no reinterpretarla como bootstrap aislado. | El payload permite continuar hacia Chronicle, reparación u otro efecto. |
+| BA-04 | Archivo de continuidad existente y válido | No sobrescribir ni reinicializarlo como parte de bootstrap. | El bootstrap reemplaza o reinicia estado existente. |
+| BA-05 | Archivo existente corrupto, esquema inválido o lectura fallida | Preservar los bytes existentes y devolver un estado distinguible de “ausente”; no convertir error de I/O en revisión cero. | Reparación/overwrite implícito o afirmación no probada de que nada se persistió. |
+| BA-06 | Dos inicializadores concurrentes | Como máximo uno crea el estado inicial; el otro detecta conflicto/existencia sin sobrescribir. La garantía debe cubrir a todos los escritores relevantes, no solo a los cooperativos. | Se depende únicamente de un lock cooperativo sin demostrar cobertura global. |
+| BA-07 | Resultado ambiguo tras intentar crear | Devolver UNKNOWN, inspeccionar/conciliar solo mediante una ruta autorizada y no reintentar automáticamente. | UNKNOWN se traduce en “no persistido” o dispara un segundo intento. |
+| BA-08 | Simulación con archivo de mundo ausente | La ausencia del archivo de mundo no debe ser por sí misma el criterio de autoridad ni habilitar continuidad más mutación; bootstrap y persistencia de simulación requieren fronteras distinguibles. | La condición `!stateExists` abre automáticamente una operación más amplia. |
+| BA-09 | Reparación | Mantener reparación fuera del alcance M0 mientras Opción A la excluya; el bootstrap no debe crear/inyectar un owner o PREPARED que habilite reparación. | La inicialización se convierte indirectamente en precondición suficiente para despacho de reparación. |
+| BA-10 | Evidencia pública de autorización | `authorization: NOT_EVALUATED` se conserva como desconocido y nunca se trata como aprobación ni como un gate efectivo. | Etiqueta de estado se confunde con enforcement. |
+
+### Evidencia mínima requerida antes de aceptar
+
+1. Un grafo de llamadas con entrypoints concretos que cubra los consumidores de bootstrap y sus rutas hasta cualquier escritura/dispatch; los imports dinámicos y consumidores no inventariados deben quedar identificados o la cobertura declararse incompleta.
+2. Contrato de entrada/salida de bootstrap que distinga ausencia, existencia, estado inválido, conflicto y UNKNOWN sin asumir constantes ya implementadas.
+3. Pruebas de integración con almacenamiento real para BA-01–BA-09 y verificación de que ningún adaptador de efecto se invoca; pruebas estáticas o stubs aislados no bastan para afirmar la propiedad end-to-end.
+4. Evidencia separada de exclusión de escritores y nivel de durabilidad prometido. Atomicidad visible no debe presentarse como durabilidad ante caída del sistema/pérdida de energía sin prueba específica.
+5. Un contrato canónico que resuelva si y bajo qué base legítima se permite crear el primer estado. Los criterios de aislamiento no resuelven por sí mismos la autoridad UNKNOWN/PENDING.
+
+**Estado de estos criterios:** propuesta documental, no ratificada como contrato de implementación; BA-01–BA-10 no se han ejecutado ni verificado. No se modificaron runtime, tests, workflows ni configuración, y no se ejecutó CI.
+
