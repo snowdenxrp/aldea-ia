@@ -8,6 +8,17 @@
   
 ---
 
+# CONSOLIDACIÓN ESTÁTICA DE CONSUMIDORES + QWEN (2026-10-27)
+
+- Nuevo documento de consolidación: [NCS_M0_STATIC_CONSUMER_MAP_QWEN_CONSOLIDATION_2026-10-27.md](BUILD/NCS_M0_STATIC_CONSUMER_MAP_QWEN_CONSOLIDATION_2026-10-27.md), commit `235b9cd95198591f5ea5dfa9414568b9afbd1fea`.
+- **Corrección del inventario:** el mapa estático dirigido ha identificado al menos tres llamadores directos de `openNexoContinuityOwner`: `src/nexo/application/chronicle-append.mjs`, `scripts/simulate.mjs` y `scripts/assistants.mjs`. Las referencias anteriores que limitaban las rutas revisadas a dos llamadores quedan superadas. No se declara exhaustividad global.
+- Se consolidó el mapa de las cinco colecciones (`missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`), sus consumidores conocidos y los límites de lo que cada lectura permite afirmar.
+- El test de concurrencia de Chronicle se leyó estáticamente; **no se ejecutó**. La cobertura que declara no demuestra exclusión frente a escritores no cooperativos, atomicidad multi-store ni durabilidad universal.
+- La entrada `runNexoRuntimeRepairSession` bloquea localmente con `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`; la exclusión global de módulos de reparación sigue `UNKNOWN`.
+- Qwen aportó criterios adversariales y condiciones falsables, pero no inspeccionó el repo; sus conclusiones no cuentan como evidencia técnica independiente.
+- No hubo cambios de runtime/tests/workflows/configuración; no se ejecutaron tests ni CI.
+- Gates sin cambios: M0 `INCOMPLETO`; autoridad raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reparaciones excluidas de M0.
+
 # MAPA ESTÁTICO AMPLIADO — RUTAS DE BOOTSTRAP Y OPERACIÓN (2026-10-27)
 
 - **Chronicle:** `scripts/nexo-chronicle-session.mjs` expone `--initialize-continuity`; `src/nexo/application/chronicle-append.mjs` puede inicializar continuidad y continuar dentro de la misma invocación hasta `PREPARED` y el handler `chronicle_append`, que muta el almacén Chronicle. Ruta confirmada estáticamente; separación de inicialización/despacho no demostrada; autorización sigue `NOT_EVALUATED`.
