@@ -303,3 +303,23 @@ Fuentes directas:
 3. Tests ejecutados/CI verde para SHA exacto: **NO VERIFICADO en esta revisión**.
 
 Esta sección corrige y precisa §14; no cambia los gates de NCS ni autoriza ejecución.
+
+
+## 16. Por qué el checkpoint documental no demuestra ni dispara CI (2026-10-27)
+
+Cruce de los triggers/path filters de §15 con los commits de documentación recientes:
+
+- Los dos workflows relevantes filtran `push` por cambios en rutas de código, tests, `package.json` y/o el propio YAML del workflow. No incluyen `NEXO_NCS/STATUS.md` ni `NEXO_NCS/BUILD/**` como rutas de trigger.
+- Los commits recientes `4059f658038c09cdf78607af625c8ebd5fde43e9` y `f5a778fd7a90401a49a2b59d8a6150e1514225d7` son cambios documentales. Por los filtros declarados, no deben interpretarse como evidencia de que los workflows se dispararon; tampoco son el SHA de runtime/tests que habría que validar.
+- La consulta disponible de runs por commit tiene una limitación explícita: solo devuelve runs asociados a pull requests y la primera página. La consulta de estado combinado del commit documental devolvió cero checks. Ninguno de esos resultados permite concluir que no existan runs históricos para otros commits.
+- En las herramientas GitHub disponibles en esta sesión no aparece una acción de solo lectura para listar directamente el historial general de runs por `workflow_id`/archivo. Las acciones disponibles consultan runs asociados a un commit bajo esa limitación, o requieren un `run_id` ya conocido para inspeccionar jobs/logs. No se adivinó un run ID ni se usaron acciones de re-ejecución.
+
+### Ruta de verificación externa, sin mutación
+
+Abrir manualmente el historial de cada workflow y elegir una ejecución cuya rama sea `ncs-clean-architecture`:
+- [Runs de aceptación M0](https://github.com/snowdenxrp/aldea-ia/actions/workflows/nexo-m0-acceptance.yml)
+- [Runs de crash cuts M0](https://github.com/snowdenxrp/aldea-ia/actions/workflows/nexo-m0-repair-crash-cuts.yml)
+
+Para cada ejecución, registrar `run_id`, `head_sha`, evento, conclusión del job, pasos concretos ejecutados y SHA/blob de los archivos de test/runtime que realmente estaban en ese commit. Si no hay una ejecución que coincida con los SHA relevantes, el estado correcto sigue siendo **CI NO VERIFICADO**, no “falló” ni “pasó”.
+
+No se inició, canceló ni reintentó ningún workflow; no se ejecutaron pruebas ni se modificó código ejecutable.
