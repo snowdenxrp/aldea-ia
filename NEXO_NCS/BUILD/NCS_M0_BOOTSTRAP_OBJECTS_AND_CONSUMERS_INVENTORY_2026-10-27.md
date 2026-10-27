@@ -183,3 +183,35 @@ Fuentes estáticas de la rama `ncs-clean-architecture`:
 4. Contrato de raíz/rutas y admisión previa a la primera lectura persistente, aún abierto en D1/D2.
 
 Esta sección registra semántica estática observada; no se ejecutó el flujo. No cierra D1, no ratifica B2 y no autoriza cambios de implementación.
+
+
+## 12. Cruce con owner-backed runtime: PREPARED, recuperación y resultado terminal (2026-10-27)
+
+Fuente estática adicional: `src/nexo/core/owner-backed-runtime.mjs`, blob SHA `a7a014489209273ce78d0103afa785728d4c467c`.
+
+### Evidencia observada en el código
+
+- Antes de un dispatch nuevo, el runtime comprueba que el adapter admita la acción y que adapter y owner dispongan de reconciliación; también reconstruye misión/paso y comprueba estado y dependencias.
+- Registra `PREPARED` y exige respuesta `committed`, confirmación `preparedCommitted: true` y una revisión exactamente incrementada antes de llamar a `adapter.executePrepared`. Ante resultado desconocido, no despacha.
+- El runtime contiene una rama de recuperación de obligaciones Chronicle ya existentes. La recuperación consulta/reconcilia el estado; los comentarios del código indican que reiniciar no debe redispatchar una operación Chronicle sin observarla.
+- Después de la reconciliación, registra un resultado terminal con evidencia `nexo-chronicle-persisted-invariant`. Comprueba también el contrato de revisión de ese registro; si no puede confirmarlo, devuelve `UNKNOWN` en vez de promoverlo a completado.
+- La operación Chronicle es la única acción no-repair con contrato end-to-end de verifier + settlement + resultado terminal que el módulo declara habilitada. Las acciones de repair tienen un rechazo separado hasta disponer de su contrato de settlement.
+
+### Interpretación limitada
+
+Esta evidencia reduce una incertidumbre concreta: **en el runtime inspeccionado, `completed` del handler no parece ser suficiente por sí solo para producir el resultado terminal final**. Existe una etapa posterior de reconciliación y confirmación de resultado terminal. Esto es una lectura estática del código, no una prueba ejecutada.
+
+No demuestra:
+- que todos los entrypoints lleguen a este runtime bajo una autoridad legítima;
+- que las rutas de persistencia estén vinculadas a una raíz de instancia autorizada;
+- que la observación Chronicle establezca causalidad o veracidad de un efecto en el mundo externo;
+- que todos los consumidores, adapters o procesos externos respeten esta secuencia;
+- que el comportamiento concurrente y los cortes de proceso cumplan el contrato en el entorno objetivo.
+
+### Pendientes de verificación
+
+1. Contrastar esta secuencia con las pruebas existentes sin ejecutarlas ni cambiar código; identificar exactamente qué pruebas cubren PREPARED, recuperación, postcondition y resultado terminal.
+2. Mantener separadas las afirmaciones «el runtime local exige una reconciliación» y «el sistema está autorizado para iniciar el efecto»: la segunda sigue sin demostrarse.
+3. Vincular cualquier conclusión futura de comportamiento a una ejecución de tests/CI autorizada y al SHA exacto.
+
+No se modificó runtime ni tests; esta actualización es documental. D1 sigue OPEN, D1-IMPLEMENTATION NO AUTORIZADA y los efectos protegidos permanecen STOP.
