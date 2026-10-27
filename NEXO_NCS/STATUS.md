@@ -1,3 +1,14 @@
+# ACTUALIZACIÓN PRIORITARIA — DISEÑO DE REGRESIÓN G1–G4 (2026-10-26)
+
+- Plan de pruebas concretas creado: [Diseño de regresión para persistencia/UNKNOWN](BUILD/NCS_M0_PERSISTENCE_UNKNOWN_REGRESSION_TEST_DESIGN_2026-10-26.md), commit `c65dc2b6cbe0d189085d05d6ad96144db5cbe5f8`.
+- El plan fija preparación, escenarios, aserciones y límites de evidencia para: archivo corrupto con adaptador real (G1), distinción archivo ausente/corrupto (G2), getter hostil `error.code` (G3) y error posterior a reemplazo visible (G4).
+- G2 conserva una decisión explícitamente pendiente: cuándo es legítima la inicialización de un archivo ausente. No confundirla con tolerar un archivo existente corrupto.
+- La integración de `executeProtectedTransition` queda separada de G1–G4 hasta ratificar el mecanismo canónico de runtime; no se asume que integrar ese motor sea la solución.
+- Solo se añadieron documentos. No se modificaron runtime/tests/workflows/configuración; no se ejecutaron pruebas ni CI.
+- Estado canónico sin cambios: M0 `INCOMPLETO`; raíz `PENDING/UNKNOWN`; autorización `NOT_EVALUATED`; efectos protegidos `STOP`; reconciliación general no integrada.
+
+---
+
 # ACTUALIZACIÓN PRIORITARIA — MAPA DE COBERTURA R1–R4 (2026-10-26)
 
 - Mapa de cobertura estática creado: [Cobertura existente frente a R1–R4](BUILD/NCS_M0_PERSISTENCE_UNKNOWN_TEST_COVERAGE_CROSSWALK_2026-10-26.md), commit `1da22af739a10db928944e9eb3a02390d02ed209`.
