@@ -75,6 +75,36 @@ La lectura estática dirigida de `scripts/nexo-runtime-session.mjs`, `scripts/ne
 
 **Clasificación:** integración de reparación en la sesión de runtime M0 = bloqueada en el código inspeccionado; existencia de módulos dedicados = confirmada; ausencia de todos los callers posibles = UNKNOWN. La política de exclusión M0 sigue vigente. No se ejecutaron esos módulos.
 
+### Inventario dirigido de consumidores y acoplamiento de estado
+
+Este pase leyó las versiones de rama de `src/nexo/application/chronicle-append.mjs`, `src/nexo/core/owner-backed-runtime.mjs`, `src/nexo/adapters/chronicle-effect.mjs`, `src/nexo/application/index.mjs`, `scripts/simulate.mjs`, `scripts/nexo-runtime-session.mjs`, `scripts/nexo-chronicle-session.mjs`, `src/nexo/core/continuity-service.mjs`, `src/nexo/core/continuity-owner.mjs` y `src/nexo/core/continuity-store.mjs`. Es inventario dirigido de esos archivos, no búsqueda exhaustiva de todos los callers del repositorio.
+
+| Ruta inspeccionada | Hallazgo estático | Estado para esta decisión |
+|---|---|---|
+| `scripts/nexo-chronicle-session.mjs` → `runNexoChronicleAppend` | CLI expone `--initialize-continuity` y `--initialize-chronicle`; delega a la aplicación. | Entrada confirmada |
+| `chronicle-append.mjs` | Hace preflight de ambos stores; si continuidad falta y se permite inicialización, abre el owner; después registra/admite misión y el flujo alcanza el runtime. | La inicialización no termina necesariamente la invocación; NBP-01/02 no demostradas |
+| `owner-backed-runtime.mjs` | Carga continuidad; para `chronicle_append` exige handler/verificador, admisión PREPARED confirmada y bloquea redispatch automático ante incertidumbre. Rechaza acciones de reparación antes de PREPARED. | Controles locales confirmados; no son autoridad constitucional ni aislamiento de bootstrap |
+| `chronicle-effect.mjs` | El handler de Chronicle llama a `store.append(...)`. | Mutación persistente de Chronicle confirmada en el recorrido revisado |
+| `application/index.mjs` | API pública estrecha: Chronicle como caso mutante y consultas/preview de solo lectura. | Confirmado para este módulo; no prueba ausencia de otros entrypoints |
+| `scripts/simulate.mjs` | Si falta `world-state.json`, permite carga tolerante, abre continuidad con `legacyMemory: state.nexoMemory ?? null` y `allowEmptyInitialization: !stateExists`; luego avanza simulación y persiste el estado del mundo. | Inicialización y mutación del mundo pueden compartir una invocación; ver acoplamiento abajo |
+| `scripts/nexo-runtime-session.mjs` | La sesión de reparación de runtime devuelve `NEXO_M0_OPTION_A_EFFECT_EXCLUDED`, `dispatchAttempted: false`. | Reparación excluida en esta entrada M0 |
+| `scripts/nexo-repair-entrypoint.mjs` y módulos relacionados | Existe un entrypoint de reparación separado que recibe `owner` y tiene etapas específicas de preparación, dispatch y settlement. | Existencia confirmada; caller global y alcanzabilidad completa siguen UNKNOWN |
+| `continuity-service.mjs` / `continuity-store.mjs` | El bootstrap se basa en ausencia de archivo y una opción de caller; el lock es cooperativo y el path se declara configuración confiable, no frontera de sandbox. | No constituye prueba de identidad, autoridad ni exclusión frente a escritores no cooperativos |
+
+#### Hallazgo de separación Nexo–Lúmina / simulación
+
+En `scripts/simulate.mjs`, la llamada de continuidad recibe `legacyMemory: state.nexoMemory ?? null`, donde `state` se carga desde el estado persistido del mundo de simulación. El servicio proyecta `legacyMemory` a un snapshot de continuidad cuando el almacén Nexo no existe y después inicializa el almacén.
+
+Esto confirma un **acoplamiento de migración/arranque entre el estado del mundo de simulación y el almacén operativo de Nexo** en esa ruta. Es contrario al principio arquitectónico registrado de mantener Nexo independiente del estado de simulación/Lúmina. No demuestra que toda la memoria o todos los estados estén mezclados; la afirmación se limita a este argumento y esta ruta. Tampoco demuestra por sí solo un efecto protegido o autoridad. Requiere decisión arquitectónica explícita y evidencia de procedencia antes de considerarse aceptable; no se modificó el código.
+
+#### Lectura consolidada
+
+1. Hay una ruta Chronicle concreta donde inicialización, admisión y ejecución mutante pueden ocurrir en una misma invocación.
+2. Hay una ruta de simulación donde inicialización de continuidad, avance y persistencia del mundo ocurren en una misma invocación; además se pasa `state.nexoMemory` como memoria heredada para el bootstrap.
+3. El runtime tiene barreras PREPARED/reconciliación útiles, pero estas no satisfacen la propiedad de “bootstrap y terminar”.
+4. Las rutas de consulta pública se describen como no mutantes, pero el mapa no prueba que sean los únicos consumidores del almacén.
+5. No se puede afirmar que el inventario de callers esté completo: la búsqueda indexada y esta selección de archivos no acreditan ausencia global.
+
 ### Cobertura del inventario
 
 Los llamadores directos observados en las rutas revisadas son Chronicle y simulación. El mapa actual es dirigido, no exhaustivo: el índice de búsqueda de GitHub dio resultados vacíos para símbolos conocidos y esos resultados no se consideran evidencia negativa. No se ha descartado toda carga dinámica ni todo consumidor indirecto.
