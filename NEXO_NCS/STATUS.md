@@ -1,3 +1,15 @@
+## DELTA — ALCANCE B2 SIGUE PENDIENTE (2026-10-27)
+
+- Registro actualizado: [NCS M0 D0–D3 — registro de decisiones](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md), sección 10, commit `0275b124d56b20c009c5461a67365210922d4d75`.
+- Pregunta pendiente documentada: si B2 exige aislar toda inicialización explícita local no autoritativa de la admisión/PREPARED/dispatch/Chronicle en la misma invocación (A), si aplica solo a rutas con alcance de efecto y exclusiones expresas (B), o si se conserva sin selección hasta cerrar alcance y evidencia (C).
+- Estado de decisión actual: C — no seleccionar todavía. Es una recomendación conservadora de trabajo, no ratificación del propietario. B2 sigue PROPUESTA / NO RATIFICADA.
+- No se cierran ni renumeran P-01…P-10. No se creó una segunda línea de meta; sigue vigente `NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md`.
+- Siguiente paso: resolver esta pregunta solo con el alcance M0 aceptado y el manifiesto D1 vigente; después actualizar la trazabilidad existente. No repetir el censo salvo cambio de fuente.
+- Sin cambios de runtime, tests, workflows o configuración ejecutable; no se ejecutaron pruebas, CI ni Actions.
+- Gates sin cambio: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 # DELTA — REVISIÓN ADVERSARIAL CONTRA LA LÍNEA DE META M0 EXISTENTE (2026-10-27)
 
 - Nuevo documento: [Revisión adversarial del contrato candidato frente a línea de meta y decisiones canónicas](BUILD/NCS_M0_CANDIDATE_CONTRACT_ADVERSARIAL_RECONCILIATION_2026-10-27.md), commit `555f0c7f50939fa0fb1ddb676d1ab64b28b68b0d`.
