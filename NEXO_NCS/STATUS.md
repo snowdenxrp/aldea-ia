@@ -1,3 +1,14 @@
+## DELTA — ALCANCE DE BOOTSTRAP Y AUTORIDAD LOCAL SEPARADOS (2026-10-27)
+
+- Registro de decisiones ampliado con la sección 11: [D0–D3 Decision Register](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md), commit `21d476930a99e63d2c9326b673dfca2f34710333`.
+- Se separan dos preguntas antes mezclables: (1) si el bootstrap crea únicamente almacenamiento local no autoritativo o toca estado constitucional/genesis; (2) qué regla aprobada legitima la primera creación local.
+- Alternativas documentadas: L (almacenamiento interno estrictamente no autoritativo, sujeto a aceptación explícita y contratos); C (estado constitucional/genesis, bloqueado hasta base de confianza y frontera independiente); U (alcance no demostrado, estado conservador actual UNKNOWN/BLOCKED).
+- No se inventó `BootstrapAuthority`, no se amplió por analogía Constitution Authority Context y no se convirtió el alcance L en permiso para inicializar. Se exige identificar objetos/archivos y consumidores antes de decidir.
+- No se cierran P-01…P-10 ni se cambia la línea de meta M0 existente. No se modificaron runtime/tests/workflows/configuración ejecutable; no se ejecutaron tests, CI ni Actions.
+- Gates intactos: M0 `INCOMPLETO`; D1-DESIGN `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+---
+
 ## DELTA — ALCANCE B2 SIGUE PENDIENTE (2026-10-27)
 
 - Registro actualizado: [NCS M0 D0–D3 — registro de decisiones](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md), sección 10, commit `0275b124d56b20c009c5461a67365210922d4d75`.
