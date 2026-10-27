@@ -1,3 +1,13 @@
+## DELTA — DECISIÓN DEL PROPIETARIO: ENTORNO RESTRINGIDO PARA PRIMERA PUBLICACIÓN DE CONTINUITY (2026-10-27)
+
+- Decisión registrada en [NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md](BUILD/NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md), commit documental `7aac3b961c99fd01765b4ac51cd32e86da66effc`.
+- El propietario permite que la primera publicación opere bajo un entorno operativo restringido, con precondiciones explícitas y verificables. Esta es una decisión normativa de alcance, pendiente de incorporación canónica completa; no afirma que el entorno o las precondiciones ya estén definidos o demostrados.
+- Pendiente documental: especificar el límite del entorno, clases de escritores cubiertas/excluidas, precondiciones verificables y evidencia previa a la publicación. Si no se demuestra cumplimiento, mantener `STOP / UNKNOWN`.
+- No se elige mecanismo técnico ni se ratifica D3. No se autoriza implementación, tests/CI/Actions, primera creación real ni efectos protegidos.
+- Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; P01-C/D/E/F/H no cerrados; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados.
+
+---
+
 ## DELTA — RECONCILIACIÓN DE HALLAZGOS DE PERPLEXITY SOBRE BOOTSTRAP (2026-10-27)
 
 - Nuevo artefacto documental: [NCS_M0_PERPLEXITY_FINDINGS_RECONCILIATION_2026-10-27.md](BUILD/NCS_M0_PERPLEXITY_FINDINGS_RECONCILIATION_2026-10-27.md), commit `edfb7b6eca3506de1047aec91cefd28cf689de07`.
