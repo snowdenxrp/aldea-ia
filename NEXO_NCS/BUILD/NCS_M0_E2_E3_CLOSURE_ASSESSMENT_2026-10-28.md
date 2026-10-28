@@ -1,3 +1,12 @@
+## DELTA — RECONCILIACIÓN DE LA DISCREPANCIA STATUS Y E3 (2026-10-28)
+
+- La discrepancia descrita en §6 quedó corregida en el estado canónico: `NEXO_NCS/STATUS.md`, commit `6a2481c3bc88fc61d7dab4710e8b34fbb4201641`. E1 ya no figura como pregunta pendiente en la cabecera; POCO X7 Pro / Android permanece identificado para esta operación. La nota de §6 debe leerse como registro histórico de la discrepancia al redactar este assessment, no como pendiente vigente.
+- Se añadió clasificación estática acotada de entrypoints en [NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md](NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md) y se incorporó a la matriz P-01 en commit `e1400d6e569e5b6f12924224611a4b53a0aeb395`: `npm run assistants` y `npm run simulate` abren Continuity dentro de flujos mixtos; `npm run nexo` no presenta un comando dedicado de primera creación en el parser revisado. No se seleccionan los dos primeros para bootstrap aislado.
+- Esto no cierra E3 operacional: el mecanismo real de lanzamiento continúa D — no configurado/no verificado; E2/E3 siguen UNKNOWN porque la inspección estática no demuestra procesos activos, cobertura exhaustiva de writers ni exclusión/no reanudación en el POCO. E4 permanece NOT READY.
+- Gates sin cambio: M0 `INCOMPLETO`; P-01 `OPEN/UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Solo reconciliación documental; sin ejecución de dispositivo, código, tests, CI ni Actions.
+
+---
+
 # NCS M0 — cierre de evaluación E2/E3 y siguiente paso verificable
 **Fecha:** 2026-10-28  
 **Rama:** `ncs-clean-architecture`  
