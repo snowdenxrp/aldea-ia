@@ -1,3 +1,15 @@
+## DELTA — FRONTERA PROPUESTA DE BOOTSTRAP CONTINUITY M0 (2026-10-28)
+
+Se amplió el borrador FB-01 con la sección 10, ahora verificada en blob `cbceb420aca3cdfa817ac7904252a935f0c16536`: [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](BUILD/NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md), commit `457772f1774463037291dc46e548925e487b23da`.
+
+La propuesta fija siete límites para un futuro bootstrap M0: raíz explícita validada ligada al `filePath`; ausencia distinguida de errores/corrupción; snapshot vacío exacto y versionado; exclusión de `legacyMemory`/migración; publicación sin overwrite ni reintento automático ante conflicto/ambigüedad; terminación antes de devolver owner operacional o entrar en Chronicle/admisión/PREPARED/dispatch/mutaciones; y evidencia reproducible contra un SHA exacto. La tabla adjunta distingue cada requisito, evidencia necesaria y estado actual. Es contrato propuesto, no ratificado ni implementado.
+
+Esta actualización es documental únicamente. No se ejecutaron tests, CI/Actions, runtime, bootstrap ni comandos del dispositivo. No se modificó código ejecutable.
+
+Gates sin cambio: FB-01 OPEN/UNKNOWN; P01-A/P01-G OPEN/PENDING/UNKNOWN; P01-B=C; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; P-05 NO RATIFICADA; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP.
+
+---
+
 ## DELTA — ALCANCE M0: MIGRACIÓN LEGACY NO ES BOOTSTRAP APROBADO (2026-10-28)
 
 El contrato FB-01 se precisó en blob verificado `34acc813a1c2339e60179ff011f40065abc19d6c`: el código conoce el snapshot vacío, pero el servicio también proyecta `legacyMemory` si se le suministra y el store falta. Esto entra en tensión con la regla D0/D1 ya registrada: no migración automática, dual-write ni merge heurístico; migración/cutover fuera de M0 hasta identificar y verificar el destino. La rama legacy es evidencia de capacidad existente, no una ruta de bootstrap M0 autorizada.
