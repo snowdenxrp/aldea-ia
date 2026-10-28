@@ -1,3 +1,18 @@
+## DELTA — EVIDENCIA DE SOLO LECTURA DEL POCO/TERMUX (2026-10-28)
+
+Nueva evidencia operacional limitada registrada en [NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md](BUILD/NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md), commit documental `4d0091eddfc9f3b32cda1616fa2d9f918835aec0`.
+
+- La copia local inspeccionada está en `/data/data/com.termux/files/home/aldea-ia`; `HOME`, repositorio y `.git` muestran permisos `700`. `world-state.json` tiene permisos `600`, tamaño observado 2,776,627 bytes; no se leyó su contenido.
+- La copia local está en `main`, HEAD `1834182a2eaf4b1bfe59f9802ce3e49fc89b2ca7`, con cambios de Lúmina y respaldos sin seguimiento. No se modificó ni limpió; no ejecutar checkout/reset/clean/pull/stash ni cambiar de rama en ese árbol.
+- No existen algunas rutas consultadas (`~/.termux/boot`, `~/.termux/tasker`, `~/.profile`, `~/.bashrc`, `~/.zshrc`); `$PREFIX/etc/profile` existe con permisos `600`, sin leer su contenido. La ausencia de estas rutas no es un inventario exhaustivo de launchers ni prueba exclusión/no reanudación.
+- Una búsqueda local limitada solo encontró referencias a `world-state.json` en scripts/archivos de la copia antigua `main`; no se usa para invalidar la inspección estática canónica de `ncs-clean-architecture`.
+- Interpretación: E2 `UNKNOWN`; E3 `UNKNOWN`; E4 `NOT READY`. E1 sigue identificado como POCO X7 Pro/Android. No se ejecutó Nexo, tests, CI/Actions; no se creó/modificó Continuity ni hubo efectos protegidos.
+- Próximo paso: reconciliación documental finita de los bloqueadores P-01/P-05 contra la línea de meta M0, sin reauditar callers ni hacer más inspecciones genéricas del teléfono. Mantener `M0_BUILD_COMPLETE` separado de `PROTECTED_EFFECTS_AUTHORIZED`.
+
+Gates sin cambio: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`.
+
+---
+
 ## DELTA — E3: tercera ruta de inicialización clasificada (2026-10-28)
 
 Una nueva lectura estática de la cadena CLI/Chronicle amplía el mapa de entrypoints: `nexo chronicle-append --initialize-continuity` es una tercera ruta conocida que puede habilitar inicialización de Continuity y luego continuar hacia Chronicle/ejecución owner-backed. También se documenta que `assistants` y `simulate` pasan `allowEmptyInitialization: !stateExists`, con `stateExists` derivado de `world-state.json`. El workflow versionado `.github/workflows/lumina-simulation.yml` declara schedule, workflow_dispatch y push a main para flujos `assistants`/`simulate`; esto no demuestra que esté activo en la rama por defecto ni que se use en el POCO.
