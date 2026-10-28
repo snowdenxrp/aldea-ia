@@ -1,3 +1,27 @@
+## DELTA — tercera ruta de inicialización y disparador legacy (2026-10-28)
+
+La inspección estática adicional amplía la clasificación anterior de dos callers a **tres rutas conocidas**. Este delta corrige el alcance del documento; no es inventario exhaustivo ni evidencia operacional.
+
+### F. `npm run nexo chronicle-append --initialize-continuity`
+- `scripts/nexo.mjs` despacha `chronicle-append` a `scripts/nexo-chronicle-session.mjs`; el parser de la sesión reconoce `--initialize-continuity`; `src/nexo/application/chronicle-append.mjs` pasa ese valor como `allowEmptyInitialization` a `openNexoContinuityOwner`.
+- Tras abrir/inicializar Continuity, la misma ruta continúa hacia la operación de Chronicle y `executeNexoStepWithContinuityOwner`, por lo que no se clasifica como bootstrap aislado.
+- Blobs revisados en la rama: `scripts/nexo-chronicle-session.mjs` `30a53de2f108aa255a1dfd61ce78c19788de160b`; `src/nexo/application/chronicle-append.mjs` `5a20044bcddbaee79d0117934eefaea5f3b2c3bc`; `src/nexo/core/continuity-service.mjs` `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`.
+
+### G. Disparador adicional en `assistants` y `simulate`
+Ambos callers pasan `allowEmptyInitialization: !stateExists`; `stateExists` depende de la existencia de `world-state.json`. La ausencia de ese archivo puede habilitar la opción de inicialización vacía; el resultado efectivo sigue dependiendo del resto del estado de entrada. Esto es un motivo adicional para no seleccionar estos flujos como bootstrap aislado y no significa que se hayan ejecutado.
+
+### H. Workflow versionado de Lúmina
+`.github/workflows/lumina-simulation.yml` contiene un disparador `schedule` cada cinco minutos, `workflow_dispatch` y `push` a `main`; sus pasos ejecutan `npm run assistants` y `npm run simulate`. Esto identifica un launcher declarado en el árbol versionado, no prueba que el workflow esté activo en la rama por defecto ni que haya afectado al POCO.
+
+### Clasificación revisada
+No seleccionar ninguna de las tres rutas conocidas como bootstrap M0 aislado:
+1. `npm run assistants` — Continuity acoplada a simulación/memoria y persistencia de estado.
+2. `npm run simulate` — Continuity acoplada a simulación y persistencia de estado.
+3. `npm run nexo chronicle-append --initialize-continuity` — inicialización acoplada a la ruta de Chronicle, que continúa hacia ejecución/admisión de pasos.
+
+El análisis amplía la cobertura estática de E3, pero E2 y E3 operacional siguen `UNKNOWN`; no demuestra instalación/actividad en el POCO, ausencia de otros callers o launchers, ni exclusión/no reanudación. P-01 permanece `OPEN / UNKNOWN`; P-05 `NO RATIFICADA`; primera creación y efectos protegidos `STOP`. No se ejecutó código, tests, CI/Actions ni comandos del dispositivo.
+
+---
 # NCS M0 — entrypoints versionados que abren Continuity: hallazgo de E3
 **Fecha:** 2026-10-28  
 **Rama:** `ncs-clean-architecture`  
