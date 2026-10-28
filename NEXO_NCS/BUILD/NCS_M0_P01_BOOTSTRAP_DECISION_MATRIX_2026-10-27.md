@@ -94,3 +94,24 @@ Referencia: [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDI
 - **Desambiguación de opciones:** la “Opción A” de la fila de estado de entrada de esta matriz se refiere al alcance de **almacenamiento local estrictamente no autoritativo** (pregunta de objeto/alcance P01-A). No es la alternativa A de aislamiento operacional B2/P01-B en el Registro §10.6. Para P01-B, la decisión expresa del propietario sigue siendo **C — no seleccionar todavía**; no se seleccionan A ni B para esa pregunta de aislamiento.
 - Estado sin cambio: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; primera creación y efectos protegidos `STOP`.
 - Sin cambios de runtime/tests/workflows/configuración ejecutable/dispositivo; tests/CI/Actions no ejecutados.
+
+
+---
+
+## Delta documental — regla provisional aprobada y precondiciones operacionales pendientes (2026-10-28)
+
+El propietario aprobó expresamente la regla provisional de primera creación. La regla está registrada en el Registro D0–D3 §10.7 y en la nota de brecha P-01 §13. El contrato consolidado se actualizó en §9 para reconciliar esa aprobación.
+
+Esta aprobación cierra únicamente la decisión normativa de la regla provisional; **no cierra P01-A…P01-H ni ratifica el contrato de entorno completo**. El alcance del objeto sigue U; la primera creación permanece STOP.
+
+| Entrada pendiente | Qué falta | Estado |
+|---|---|---|
+| E1 parcial — entorno de esta operación | Confirmar si el bootstrap M0 de Continuity se pretende ejecutar en el POCO X7 Pro/Android o en otro entorno concreto. La plataforma general del prototipo ya está registrada y no se vuelve a preguntar. | PENDING |
+| E2 — control de exclusión | Evidencia de quién/qué puede detener todos los escritores/launchers relevantes e impedir su reinicio durante la ventana. | UNKNOWN |
+| E3 — launchers/writers | Modo efectivo de lanzamiento e inventario verificable de procesos, wrappers, supervisores y consumidores con capacidad de escribir o relanzar. | UNKNOWN |
+| E4 — almacenamiento | Propiedades del almacenamiento y posibles escritores externos, solo después de E1–E3. | NOT READY |
+| P01-H — evidencia | Pruebas/CI ligadas al SHA exacto después de contrato congelado y autorización separada; no ejecutadas para esta decisión. | NOT RUN / NOT VERIFIED |
+
+Siguiente paso documental mínimo: resolver E1 para esta operación concreta; no volver a auditar callers, no elegir un mecanismo técnico y no interpretar una respuesta de entorno como prueba de exclusión. E2/E3 deben demostrarse con evidencia antes de pasar a E4. Si el entorno no puede identificarse o sus condiciones no pueden verificarse, conservar STOP/UNKNOWN.
+
+Estado canónico intacto: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; pruebas/CI/Actions no ejecutados.
