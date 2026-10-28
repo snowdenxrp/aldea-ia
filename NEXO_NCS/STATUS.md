@@ -1,8 +1,18 @@
+## DELTA — RECONCILIACIÓN E3: ENTRYPOINTS VERSIONADOS Y ESTADO DE E1 (2026-10-28)
+
+- E1 permanece IDENTIFICADO: POCO X7 Pro / Android para la operación concreta. La pregunta antigua de “confirmar el entorno” queda resuelta y no debe volver a formularse.
+- La inspección estática acotada registrada en [NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md](BUILD/NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md) identificó dos entrypoints versionados que abren Continuity: `npm run assistants` y `npm run simulate`. Ambos mezclan esa apertura con flujos de simulación/estado persistente; por tanto, no se seleccionan como mecanismo de primera creación M0. Esto no demuestra que estén instalados/activos en el POCO ni que el inventario E3 sea exhaustivo.
+- `npm run nexo` es un router más estrecho, pero el parser revisado no expone un comando de primera creación de Continuity. No inventar un comando ni forzar ese entrypoint.
+- Siguiente bloqueo verificable: E2/E3 operacionales — mecanismo real de lanzamiento aún D: NO CONFIGURADO/NO VERIFICADO; cobertura de escritores/relanzadores y exclusión sostenida UNKNOWN. No reauditar callers ya examinados; no elegir primitiva técnica; no inspeccionar ni cambiar el dispositivo sin autorización específica.
+- Estado intacto: M0 `INCOMPLETO`; P-01 `OPEN/UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Solo documentación/lectura estática; no runtime, tests, CI/Actions ni dispositivo.
+
+---
+
 ## DELTA — RECONCILIACIÓN DE REGLA APROBADA Y BLOQUEOS P-01 RESTANTES (2026-10-28)
 
 - Reconciliada la aprobación de la regla provisional con el [candidato consolidado del entorno restringido](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md), sección 9, commit `2a8de545c383d2c0431e38a5d903835234aea936`, y con la [matriz P-01](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), delta del 2026-10-28, commit `7abcc583e4d348bc961b6bd38ec10adc0f50c2fb`.
 - La regla normativa provisional está aprobada; el contrato consolidado sigue siendo candidato, no está ratificado en su totalidad. No se cerró ningún gate P-01.
-- Próximo paso documental mínimo: confirmar si **esta operación concreta** de bootstrap M0 de Continuity se pretende ejecutar en el POCO X7 Pro/Android o en otro entorno. La plataforma general del prototipo ya está registrada; no se vuelve a preguntar eso. E2/E3 siguen UNKNOWN: falta evidencia de control sobre escritores/launchers y del modo real de lanzamiento. E4 solo después de E1–E3.
+- E1 ya está confirmado para esta operación: POCO X7 Pro / Android. No volver a preguntar el entorno objetivo. El siguiente bloqueo no es identificar el dispositivo, sino demostrar E2/E3: control sostenido sobre escritores/launchers y modo real de lanzamiento. El análisis estático versionado identificó `npm run assistants` y `npm run simulate` como entrypoints que abren Continuity, pero mezclan la apertura con flujos de simulación/persistencia; no son candidatos aceptados para bootstrap aislado. Véase `BUILD/NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md`. E4 solo después de evidencia suficiente de E2/E3.
 - No inferir exclusión por identificar el dispositivo. No seleccionar primitiva técnica, no reauditar callers y no ejecutar cambios/tests/CI/Actions.
 - Estado canónico: alcance U; M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`.
 
