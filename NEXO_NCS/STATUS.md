@@ -2672,3 +2672,12 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - E3 permanece UNKNOWN: falta identificar el modo efectivo de lanzamiento y verificar procesos, wrappers, supervisores y consumidores capaces de escribir o relanzar.
 - Siguiente paso: recopilar evidencia no ejecutiva sobre el mecanismo previsto y sus controles; si no hay evidencia, conservar UNKNOWN/STOP. No repetir auditorías cerradas ni ejecutar cambios/pruebas por inferencia.
 - Estado canónico sin cambio: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; no runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
+
+
+### Continuity bootstrap — M1 instalada, relación con M0 no demostrada (2026-10-28)
+
+- El propietario aclaró que en el POCO X7 Pro solo está instalada la aplicación local de **Nexo M1**.
+- No inferir que M1 sea el lanzador del bootstrap de Continuity de NCS M0, que contenga esa ruta o que comparta su estado. La separación Modelo/OS/Dispositivo/Lúmina/Nexo se mantiene.
+- E1 permanece identificado como POCO X7 Pro / Android. El mecanismo de lanzamiento para primera creación sigue sin configurar/verificar (D). E2/E3 UNKNOWN; E4 NOT READY.
+- Próximo paso limitado: contrastar documentalmente el alcance real de M1 con los artefactos de repositorio ya existentes, sin reinstalar, modificar ni ejecutar la app. No repetir auditorías cerradas. Si los artefactos no demuestran relación con el bootstrap, mantenerla UNKNOWN.
+- Gates intactos: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; no runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
