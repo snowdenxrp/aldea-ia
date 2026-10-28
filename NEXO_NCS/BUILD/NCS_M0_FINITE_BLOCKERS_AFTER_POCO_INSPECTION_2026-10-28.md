@@ -1,3 +1,9 @@
+## DELTA — AVANCE DOCUMENTAL FB-01 (2026-10-28)
+
+Se creó el borrador [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md), blob `8a173cc4fcfa3471ec2e1fd7559df4d7c4bd9ac3`, y se enlazó desde STATUS. Esto satisface únicamente la tarea intermedia de disponer de un contrato semántico candidato; **FB-01 sigue OPEN / UNKNOWN**. No se ratificó el contrato, no se identificó un destino efectivo de una invocación concreta ni se fijó el snapshot inicial exacto. U/P01-A/P01-G/STOP permanecen sin cambio. El resto de FB-02…FB-07 no se altera. Sin implementación, tests, CI/Actions, bootstrap ni operaciones de dispositivo.
+
+---
+
 # NCS M0 — bloqueadores finitos tras la inspección del POCO
 
 **Fecha:** 2026-10-28  
