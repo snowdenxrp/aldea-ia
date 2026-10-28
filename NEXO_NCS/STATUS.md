@@ -1,3 +1,10 @@
+## DELTA — E3: tercera ruta de inicialización clasificada (2026-10-28)
+
+Una nueva lectura estática de la cadena CLI/Chronicle amplía el mapa de entrypoints: `nexo chronicle-append --initialize-continuity` es una tercera ruta conocida que puede habilitar inicialización de Continuity y luego continuar hacia Chronicle/ejecución owner-backed. También se documenta que `assistants` y `simulate` pasan `allowEmptyInitialization: !stateExists`, con `stateExists` derivado de `world-state.json`. El workflow versionado `.github/workflows/lumina-simulation.yml` declara schedule, workflow_dispatch y push a main para flujos `assistants`/`simulate`; esto no demuestra que esté activo en la rama por defecto ni que se use en el POCO.
+
+Referencias: [entrypoints E3 versionados](BUILD/NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md) y [matriz P-01](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md). Es una ampliación de cobertura estática, no evidencia operacional ni inventario exhaustivo. E2/E3 operacionales permanecen `UNKNOWN`; E4 `NOT READY`; P-01 `OPEN / UNKNOWN`; P-05 `NO RATIFICADA`; M0 `INCOMPLETO`; primera creación y efectos protegidos `STOP`. No se ejecutó código, tests, CI/Actions ni dispositivo.
+
+---
 ## DELTA — RECONCILIACIÓN E3: ENTRYPOINTS VERSIONADOS Y ESTADO DE E1 (2026-10-28)
 
 - E1 permanece IDENTIFICADO: POCO X7 Pro / Android para la operación concreta. La pregunta antigua de “confirmar el entorno” queda resuelta y no debe volver a formularse.
