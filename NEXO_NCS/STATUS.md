@@ -2650,3 +2650,15 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Reutilización del protocolo `NCS_M0_D3_LEGACY_WRITER_QUIESCENCE_EVIDENCE_PROTOCOL_2026-10-23.md`: sirve como criterio para quiescencia en migración/cutover legacy; está pendiente/no ejecutado y no demuestra quiescencia real ni define la publicación exclusiva del bootstrap inicial.
 - No duplicar D3 ni ampliar su alcance por analogía. P01-C/D siguen OPEN/UNKNOWN hasta determinar la garantía de exclusión exigida para la primera publicación del archivo Continuity y la evidencia capaz de demostrarla en el entorno objetivo.
 - Estado canónico intacto: M0 INCOMPLETO; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; no runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
+
+
+### Continuity bootstrap — E1 confirmado para la operación específica (2026-10-28)
+
+- El propietario confirmó que la primera creación de Continuity de NCS M0 se prevé en el **POCO X7 Pro con Android**.
+- E1 queda resuelto únicamente como identificación del objetivo previsto. No demuestra configuración del entorno, exclusividad, autoridad raíz ni autorización de ejecución.
+- E2 sigue UNKNOWN: falta evidencia de quién/qué puede detener todos los escritores/launchers relevantes e impedir su reinicio durante la ventana.
+- E3 sigue UNKNOWN: falta el modo efectivo de lanzamiento y una lista verificable de procesos, wrappers, supervisores y consumidores capaces de escribir o relanzar.
+- E4 queda NOT READY hasta establecer E2/E3. Reutilizar el protocolo D3 existente como criterio; no duplicarlo ni reabrir auditorías cerradas.
+- Siguiente paso mínimo: trabajar únicamente E2/E3 para el POCO/Android previsto, a partir de evidencia del entorno real. No seleccionar mecanismo de filesystem ni ejecutar cambios/pruebas por inferencia.
+- Gates sin cambios: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP.
+- Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados.
