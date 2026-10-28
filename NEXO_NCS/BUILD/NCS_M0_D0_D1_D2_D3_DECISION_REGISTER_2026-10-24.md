@@ -222,3 +222,13 @@ Conservar U como clasificación actual hasta que el propietario confirme el alca
 - **Clasificación:** decisión de alcance del propietario registrada documentalmente; no es implementación, evidencia de comportamiento ni autorización para ejecutar bootstrap.
 - **Consecuencia:** B2/P01-B permanece sin PASS; P-01 sigue `OPEN / UNKNOWN`; M0 `INCOMPLETO`; D1-IMPLEMENTATION `NO AUTORIZADA`; primera creación `STOP`; `authorization: NOT_EVALUATED`; efectos protegidos `STOP`.
 - **No realizado:** no se eligió protocolo, no se modificaron runtime/tests/workflows/configuración ejecutable, no se ejecutaron pruebas, CI ni GitHub Actions.
+
+
+### 10.7 Decisión expresa del propietario — regla provisional de primera creación (2026-10-28)
+
+- **Aprobación explícita:** «Apruebo la regla provisional de primera creación!».
+- **Regla aprobada:** no inferir permiso de escritura por ausencia del archivo, código existente o éxito técnico; antes de permitir la creación deben definirse el propósito/clasificación del objeto exacto, la regla legítima aplicable y precondiciones verificables del entorno restringido. Bootstrap debe mantenerse separado de admisión, PREPARED, dispatch, reconciliación y mutaciones de dominio. Si falta evidencia o hay ambigüedad, STOP / UNKNOWN.
+- **Límite:** la aprobación de la regla no autoriza la primera creación real, no crea una autoridad paralela, no declara una raíz legítima, no ratifica P-05 ni autoriza implementación, pruebas, CI/Actions o efectos protegidos.
+- **Gates conservados:** alcance U; P01-A OPEN / UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING / UNKNOWN; authorization: NOT_EVALUATED; primera creación y efectos protegidos STOP; M0 INCOMPLETO.
+- **Pendiente verificable:** especificar y demostrar el entorno restringido, los escritores cubiertos/excluidos, las precondiciones observables de exclusión y su enlace al objeto/ruta efectivos y al SHA evaluado.
+- **Ejecución:** registro documental solamente. Sin cambios en runtime/tests/workflows/configuración ejecutable; pruebas, CI y Actions no ejecutados para esta decisión.
