@@ -507,3 +507,13 @@ Avanzar hacia la línea de meta M0 usando la matriz P-01 y los artefactos canón
 
 ### Estado canónico
 M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz legítima `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación de Continuity y efectos protegidos `STOP`.
+
+
+## Próximo entregable obligatorio — aplicar matriz finita de cierre M0 (2026-10-27)
+
+La tarea activa se concreta en [NCS_M0_CLOSEOUT_GATE_MATRIX_2026-10-27.md](BUILD/NCS_M0_CLOSEOUT_GATE_MATRIX_2026-10-27.md), blob `92d20cf280bf22354416c49c54bbdaaf9940952e`.
+
+- La matriz reduce la línea de meta A–E a cinco bloqueos operativos/documentales finitos (B1–B5), cita fuentes existentes y fija una secuencia sin reauditoría general.
+- Próximo paso: reconciliar solo los bloqueos B1–B3 con el registro de decisiones y la brecha de autoridad ya existentes. No crear otra matriz general ni solicitar más revisiones externas.
+- B4–B5 dependen de contratos congelados y autorización separada para implementar/ejecutar pruebas; no simular su cierre documental.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz/autoridad inicial `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`.
