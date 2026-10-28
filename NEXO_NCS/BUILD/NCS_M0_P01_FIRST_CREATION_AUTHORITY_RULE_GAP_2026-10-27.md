@@ -122,3 +122,20 @@ Interpretación acotada y vinculante para la continuidad documental:
 **Estado:** regla legítima de primera creación PENDING/UNKNOWN; primera creación STOP; raíz legítima PENDING/UNKNOWN; authorization: NOT_EVALUATED; efectos protegidos STOP; M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN.
 
 Esta ratificación conserva la condición de parada; no autoriza implementación, pruebas, CI, instalación, configuración de la YubiKey ni acciones sobre el dispositivo.
+
+
+---
+
+## 12. Decisión explícita del propietario sobre el alcance del objeto — U (2026-10-27)
+
+El propietario decidió: **“Para el alcance del objeto de bootstrap M0 de Continuity, mi decisión es U.”**
+
+Se registra con el significado exacto siguiente:
+- U significa que el alcance del objeto todavía no puede demostrarse ni clasificarse con seguridad como L (almacenamiento local estrictamente no autoritativo) ni como C (estado constitucional o que afecta a la autoridad).
+- No se selecciona L ni C, no se presume que el objeto sea inocuo por ser local, y tampoco se presume que sea una raíz constitucional.
+- P01-A permanece OPEN / UNKNOWN.
+- P01-B permanece **C — NO SELECCIONAR TODAVÍA**; esta decisión U es independiente y no cambia P01-B.
+- La regla legítima para la primera creación permanece PENDING / UNKNOWN; primera creación de Continuity STOP; raíz legítima PENDING / UNKNOWN; authorization: NOT_EVALUATED; efectos protegidos STOP; M0 INCOMPLETO.
+- No se ratifica ningún contrato candidato. No se autoriza implementación, escrituras, pruebas, CI/Actions, configuración ejecutable, instalación/configuración de hardware ni acciones sobre el dispositivo.
+
+La decisión U delimita honestamente lo que aún no se conoce; no levanta ningún gate ni resuelve por sí misma la regla legítima de primera creación.
