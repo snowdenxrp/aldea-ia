@@ -169,3 +169,19 @@ Alcance exacto de la respuesta:
 Siguiente requisito: establecer E2/E3 mediante evidencia del entorno real previsto. Reutilizar el protocolo D3 existente solo como criterio de evidencia; no duplicarlo ni afirmar que está ejecutado. Si el control de lanzamiento o la cobertura de escritores no se pueden verificar, mantener `UNKNOWN / STOP`.
 
 Estado canónico intacto: M0 `INCOMPLETO`; alcance U; P01-A `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Solo documentación; sin cambios ejecutables ni pruebas/CI/Actions.
+
+
+## 11. Estado del mecanismo de lanzamiento: D — todavía no configurado (2026-10-28)
+
+El propietario confirmó **D** como descripción del estado actual: el mecanismo de lanzamiento de la operación de primera creación de Continuity todavía no está configurado ni verificado. El objetivo previsto E1 sigue identificado como POCO X7 Pro / Android.
+
+Esta distinción evita tratar el dispositivo previsto como si el método de ejecución ya estuviera establecido:
+- No se ha elegido entre app instalada, terminal local (incluido Termux) u otro mecanismo.
+- No se autoriza instalar, configurar ni ejecutar herramientas; esta anotación es documental.
+- E2 sigue UNKNOWN: no hay evidencia aportada aquí de control verificable para detener todos los escritores/launchers relevantes y prevenir su reinicio durante la ventana.
+- E3 sigue UNKNOWN: el modo efectivo y el inventario verificable de procesos, wrappers, supervisores y consumidores capaces de escribir/relanzar no están establecidos.
+- E4 sigue NOT READY hasta establecer E2/E3.
+
+Próximo paso acotado: reunir evidencia no ejecutiva del mecanismo que se pretende usar y de los controles observables sobre su lanzamiento y sus escritores. No elegir un mecanismo de exclusión por anticipado, no duplicar D3 y no reabrir auditorías cerradas. Si no se puede demostrar la cobertura/control, mantener UNKNOWN / STOP.
+
+Gates intactos: M0 INCOMPLETO; alcance U; P01-A OPEN / UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING / UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; no runtime/tests/workflows/configuración ejecutable/dispositivo; tests/CI/Actions no ejecutados.
