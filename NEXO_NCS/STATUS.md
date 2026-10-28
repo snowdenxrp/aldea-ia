@@ -1,3 +1,13 @@
+## DELTA — RECONCILIACIÓN FB-01 CON CONTRATO DE RAÍZ Y CÓDIGO (2026-10-28)
+
+El borrador [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](BUILD/NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md) se actualizó con reconciliación estática de raíz y fuentes de código. Commit `0f58c29cb0d871e98fa9a69eab4b4a50aaf052bf`, blob verificado `62cfde7aab5ec7602c2ca9c0060d47814d1233e0`.
+
+Hallazgos concretos: (1) el payload `NEXO_OPERATIONAL_CONTINUITY` v1 y sus cinco colecciones ya están definidos en `continuity-snapshot.mjs` (blob `56cbd1753f1fa3fb67c3592e5a5664b58d96c4c3`); el envelope separado es `NEXO_CONTINUITY_STORE` v1 con revisión local y snapshot (`continuity-store.mjs`, blob `9ffd28930abdbe29f5b041711cc29b74dc99fbae`). (2) El servicio recibe `filePath` directamente y no prueba que provenga de `--root` explícito validado. (3) Si el store falta y `legacyMemory` está presente, `openNexoContinuityOwner` proyecta esa memoria aun cuando `allowEmptyInitialization` sea false; ese flag solo gobierna la alternativa de snapshot vacío. (4) La inicialización devuelve owner y estado cargado; el aislamiento end-to-end respecto a admisión/Chronicle no está demostrado.
+
+Estos hallazgos refinan el diseño, pero no autorizan un cambio de código. El esquema conocido no legitima el objeto ni su caller. FB-01, P01-A/P01-G y la primera creación permanecen OPEN/UNKNOWN/STOP; P01-B=C, P-05 NO RATIFICADA; D0-D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; M0 INCOMPLETO. No se ejecutaron tests, CI/Actions, runtime ni bootstrap.
+
+---
+
 ## DELTA — BORRADOR DE CONTRATO SEMÁNTICO CONTINUITY PARA FB-01 (2026-10-28)
 
 Nuevo borrador documental: [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](BUILD/NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md), commit `9f7396df4d9b5d442fbbeebfa9956e49ec549fdf`, blob verificado `8a173cc4fcfa3471ec2e1fd7559df4d7c4bd9ac3`.
