@@ -1,3 +1,11 @@
+## DELTA — EVIDENCIA ESTÁTICA ADICIONAL FB-01 (2026-10-28)
+
+El borrador semántico se actualizó y verificó en blob `62cfde7aab5ec7602c2ca9c0060d47814d1233e0`. El código confirma el esquema payload v1 y su envelope separado, pero también identifica dos brechas que impiden cerrar FB-01: el servicio recibe `filePath` sin demostrar su derivación de una raíz explícita validada; y, ante store ausente, una `legacyMemory` suministrada puede inicializar Continuity aunque `allowEmptyInitialization` sea falso. Además, el servicio no demuestra por sí solo que la invocación termine antes de rutas compuestas/admisión.
+
+Actualizar la trazabilidad conceptual: schema conocido = evidencia estática; ruta canónica, origen legítimo, aislamiento end-to-end y propiedad no autoritativa global = NO DEMOSTRADOS. FB-01 no pasa a PASS. No hubo ejecución de tests/CI/runtime.
+
+---
+
 ## DELTA — FB-01: BORRADOR SEMÁNTICO CREADO, SIN CIERRE (2026-10-28)
 
 Se creó [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md), blob verificado `8a173cc4fcfa3471ec2e1fd7559df4d7c4bd9ac3`. El borrador convierte en invariantes propuestos la no-autoridad del snapshot, la separación de Continuity respecto de Chronicle y de admisión/dispatch, y el tratamiento UNKNOWN/STOP. No fija una ruta universal ni inventa el esquema inicial.
