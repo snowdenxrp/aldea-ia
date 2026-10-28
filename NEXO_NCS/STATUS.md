@@ -1,3 +1,15 @@
+## DELTA — TRAZABILIDAD DE CRITERIOS DE ACEPTACIÓN M0 (2026-10-28)
+
+Nueva matriz: [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `3286aecbfdd8025e307ff97316ced5e17dbd763c`.
+
+La matriz enlaza los criterios obligatorios de la línea de meta M0 con evidencia ya documentada y los bloqueadores finitos FB-01…FB-07. No reabre censos cerrados ni declara PASS por la existencia de documentos. Confirma que no hay base para declarar `M0_BUILD_COMPLETE`: los contratos D0–D3 siguen abiertos, la no-bypass final no está verificada contra el SHA de cierre, E2/E3 son UNKNOWN, P-05 no está ratificada y no existe acta final de aceptación.
+
+Decisiones no volver a preguntar: clasificación del objeto U; regla provisional de primera creación aprobada con límites; P01-B=C. La aplicabilidad de la regla al objeto efectivo sigue PENDING/UNKNOWN. No hay autorización de implementación/tests/CI/bootstrap/efectos protegidos.
+
+Gates intactos: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; P01-A OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P01-G PENDING/UNKNOWN; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. No se ejecutaron código, tests, CI/Actions ni operaciones en dispositivo.
+
+---
+
 ## DELTA — FB-01 RECONCILIADO CON DECISIONES YA TOMADAS (2026-10-28)
 
 Nueva nota: [NCS_M0_FB01_DECISION_RECONCILIATION_2026-10-28.md](BUILD/NCS_M0_FB01_DECISION_RECONCILIATION_2026-10-28.md), commit `777e20910b2ef0a6381ce48a5c9207a49023f933`.
