@@ -1,3 +1,9 @@
+## DELTA — ALCANCE DE MIGRACIÓN LEGACY EN FB-01 (2026-10-28)
+
+La revisión del contrato de raíz y de separación Nexo/Lúmina confirma que la migración/cutover legacy está fuera de M0 y no puede ocurrir automáticamente. El código de `openNexoContinuityOwner` aún tiene una rama que proyecta `legacyMemory` cuando el store no existe. Esta capacidad existente no equivale a una ruta aprobada; es una discrepancia entre el comportamiento disponible y el alcance contractual objetivo. Recomendación pendiente de implementación autorizada: bootstrap M0 vacío y explícito; migración legacy separada, futura y sujeta a contrato propio. FB-01 sigue OPEN/UNKNOWN, sin cambio de gates. No ejecución.
+
+---
+
 ## DELTA — EVIDENCIA ESTÁTICA ADICIONAL FB-01 (2026-10-28)
 
 El borrador semántico se actualizó y verificó en blob `62cfde7aab5ec7602c2ca9c0060d47814d1233e0`. El código confirma el esquema payload v1 y su envelope separado, pero también identifica dos brechas que impiden cerrar FB-01: el servicio recibe `filePath` sin demostrar su derivación de una raíz explícita validada; y, ante store ausente, una `legacyMemory` suministrada puede inicializar Continuity aunque `allowEmptyInitialization` sea falso. Además, el servicio no demuestra por sí solo que la invocación termine antes de rutas compuestas/admisión.
