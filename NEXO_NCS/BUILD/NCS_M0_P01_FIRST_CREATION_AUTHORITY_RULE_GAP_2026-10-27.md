@@ -139,3 +139,24 @@ Se registra con el significado exacto siguiente:
 - No se ratifica ningún contrato candidato. No se autoriza implementación, escrituras, pruebas, CI/Actions, configuración ejecutable, instalación/configuración de hardware ni acciones sobre el dispositivo.
 
 La decisión U delimita honestamente lo que aún no se conoce; no levanta ningún gate ni resuelve por sí misma la regla legítima de primera creación.
+
+
+## 13. Aprobación expresa del propietario de la regla provisional de primera creación (2026-10-28)
+
+El propietario confirmó explícitamente en la conversación: **«Apruebo la regla provisional de primera creación!»**. Se registra la aprobación normativa limitada de la regla propuesta; no se interpreta como autorización para ejecutar la primera creación ni para implementar cambios.
+
+### Regla aprobada
+
+1. No se infiere permiso de escritura a partir de la ausencia del archivo, del código existente, de un flag/caller ni del éxito técnico de una operación.
+2. Antes de permitir la primera creación deben estar definidos el propósito y la clasificación del objeto exacto, la regla legítima aplicable y las precondiciones verificables del entorno operativo restringido.
+3. El bootstrap debe permanecer separado de admisión, PREPARED, dispatch, reconciliación y mutaciones de dominio; la aprobación no permite que el objeto creado o su caller se conviertan en autoridad.
+4. Si falta una condición o la evidencia es ambigua, se conserva `STOP / UNKNOWN`.
+5. La regla no crea una autoridad paralela, no determina por sí sola que la raíz legítima exista y no autoriza efectos protegidos.
+
+### Alcance y gates no alterados
+
+Esta aprobación **no cambia** la clasificación del objeto (`U`), P01-A (`OPEN / UNKNOWN`), P01-B (`C — NO SELECCIONAR TODAVÍA`), P-05 (`NO RATIFICADA`), D0/D1/D2/D3 (`OPEN`), D1-IMPLEMENTATION (`NO AUTORIZADA`), raíz legítima (`PENDING / UNKNOWN`), `authorization: NOT_EVALUATED`, primera creación (`STOP`), efectos protegidos (`STOP`) ni M0 (`INCOMPLETO`).
+
+### Evidencia pendiente y límites
+
+Siguen pendientes la definición concreta del entorno restringido, las clases de escritores cubiertas/excluidas, las precondiciones observables de exclusión y la evidencia vinculada al objeto/ruta efectivos y al SHA evaluado. No se autoriza ni afirma que se haya realizado una escritura real. No se modificaron runtime, tests, workflows ni configuración ejecutable; no se ejecutaron pruebas, CI ni Actions como parte de esta decisión.
