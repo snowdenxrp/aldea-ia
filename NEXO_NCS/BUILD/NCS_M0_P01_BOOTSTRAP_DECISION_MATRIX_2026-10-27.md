@@ -1,3 +1,17 @@
+## Delta documental — entrypoints E3 clasificados para bootstrap M0 (2026-10-28)
+
+La inspección estática acotada de [entrypoints versionados](NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md) queda incorporada a la matriz como evidencia de E3 parcial, no como inventario exhaustivo ni prueba operacional:
+
+| Entry point | Hecho observado | Clasificación para primera creación M0 |
+|---|---|---|
+| `npm run assistants` → `scripts/assistants.mjs` | Abre Continuity y después mezcla misión/memoria Nexo con simulación y persistencia de estado. | No seleccionar como bootstrap aislado; requiere una decisión/contrato distinto para cualquier otro uso. |
+| `npm run simulate` → `scripts/simulate.mjs` | Abre Continuity dentro del flujo de simulación y persiste estado de simulación; la ruta predeterminada observada difiere de la configurable de assistants. | No seleccionar como bootstrap aislado. |
+| `npm run nexo` → `scripts/nexo.mjs` | Router de CLI más estrecho; el parser revisado no ofrece comando de primera creación de Continuity. | No forzar un comando inexistente ni inferir que el router cubre bootstrap. |
+
+Esto acota la clasificación de tres entrypoints versionados; no demuestra qué se ejecuta en el POCO, no demuestra que no haya otros escritores/launchers y no satisface E2. El mecanismo real sigue D: no configurado/no verificado; E2/E3 operacionales UNKNOWN; E4 NOT READY. No se ejecutó código, dispositivo, tests, CI ni Actions.
+
+---
+
 # NCS M0 — matriz de decisiones pendientes de P-01 (2026-10-27)
 
 ## Propósito y límites
@@ -106,13 +120,13 @@ Esta aprobación cierra únicamente la decisión normativa de la regla provision
 
 | Entrada pendiente | Qué falta | Estado |
 |---|---|---|
-| E1 parcial — entorno de esta operación | Confirmar si el bootstrap M0 de Continuity se pretende ejecutar en el POCO X7 Pro/Android o en otro entorno concreto. La plataforma general del prototipo ya está registrada y no se vuelve a preguntar. | PENDING |
+| E1 — entorno de esta operación | Confirmado por el propietario: POCO X7 Pro / Android. Esto identifica el destino, no demuestra configuración, control de escritores ni exclusión. | IDENTIFICADO; no prueba E2/E3 |
 | E2 — control de exclusión | Evidencia de quién/qué puede detener todos los escritores/launchers relevantes e impedir su reinicio durante la ventana. | UNKNOWN |
 | E3 — launchers/writers | Modo efectivo de lanzamiento e inventario verificable de procesos, wrappers, supervisores y consumidores con capacidad de escribir o relanzar. | UNKNOWN |
 | E4 — almacenamiento | Propiedades del almacenamiento y posibles escritores externos, solo después de E1–E3. | NOT READY |
 | P01-H — evidencia | Pruebas/CI ligadas al SHA exacto después de contrato congelado y autorización separada; no ejecutadas para esta decisión. | NOT RUN / NOT VERIFIED |
 
-Siguiente paso documental mínimo: resolver E1 para esta operación concreta; no volver a auditar callers, no elegir un mecanismo técnico y no interpretar una respuesta de entorno como prueba de exclusión. E2/E3 deben demostrarse con evidencia antes de pasar a E4. Si el entorno no puede identificarse o sus condiciones no pueden verificarse, conservar STOP/UNKNOWN.
+Siguiente paso: evidencia específica de E2/E3 sobre el modo real de lanzamiento y el control sostenido de writers/relanzadores. La inspección estática ya identificó `npm run assistants` y `npm run simulate` como entrypoints que abren Continuity, pero mezclan la apertura con simulación/persistencia; no se seleccionan para bootstrap aislado. `npm run nexo` no expone un comando dedicado de primera creación. Véase `NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md`. No volver a auditar callers ni seleccionar una primitiva técnica. E4 sigue NOT READY hasta evidencia suficiente de E2/E3.
 
 Estado canónico intacto: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; pruebas/CI/Actions no ejecutados.
 
