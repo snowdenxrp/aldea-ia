@@ -144,3 +144,48 @@ Consecuencia: `allowEmptyInitialization: false` **no bloquea por sí solo toda i
 La reconciliación D0/D1 de raíz y el contrato de separación Nexo/Lúmina ya dicen que no habrá migración automática, dual-write ni merge heurístico y que el cutover/migración se mantiene fuera de M0 hasta identificar y verificar el destino. Por tanto, el camino de `openNexoContinuityOwner` que acepta `legacyMemory` y lo proyecta cuando falta el store es una capacidad de código existente, pero **no puede tratarse como ruta aprobada para el bootstrap M0**. Su presencia no demuestra autorización de migración ni modifica el alcance aceptado.
 
 Consecuencia de diseño recomendada, pendiente de implementación autorizada: el camino de bootstrap M0 debe definirse para el snapshot vacío explícito y exacto, y no debe importar `legacyMemory`; la migración legacy, si se retoma más adelante, necesita operación separada y aprobación/criterios propios. Esto no resuelve por sí solo la regla legítima de primera creación, la raíz efectiva ni la separación del caller. No se modifica el runtime en esta ronda.
+
+
+## 10. Frontera propuesta de bootstrap M0 y evidencia de no continuación (2026-10-28)
+
+Esta sección convierte los hallazgos previos en un contrato de frontera verificable. Es una propuesta documental, no ratificada; no describe comportamiento implementado ni autoriza cambios ejecutables.
+
+### 10.1 Flujo permitido propuesto
+
+El bootstrap M0, si recibe autorización específica en el futuro, deberá ser una operación separada y de propósito único:
+
+1. Recibir una raíz explícita y validar el contrato de raíz antes de resolver cualquier ruta hija. No aceptar una ruta de archivo arbitraria como sustituto de la raíz.
+2. Resolver la ubicación de Continuity mediante una regla versionada y única para esa instancia. La vinculación efectiva entre la raíz validada y el filePath debe poder demostrarse en la misma cadena de llamada.
+3. Confirmar que el destino está realmente ausente. Error de lectura, permiso denegado, corrupción, formato desconocido, tipo de archivo inesperado o estado contradictorio no equivalen a ausencia.
+4. Construir únicamente el snapshot vacío versionado ya identificado: payload NEXO_OPERATIONAL_CONTINUITY, schemaVersion: 1, con missions, attempts, doNotRepeat, executions y effectJournal vacíos. El envelope del store se mantiene como capa de persistencia separada.
+5. Rechazar la ruta legacyMemory como fuente para este flujo. La proyección/migración legacy queda fuera de M0 y no puede ser una alternativa implícita cuando falta el store.
+6. Intentar una sola publicación conforme al protocolo de concurrencia/atomicidad que se apruebe. Un conflicto, error o resultado ambiguo no autoriza sobrescritura, eliminación ni reintento automático.
+7. Terminar la operación y devolver un resultado de bootstrap limitado. No devolver un owner habilitado ni continuar dentro de la misma invocación hacia Chronicle, admisión, reconstrucción de misión, PREPARED, dispatch, reconciliación o mutaciones de dominio.
+
+Los pasos 1–7 son requisitos propuestos. No se afirma que el runtime actual los cumpla.
+
+### 10.2 Tabla de cierre: requisito, evidencia exigible y estado actual
+
+| Requisito | Evidencia que permitiría evaluarlo | Estado actual |
+|---|---|---|
+| Raíz explícita y validada | Cadena de llamada desde parsing/validación de --root hasta el filePath efectivo; prueba de rechazo de fallback ambiental/legacy | UNKNOWN: el servicio recibe filePath directamente |
+| Ausencia inequívoca | Distinción explícita entre ENOENT y otros errores; casos adversariales de permiso, corrupción y tipo inesperado | No demostrado por el análisis actual |
+| Snapshot inicial limitado | Contrato/schema versionado y prueba de igualdad exacta de las cinco colecciones vacías; rechazo de campos/formato no reconocidos | Esquema conocido; enforcement M0 no verificado |
+| Sin migración implícita | Bootstrap sin dependencia ni argumento legacyMemory; prueba de que su presencia no activa proyección/migración | Contradicción de alcance conocida en capacidad existente |
+| Publicación segura | Evidencia de concurrencia, destino preexistente, interrupción y resultado ambiguo; sin overwrite/retry automático | Pendiente de contrato y pruebas autorizadas |
+| Terminación antes de admisión | Resultado/tipo de API separado que no entregue owner operacional; prueba de que el flujo termina y no alcanza Chronicle/admisión/dispatch/mutaciones | UNKNOWN: existe una ruta de servicio que retorna owner y callers compuestos |
+| No bypass por otras entradas | Inventario ya existente ligado a SHA y pruebas negativas por cada ruta de entrada en alcance | El inventario documental existe; no es evidencia de no-bypass ejecutada |
+| Reproducibilidad de cierre | SHA exacto de código, pruebas autorizadas, logs CI de ese SHA y acta de aceptación M0 | No satisfecho |
+
+### 10.3 Criterio de aceptación para la frontera
+
+La frontera solo podrá considerarse demostrada cuando una revisión sobre un SHA exacto identifique el flujo autorizado de bootstrap y la evidencia ejecutada demuestre tanto el resultado permitido como la imposibilidad de continuar hacia las operaciones excluidas. La existencia de una función, un flag, un test aislado o documentación no basta por sí sola.
+
+Hasta entonces:
+- FB-01 permanece OPEN/UNKNOWN.
+- P01-A/P01-G, raíz y aplicabilidad de la regla de primera creación permanecen OPEN/PENDING/UNKNOWN según su estado registrado.
+- E2/E3 permanecen UNKNOWN.
+- D0–D3 permanecen OPEN; D1-IMPLEMENTATION NO AUTORIZADA.
+- M0 permanece INCOMPLETO; authorization: NOT_EVALUATED; primera creación y efectos protegidos STOP.
+
+No se ejecutaron código, tests, CI/Actions, bootstrap ni comandos del dispositivo. No se modificaron archivos de runtime.
