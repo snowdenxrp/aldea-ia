@@ -154,3 +154,18 @@ El propietario aprobó la regla provisional de primera creación. La aprobación
 No se deben pedir de nuevo datos generales ya registrados sobre la plataforma del prototipo. La siguiente pregunta de intake se limita a esta operación concreta: **¿el bootstrap M0 de Continuity se pretende ejecutar en el POCO X7 Pro/Android, o en otro entorno?** La respuesta solo identifica el objetivo; no demuestra E2/E3 ni autoriza ejecución. Si no se puede responder o verificar, mantener STOP/UNKNOWN.
 
 Gates intactos: alcance U; P01-A OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP; M0 INCOMPLETO. No runtime/tests/workflows/configuración ejecutable modificados; no pruebas/CI/Actions ejecutados.
+
+
+## 10. E1 resuelto como identificación de objetivo, no como prueba operacional (2026-10-28)
+
+El propietario confirmó expresamente: **para la operación específica de primera creación de Continuity, el entorno previsto es el POCO X7 Pro con Android**.
+
+Alcance exacto de la respuesta:
+- **E1 — objetivo previsto: IDENTIFICADO** como POCO X7 Pro / Android.
+- Esta respuesta no demuestra que el entorno esté configurado o aislado, que el dispositivo sea exclusivo, que todos los escritores/launchers estén controlados, ni que la primera creación tenga autoridad legítima.
+- No resuelve E2 (control verificable de detención y prevención de reinicio), E3 (modo real de lanzamiento y escritores/launchers verificables) ni E4 (almacenamiento y escritores externos).
+- No ratifica este contrato, no autoriza implementación o pruebas dinámicas y no cambia ningún gate canónico.
+
+Siguiente requisito: establecer E2/E3 mediante evidencia del entorno real previsto. Reutilizar el protocolo D3 existente solo como criterio de evidencia; no duplicarlo ni afirmar que está ejecutado. Si el control de lanzamiento o la cobertura de escritores no se pueden verificar, mantener `UNKNOWN / STOP`.
+
+Estado canónico intacto: M0 `INCOMPLETO`; alcance U; P01-A `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Solo documentación; sin cambios ejecutables ni pruebas/CI/Actions.
