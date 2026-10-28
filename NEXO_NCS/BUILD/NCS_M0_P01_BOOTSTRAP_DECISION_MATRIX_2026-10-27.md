@@ -81,3 +81,16 @@ Este delta registra progreso de especificación, **no cierre de criterios**:
 El borrador identifica qué se debe demostrar, pero no identifica por sí solo una instalación/entorno concreto ni ofrece evidencia operacional. No se cierra P-01, D0–D3 ni ningún gate por este delta. Si se descubre una contradicción con un contrato canónico existente, resolver únicamente esa discrepancia; no repetir el inventario general.
 
 Límites intactos: sin cambios de runtime/tests/workflows/configuración ejecutable/dispositivo; sin ejecución de tests/CI/Actions; primera creación de Continuity y efectos protegidos en `STOP`; `authorization: NOT_EVALUATED`.
+
+
+---
+
+## Delta documental — candidato consolidado y desambiguación de opciones (2026-10-27)
+
+Referencia: [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md](NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md), blob `3af18f1df75c687771aa7ceef3fe0d9b232ca45f`.
+
+- El candidato incorpora un predicado positivo para persistencia confirmada, separa fin de exclusión de release de lock, mantiene readmisión `BLOCKED/UNKNOWN` mientras P-05 no esté ratificada y explicita la evidencia de frontera del entorno que aún falta.
+- La revisión de este delta es documental; no cambia el estado de P01-A…P01-H, no convierte la propuesta en contrato ratificado y no acredita entorno, exclusión, persistencia real ni autoridad.
+- **Desambiguación de opciones:** la “Opción A” de la fila de estado de entrada de esta matriz se refiere al alcance de **almacenamiento local estrictamente no autoritativo** (pregunta de objeto/alcance P01-A). No es la alternativa A de aislamiento operacional B2/P01-B en el Registro §10.6. Para P01-B, la decisión expresa del propietario sigue siendo **C — no seleccionar todavía**; no se seleccionan A ni B para esa pregunta de aislamiento.
+- Estado sin cambio: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D1-IMPLEMENTATION `NO AUTORIZADA`; `authorization: NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; primera creación y efectos protegidos `STOP`.
+- Sin cambios de runtime/tests/workflows/configuración ejecutable/dispositivo; tests/CI/Actions no ejecutados.
