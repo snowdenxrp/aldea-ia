@@ -1,3 +1,12 @@
+## DELTA — MATRIZ P-01 ENLAZADA Y OPCIONES DESAMBIGUADAS (2026-10-27)
+
+- Actualizada [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `86cf65a6f36324227e3c72d2cb906f1a8b65547f`, blob verificado `f06a50892270ff1e03d5be1c3b911774fd593569`.
+- Enlaza el candidato consolidado y aclara una posible confusión de etiquetas: “Opción A” de alcance de almacenamiento estrictamente no autoritativo (P01-A) no es la alternativa A de aislamiento B2/P01-B. P01-B permanece en C — no seleccionar todavía.
+- Verificación posterior confirmó el enlace, la desambiguación y la conservación de P01-B=C y P-05 no ratificada. Sin cambios de estados ni de artefactos ejecutables.
+- M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Tests/CI/Actions no ejecutados.
+
+---
+
 ## DELTA — CANDIDATO CONSOLIDADO DE CONTRATO DE BOOTSTRAP (2026-10-27)
 
 - Creado [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md), commit `8bcc4b3758dc3f722b3abb7ea34163e5b8b7bc2d`, blob verificado `3af18f1df75c687771aa7ceef3fe0d9b232ca45f`.
