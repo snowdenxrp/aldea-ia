@@ -1,3 +1,15 @@
+## DELTA — BORRADOR DE CONTRATO SEMÁNTICO CONTINUITY PARA FB-01 (2026-10-28)
+
+Nuevo borrador documental: [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](BUILD/NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md), commit `9f7396df4d9b5d442fbbeebfa9956e49ec549fdf`, blob verificado `8a173cc4fcfa3471ec2e1fd7559df4d7c4bd9ac3`.
+
+El borrador convierte la aprobación limitada de la regla provisional y el mapa estático existente en obligaciones semánticas explícitas: el objeto se identifica por el `filePath` efectivo de una invocación concreta; no se presume una ruta universal; el snapshot inicial no puede conferir autoridad; la validez estructural no equivale a legitimidad, admisión ni permiso de dispatch; Continuity no inicializa implícitamente Chronicle; y cualquier incertidumbre de estado o publicación mantiene UNKNOWN/STOP. También separa explícitamente las preguntas de semántica, aislamiento P01-B, escritores/launchers E2/E3, estado previo/publicación incierta y política P-05.
+
+**No está ratificado ni cierra FB-01.** La clasificación U, P01-A OPEN/UNKNOWN, P01-G PENDING/UNKNOWN, P01-B=C, P-05 NO RATIFICADA y primera creación STOP se conservan. El esquema y contenido inicial exactos, el destino efectivo y la regla legítima aplicable aún requieren evidencia; el borrador no crea autoridad paralela ni autoriza implementación, tests, CI/Actions, bootstrap o efectos protegidos.
+
+No se modificaron runtime, tests, workflows, configuración ejecutable, dispositivo ni checkout local. No se ejecutaron tests, CI/Actions ni bootstrap.
+
+---
+
 ## DELTA — TRAZABILIDAD DE CRITERIOS DE ACEPTACIÓN M0 (2026-10-28)
 
 Nueva matriz: [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `3286aecbfdd8025e307ff97316ced5e17dbd763c`.
