@@ -1,3 +1,13 @@
+## DELTA — TAREA ACTIVA MOVIDA A CIERRE M0 (2026-10-27)
+
+- Actualizado [AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md), commit `9f54a3f49ac2997804c813be7329a71e6972ac7c`, blob verificado `aec9863fe17cacb7e6b8964fbf784fdc7acfca8c`.
+- La revisión general Claude/Gemini del contrato restringido deja de ser la tarea activa: se integraron las respuestas disponibles de Claude, DeepSeek y Qwen con los hallazgos previos de Perplexity. No se pide otra ronda general ni se repiten auditorías.
+- La tarea activa ahora es reconciliar puntualmente el candidato consolidado, P-01, P-05 y la línea de meta M0; producir una lista finita de bloqueos reales y avanzar al siguiente cierre verificable.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`.
+- Sin cambios ejecutables ni pruebas/CI/Actions.
+
+---
+
 ## DELTA — MATRIZ P-01 ENLAZADA Y OPCIONES DESAMBIGUADAS (2026-10-27)
 
 - Actualizada [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `86cf65a6f36324227e3c72d2cb906f1a8b65547f`, blob verificado `f06a50892270ff1e03d5be1c3b911774fd593569`.
