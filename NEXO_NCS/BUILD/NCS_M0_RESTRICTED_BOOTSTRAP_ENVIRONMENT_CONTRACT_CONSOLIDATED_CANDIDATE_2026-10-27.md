@@ -135,3 +135,22 @@ Para el entorno concreto de esta operación, las únicas lagunas de intake inmed
 - **E4:** solo después de fijar el entorno y lanzamiento, identificar las propiedades relevantes del almacenamiento y posibles escritores externos.
 
 No se exige resolver ahora todo E1–E6 ni compartir rutas privadas, secretos o credenciales. Si E2/E3 no se pueden establecer, el contrato no debe rellenar la brecha con un mecanismo supuesto: P01-C/P01-D siguen `UNKNOWN` y la publicación sigue `STOP`.
+
+
+## 9. Reconciliación con la aprobación expresa de la regla provisional (2026-10-28)
+
+El propietario aprobó la regla provisional de primera creación. La aprobación queda registrada en `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md` §10.7 y en `NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md` §13.
+
+**Efecto sobre este candidato:** la regla normativa de no inferir permiso por ausencia, código existente o éxito técnico, y de mantener STOP/UNKNOWN cuando falte evidencia, está aprobada. Esta aprobación no ratifica este contrato consolidado en su totalidad, no selecciona un mecanismo de filesystem ni declara demostrado el entorno restringido. Este archivo conserva su estado de candidato documental.
+
+**Precondiciones todavía no satisfechas:**
+
+- E1 parcial: identificar si esta operación concreta de bootstrap M0 se ejecutaría en el POCO X7 Pro/Android u otro entorno. El dispositivo previsto para el prototipo no demuestra que sea el entorno de esta operación.
+- E2: evidencia de quién/qué puede detener todos los escritores y launchers relevantes e impedir que se reinicien durante la ventana de exclusión.
+- E3: modo efectivo de lanzamiento y lista verificable de procesos, wrappers, supervisores y consumidores capaces de escribir o relanzar. Los actores no identificados permanecen UNKNOWN.
+- E4, solo después de E1–E3: propiedades relevantes del almacenamiento efectivo y posibles escritores externos, sin presumir garantías de exclusión.
+- Enlace de evidencia al objeto/ruta efectivos y al SHA exacto evaluado; inspección estática sola no prueba exclusión operacional.
+
+No se deben pedir de nuevo datos generales ya registrados sobre la plataforma del prototipo. La siguiente pregunta de intake se limita a esta operación concreta: **¿el bootstrap M0 de Continuity se pretende ejecutar en el POCO X7 Pro/Android, o en otro entorno?** La respuesta solo identifica el objetivo; no demuestra E2/E3 ni autoriza ejecución. Si no se puede responder o verificar, mantener STOP/UNKNOWN.
+
+Gates intactos: alcance U; P01-A OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP; M0 INCOMPLETO. No runtime/tests/workflows/configuración ejecutable modificados; no pruebas/CI/Actions ejecutados.
