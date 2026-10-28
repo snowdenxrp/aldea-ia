@@ -1,3 +1,17 @@
+## DELTA — BLOQUEADORES FINITOS M0 TRAS INSPECCIÓN POCO (2026-10-28)
+
+Creado el registro finito [NCS_M0_FINITE_BLOCKERS_AFTER_POCO_INSPECTION_2026-10-28.md](BUILD/NCS_M0_FINITE_BLOCKERS_AFTER_POCO_INSPECTION_2026-10-28.md), commit documental `a31fd8a89c3e6d2c1b66894d7cb5ca41e157def4`. La evidencia operacional acotada está en [NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md](BUILD/NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md), commit `4d0091eddfc9f3b32cda1616fa2d9f918835aec0`.
+
+La lista finita distingue: (FB-01) clasificación/destino y regla legítima del objeto; (FB-02) aislamiento P01-B, que sigue en C — no seleccionar todavía; (FB-03) control sostenido de writers/launchers E2/E3; (FB-04) estado previo/no sobrescritura/UNKNOWN; (FB-05) política P-05 de release/readmisión no ratificada; (FB-06) coherencia contractual D0–D3 y criterios de línea de meta; (FB-07) trazabilidad/verificación ligada al SHA tras autorizaciones separadas.
+
+La inspección local no resuelve FB-03: el checkout está en `main` con cambios locales que deben preservarse; los permisos/rutas observados no prueban exclusión global ni no-reanudación. No repetir inventarios estáticos ya registrados ni hacer más inspecciones genéricas del teléfono. El mecanismo de lanzamiento sigue D: no configurado/no verificado; no hay mecanismo concreto que pueda validarse todavía.
+
+Orden de trabajo: resolver decisiones contractuales/autoridad y aislamiento sin elegir por inferencia; solo después concretar entorno y evidencia operacional; después resolver P-05/estado ambiguo; por último verificar criterios de M0 sobre el SHA exacto, con autorización específica para implementación/tests/CI. Mantener `M0_BUILD_COMPLETE` separado de `PROTECTED_EFFECTS_AUTHORIZED`.
+
+Gates intactos: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; E1 identificado; E2/E3 `UNKNOWN`; E4 `NOT READY`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. No se ejecutó Nexo, tests, CI/Actions ni bootstrap; no se modificó el dispositivo ni el checkout local.
+
+---
+
 ## DELTA — EVIDENCIA DE SOLO LECTURA DEL POCO/TERMUX (2026-10-28)
 
 Nueva evidencia operacional limitada registrada en [NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md](BUILD/NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md), commit documental `4d0091eddfc9f3b32cda1616fa2d9f918835aec0`.
