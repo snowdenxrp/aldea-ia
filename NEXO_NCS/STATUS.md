@@ -2662,3 +2662,13 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Siguiente paso mínimo: trabajar únicamente E2/E3 para el POCO/Android previsto, a partir de evidencia del entorno real. No seleccionar mecanismo de filesystem ni ejecutar cambios/pruebas por inferencia.
 - Gates sin cambios: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP.
 - Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados.
+
+
+### Continuity bootstrap — modo de lanzamiento aún no configurado (2026-10-28)
+
+- El propietario confirmó **D** para el mecanismo de lanzamiento: todavía no está configurado/verificado. Esto no revoca E1; el objetivo previsto continúa siendo POCO X7 Pro / Android.
+- Interpretación acotada: plataforma objetivo identificada; mecanismo concreto de ejecución pendiente. No se elige todavía entre app instalada, terminal local u otro lanzador, ni se instala/configura herramienta alguna.
+- E2 permanece UNKNOWN: falta evidencia de control para detener todos los escritores/launchers relevantes e impedir su reinicio durante la ventana.
+- E3 permanece UNKNOWN: falta identificar el modo efectivo de lanzamiento y verificar procesos, wrappers, supervisores y consumidores capaces de escribir o relanzar.
+- Siguiente paso: recopilar evidencia no ejecutiva sobre el mecanismo previsto y sus controles; si no hay evidencia, conservar UNKNOWN/STOP. No repetir auditorías cerradas ni ejecutar cambios/pruebas por inferencia.
+- Estado canónico sin cambio: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; no runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
