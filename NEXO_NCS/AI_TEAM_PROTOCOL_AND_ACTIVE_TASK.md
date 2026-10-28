@@ -482,3 +482,28 @@ Esta adición registra un criterio de evidencia pendiente; no certifica completi
 - Al recibirlas, ChatGPT integra los resultados y clasifica cada punto como nuevo, ya cubierto, inferencia, contradicción real o UNKNOWN. Si no aparece discrepancia material, se registra y se continúa; no se inventa otra tarea.
 
 El dato de plataforma ya conocido (POCO X7 Pro/Android como primer prototipo) no debe preguntarse otra vez como si fuera desconocido. La ubicación exacta de la operación de bootstrap y los controles reales de writers/launchers siguen sin demostrarse.
+
+
+---
+
+## Cambio de tarea activa — consolidación y cierre M0, sin otra ronda de revisiones (2026-10-27)
+
+Esta sección supersede cualquier encargo anterior que siga presentando la revisión general Claude/Gemini del contrato restringido como tarea activa. No borra el historial de revisiones.
+
+### Trabajo consolidado
+- Se recibieron y compararon los hallazgos de Claude, DeepSeek y Qwen sobre el candidato revisado. Perplexity aportó antes fuentes técnicas de referencia; su análisis no fue una revisión del candidato completo.
+- Se creó el candidato consolidado [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md), blob `3af18f1df75c687771aa7ceef3fe0d9b232ca45f`.
+- Se actualizó la matriz P-01 para enlazarlo y desambiguar la “Opción A” de alcance del objeto (P01-A) de la alternativa A de aislamiento B2/P01-B. P01-B sigue C — no seleccionar todavía.
+- STATUS.md contiene los commits y estados verificables.
+
+### Tarea activa
+Avanzar hacia la línea de meta M0 usando la matriz P-01 y los artefactos canónicos existentes. No solicitar otra revisión general de Claude/Gemini/DeepSeek/Qwen ni rehacer el análisis de los hallazgos ya clasificados. Solo pedir una comprobación externa si aparece una contradicción material nueva y concreta que no pueda resolverse con los documentos existentes.
+
+### Próximas acciones permitidas
+1. Reconciliar las secciones afectadas del candidato consolidado con la matriz P-01, P-05 y la línea de meta M0; revisar solo contradicciones puntuales.
+2. Mantener un listado finito de bloqueos reales: decisiones/contratos pendientes, evidencia operacional ausente y pruebas autorizadas no ejecutadas.
+3. No declarar el contrato ratificado, no cerrar P-01/P-05 y no afirmar M0 completo mientras falten sus criterios obligatorios.
+4. No modificar runtime/tests/workflows/configuración ejecutable/dispositivo ni ejecutar tests/CI/Actions sin autorización explícita separada.
+
+### Estado canónico
+M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz legítima `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación de Continuity y efectos protegidos `STOP`.
