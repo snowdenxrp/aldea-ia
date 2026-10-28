@@ -1,3 +1,13 @@
+## DELTA — RECONCILIACIÓN DE REGLA APROBADA Y BLOQUEOS P-01 RESTANTES (2026-10-28)
+
+- Reconciliada la aprobación de la regla provisional con el [candidato consolidado del entorno restringido](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md), sección 9, commit `2a8de545c383d2c0431e38a5d903835234aea936`, y con la [matriz P-01](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), delta del 2026-10-28, commit `7abcc583e4d348bc961b6bd38ec10adc0f50c2fb`.
+- La regla normativa provisional está aprobada; el contrato consolidado sigue siendo candidato, no está ratificado en su totalidad. No se cerró ningún gate P-01.
+- Próximo paso documental mínimo: confirmar si **esta operación concreta** de bootstrap M0 de Continuity se pretende ejecutar en el POCO X7 Pro/Android o en otro entorno. La plataforma general del prototipo ya está registrada; no se vuelve a preguntar eso. E2/E3 siguen UNKNOWN: falta evidencia de control sobre escritores/launchers y del modo real de lanzamiento. E4 solo después de E1–E3.
+- No inferir exclusión por identificar el dispositivo. No seleccionar primitiva técnica, no reauditar callers y no ejecutar cambios/tests/CI/Actions.
+- Estado canónico: alcance U; M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`.
+
+---
+
 ## DELTA — APROBACIÓN DEL PROPIETARIO DE LA REGLA PROVISIONAL DE PRIMERA CREACIÓN (2026-10-28)
 
 - El propietario aprobó explícitamente: «Apruebo la regla provisional de primera creación!».
