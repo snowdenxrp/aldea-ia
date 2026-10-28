@@ -115,3 +115,21 @@ Esta aprobación cierra únicamente la decisión normativa de la regla provision
 Siguiente paso documental mínimo: resolver E1 para esta operación concreta; no volver a auditar callers, no elegir un mecanismo técnico y no interpretar una respuesta de entorno como prueba de exclusión. E2/E3 deben demostrarse con evidencia antes de pasar a E4. Si el entorno no puede identificarse o sus condiciones no pueden verificarse, conservar STOP/UNKNOWN.
 
 Estado canónico intacto: M0 INCOMPLETO; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; pruebas/CI/Actions no ejecutados.
+
+
+---
+
+## Delta documental — E1 confirmado para la operación concreta (2026-10-28)
+
+El propietario confirmó que la operación específica de primera creación de Continuity se prevé en el **POCO X7 Pro con Android**.
+
+| Entrada | Actualización | Estado |
+|---|---|---|
+| E1 — objetivo del bootstrap M0 | Entorno previsto identificado: POCO X7 Pro / Android. Esto identifica el objetivo, no prueba su configuración ni sus propiedades operacionales. | IDENTIFICADO; precondiciones operacionales pendientes |
+| E2 — control de exclusión | Sigue faltando evidencia de quién/qué detiene todos los escritores y launchers relevantes e impide que se reinicien durante la ventana. | UNKNOWN |
+| E3 — launchers/writers | Sigue faltando modo efectivo de lanzamiento e inventario verificable de procesos, wrappers, supervisores y consumidores capaces de escribir o relanzar. | UNKNOWN |
+| E4 — almacenamiento | No se aborda hasta establecer E2/E3; no inferir propiedades de Android ni del almacenamiento. | NOT READY |
+
+La respuesta no demuestra exclusividad, autoridad raíz, aislamiento de invocación ni permiso de ejecución. No cambia P01-A…P01-H ni los gates canónicos. Siguiente paso limitado: resolver E2/E3 con evidencia concreta del entorno previsto, reutilizando D3 como criterio cuando corresponda; no repetir auditorías de callers ni inventariar de nuevo lo ya documentado.
+
+Estado: M0 `INCOMPLETO`; alcance U; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Solo documentación; no tests/CI/Actions.
