@@ -133,3 +133,20 @@ El propietario confirmó que la operación específica de primera creación de C
 La respuesta no demuestra exclusividad, autoridad raíz, aislamiento de invocación ni permiso de ejecución. No cambia P01-A…P01-H ni los gates canónicos. Siguiente paso limitado: resolver E2/E3 con evidencia concreta del entorno previsto, reutilizando D3 como criterio cuando corresponda; no repetir auditorías de callers ni inventariar de nuevo lo ya documentado.
 
 Estado: M0 `INCOMPLETO`; alcance U; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING/UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Solo documentación; no tests/CI/Actions.
+
+
+## Delta documental — mecanismo de lanzamiento D aún no configurado (2026-10-28)
+
+El propietario eligió **D** como descripción del estado actual del mecanismo de lanzamiento: aún no está configurado ni verificado. Esta respuesta no cambia el objetivo E1 ya identificado como POCO X7 Pro / Android; distingue el dispositivo previsto del método real para lanzar la operación.
+
+| Entrada | Estado actual | Consecuencia |
+|---|---|---|
+| E1 — objetivo | POCO X7 Pro / Android, IDENTIFICADO | Solo identifica el destino previsto; no demuestra aislamiento ni configuración. |
+| Modo de lanzamiento | D — NO CONFIGURADO / NO VERIFICADO | No seleccionar todavía app, terminal local u otro mecanismo; no instalar ni configurar herramientas por inferencia. |
+| E2 — control de exclusión | UNKNOWN | Falta evidencia de control para detener escritores/launchers relevantes y evitar su reinicio durante la ventana. |
+| E3 — launchers/writers | UNKNOWN | Falta evidencia del modo efectivo y del inventario verificable de actores capaces de escribir o relanzar. |
+| E4 — almacenamiento | NOT READY | No abordar hasta establecer E2/E3. |
+
+Siguiente paso: intake de evidencia no ejecutiva sobre el mecanismo de lanzamiento previsto y sobre cómo puede observarse/controlarse; no repetir auditorías de callers ni dar por probado el protocolo D3. Si no puede establecerse, mantener UNKNOWN/STOP.
+
+Gates intactos: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo documentación; runtime/tests/workflows/configuración ejecutable/dispositivo sin cambios; tests/CI/Actions no ejecutados.
