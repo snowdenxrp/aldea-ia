@@ -82,3 +82,32 @@ Esta matriz es el índice finito de cierre. Reutiliza los documentos existentes;
 - Primera creación de Continuity y efectos protegidos: `STOP`.
 
 **Límites de esta matriz:** no modifica runtime, tests, workflows, configuración ejecutable ni dispositivo. No afirma que se hayan ejecutado pruebas, CI o acciones operativas. Su función es fijar el orden de cierre y evitar que el proyecto vuelva a una investigación general.
+
+## 8. Reconciliación aplicada de decisiones aceptadas con B1–B3 (2026-10-27)
+
+Esta sección actualiza la lectura de los gates con las decisiones explícitas ya registradas; no crea una decisión nueva del propietario.
+
+### B1 — qué queda resuelto y qué no
+
+- **Resuelto como base de diseño:** O-01/O-08 fijan una raíz explícita por operación, sin fallback ambiental/legacy; O-02 fija que la operación normal requiere raíz existente/válida y que bootstrap es separado y explícito; O-03 exige canonicalizar antes de derivar rutas y bloquear ambigüedad; O-04/O-08 excluyen migración automática y fallback legacy en el alcance acordado.
+- **No resuelto:** esos acuerdos no clasifican el objeto de primera creación ni fijan su finalidad y consumidores exactos. La decisión explícita **U** registrada en `NCS_M0_OWNER_DECISION_BOOTSTRAP_SCOPE_U_2026-10-27.md` prevalece sobre cualquier línea histórica de la matriz P-01 que diga «Alcance elegido: Opción A». U significa que no está demostrado ni L (almacenamiento estrictamente no autoritativo) ni C (estado constitucional/que afecta autoridad).
+- **Resultado B1:** los principios de raíz/operación normal se conservan; el contrato del objeto y el alcance de bootstrap no se congelan. P01-A = `OPEN / UNKNOWN`; P01-B = `C — NO SELECCIONAR TODAVÍA`.
+
+### B2 — regla de autoridad para primera creación
+
+- O-02 separa bootstrap de operación normal, pero dice expresamente que no selecciona el protocolo concreto ni demuestra quiescencia.
+- O-09 ordena definir primero las fronteras Nexo/Lúmina; no demuestra aislamiento actual ni autoridad de primera creación.
+- O-10/O-11 y los principios de STOP/UNKNOWN impiden inferir seguridad de reanudación/readmisión o permiso a partir de locks, persistencia o estado técnico; no aportan una regla positiva que legitime la primera creación local.
+- La investigación documental acotada registrada en `NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md` no localizó una regla canónica aceptada que cubra expresamente esa operación. No debe ampliarse por analogía el Constitution Authority Context, la decisión histórica sobre un canal humano candidato ni la propiedad conceptual del proyecto.
+- **Resultado B2:** regla legítima de primera creación = `PENDING / UNKNOWN`; primera creación = `STOP`; no inventar autoridad paralela ni pedir a otra IA que elija autoridad en nombre del propietario.
+
+### B3 — release incierto y readmisión
+
+- O-11 fija la regla de seguridad: incertidumbre sobre release implica `UNKNOWN / BLOCKED`, sin reintento/readmisión automática.
+- Esa decisión es una regla de bloqueo, no una demostración de que exista un protocolo completo aprobado. P-05 sigue `NO RATIFICADA`; B3 no puede cerrarse por O-11 solo.
+
+### Siguiente paso mínimo
+
+No hace falta otra auditoría general ni otra ronda de modelos. B1–B3 ya están reconciliados hasta el límite de las decisiones existentes. La única vía para avanzar más allá del estado documental es resolver las decisiones explícitas que faltan: clasificación/finalidad del objeto (B1), regla aplicable de primera creación (B2) y ratificación de P-05 (B3). Hasta entonces, no congelar el candidato ni implementar/ejecutar bootstrap.
+
+**Estado posterior a esta reconciliación:** M0 `INCOMPLETO`; D0–D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; P01-A `OPEN / UNKNOWN`; P01-B `C`; P01-G `PENDING / UNKNOWN`; P-05 `NO RATIFICADA`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. Esta actualización es documental; no se ejecutaron tests, CI ni Actions.
