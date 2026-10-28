@@ -1,3 +1,19 @@
+## Delta documental — tercera ruta de inicialización Continuity (2026-10-28)
+
+La clasificación E3 se amplía con una tercera ruta estática: `npm run nexo chronicle-append --initialize-continuity`. El router `scripts/nexo.mjs` deriva `chronicle-append` a `scripts/nexo-chronicle-session.mjs`; esa sesión reconoce `--initialize-continuity` y `src/nexo/application/chronicle-append.mjs` lo entrega como `allowEmptyInitialization` al owner de Continuity. La misma ruta continúa hacia la operación de Chronicle y ejecución owner-backed; no es bootstrap aislado. Blobs comprobados: `30a53de2f108aa255a1dfd61ce78c19788de160b`, `5a20044bcddbaee79d0117934eefaea5f3b2c3bc` y `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`.
+
+Se registra también un disparador de inicialización adicional en `assistants` y `simulate`: `allowEmptyInitialization: !stateExists`, donde `stateExists` deriva de la existencia de `world-state.json`. La ausencia de ese archivo puede habilitar la opción; no prueba que la ruta se haya ejecutado. El workflow versionado `.github/workflows/lumina-simulation.yml` declara `schedule` cada cinco minutos, `workflow_dispatch` y `push` a `main`, con pasos `npm run assistants` y `npm run simulate`. Esto no prueba que esté activo en la rama por defecto ni en el POCO.
+
+| Entry point | Hecho observado | Clasificación para primera creación M0 |
+|---|---|---|
+| `npm run assistants` | Abre Continuity en flujo de simulación/memoria y persistencia; la opción de inicialización vacía depende también de `!stateExists`. | No seleccionar como bootstrap aislado. |
+| `npm run simulate` | Abre Continuity en flujo de simulación/persistencia; la opción de inicialización vacía depende también de `!stateExists`. | No seleccionar como bootstrap aislado. |
+| `npm run nexo chronicle-append --initialize-continuity` | La sesión habilita inicialización y la invocación continúa a Chronicle y ejecución owner-backed. | No seleccionar como bootstrap aislado. |
+| `npm run nexo` sin esos argumentos | Router estrecho; no es un comando dedicado de creación. | No inferir que cubre bootstrap ni forzar un comando inexistente. |
+
+Esta actualización solo amplía la clasificación estática; no cierra E2/E3 operacionales, no demuestra inventario exhaustivo, no cambia P-01/P-05 ni autoriza primera creación. E2/E3 operacionales `UNKNOWN`; E4 `NOT READY`; M0 `INCOMPLETO`; primera creación y efectos protegidos `STOP`.
+
+---
 ## Delta documental — entrypoints E3 clasificados para bootstrap M0 (2026-10-28)
 
 La inspección estática acotada de [entrypoints versionados](NCS_M0_E3_VERSIONED_CONTINUITY_ENTRYPOINTS_2026-10-28.md) queda incorporada a la matriz como evidencia de E3 parcial, no como inventario exhaustivo ni prueba operacional:
