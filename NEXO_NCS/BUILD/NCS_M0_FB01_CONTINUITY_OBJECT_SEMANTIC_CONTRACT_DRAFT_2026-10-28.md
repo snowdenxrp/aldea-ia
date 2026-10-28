@@ -138,3 +138,9 @@ Consecuencia: `allowEmptyInitialization: false` **no bloquea por sí solo toda i
 - El esquema vacío del código es conocido; el destino, origen autorizado, caller legítimo y aislamiento end-to-end no están demostrados.
 - No se propone cambiar el código ni retirar el puente legacy en esta ronda. Cualquier cambio ejecutable requiere autorización separada.
 
+
+### 9.5 Implicación de alcance ratificado: legacy migration no pertenece al bootstrap M0
+
+La reconciliación D0/D1 de raíz y el contrato de separación Nexo/Lúmina ya dicen que no habrá migración automática, dual-write ni merge heurístico y que el cutover/migración se mantiene fuera de M0 hasta identificar y verificar el destino. Por tanto, el camino de `openNexoContinuityOwner` que acepta `legacyMemory` y lo proyecta cuando falta el store es una capacidad de código existente, pero **no puede tratarse como ruta aprobada para el bootstrap M0**. Su presencia no demuestra autorización de migración ni modifica el alcance aceptado.
+
+Consecuencia de diseño recomendada, pendiente de implementación autorizada: el camino de bootstrap M0 debe definirse para el snapshot vacío explícito y exacto, y no debe importar `legacyMemory`; la migración legacy, si se retoma más adelante, necesita operación separada y aprobación/criterios propios. Esto no resuelve por sí solo la regla legítima de primera creación, la raíz efectiva ni la separación del caller. No se modifica el runtime en esta ronda.
