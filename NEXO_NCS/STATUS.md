@@ -1,3 +1,14 @@
+## DELTA — CANDIDATO CONSOLIDADO DE CONTRATO DE BOOTSTRAP (2026-10-27)
+
+- Creado [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_CONTRACT_CONSOLIDATED_CANDIDATE_2026-10-27.md), commit `8bcc4b3758dc3f722b3abb7ea34163e5b8b7bc2d`, blob verificado `3af18f1df75c687771aa7ceef3fe0d9b232ca45f`.
+- Es una versión candidata documental nueva basada en el candidato revisado blob `935bfe80f87e33003524afc39e30b7fc98debed6`; conserva intactos el candidato base, la propuesta mínima y la adenda de Claude.
+- Integra: criterio positivo de persistencia confirmada mediante inspección observable antes del fin de la ventana de exclusión; separación entre fin de exclusión y release de lock; readmisión `BLOCKED/UNKNOWN` mientras P-05 no esté ratificada y no exista protocolo aplicable; evidencia de frontera de control/modelo de amenaza como brecha abierta; prohibición expresa de inferir autoridad a partir de PASS/persistencia/éxito de filesystem; resumen explícito P01-B=C y P-05 no ratificada.
+- Verificación documental por lectura posterior del archivo: las comprobaciones de presencia de esos seis elementos y de referencia al SHA base pasaron. Esto no es revisión independiente completa, test de runtime ni evidencia operacional.
+- No se modificaron runtime, tests, workflows, configuración ejecutable ni dispositivo. Tests/CI/Actions no ejecutados.
+- Estado canónico sin cambio: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz legítima `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación de Continuity y efectos protegidos `STOP`.
+
+---
+
 ## DELTA — DECISIÓN EXPRESA DEL PROPIETARIO P01-B REGISTRADA (2026-10-27)
 
 - Registrada en el registro existente [NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md), sección 10.6, la elección expresa del propietario: **C — no seleccionar todavía** para P01-B/B2.
