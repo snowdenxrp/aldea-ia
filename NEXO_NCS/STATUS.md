@@ -1,3 +1,11 @@
+## DELTA — ALCANCE M0: MIGRACIÓN LEGACY NO ES BOOTSTRAP APROBADO (2026-10-28)
+
+El contrato FB-01 se precisó en blob verificado `34acc813a1c2339e60179ff011f40065abc19d6c`: el código conoce el snapshot vacío, pero el servicio también proyecta `legacyMemory` si se le suministra y el store falta. Esto entra en tensión con la regla D0/D1 ya registrada: no migración automática, dual-write ni merge heurístico; migración/cutover fuera de M0 hasta identificar y verificar el destino. La rama legacy es evidencia de capacidad existente, no una ruta de bootstrap M0 autorizada.
+
+Recomendación técnica pendiente de implementación: limitar el bootstrap M0 a la inicialización vacía explícita con esquema exacto; dejar la migración legacy para una operación separada, futura y aprobada. No se autoriza código con esta nota. La regla legítima de primera creación, la ruta efectiva vinculada a `--root` y el aislamiento del caller siguen UNKNOWN/STOP. Gates generales sin cambio: M0 INCOMPLETO, D0–D3 OPEN, D1-IMPLEMENTATION NO AUTORIZADA, P01-A/G OPEN/UNKNOWN, P01-B=C, P-05 NO RATIFICADA, E2/E3 UNKNOWN, raíz PENDING/UNKNOWN, authorization NOT_EVALUATED, efectos protegidos STOP. No tests, CI/Actions, runtime ni bootstrap.
+
+---
+
 ## DELTA — RECONCILIACIÓN FB-01 CON CONTRATO DE RAÍZ Y CÓDIGO (2026-10-28)
 
 El borrador [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](BUILD/NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md) se actualizó con reconciliación estática de raíz y fuentes de código. Commit `0f58c29cb0d871e98fa9a69eab4b4a50aaf052bf`, blob verificado `62cfde7aab5ec7602c2ca9c0060d47814d1233e0`.
