@@ -1,3 +1,14 @@
+## DELTA — APROBACIÓN DEL PROPIETARIO DE LA REGLA PROVISIONAL DE PRIMERA CREACIÓN (2026-10-28)
+
+- El propietario aprobó explícitamente: «Apruebo la regla provisional de primera creación!».
+- La regla queda registrada en el [registro de decisiones D0–D3](BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md), sección 10.7, y en la [brecha de regla legítima P-01](BUILD/NCS_M0_P01_FIRST_CREATION_AUTHORITY_RULE_GAP_2026-10-27.md), sección 13. Commits documentales: `018be601fde1b4b6a3440b315440ea0017b6c6b2` y `4a9fe008c22d0343de0130e13ea506779c78dfff`.
+- Regla: no inferir permiso por ausencia del archivo, código existente o éxito técnico; antes de permitir la creación deben definirse propósito/clasificación del objeto, regla legítima aplicable y precondiciones verificables del entorno restringido. Bootstrap separado de admisión, PREPARED, dispatch, reconciliación y mutaciones de dominio. Evidencia faltante/ambigua → `STOP / UNKNOWN`.
+- La aprobación no autoriza la primera creación real, implementación, pruebas, CI/Actions ni efectos protegidos; no establece una raíz legítima ni crea una autoridad paralela.
+- Estado canónico intacto: alcance U; P-01 `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`; M0 `INCOMPLETO`.
+- Siguiente paso acotado: reconciliar la regla aprobada con el contrato existente del entorno restringido y listar únicamente las precondiciones verificables aún ausentes. No repetir auditorías generales ni cambiar runtime/tests/workflows/configuración ejecutable.
+
+---
+
 ## DELTA — TAREA ACTIVA MOVIDA A CIERRE M0 (2026-10-27)
 
 - Actualizado [AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md](AI_TEAM_PROTOCOL_AND_ACTIVE_TASK.md), commit `9f54a3f49ac2997804c813be7329a71e6972ac7c`, blob verificado `aec9863fe17cacb7e6b8964fbf784fdc7acfca8c`.
