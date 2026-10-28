@@ -1,0 +1,58 @@
+# NCS M0 — trazabilidad de criterios de aceptación y cierre finito
+
+**Fecha:** 2026-10-28  
+**Rama:** `ncs-clean-architecture`  
+**Estado:** MATRIZ DOCUMENTAL DE TRABAJO — NO RATIFICACIÓN ADICIONAL — NO IMPLEMENTACIÓN / NO TEST / NO CI  
+**Base:** `NCS_M0_FINISH_LINE_AND_ACCEPTANCE_CRITERIA_2026-10-24.md`, `NCS_M0_FINITE_BLOCKERS_AFTER_POCO_INSPECTION_2026-10-28.md`, `NCS_M0_FB01_DECISION_RECONCILIATION_2026-10-28.md`, contrato candidato de entorno restringido y documentos D0–D3 existentes.
+
+## 1. Propósito
+
+Convertir la línea de meta ya aceptada como base en una vista de trazabilidad: qué evidencia existe, qué se ha demostrado realmente y qué impide declarar `M0_BUILD_COMPLETE`. Esta matriz **no crea una segunda línea de meta**, no reabre auditorías cerradas y no convierte documentos en pruebas.
+
+## 2. Decisiones ya tomadas que no se deben volver a preguntar
+
+- La línea de meta M0 es la base de trabajo aceptada; `M0_BUILD_COMPLETE` y `PROTECTED_EFFECTS_AUTHORIZED` son gates independientes.
+- La clasificación del objeto de bootstrap es **U**: no se ha demostrado que sea estrictamente no autoritativo ni que sea estado constitucional.
+- La regla provisional de primera creación está **aprobada con límites**. Esto no demuestra que su aplicabilidad a la invocación/objeto concretos esté cerrada y no autoriza una escritura real.
+- Para P01-B, la decisión vigente es **C — NO SELECCIONAR TODAVÍA**.
+- El entorno operativo restringido está permitido como alcance de diseño, pero el entorno y su mecanismo de lanzamiento no están identificados ni demostrados.
+- No hay autorización de implementación, ejecución de pruebas, CI/Actions, bootstrap ni efectos protegidos.
+
+## 3. Trazabilidad mínima de criterios obligatorios
+
+| Criterio de la línea de meta | Evidencia documental existente | Resultado real actual | Bloqueador de cierre |
+|---|---|---|---|
+| Alcance M0 y exclusiones inequívocos (§3.1 y §3.17) | Línea de meta; registro D0–D3; decisiones del propietario | **PARCIAL**: alcance base aceptado; varios contratos y exclusiones aún abiertos | FB-06: reconciliar contratos y listar solo brechas críticas concretas; exclusiones deben ser aceptadas explícitamente |
+| Contratos D0–D3 coherentes (§3.3) | Registro D0–D3, matriz P-01, especificación P-05, mapas D1/D3 | **NO PASS**: D0/D1/D2/D3 siguen OPEN | FB-01…FB-06; no congelar por documentación |
+| Entry points/callers y rutas indirectas clasificados (§3.5) | Manifiesto D1; mapa de objeto/consumidores; entrypoints versionados E3; revisión estática de Claude ya incorporada | **EVIDENCIA ESTÁTICA PARCIAL**; las rutas conocidas no son bootstrap aislado; no es prueba de ejecución ni autorización | No repetir el censo completo sin contradicción concreta; cerrar aristas realmente desconocidas contra SHA objetivo cuando exista autorización |
+| Prueba arquitectónica de no-bypass ejecutada contra SHA exacto (§3.6) | Criterio definido en línea de meta; evidencia estática parcial | **NOT RUN / NOT VERIFIED en esta etapa** | FB-07: congelar contrato, obtener autorización separada y ejecutar solo pruebas acordadas sobre SHA exacto |
+| Estados ausentes/corruptos/UNKNOWN y no-sobrescritura (§3.10–3.13) | Candidato de entorno restringido; mapa de objeto/campos; especificación P-05 | **REQUISITOS DOCUMENTADOS; integración no demostrada** | FB-04 y FB-05: contrato ratificado, política explícita y evidencia autorizada; no retry automático |
+| Exclusión de escritores y launchers durante toda la ventana (§3.12 y contrato de bootstrap) | Reconciliación de exclusión; inspección read-only del POCO/Termux | **UNKNOWN**: permisos privados y ausencia de algunos directorios no demuestran exclusión universal | FB-03: definir mecanismo concreto antes de evaluar; demostrar escritores/launchers relevantes y no-reanudación o mantener STOP |
+| Clasificación del objeto y regla de primera creación | Mapa exacto de objeto/campos; brecha de regla; reconciliación FB-01 | **U / OPEN / UNKNOWN**; regla provisional aprobada, aplicabilidad exacta pendiente | FB-01: especificar semántica, consumidores, prohibiciones de autoridad y destino efectivo sin asumir ruta universal |
+| Readmisión después de release/limpieza inciertos | Especificación P-05 | **NO RATIFICADA; UNKNOWN/BLOCKED** | FB-05: decisión explícita del propietario o bloqueo formal; después pruebas deterministas autorizadas |
+| Evidencia de aceptación ligada a código/tests/SHA/jobs (§3.18 y §3.20) | Línea de meta; resultados de CI históricos para otros SHAs; inspecciones documentales actuales | **NO PASS para cierre final** | FB-07: evidencia exacta para el SHA evaluado, con tests/CI autorizados; no trasladar resultados de otro SHA |
+| Acta final criterio por criterio | Línea de meta define el formato requerido; no existe acta de cierre válida porque hay gates abiertos | **NO EMITIDA** | Solo tras resolver brechas críticas, documentar PASS/fallos/exclusiones aceptadas y aprobación requerida |
+
+## 4. Secuencia de cierre sin repetir trabajo
+
+1. **FB-01 — objeto/semántica/regla aplicable.** No volver a pedir la elección U ni la aprobación de la regla provisional. Completar únicamente la trazabilidad de aplicabilidad al objeto exacto.
+2. **FB-02 — aislamiento.** Mantener P01-B=C; no seleccionar un mecanismo por inferencia. Resolver el límite operativo requerido antes de congelar el contrato.
+3. **FB-03 — entorno y writers.** No ejecutar otro censo genérico del teléfono. La evidencia debe corresponder al entorno, launcher, invocación y destino efectivos propuestos.
+4. **FB-04/FB-05 — estado previo, publicación incierta y readmisión.** No sobrescribir objetos existentes ni reintentar automáticamente. P-05 requiere decisión explícita o bloqueo continuado.
+5. **FB-06 — reconciliación final D0–D3.** Solo registrar contradicciones y brechas residuales concretas, no reauditar fuentes cerradas.
+6. **FB-07 — verificación exacta.** Solo tras contrato congelado y autorización separada para cada acción necesaria; vincular los resultados al SHA exacto.
+7. Emitir el acta M0 únicamente si todos los criterios obligatorios aplicables pasan y cualquier exclusión fuera de alcance ha sido explícitamente aceptada. Un criterio UNKNOWN dentro del alcance impide el cierre.
+
+## 5. Estados canónicos conservados
+
+- M0: `INCOMPLETO`.
+- P-01: `OPEN / UNKNOWN`; P01-A: `OPEN / UNKNOWN`; P01-B: `C — NO SELECCIONAR TODAVÍA`; P01-G: `PENDING / UNKNOWN`.
+- Alcance del objeto: `U`; regla provisional: `OWNER_APPROVED_LIMITED`; aplicabilidad al objeto exacto: `PENDING / UNKNOWN`.
+- P-05: `NO RATIFICADA`; D0/D1/D2/D3: `OPEN`; D1-IMPLEMENTATION: `NO AUTORIZADA`.
+- E2/E3: `UNKNOWN`; E4: `NOT READY`; raíz legítima: `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`.
+- Primera creación y efectos protegidos: `STOP`.
+
+## 6. Límites de esta matriz
+
+Esta es una vista de trazabilidad documental, no un resultado de implementación, ejecución, test, CI ni operación. No cambia runtime, workflows, configuración del dispositivo o datos. No selecciona primitivas de filesystem, mecanismos de lanzamiento, políticas de recuperación ni autoridad nueva. No afirma que M0 esté completo.
+
