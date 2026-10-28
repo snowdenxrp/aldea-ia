@@ -1,3 +1,15 @@
+## DELTA — FB-01 RECONCILIADO CON DECISIONES YA TOMADAS (2026-10-28)
+
+Nueva nota: [NCS_M0_FB01_DECISION_RECONCILIATION_2026-10-28.md](BUILD/NCS_M0_FB01_DECISION_RECONCILIATION_2026-10-28.md), commit `777e20910b2ef0a6381ce48a5c9207a49023f933`.
+
+No volver a preguntar al propietario la clasificación del objeto: la decisión ya registrada es U. Tampoco tratar la aprobación de la regla provisional de primera creación como autorización de ejecución. El mapa de objeto/campos muestra que el snapshot Continuity influye en reconstrucción/admisión, planificación, intentos, `doNotRepeat`, linaje y journal de efectos; eso impide describirlo como inocuo, pero no demuestra por sí solo que sea raíz constitucional. Ambas propiedades requieren límites contractuales explícitos y evidencia.
+
+FB-01 siguiente paso mínimo: reconciliar la regla provisional con un contrato de semántica/consumidores/prohibiciones de autoridad y separación de la inicialización respecto a admisión/PREPARED/dispatch/Chronicle, ligado a una invocación, `filePath` efectivo y SHA concretos. No inventar una ruta universal, owner paralelo ni primitiva de filesystem. Si no se demuestra la separación, U/STOP persiste.
+
+Gates sin cambio: M0 `INCOMPLETO`; P-01 `OPEN / UNKNOWN`; P01-A `OPEN / UNKNOWN`; P01-B `C — NO SELECCIONAR TODAVÍA`; P01-G `PENDING / UNKNOWN`; alcance U; P-05 `NO RATIFICADA`; D0/D1/D2/D3 `OPEN`; D1-IMPLEMENTATION `NO AUTORIZADA`; E2/E3 `UNKNOWN`; E4 `NOT READY`; raíz `PENDING / UNKNOWN`; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos `STOP`. No hubo ejecución de código, tests, CI/Actions, bootstrap ni cambios de dispositivo.
+
+---
+
 ## DELTA — BLOQUEADORES FINITOS M0 TRAS INSPECCIÓN POCO (2026-10-28)
 
 Creado el registro finito [NCS_M0_FINITE_BLOCKERS_AFTER_POCO_INSPECTION_2026-10-28.md](BUILD/NCS_M0_FINITE_BLOCKERS_AFTER_POCO_INSPECTION_2026-10-28.md), commit documental `a31fd8a89c3e6d2c1b66894d7cb5ca41e157def4`. La evidencia operacional acotada está en [NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md](BUILD/NCS_M0_POCO_TERMUX_READ_ONLY_INSPECTION_2026-10-28.md), commit `4d0091eddfc9f3b32cda1616fa2d9f918835aec0`.
