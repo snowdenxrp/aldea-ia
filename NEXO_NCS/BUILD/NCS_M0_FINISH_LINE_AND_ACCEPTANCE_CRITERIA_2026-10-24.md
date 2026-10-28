@@ -1,3 +1,16 @@
+## DELTA — ALCANCE EXACTO DE LA ACEPTACIÓN DEL PROPIETARIO (2026-10-28)
+
+La nota de §7 («Su presencia en GitHub no significa que el propietario haya aceptado sus criterios») es una advertencia genérica de la versión inicial y quedó desambiguada por la aceptación explícita registrada en §9 el 2026-10-24. La lectura vigente es:
+
+- El propietario **sí aceptó esta línea de meta como base de trabajo**, incluyendo separar `M0_BUILD_COMPLETE` de `PROTECTED_EFFECTS_AUTHORIZED`, evitar cierres por documentación/CI de otro SHA y no repetir auditorías cerradas.
+- Esa aceptación **no** equivale a aceptación automática de cada recomendación/criterio técnico individual, exclusión de alcance no ratificada, congelación de contratos D0–D3, aprobación de implementación ni autorización de tests/CI/runtime.
+- Por tanto, el encabezado «BASE DE CIERRE ACEPTADA POR EL PROPIETARIO — SIN AUTORIZACIÓN DE IMPLEMENTACIÓN» y §9 son la declaración específica vigente; la frase de §7 no debe interpretarse como negación de esa aceptación, sino como una cautela general sobre que la publicación de un documento no prueba aceptación por sí sola.
+- No cambia el estado de cierre: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+Esta reconciliación es documental; no altera criterios técnicos ni concede autoridad nueva.
+
+---
+
 # NCS M0 — línea de meta y criterios de aceptación
 
 Fecha: 2026-10-24  
