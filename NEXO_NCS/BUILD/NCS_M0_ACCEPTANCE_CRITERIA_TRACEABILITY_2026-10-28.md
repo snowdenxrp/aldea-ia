@@ -1,3 +1,11 @@
+## DELTA — FB-01: BORRADOR SEMÁNTICO CREADO, SIN CIERRE (2026-10-28)
+
+Se creó [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md), blob verificado `8a173cc4fcfa3471ec2e1fd7559df4d7c4bd9ac3`. El borrador convierte en invariantes propuestos la no-autoridad del snapshot, la separación de Continuity respecto de Chronicle y de admisión/dispatch, y el tratamiento UNKNOWN/STOP. No fija una ruta universal ni inventa el esquema inicial.
+
+Efecto sobre la trazabilidad: FB-01 avanza de “falta redactar/reconciliar la semántica” a “borrador disponible para reconciliación”; **no** pasa a PASS ni se cierra. El objeto continúa U; P01-A OPEN/UNKNOWN; P01-G PENDING/UNKNOWN; P01-B=C; regla legítima aplicable a la invocación concreta UNKNOWN; primera creación STOP. Faltan ratificación contractual, objeto/ruta efectivos, esquema/contenido inicial exactos y evidencia de consumidores/propiedades negativas. No se ejecutaron código, tests, CI/Actions ni bootstrap.
+
+---
+
 # NCS M0 — trazabilidad de criterios de aceptación y cierre finito
 
 **Fecha:** 2026-10-28  
