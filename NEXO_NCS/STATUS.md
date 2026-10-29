@@ -1,3 +1,14 @@
+## DELTA — FB-06/FB-07: MATRIZ DE ACEPTACIÓN FINAL DOCUMENTADA (2026-10-29)
+
+- Matriz añadida a [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `caed8da590bfe359852b1069253bdb35811cd8cb`.
+- Se fijan nueve criterios A-01…A-09: contrato/autoridad; bootstrap; no-continuación/no-bypass; aislamiento ambiental; no-replace/path; recuperación/autoridad; separación Nexo/Lúmina; verificación final reproducible; reconciliación/acta.
+- Se separan explícitamente FB-06 (suficiencia y trazabilidad de la evidencia) y FB-07 (ejecución reproducible ligada al SHA candidato). CI Ubuntu no demuestra entorno POCO ni filesystem Android.
+- Regla de salida: UNKNOWN en cualquier propiedad crítica mantiene M0 INCOMPLETO/STOP; no se compensa con cantidad de tests PASS ni documentos.
+- Estados reconciliados: FB-02 PASS/CERRADO solo en alcance validado en SHA `86e73525f8c63e143b5860d77f0d191e54213976`; PR #110 CI PASS en `572fe085abc11c625d13beb4885a74da2d7ffd95`, pero OPEN/DRAFT; FB-01/03/04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/07 OPEN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; publicación Continuity y efectos protegidos STOP.
+- Solo documentación; sin cambios de runtime/tests/workflows, sin pruebas/CI/Actions, sin comandos POCO ni bootstrap real.
+
+---
+
 ## DELTA — FB-04: EVALUACIÓN CONDICIONAL DE MECANISMOS DE PUBLICACIÓN (2026-10-29)
 
 - Nueva evaluación: [NCS_M0_FB04_PUBLICATION_MECHANISM_ASSESSMENT_2026-10-29.md](BUILD/NCS_M0_FB04_PUBLICATION_MECHANISM_ASSESSMENT_2026-10-29.md), commit `37fc314a90b31e939d65a1e7c0293c27c2bbc98b`.
