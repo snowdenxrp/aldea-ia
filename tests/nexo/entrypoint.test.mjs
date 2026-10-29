@@ -5,7 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseNexoEntrypointArguments } from "../../scripts/nexo.mjs";
-import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { openNexoContinuityOwner, createNexoChronicleStore } from "../../scripts/nexo-continuity.mjs";
 import * as nexoApplication from "../../src/nexo/application/index.mjs";
 
 assert.deepEqual(Object.keys(nexoApplication).sort(), [
@@ -116,14 +116,16 @@ try {
   const continuityPath = path.join(root, "continuity.json");
   const chroniclePath = path.join(root, "chronicle.json");
   const privateSentinel = "NEXO_PRIVATE_CONTENT_SENTINEL_7F2A";
+  // Prepare stores independently; the operation under test must not bootstrap
+  // Continuity and then continue into mission admission/dispatch.
+  await openNexoContinuityOwner({ filePath: continuityPath, allowEmptyInitialization: true });
+  await createNexoChronicleStore({ filePath: chroniclePath }).initialize();
   const valid = spawnSync(process.execPath, [
     entrypointPath, "chronicle-append",
     "--continuity", continuityPath,
     "--chronicle", chroniclePath,
     "--mission", "entrypoint-mission",
     "--step", "entrypoint-step",
-    "--initialize-continuity",
-    "--initialize-chronicle",
     "--content-stdin"
   ], {
     cwd: process.cwd(), input: privateSentinel, encoding: "utf8"
@@ -193,8 +195,6 @@ try {
     "--chronicle", chroniclePath,
     "--mission", "entrypoint-mission",
     "--step", "entrypoint-step",
-    "--initialize-continuity",
-    "--initialize-chronicle",
     "--content-stdin"
   ], { cwd: process.cwd(), input: privateSentinel, encoding: "utf8" });
   assert.equal(replay.status, 0, replay.stderr || replay.stdout);
@@ -470,58 +470,49 @@ try {
   assert.equal(contradictorySummary.statusDiscrepancy, true);
   assert.equal("steps" in contradictorySummary, false, "contradictory state must not be projected as a usable mission");
   assert.equal(await fs.readFile(contradictoryContinuityPath, "utf8"), contradictoryBytesBefore);
-  // Coordinated bootstrap is not atomic across the two independent files.
-  // If Continuity initializes but Chronicle's parent directory is unavailable,
-  // the first attempt must remain blocked with no mission/effect admitted.
-  // A retry against the same Continuity file and a valid Chronicle path must
-  // resume from that durable empty state without duplicate initialization.
-  const partialBootstrapContinuityPath = path.join(root, "partial-bootstrap-continuity.json");
-  const unavailableChroniclePath = path.join(root, "missing-parent", "chronicle.json");
-  const partialBootstrap = spawnSync(process.execPath, [
+  // FB-02: every public Chronicle-append route fails closed when asked to
+  // initialize Continuity, and must not create either store or admit a mission.
+  const blockedBootstrapContinuityPath = path.join(root, "blocked-bootstrap-continuity.json");
+  const blockedBootstrapChroniclePath = path.join(root, "blocked-bootstrap-chronicle.json");
+  const blockedBootstrap = spawnSync(process.execPath, [
     entrypointPath, "chronicle-append",
-    "--continuity", partialBootstrapContinuityPath,
-    "--chronicle", unavailableChroniclePath,
-    "--mission", "partial-bootstrap-mission",
+    "--continuity", blockedBootstrapContinuityPath,
+    "--chronicle", blockedBootstrapChroniclePath,
+    "--mission", "blocked-bootstrap-mission",
     "--step", "step-1",
     "--initialize-continuity",
     "--initialize-chronicle",
     "--content-stdin"
-  ], { cwd: process.cwd(), input: "bootstrap-retry-content", encoding: "utf8" });
-  assert.equal(partialBootstrap.status, 1);
-  assert.equal(partialBootstrap.stderr, "");
-  const partialBootstrapResult = JSON.parse(partialBootstrap.stdout);
-  assert.equal(partialBootstrapResult.status, "blocked");
-  assert.equal(partialBootstrapResult.code, "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE");
-  assert.equal(partialBootstrapResult.dispatchAttempted, false);
-  assert.equal(partialBootstrapResult.redispatchAuthorized, false);
-  assert.equal(partialBootstrapResult.authorization, "NOT_EVALUATED");
-  const partialContinuity = JSON.parse(await fs.readFile(partialBootstrapContinuityPath, "utf8"));
-  assert.equal(partialContinuity.storeRevision, 0);
-  assert.deepEqual(partialContinuity.snapshot.missions, []);
-  await assert.rejects(fs.access(unavailableChroniclePath), { code: "ENOENT" });
+  ], { cwd: process.cwd(), input: "must-not-dispatch", encoding: "utf8" });
+  assert.equal(blockedBootstrap.status, 1);
+  assert.equal(blockedBootstrap.stderr, "");
+  const blockedBootstrapResult = JSON.parse(blockedBootstrap.stdout);
+  assert.equal(blockedBootstrapResult.status, "blocked");
+  assert.equal(blockedBootstrapResult.code, "NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
+  assert.equal(blockedBootstrapResult.dispatchAttempted, false);
+  assert.equal(blockedBootstrapResult.redispatchAuthorized, false);
+  assert.equal(blockedBootstrapResult.authorization, "NOT_EVALUATED");
+  await assert.rejects(fs.access(blockedBootstrapContinuityPath), { code: "ENOENT" });
+  await assert.rejects(fs.access(blockedBootstrapChroniclePath), { code: "ENOENT" });
 
-  const retryChroniclePath = path.join(root, "partial-bootstrap-chronicle.json");
-  const bootstrapRetry = spawnSync(process.execPath, [
-    entrypointPath, "chronicle-append",
-    "--continuity", partialBootstrapContinuityPath,
-    "--chronicle", retryChroniclePath,
-    "--mission", "partial-bootstrap-mission",
-    "--step", "step-1",
-    "--initialize-continuity",
-    "--initialize-chronicle",
-    "--content-stdin"
-  ], { cwd: process.cwd(), input: "bootstrap-retry-content", encoding: "utf8" });
-  assert.equal(bootstrapRetry.status, 0, bootstrapRetry.stderr || bootstrapRetry.stdout);
-  assert.equal(bootstrapRetry.stderr, "");
-  const bootstrapRetryResult = JSON.parse(bootstrapRetry.stdout);
-  assert.equal(bootstrapRetryResult.status, "completed");
-  assert.equal(bootstrapRetryResult.dispatchAttempted, true);
-  const retryContinuity = JSON.parse(await fs.readFile(partialBootstrapContinuityPath, "utf8"));
-  const retryChronicle = JSON.parse(await fs.readFile(retryChroniclePath, "utf8"));
-  assert.equal(retryContinuity.snapshot.missions.filter(item => item.missionId === "partial-bootstrap-mission").length, 1);
-  assert.equal(retryContinuity.snapshot.effectJournal.length, 1);
-  assert.equal(retryContinuity.snapshot.effectJournal[0].status, "settled_observed");
-  assert.equal(retryChronicle.entries.filter(item => item.content === "bootstrap-retry-content").length, 1);
+  // The application use case is also a public boundary; direct callers cannot
+  // bypass the CLI guard and combine bootstrap with operation execution.
+  const directBootstrapContinuityPath = path.join(root, "direct-bootstrap-continuity.json");
+  const directBootstrapChroniclePath = path.join(root, "direct-bootstrap-chronicle.json");
+  const directBootstrap = await nexoApplication.runNexoChronicleAppend({
+    continuityPath: directBootstrapContinuityPath,
+    chroniclePath: directBootstrapChroniclePath,
+    missionId: "direct-bootstrap-mission",
+    stepId: "step-1",
+    content: "must-not-dispatch",
+    initializeContinuity: true,
+    initializeChronicle: true
+  });
+  assert.equal(directBootstrap.status, "blocked");
+  assert.equal(directBootstrap.code, "NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
+  assert.equal(directBootstrap.dispatchAttempted, false);
+  await assert.rejects(fs.access(directBootstrapContinuityPath), { code: "ENOENT" });
+  await assert.rejects(fs.access(directBootstrapChroniclePath), { code: "ENOENT" });
 
 } finally {
   await fs.rm(root, { recursive: true, force: true });
