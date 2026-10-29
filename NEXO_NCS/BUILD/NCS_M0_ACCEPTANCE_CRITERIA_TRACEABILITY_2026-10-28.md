@@ -1,3 +1,13 @@
+## DELTA — FB-01: ESTADO TEMPORAL PREEXISTENTE BLOQUEA BOOTSTRAP (2026-10-29)
+
+Se endureció la API candidata tras detectar que la ruta general `store.initialize` limpia archivos temporales obsoletos. Para que el bootstrap M0 no borre ese estado previo conocido, `bootstrapNexoContinuityStore` ahora inspecciona el directorio padre y devuelve STOP/UNKNOWN si no puede leerlo o encuentra `<destino>.tmp` / `<destino>.tmp-*`. Cambios verificados por lectura de GitHub: servicio blob `86b33409ca7150e45846c7c97a2d4b28780121e7`; prueba blob `6f5e706ccb6c242cc32ebc77a11dab011f217b22`. Se añadió una prueba que exige preservar el archivo temporal preexistente. La prueba no se ejecutó.
+
+Límite importante: esta comprobación previa no elimina la carrera frente a escritores no cooperativos que creen/modifiquen temporales después de la inspección; tampoco demuestra exclusión sostenida ni resuelve TOCTOU del store. Por eso el API sigue siendo una implementación candidata no apta para publicación operativa mientras FB-03/FB-04 y la evidencia del entorno continúen abiertos. No se eligió una primitiva de publicación alternativa por inferencia.
+
+Gates sin cambio: FB-01 OPEN/UNKNOWN (código candidato, no PASS); FB-02/P01-B=C; FB-03 OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; M0 INCOMPLETO; D0–D3 OPEN; primera creación operativa y efectos protegidos STOP. Sin ejecución de tests, CI/Actions ni bootstrap operativo.
+
+---
+
 ## DELTA — IMPLEMENTACIÓN AISLADA PROPUESTA PARA FB-01 (2026-10-29)
 
 Tras autorización explícita del propietario, se añadió una API dedicada de primera publicación, sin ejecutar pruebas ni bootstrap operativo:
