@@ -1,18 +1,15 @@
 import fs from "node:fs/promises";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
 import { createSimulation } from "../src/simulation.js";
 import { tick } from "../src/simulation.js";
 import { loadState, loadStateStrict, applyState, persistState } from "./simulate.mjs";
-import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
-import { runNexoRuntimeRepairSession } from "./nexo-runtime-session.mjs";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 import { runDebugger, runTester, analyzeLumina, buildAssistantReport } from "../src/assistants/index.js";
 import { createLearningMemory, learnFromReports } from "../src/assistants/memory.js";
 import { runAssistantSquad } from "../src/assistants/squad.js";
-import { buildNexoMission } from "../src/nexo/orchestrator.js";
 
 const STATE_PATH = process.env.NEXO_STATE_PATH
   ? pathToFileURL(resolve(process.env.NEXO_STATE_PATH))
@@ -20,9 +17,6 @@ const STATE_PATH = process.env.NEXO_STATE_PATH
 const MEMORY_PATH = process.env.NEXO_LUMINA_MEMORY_PATH
   ? pathToFileURL(resolve(process.env.NEXO_LUMINA_MEMORY_PATH))
   : new URL("../.lumina-assistant-memory.json", import.meta.url);
-const NEXO_CONTINUITY_PATH = process.env.NEXO_CONTINUITY_PATH
-  ? resolve(process.env.NEXO_CONTINUITY_PATH)
-  : fileURLToPath(new URL("../.nexo-continuity.json", import.meta.url));
 
 async function readJson(path, fallback) {
   try { return JSON.parse(await fs.readFile(path, "utf8")); } catch { return fallback; }
@@ -47,11 +41,6 @@ function normalizeCoreAgents(agents) {
 let stateExists = true;
 try { await fs.access(STATE_PATH); } catch (error) { if (error?.code === "ENOENT") stateExists = false; else throw error; }
 const persisted = stateExists ? await loadStateStrict(STATE_PATH) : await loadState(STATE_PATH);
-const continuity = await openNexoContinuityOwner({
-  filePath: NEXO_CONTINUITY_PATH,
-  legacyMemory: persisted.nexoMemory ?? null,
-  allowEmptyInitialization: !stateExists
-});
 const simulation = applyState(persisted);
 normalizeCoreAgents(simulation.agents);
 
@@ -61,7 +50,6 @@ for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "s
 }
 
 const memory = createLearningMemory(await readJson(MEMORY_PATH, null));
-const nexoMemory = { version: 4, runs: [], lessons: [], patterns: [], nexo: continuity.current.snapshot };
 const debuggerReport = runDebugger({ files: codeFiles, simulation });
 const testerReport = runTester({ simulation, tick, moveAgent, setMovementTarget });
 const analystReport = analyzeLumina({
@@ -84,17 +72,6 @@ const structuralReport = {
 const squadReport = runAssistantSquad({ simulation });
 const report = buildAssistantReport({ debuggerReport, testerReport, analystReport, structuralReport });
 report.assistantSquad = squadReport;
-const nexoMission = buildNexoMission({ simulation, reports: [...squadReport.reports, debuggerReport, testerReport, analystReport], memory: nexoMemory });
-report.nexoMission = nexoMission;
-const missionCommit = await continuity.owner.recordMission({
-  expectedRevision: continuity.current.storeRevision,
-  mission: nexoMission
-});
-if (!["committed", "already_recorded"].includes(missionCommit.status)) {
-  const error = new Error(missionCommit.code ?? "NEXO_MISSION_PERSISTENCE_UNKNOWN");
-  error.code = missionCommit.code ?? "NEXO_MISSION_PERSISTENCE_UNKNOWN";
-  throw error;
-}
 const learned = learnFromReports(
   memory,
   [debuggerReport, testerReport, analystReport],
@@ -105,20 +82,6 @@ await fs.writeFile(MEMORY_PATH, JSON.stringify(learned, null, 2) + "\n", "utf8")
 const nextRevision = Number(persisted.stateRevision ?? 0) + 1;
 await persistState(STATE_PATH, simulation, Date.now(), { expectedRevision: Number(persisted.stateRevision ?? 0), stateRevision: nextRevision });
 
-let finalStateRevision = nextRevision;
-if (process.argv.includes("--nexo-repair-once")) {
-  // Explicit opt-in only: the default assistant/simulation run remains unchanged.
-  // The repair session runs after this invocation has durably saved its snapshot,
-  // so no later write from this invocation can overwrite the repaired environment.
-  report.nexoRuntimeSession = await runNexoRuntimeRepairSession({
-    continuity,
-    statePath: fileURLToPath(STATE_PATH),
-    missionId: nexoMission.missionId
-  });
-  const finalState = await loadStateStrict(STATE_PATH);
-  finalStateRevision = finalState.stateRevision;
-}
-
-console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length }, nexoContinuityPersisted: true, nexoContinuityStoreRevision: (await continuity.owner.loadCurrent()).storeRevision, stateRevision: finalStateRevision }, null, 2));
+console.log(JSON.stringify({ ...report, learning: { runs: learned.runs.length, lessons: learned.lessons.length, patterns: learned.patterns.length }, stateRevision: nextRevision }, null, 2));
 
 if (report.status === "error") process.exitCode = 1;
