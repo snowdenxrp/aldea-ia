@@ -1,3 +1,14 @@
+## DELTA — COORDINACIÓN DE REVISIONES PARALELAS CON OTRAS IA (2026-10-29)
+
+- Se creó [NCS_M0_PARALLEL_AI_WORK_ORDERS_2026-10-29.md](BUILD/NCS_M0_PARALLEL_AI_WORK_ORDERS_2026-10-29.md), commit `8663815a373ebf150dcb385ac038226af76cdbe9`.
+- Encargos diferenciados: Qwen (revisión adversarial de matriz FB-04); Perplexity (fuentes primarias sobre primitivas no-replace Node/Linux/Android); Gemini (coherencia de autoridad y trazabilidad A-01…A-09); Claude (suficiencia de evidencia E2/E3, alcance breve).
+- Los encargos están preparados, pero **no enviados ni respondidos** por esas IA. No se atribuye evidencia ni progreso externo todavía.
+- Protocolo: respuestas originales preservadas; reconciliar como CONFIRMADO/NUEVO/YA CUBIERTO/INCORRECTO/UNKNOWN; ninguna IA puede cerrar un gate sin evidencia verificable.
+- Estados sin cambio: FB-01/03/04 OPEN/UNKNOWN; FB-05/P-05 no ratificada; FB-06/07 OPEN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación Continuity y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Solo documentación; sin cambios runtime/tests/workflows, sin pruebas/CI/Actions ni comandos POCO.
+
+---
+
 ## DELTA — FB-04: MATRIZ NEGATIVA DE ACEPTACIÓN DEFINIDA (2026-10-29)
 
 - Nueva matriz: [NCS_M0_FB04_NEGATIVE_ACCEPTANCE_TEST_MATRIX_2026-10-29.md](BUILD/NCS_M0_FB04_NEGATIVE_ACCEPTANCE_TEST_MATRIX_2026-10-29.md), commit `0e395aa71d9c499c79e6033dfe0d55bd4410ef4b`.
