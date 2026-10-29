@@ -176,7 +176,8 @@ try {
   await fs.rm(appChronicleTimeoutRoot, { recursive: true, force: true });
 }
 
-// Timeout while bootstrapping missing Continuity must survive the service's thrown-error boundary.
+// A combined Continuity bootstrap + Chronicle operation is rejected before store access,
+// even when a Continuity lock exists; the legacy timeout path must not be reached.
 const appContinuityTimeoutRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-app-continuity-timeout-"));
 try {
   const continuityPath = path.join(appContinuityTimeoutRoot, "continuity.json");
@@ -192,11 +193,12 @@ try {
     content: "must not initialize", initializeContinuity: true, lockWaitMs: 20
   });
   assert.equal(result.status, "blocked");
-  assert.equal(result.code, "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
-  assert.equal(result.phase, "lock_acquisition");
-  assert.equal(result.writeStarted, false);
+  assert.equal(result.code, "NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
+  assert.equal(result.authorization, "NOT_EVALUATED");
   assert.equal(result.dispatchAttempted, false);
   assert.equal(result.redispatchAuthorized, false);
+  await assert.rejects(fs.access(continuityPath), { code: "ENOENT" });
+  await fs.access(continuityLock);
   await fs.rm(continuityLock, { recursive: true, force: true });
 } finally {
   await fs.rm(appContinuityTimeoutRoot, { recursive: true, force: true });
