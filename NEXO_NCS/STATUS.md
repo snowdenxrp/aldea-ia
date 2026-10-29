@@ -1,3 +1,13 @@
+## DELTA — FB-01 CONTRATO DE BOOTSTRAP VALIDADO; GATE AMBIENTAL AÚN ABIERTO (2026-10-29)
+
+- En el SHA de código `86e73525f8c63e143b5860d77f0d191e54213976`, el workflow integrado M0 pasó los tests de contrato/store de Continuity y el test de migración legacy. Evidencia: [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189).
+- Esto valida el contrato automatizado de la API dedicada presente en `src/nexo/core/continuity-service.mjs`: root absoluto + ruta relativa, destino derivado, rechazo de `legacyMemory`, no devolución de owner y stops de preflight probados. No se ejecutó bootstrap real.
+- **FB-01 no se cierra globalmente:** legitimidad de la raíz y aplicabilidad de la raíz/destino reales siguen PENDING/UNKNOWN. La carrera TOCTOU del preflight y la exclusión frente a writers no cooperativos tampoco están resueltas; permanecen FB-03/FB-04 OPEN/UNKNOWN.
+- Próxima ruta: no volver a auditar el contrato ni repetir los tests ya pasados; avanzar con la evidencia ambiental E2/E3 y la decisión explícita sobre raíz/entorno restringido. Termux + Node.js sigue siendo candidato, no instalación ni entorno demostrado.
+- Sin comandos del POCO, instalaciones, bootstrap real ni efectos protegidos. Global **M0 INCOMPLETO**; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; primera publicación STOP.
+
+---
+
 ## DELTA — FB-02 CERRADO CON EVIDENCIA CI Y REVISIÓN DEL LÍMITE PÚBLICO (2026-10-29)
 
 - **FB-02: PASS / CERRADO** para el alcance “no combinar inicialización de Continuity y operación Chronicle en una misma invocación”.
