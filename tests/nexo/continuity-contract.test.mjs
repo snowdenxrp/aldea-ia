@@ -1278,6 +1278,19 @@ for (const [method, fields] of accessorCallCases) {
     assert.equal(await fs.readFile(expectedPath, "utf8"), beforeConflict,
       "bootstrap must not overwrite an existing object");
 
+    const blockedTempPath = path.join(bootstrapRoot, "blocked.json.tmp");
+    await fs.writeFile(blockedTempPath, "prior ambiguous state", "utf8");
+    await assert.rejects(
+      bootstrapNexoContinuityStore({
+        root: bootstrapRoot,
+        relativePath: "blocked.json"
+      }),
+      error => error?.code === "NEXO_CONTINUITY_BOOTSTRAP_TEMPORARY_STATE_UNKNOWN",
+      "bootstrap must stop rather than delete or reuse a pre-existing temporary artifact"
+    );
+    assert.equal(await fs.readFile(blockedTempPath, "utf8"), "prior ambiguous state",
+      "bootstrap must preserve pre-existing temporary state");
+
     await assert.rejects(
       bootstrapNexoContinuityStore({
         root: bootstrapRoot,
