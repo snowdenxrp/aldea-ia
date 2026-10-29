@@ -59,3 +59,10 @@ Estos archivos se crean en una rama documental dedicada para no alterar el estad
 - La propuesta distingue incertidumbre por caducidad/ausencia de revocación de una revocación autenticada. No se fija plazo de caducidad; el reloj monotónico no se trata como durable entre reinicios.
 - Para avisos/rutas, se propone no presentar como segura una ruta que depende de un tramo con conflicto material sin resolver; mostrar procedencia y no inventar una alternativa. La jerarquía de fuentes queda pendiente de validación local.
 - Estado: PROPOSAL — NOT IMPLEMENTED; no hay código ni pruebas. Siguiente orden: protocolo de publicación/recuperación de bundle (A5), después verificación normativa (A7). NCS M0 sigue separado.
+
+
+### Delta Atlas — A5, publicación/recuperación de bundle (2026-10-29)
+- Se añadió la sección 17 al expediente Atlas con un protocolo candidato de staging, verificación de manifiesto/componentes, commit y recuperación.
+- Bloqueo central: coordinación del puntero de bundle activo con el ancla anti-rollback; dos escrituras independientes no constituyen una transacción atómica.
+- Se registró una matriz de fallos propuesta, incluyendo interrupciones durante staging, commit, actualización del ancla, WAL/checkpoint, falta de espacio y errores de E/S.
+- No se implementó ni probó el protocolo; sigue PROPOSAL — NOT IMPLEMENTED. Siguiente: revisar atribuciones normativas A7 y registrar exactamente qué se verificó. NCS M0 permanece separado.
