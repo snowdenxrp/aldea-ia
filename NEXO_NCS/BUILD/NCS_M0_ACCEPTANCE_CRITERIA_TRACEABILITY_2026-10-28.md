@@ -1,3 +1,17 @@
+## DELTA — IMPLEMENTACIÓN AISLADA PROPUESTA PARA FB-01 (2026-10-29)
+
+Tras autorización explícita del propietario, se añadió una API dedicada de primera publicación, sin ejecutar pruebas ni bootstrap operativo:
+
+- `src/nexo/core/continuity-service.mjs`, blob `ded252fadff00a04e95e452a80a2c62d902c184b`: `bootstrapNexoContinuityStore({ root, relativePath, lockDeadline?, lockWaitMs? })`. Exige raíz absoluta existente y directorio, deriva `filePath` de raíz + ruta relativa normalizada, rechaza escapes/argumentos desconocidos (incluido `legacyMemory`), solicita únicamente el snapshot vacío v1 al store y devuelve el resultado explícito junto con la relación raíz/destino. No carga memoria legacy, no llama a `openNexoContinuityOwner`, no devuelve `owner` y se detiene tras la publicación/conflicto/fallo.
+- `scripts/nexo-continuity.mjs`, blob `ecd4bfb999ed67f88229d40e009daaa3d1b61380`: reexporta la API dedicada; no se conectó a un launcher/CLI ni se realizó una publicación real.
+- `tests/nexo/continuity-contract.test.mjs`, blob `d358dd32cf36033225c771121ee5ccd23c615c52`: se añadieron pruebas para destino derivado, snapshot vacío exacto, ausencia de `owner`, conflicto sin sobrescritura, rechazo de ruta fuera de raíz, rechazo de `legacyMemory` y raíz relativa. El test de migración legacy existente se conservó sin alteración.
+
+**Estado de verificación:** los cambios se guardaron en la rama y se inspeccionó su contenido desde GitHub; las pruebas añadidas NO se ejecutaron. No se ejecutó CI/Actions ni se usó el bootstrap contra un destino operativo. Esta API no demuestra por sí sola legitimidad de la raíz, exclusión sostenida de escritores, resistencia a symlinks/path attacks, quiescencia, ni no-bypass de todos los callers. No autoriza primera creación real, readmisión ni efectos protegidos.
+
+**Resultado de FB-01:** avance de implementación candidata, todavía **OPEN / UNKNOWN**, no PASS. La API exige raíz explícita y liga el destino sintácticamente; la autoridad de esa raíz y la aplicabilidad de la regla al objeto concreto siguen pendientes. FB-02/P01-B=C, FB-03, FB-04, FB-05/P-05 y FB-06/FB-07 no cambian. M0 sigue INCOMPLETO; D0–D3 OPEN; D1-IMPLEMENTATION continúa NO AUTORIZADA para cualquier trabajo fuera de este alcance limitado; `authorization: NOT_EVALUATED`; primera creación operativa y efectos protegidos STOP.
+
+---
+
 ## DELTA — EVIDENCIA ESTÁTICA ACTUAL DEL BLOQUEO FB-01 (2026-10-29)
 
 Se contrastó el contrato candidato con las versiones actuales de servicio, test y workflow en la rama `ncs-clean-architecture`. Esto no es una auditoría general nueva: precisa el punto exacto que impide pasar de diseño a implementación/verificación.
