@@ -141,3 +141,21 @@ Verificar la sección y pasaje exactos antes de usar citas literales. Presentar 
 ## Estado final
 
 `PROPOSAL — NOT IMPLEMENTED`. La auditoría de Perplexity fue aportada en conversación y se preserva aquí en forma consolidada; este documento no afirma que el original completo de Gemini esté archivado. No se reportan cambios de código ni pruebas. NCS M0 permanece separado.
+
+
+## Delta de fuentes locales — 2026-10-29
+
+### Manzanillo: mapas de tsunami y cautela de validación
+
+Fuente municipal: https://tsunami.manzanillo.gob.mx/
+
+El sitio de Protección Civil y Bomberos de Manzanillo presenta once zonas de evacuación, mapas, rutas y puntos de encuentro, además de material de preparación ante tsunamis. La propia página incluye una advertencia explícita: **las rutas y los puntos de encuentro están en validación comunitaria; la versión es preliminar y se debe seguir la señalización instalada en campo**.
+
+Tratamiento para Atlas Offline:
+- Guardar el enlace y los mapas como fuentes locales candidatas, no como rutas ya validadas por Atlas.
+- Registrar la fecha de consulta y la versión/fecha de cada PDF descargado, si la hay.
+- No inferir que todos los trazados son definitivos a partir de la existencia del portal o de los simulacros de 2026.
+- Mantener la instrucción de emergencia basada en señales naturales y seguir señalización y autoridad local; la navegación sin conexión no debe sustituir las instrucciones de Protección Civil/CAT-SEMAR.
+- Pendiente: extraer metadatos de los once mapas y comprobar si cada PDF declara fecha de emisión/revisión, autoridad responsable y estado de validación.
+
+Esta evidencia no resuelve los cinco bloques técnicos del informe Gemini/Perplexity; es un hallazgo local complementario y debe permanecer separado de la revisión de KeyMint, reloj offline, conflictos de avisos, consistencia multiarchivo y recuperación de claves.
