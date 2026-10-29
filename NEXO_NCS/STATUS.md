@@ -1,3 +1,15 @@
+## DELTA — BRECHA FB-01 ANCLADA A FUENTE/TEST/WORKFLOW (2026-10-29)
+
+Se verificó una lectura estática específica de servicio, test y workflow y se incorporó a [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `4981b5fb6744d2bc8060efcc2507b2568fb59677`, blob verificado `9807030cc5176beeb0cfe42c615e5812d796766d`.
+
+La brecha ejecutable queda acotada: `openNexoContinuityOwner` aún permite proyectar `legacyMemory` cuando falta el store, antes de evaluar `allowEmptyInitialization`, y devuelve un owner después de inicializar. El test existente cubre esa migración como comportamiento actual, pero no prueba exclusión de legacy para un bootstrap M0 dedicado ni no-continuación end-to-end. La sesión Chronicle acepta `--initialize-continuity`; su workflow de aceptación está definido en la rama, pero no fue ejecutado en esta revisión.
+
+Esto identifica una discrepancia de alcance concreta, no autoriza resolverla mediante un parche. El próximo cambio ejecutable requeriría autorización separada y debería ser una operación de bootstrap de propósito único, sin ruta legacy, sin owner operacional y con vínculo verificable raíz explícita→destino; luego pruebas negativas y CI sobre el SHA exacto. No se modifica runtime ni tests ahora.
+
+Gates sin cambio: FB-01 OPEN/UNKNOWN; FB-02 OPEN/P01-B=C; FB-03 OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; P-05 NO RATIFICADA; FB-06/FB-07 OPEN; M0 INCOMPLETO; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Solo lectura estática/documentación; sin tests, CI/Actions, runtime, bootstrap ni dispositivo.
+
+---
+
 ## DELTA — CLASIFICACIÓN DE BLOQUEOS POR TIPO DE CIERRE (2026-10-29)
 
 Se actualizó y releyó [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `a2f35018c7489f203963329073f7ff68a12fb3e2`, blob verificado `646762d7768109770e94bcc34d3988a77856219d`. La delta separa para FB-01…FB-07 el trabajo documental admisible de lo que exige decisión del propietario, entorno/evidencia concreta o autorización de verificación.
