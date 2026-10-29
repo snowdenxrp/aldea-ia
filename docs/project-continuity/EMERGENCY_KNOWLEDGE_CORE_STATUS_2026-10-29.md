@@ -219,3 +219,67 @@ Ambas fichas publican el número para avisar sobre fuentes radiactivas perdidas 
 | B6 — actualización de guías de tsunami | UNKNOWN/PARTIAL | No fue investigado ni resuelto por este informe. |
 
 No se acepta la conclusión de Qwen de que B1 esté “RESUELTO” como teléfono operativo ni que B3 esté totalmente “RESUELTO”. Se conserva la diferencia entre publicación, existencia de marco y validación operacional.
+
+
+## 11. Delta de verificación independiente de Perplexity — 2026-10-29
+
+**Origen:** informe independiente compartido por el usuario. No se hicieron llamadas a CNSNS ni pruebas operativas; no se declara implementación ni ejecución de pruebas del proyecto. Las conclusiones siguientes distinguen evidencia encontrada de ausencia de evidencia.
+
+### B3 — KI/PERE: UNKNOWN (reclasificado desde PARTIAL)
+
+Fuente primaria examinada por Perplexity:
+- CNSNS, *Respuesta a emergencias radiológicas*: https://www.gob.mx/cms/uploads/attachment/file/269248/4._Repuesta_a_emergencia_radiol_gicas.pdf
+- Informe Nacional de México ante el OIEA (2022), aportado en el delta previo: https://www.gob.mx/cms/uploads/attachment/file/843327/Informe_Nacional-_Mexico_2022.pdf
+- Nota secundaria sobre Laguna Verde/PERE: https://elmanana.com.mx/nacional/2026/5/27/protocolo-nuclear-en-mexico-que-pasaria-si-sonara-la-alarma-en-la-central-de-laguna-verde-veracruz-173310.html
+
+**Conflicto material:** Qwen concluyó que el protocolo mexicano de distribución de KI estaba confirmado, pero su evidencia explícita combina una nota periodística con menciones al PERE/profilaxis; Perplexity no encontró en el documento CNSNS un procedimiento ciudadano concreto de distribución/administración. La evidencia disponible respalda que existe un marco de respuesta radiológica y referencias al KI/PERE, pero todavía no demuestra suficientemente un protocolo federal vigente con criterios de activación, autoridad de indicación, logística de distribución y población cubierta.
+
+**Clasificación de proyecto:** `UNKNOWN` para la existencia/alcance del protocolo operativo ciudadano específico; no significa que se haya demostrado que no existe. La conclusión anterior de Qwen “RESUELTO” no se acepta como cierre.
+
+**Acción residual:** recuperar y revisar las secciones/páginas exactas del Informe Nacional OIEA y cualquier anexo oficial vigente del PERE que describa explícitamente distribución y uso. Mantener la prohibición de presentar KI como automedicación.
+
+### B4 — Hervido de agua por altitud: PARTIAL
+
+Nueva fuente oficial mexicana aportada por Perplexity:
+- CENAPRECE / Secretaría de Salud, *Cuidado con el agua*: http://www.cenaprece.salud.gob.mx/programas/interior/emergencias/descargas/pdf/cuidado_con_el_agua.pdf
+
+El documento indica: “Hervir el agua durante 5 minutos a partir del primer hervor.” El informe no identifica fecha de publicación y no encuentra diferenciación por altitud.
+
+**Clasificación:** `PARTIAL`. Ya hay una instrucción federal mexicana publicada sobre hervido de agua; no se ha demostrado que sea una NOM ni que incluya ajuste por altitud. La regla CDC de tiempo adicional por encima de aproximadamente 2.000 m sigue siendo guía extranjera y no debe presentarse como norma mexicana. Tampoco afirmar categóricamente que no existe ninguna otra guía mexicana sin búsqueda exhaustiva.
+
+**Acción residual:** verificar fecha/estado de vigencia y contexto de la guía CENAPRECE antes de convertir los cinco minutos en recomendación general del producto; documentar por separado la recomendación CDC y su jurisdicción.
+
+### B5 — Evacuación por incendios forestales en Colima/Manzanillo: PARTIAL
+
+Fuente estatal más reciente aportada:
+- Programa Especial de Protección Civil para la temporada de incendios forestales, estiaje y sequías 2026: https://admiweb.col.gob.mx/archivos_prensa/banco_img/file_69c5875e1853b_Programa_especial_de_proteccion_civil_incendios_forestales_estiaje_y_sequias_2026_1.pdf
+
+El informe de Perplexity refiere que el programa incluye las funciones “Planes de Emergencia” y “Evacuación, Búsqueda y Rescate”, lista 63 refugios para Manzanillo y da el contacto municipal 314 336 7300. La búsqueda no demuestra un protocolo público específico de evacuación ciudadana por incendio forestal en Manzanillo con rutas, criterios de activación, responsables y puntos de encuentro.
+
+**Clasificación:** `PARTIAL`. La evidencia de planificación estatal y refugios es más reciente que el programa 2025, pero no equivale por sí sola a un procedimiento ciudadano completo. El teléfono debe verificarse en un directorio institucional vigente antes de publicarse como contacto operativo.
+
+**Acción residual:** revisar el programa 2026 completo y el plan municipal vigente; si no describen instrucciones públicas concretas, solicitar confirmación a Protección Civil municipal/estatal. No inferir que un protocolo no existe solo porque no se encontró en la búsqueda.
+
+### B1/B2 — CNSNS 01 800 111 3168: publicación oficial, operación actual UNKNOWN
+
+Fuentes citadas por Perplexity:
+- CNSNS, *Respuesta a emergencias radiológicas*: https://www.gob.mx/cms/uploads/attachment/file/269248/4._Repuesta_a_emergencia_radiol_gicas.pdf
+- FGR, *Robo de material radioactivo: un delito que te pone en riesgo*: https://www.gob.mx/fgr/es/articulos/robo-de-material-radioactivo-un-delito-que-te-pone-en-riesgo?idiom=es
+- Curso CENAPRED 2026: https://cursos.aprende.gob.mx/courses/course-v1:CENAPRED%2BRIFR26048X%2B2026_06/about
+
+Las fuentes institucionales respaldan que el número se designa/publica como contacto para emergencias radiológicas, y CENAPRED lo publicaba en material accesible en 2026. Perplexity no hizo llamadas ni obtuvo confirmación directa de CNSNS.
+
+**Clasificación:** B2 `RESUELTO COMO PUBLICACIÓN OFICIAL RECIENTE`; B1 `UNKNOWN` para operación actual. No describir el teléfono como “activo” o “verificado en funcionamiento” solo por publicaciones.
+
+### Estado neto tras Qwen + Perplexity
+
+| Bloque | Estado consolidado | Motivo |
+|---|---|---|
+| B1 — funcionamiento actual del teléfono CNSNS | UNKNOWN | No hubo llamada ni confirmación directa; publicaciones no prueban respuesta en vivo. |
+| B2 — publicación oficial reciente del número | RESUELTO COMO PUBLICACIÓN | Curso CENAPRED 2026 y otras fuentes federales publican el número. |
+| B3 — protocolo ciudadano concreto de KI/PERE | UNKNOWN | Qwen y Perplexity discrepan; las citas actuales no establecen con suficiente precisión el procedimiento operativo específico. |
+| B4 — hervido de agua según altitud | PARTIAL | Guía federal indica 5 minutos desde primer hervor, pero no resuelve ajuste por altitud ni su vigencia/alcance. |
+| B5 — evacuación ciudadana por incendios en Colima | PARTIAL | Programa estatal 2026 contempla funciones de evacuación y refugios, pero no se ha verificado protocolo público específico para Manzanillo. |
+| B6 — actualización de guías de tsunami | UNKNOWN/PARTIAL | No afectado por este delta. |
+
+**Regla de resolución:** una búsqueda sin resultado no demuestra inexistencia; la publicación de un número no demuestra que esté operativo; un plan institucional general no demuestra por sí solo un procedimiento ciudadano detallado. Mantener el estado `PROPOSAL — NOT IMPLEMENTED`.
