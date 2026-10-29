@@ -1,3 +1,14 @@
+## DELTA — FB-04: MATRIZ NEGATIVA DE ACEPTACIÓN DEFINIDA (2026-10-29)
+
+- Nueva matriz: [NCS_M0_FB04_NEGATIVE_ACCEPTANCE_TEST_MATRIX_2026-10-29.md](BUILD/NCS_M0_FB04_NEGATIVE_ACCEPTANCE_TEST_MATRIX_2026-10-29.md), commit `0e395aa71d9c499c79e6033dfe0d55bd4410ef4b`.
+- Define 13 escenarios negativos de primera publicación: destino válido/corrupto preexistente; destino creado tras preflight; temporales preexistentes/desconocidos/concurrentes; sustitución de padres/symlink; discrepancia root→destino; primitiva/permisos no soportados; fallos antes/después de publicar; bootstrap simultáneo; writer no cooperativo.
+- Define por separado cinco casos de commit posterior; no se confunde create-if-absent de bootstrap con reemplazo controlado de commits.
+- Exige pruebas deterministas de carreras, verificación de bytes/hash del objeto competidor, cero fallback inseguro y clasificación UNKNOWN/STOP ante resultados ambiguos. Harness no sustituye evidencia del filesystem real.
+- FB-03/FB-04 OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; publicación Continuity y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Solo especificación documental; no se modificó runtime/tests/workflows; no se ejecutaron pruebas/CI/Actions ni comandos POCO; no hubo bootstrap real.
+
+---
+
 ## DELTA — FB-06/FB-07: MATRIZ DE ACEPTACIÓN FINAL DOCUMENTADA (2026-10-29)
 
 - Matriz añadida a [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `caed8da590bfe359852b1069253bdb35811cd8cb`.
