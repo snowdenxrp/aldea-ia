@@ -212,3 +212,20 @@ Fuente: https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-57pt1r
 - Riesgo crítico transversal: varias decisiones están formuladas como arquitectura propuesta sin evidencia de implementación ni pruebas de fallo/recuperación.
 - Pendientes: atestación real del dispositivo objetivo; política temporal durable y caducidad; reglas de autoridad/conflicto de avisos; protocolo reproducible de publicación/recuperación multicomponente; modelo de amenaza y gobernanza de quórum.
 - Estado sigue `PROPOSAL — NOT IMPLEMENTED`. No se ha inspeccionado el hardware objetivo, ejecutado pruebas de persistencia ni probado recuperación de claves.
+
+
+## 10. Verificación técnica focalizada adicional de Perplexity — 2026-10-29
+
+Este delta aporta precisión a los cinco bloques; no reabre la auditoría general ni demuestra implementación.
+
+1. **KeyMint / rollback resistance — PARCIAL.** La verificación focalizada especifica que `Tag::ROLLBACK_RESISTANCE` protege frente a la reutilización de claves borradas/restauradas en las condiciones de implementación segura, con posible dependencia de almacenamiento protegido como RPMB; la creación puede fallar si el almacenamiento protegido está lleno. La atestación no prueba integridad completa del dispositivo ni de datos de aplicación. En el expediente se mantiene la distinción entre el tag actual y el campo de atestación `rollbackResistant`; para evitar generalizar entre formatos, verificar la versión concreta de atestación antes de describir el campo. Fuente primaria: https://source.android.com/docs/security/features/keystore/implementer-ref
+
+2. **Reloj / revocación offline — CONFIRMADO como límite.** La documentación de `AlarmManager` confirma además que las alarmas basadas en `ELAPSED_REALTIME` usan tiempo desde el arranque y se eliminan al apagar/reiniciar. Esto refuerza que `elapsedRealtime()` solo sirve para intervalos dentro del arranque actual y no resuelve caducidad durable por sí solo. Fuente: https://developer.android.com/reference/kotlin/android/app/AlarmManager
+
+3. **ISO 22320 / bloqueo de rutas — CONFIRMADO como límite de atribución.** La evidencia primaria pública consultada describe gestión de incidentes y cooperación interorganizacional, no un requisito específico de bloqueo automático de rutas. Mantener el bloqueo como política propia de Atlas, con autoridad, ámbito y reglas de conflicto definidos; no atribuirlo a ISO sin cláusula comprobada.
+
+4. **Persistencia multiarchivo — CONFIRMADO como límite.** SQLite WAL no da atomicidad de conjunto entre bases adjuntas ni entre una base y archivos externos. `rename()` no basta para durabilidad; el orden de sincronización y las garantías concretas dependen del sistema de archivos/plataforma. El protocolo de manifiesto, journal/estados, verificación de hashes y recuperación sigue pendiente de especificación y pruebas.
+
+5. **NIST / quórum offline — CONFIRMADO como límite de atribución.** La sección 8.2.2.2 de SP 800-57 Part 1 Rev. 5 trata la función de recuperación de claves y evaluación caso por caso; no prescribe quórum offline. El quórum puede elegirse por diseño, pero exige modelo de amenazas, custodia, umbral, pérdida/compromiso y recuperación.
+
+**Resultado:** la revisión focalizada de Perplexity no presenta una contradicción material nueva con Gemini ni con el expediente previo; agrega precisión sobre borrado/rollback de claves y pérdida de alarmas tras reinicio. Las decisiones arquitectónicas permanecen propuestas. Estado global: `PROPOSAL — NOT IMPLEMENTED`; no se modificó código, no se ejecutaron pruebas y NCS M0 sigue fuera de alcance.
