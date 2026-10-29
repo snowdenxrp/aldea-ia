@@ -1,3 +1,15 @@
+## DELTA — FB-04: CARRERAS CONCRETAS DE PUBLICACIÓN IDENTIFICADAS (2026-10-29)
+
+- Nueva revisión estática: [NCS_M0_FB04_STATIC_PUBLICATION_GAPS_2026-10-29.md](BUILD/NCS_M0_FB04_STATIC_PUBLICATION_GAPS_2026-10-29.md), commit `df49ed051c7706d0eb451fe484169eec42a5a2dc`.
+- Hallazgos acotados en `continuity-service.mjs` y `continuity-store.mjs`: (S1) carrera entre `access(filePath)` y `rename(tempPath, filePath)` que no queda cerrada frente a writers no cooperativos; (S2) el preflight de temporales sucede antes del lock y el store ejecuta limpieza genérica posterior; (S3) `path.resolve/relative` + `stat` no demuestran confinamiento físico ni estabilidad de componentes/symlinks.
+- No son una autorización para parchear ni evidencia dinámica. El propio store limita su lock/revision a writers cooperativos y declara que no reclama resistencia a symlink/path attacks.
+- Nuevo contrato documental de aceptación del entorno restringido: [NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_ACCEPTANCE_CONTRACT_2026-10-29.md](BUILD/NCS_M0_RESTRICTED_BOOTSTRAP_ENVIRONMENT_ACCEPTANCE_CONTRACT_2026-10-29.md), commit `b942b9a54f7a5c195b572c4d91df0aaeabd37ed3`. Define condiciones de FB-03/FB-04 sin seleccionar mecanismo técnico ni afirmar que el POCO esté preparado.
+- Próximo paso: establecer el runtime/launcher real del bootstrap y las garantías de acceso del entorno; luego elegir el mecanismo no-reemplazable según el filesystem observado. No repetir censo general ni seleccionar Termux por inferencia.
+- Gates sin cambio: FB-03/FB-04 OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; FB-06/FB-07 OPEN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Sin cambios runtime/tests/workflows; sin tests, CI/Actions, comandos del POCO ni bootstrap real.
+
+---
+
 ## DELTA — FB-01 CONTRATO DE BOOTSTRAP VALIDADO; GATE AMBIENTAL AÚN ABIERTO (2026-10-29)
 
 - En el SHA de código `86e73525f8c63e143b5860d77f0d191e54213976`, el workflow integrado M0 pasó los tests de contrato/store de Continuity y el test de migración legacy. Evidencia: [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189).
