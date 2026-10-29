@@ -1,3 +1,24 @@
+## DELTA — EVIDENCIA ESTÁTICA ACTUAL DEL BLOQUEO FB-01 (2026-10-29)
+
+Se contrastó el contrato candidato con las versiones actuales de servicio, test y workflow en la rama `ncs-clean-architecture`. Esto no es una auditoría general nueva: precisa el punto exacto que impide pasar de diseño a implementación/verificación.
+
+| Evidencia actual | Hecho comprobado por lectura estática | Qué demuestra y qué no |
+|---|---|---|
+| `src/nexo/core/continuity-service.mjs`, blob `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`, función `openNexoContinuityOwner` | Tras `NEXO_CONTINUITY_STORE_NOT_FOUND`, la rama `legacyMemory` se evalúa antes de `allowEmptyInitialization`; después de `store.initialize` el servicio carga el estado y devuelve `store`, `owner` y `current`. | Confirma la brecha entre el alcance M0 propuesto y la API existente. No demuestra que un caller concreto esté autorizado ni que la frontera de bootstrap esté aislada. |
+| `tests/nexo/continuity-contract.test.mjs`, blob `dc202cabdc1c3dcada4f10c3c323c84b60eb1f35`, bloque de migración cerca de líneas 1083–1110 | El test llama a `openNexoContinuityOwner` con `legacyMemory`, espera que la misión se proyecte y luego comprueba que el store ya creado sea canónico. También prueba que sin store ni legacy se rechace la inicialización silenciosa. | Hay cobertura del comportamiento de migración existente y del rechazo por estado inicial desconocido. No hay en ese bloque prueba de que una ruta dedicada de bootstrap M0 excluya `legacyMemory` ni prueba de no-continuación end-to-end. No se debe borrar ni reescribir ese test por inferencia: cualquier separación de migración exige cambio de contrato y autorización propia. |
+| `scripts/nexo-chronicle-session.mjs`, blob `30a53de2f108aa255a1dfd61ce78c19788de160b` | El parser acepta `--initialize-continuity` y la sesión entrega los argumentos a `runNexoChronicleAppend`. | La ruta existente es una sesión Chronicle, no una operación de propósito único demostrada como bootstrap aislado. |
+| `.github/workflows/nexo-m0-acceptance.yml`, blob `60323063fe6656eb7e7710825f327fa7e39526c3` | El workflow define triggers de push con filtros de paths y `workflow_dispatch`, y enumera los tests de aceptación. | Es configuración versionada; esta lectura no prueba ejecución, estado activo en otro contexto ni PASS para el SHA actual. No se lanzó el workflow. |
+
+### Decisión técnica de trabajo
+
+El próximo cambio ejecutable que eventualmente podría cerrar parte de FB-01 no es otro ajuste de texto: requiere una operación de bootstrap de propósito único cuyo contrato y API no acepten la ruta de proyección legacy, que no devuelva un owner operacional y que demuestre el vínculo raíz explícita→destino efectivo. Debe tratarse como una propuesta de cambio aún no autorizada; no editar el runtime ni los tests en esta ronda.
+
+Para que ese cambio no se confunda con cierre M0, el criterio de salida posterior debe exigir: revisión del contrato/D0-D1; pruebas negativas de legacy, estado previo y no-continuación; comprobación de no-bypass para los entrypoints en alcance; y CI ligado al SHA que contenga implementación y tests. La evidencia histórica o el workflow definido no sustituye esos resultados.
+
+**Gates sin cambio:** FB-01 OPEN/UNKNOWN; FB-02 OPEN con P01-B=C; FB-03 OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05 P-05 NO RATIFICADA; FB-06/FB-07 OPEN; M0 INCOMPLETO; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Solo lectura estática y documentación; no se ejecutaron tests/CI/Actions/runtime/bootstrap ni se modificó el dispositivo.
+
+---
+
 ## DELTA — DESCOMPOSICIÓN DE BLOQUEOS M0 POR TIPO DE CIERRE (2026-10-29)
 
 Esta delta ordena el trabajo pendiente usando los contratos y evidencias ya registrados; no crea una segunda línea de meta ni cambia decisiones previas.
