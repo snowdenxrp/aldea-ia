@@ -1586,16 +1586,18 @@ try {
   await fs.rm(cliRoot, { recursive: true, force: true });
 }
 
-// The real Nexo entrypoint is explicitly initialized and remains independent of Lúmina.
+// The real Nexo entrypoint uses a separately initialized Continuity store and remains independent of Lúmina.
 const entryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-entry-"));
 try {
+  const entryContinuityPath = path.join(entryRoot, "continuity.json");
+  await createNexoContinuityStore({ filePath: entryContinuityPath }).initialize();
   const args = {
-    continuityPath: path.join(entryRoot, "continuity.json"),
+    continuityPath: entryContinuityPath,
     chroniclePath: path.join(entryRoot, "chronicle.json"),
     missionId: "caller-provided-mission",
     stepId: "caller-provided-step",
     content: "Nexo owns this history",
-    initializeContinuity: true,
+    initializeContinuity: false,
     initializeChronicle: true
   };
   const separatorCollision = await runNexoChronicleAppend({ ...args, missionId: "caller:provided-mission" });
@@ -1696,19 +1698,17 @@ try {
     initializeContinuity: true,
     initializeChronicle: true
   };
-  const partialBootstrap = await runNexoChronicleAppend(partialBootstrapArgs);
-  assert.equal(partialBootstrap.status, "blocked");
-  assert.equal(partialBootstrap.authorization, "NOT_EVALUATED");
-  assert.equal(partialBootstrap.dispatchAttempted, false);
-  assert.equal(partialBootstrap.code, "NEXO_CHRONICLE_PARENT_PATH_UNAVAILABLE");
-  const partialContinuity = await createNexoContinuityStore({
-    filePath: partialBootstrapContinuityPath
-  }).loadCurrent();
-  assert.equal(partialContinuity.status, "loaded");
-  assert.equal(partialContinuity.snapshot.missions.length, 0,
-    "failed second-store bootstrap must not admit a mission or append Chronicle");
+  const combinedBootstrap = await runNexoChronicleAppend(partialBootstrapArgs);
+  assert.equal(combinedBootstrap.status, "blocked");
+  assert.equal(combinedBootstrap.code, "NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
+  assert.equal(combinedBootstrap.authorization, "NOT_EVALUATED");
+  assert.equal(combinedBootstrap.dispatchAttempted, false);
+  await assert.rejects(fs.access(partialBootstrapContinuityPath), { code: "ENOENT" });
   await assert.rejects(fs.access(partialBootstrapChroniclePath), { code: "ENOENT" });
 
+  // The fixture performs Continuity initialization as a distinct operation,
+  // then invokes Chronicle append without the combined-bootstrap flag.
+  await createNexoContinuityStore({ filePath: partialBootstrapContinuityPath }).initialize();
   await fs.mkdir(lateChronicleParent);
   const recoveredBootstrap = await runNexoChronicleAppend({
     ...partialBootstrapArgs,
