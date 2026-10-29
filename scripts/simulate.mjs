@@ -188,6 +188,9 @@ export function applyState(state) {
   simulation.day = Number(state.day) || world.day || 1;
   simulation.hour = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (world.timeOfDay || 8);
   simulation.events = Array.isArray(state.events) ? state.events.slice(-500) : [];
+  // Preserve legacy Nexo data as an opaque field only; Lúmina never reads,
+  // interprets, migrates, or writes into it.
+  if (Object.hasOwn(state, "nexoMemory")) simulation.legacyNexoMemory = clone(state.nexoMemory);
   simulation.world.day = simulation.day;
   simulation.world.timeOfDay = simulation.hour;
   return simulation;
@@ -234,6 +237,9 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     agents: simulation.agents,
     events: simulation.events.slice(-500),
   };
+  if (Object.hasOwn(simulation, "legacyNexoMemory")) {
+    payload.nexoMemory = clone(simulation.legacyNexoMemory);
+  }
   const tempPrefix = `${normalizedStatePath}.tmp-`;
   try {
     const siblings = await fs.readdir(path.dirname(normalizedStatePath));
