@@ -1,3 +1,13 @@
+## DELTA — BRECHA E2/E3 DEL POCO ACOTADA SIN REPETIR EL CENSO (2026-10-29)
+
+- Nuevo artefacto: [NCS_M0_POCO_E2_E3_EVIDENCE_GAP_2026-10-29.md](BUILD/NCS_M0_POCO_E2_E3_EVIDENCE_GAP_2026-10-29.md), commit `b839cb44d6c44d5548305de1c25d0ab25b46b2e1`.
+- Reutiliza los datos ya conocidos: POCO X7 Pro/Android es el destino previsto; la app Nexo M1 instalada no demuestra ser lanzador del bootstrap M0; el mecanismo de lanzamiento del bootstrap sigue sin configurar/verificar.
+- E2 sigue UNKNOWN porque no hay evidencia de control que detenga todos los writers/launchers e impida relanzamientos durante toda la ventana. E3 sigue UNKNOWN porque no se ha establecido qué entrypoints del repositorio están instalados/invocables en el POCO ni cuál es el modo real de lanzamiento. Observaciones previas de procesos/paquetes fueron parciales y no se elevan a prueba.
+- La brecha concreta ya no es otro censo de código: falta identificar el mecanismo de lanzamiento real, su capacidad de relanzamiento, el control para bloquearlo y la evidencia observable de que permanece activo. No ejecutar comandos del dispositivo ni instalar/configurar software para resolverlo sin autorización específica.
+- Gates sin cambio: **M0 INCOMPLETO**; E2/E3 UNKNOWN; E4 NOT READY; FB-01/FB-02 OPEN/UNKNOWN; P01-B=C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0–D3 OPEN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP.
+
+---
+
 ## DELTA — CRITERIO NEGATIVO NC-01/NC-02 PARA NO-CONTINUATION (2026-10-29)
 
 - Trazabilidad actualizada: [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), criterio NC-01/NC-02.
