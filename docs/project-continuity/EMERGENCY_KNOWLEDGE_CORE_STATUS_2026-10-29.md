@@ -297,3 +297,27 @@ DeepSeek aporta una tercera revisión documental de B1–B5. Su resultado es com
 - **B6 tsunami:** sin cambio.
 
 No se realizaron llamadas ni pruebas operativas. Las búsquedas negativas no demuestran inexistencia; los documentos publicados no prueban disponibilidad actual. Estado global: PROPOSAL — NOT IMPLEMENTED. Código y NCS M0 sin cambios.
+
+
+## 13. Revisión adversarial provisional de Claude — 2026-10-29
+
+**Alcance:** revisión de solo lectura de ECK, Atlas e issue #109. Claude declara que su extracción no fue texto bruto completo y que faltaban verificaciones A–D; por tanto, sus hallazgos se registran como revisión provisional, no como auditoría final. No modificó código ni NCS M0.
+
+### Riesgos ECK que requieren resolución
+
+1. **KI — umbrales de edad y repetición de dosis.** Claude señala una posible inconsistencia entre la atribución a OMS de exclusión de dosis repetidas para mayores de 60 años y los criterios publicados por CDC (mayores de 40 solo si lo recomiendan autoridades; restricción de dosis repetidas destacada para neonatos menores de un mes). Estado: NO CONFIRMADO como contradicción, porque Claude no verificó el texto OMS. Acción: comparar directamente las páginas vigentes de OMS, CDC y etiqueta FDA/DailyMed, conservando atribuciones separadas por agencia; no combinar umbrales como si fueran una regla única. ECK no debe promover autoadministración.
+
+2. **Teléfono CNSNS 01 800 111 3168 — procedencia documental inconsistente.** Claude detecta que distintas secciones atribuyen el número a material CNSNS de 2017, manual UNAM sin fecha, curso CENAPRED 2026 y boletines CNSNS. Se acepta el hallazgo de inconsistencia de procedencia. La publicación institucional del número no prueba funcionamiento actual. Mantener operación actual UNKNOWN y normalizar cada referencia con organismo, fecha, URL y qué demuestra.
+
+3. **SODIS — duración y nubosidad.** Las afirmaciones de seis horas con cielo despejado/hasta aproximadamente 50 % de nubosidad y dos días con nubosidad muy alta siguen NO CONFIRMADAS en esta revisión porque Claude no verificó las guías originales. Antes de convertirlas en instrucciones operativas, cotejar la fuente primaria exacta, sus condiciones de uso y límites.
+
+4. **Sismo/tsunami y gas.** La frase “sismo fuerte y prolongado” para evacuar a zona alta en costa es demasiado subjetiva si se presenta sin atribución precisa y contexto local. Claude no verificó la nota de CENAPRED que la sustenta. Estado de esa atribución: NO CONFIRMADO. La ausencia de instrucciones sobre fuga de gas queda UNKNOWN; no debe inferirse que el protocolo oficial no existe.
+
+5. **B1–B6:** se mantienen las clasificaciones consolidadas del apartado 12. Claude no aporta prueba operativa nueva para el teléfono ni cierra KI/PERE, regla de hervido por altitud, evacuación ciudadana o validación de mapas de tsunami.
+
+### Cierre provisional ECK
+
+- Puede cerrarse documentalmente la distinción “número publicado” ≠ “línea operativa confirmada”.
+- Mantener UNKNOWN/PARTIAL para asuntos sin fuente primaria suficiente; las búsquedas negativas no prueban inexistencia.
+- No convertir dosis de KI, instrucciones SODIS ni recomendaciones de evacuación en instrucciones operativas definitivas hasta resolver la atribución de fuentes y los contextos de seguridad.
+- Estado global: PROPOSAL — NOT IMPLEMENTED. No se realizaron llamadas ni pruebas operativas.
