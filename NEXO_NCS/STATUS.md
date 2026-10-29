@@ -1,3 +1,15 @@
+## DELTA — INVENTARIO DE ENTRYPOINTS Y LAUNCHER M1 (2026-10-29)
+
+- Revisión estática registrada en [NCS_M0_FB03_REPOSITORY_LAUNCHER_INVENTORY_2026-10-29.md](BUILD/NCS_M0_FB03_REPOSITORY_LAUNCHER_INVENTORY_2026-10-29.md), commit `e567fdc25178a8f7d9756444be2e1c43f5ee5be0`.
+- `package.json` confirma `nexo: node scripts/nexo.mjs`; `scripts/nexo.mjs` despacha Chronicle mediante `process.execPath` al wrapper Node `scripts/nexo-chronicle-session.mjs`. `scripts/nexo-continuity.mjs` es solo un re-export.
+- El workflow NCS de aceptación corre en `ubuntu-latest` con Node.js 22 y pruebas directas; no aporta evidencia del runtime POCO.
+- Las búsquedas realizadas no localizaron launcher Android (manifest/Gradle/Capacitor/launcher/Termux:Boot). Alcance limitado: no equivale a prueba exhaustiva de inexistencia.
+- Conclusión: entrypoint Node del repositorio CONFIRMADO; vínculo app M1 → NCS y mecanismo de inicio automático UNKNOWN. No inferir Termux/Node en el teléfono ni pedir instalación/configuración.
+- FB-03/E2/E3 permanecen OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Solo lectura estática y documentación; sin runtime, tests, CI/Actions, comandos del POCO ni bootstrap real.
+
+---
+
 ## DELTA — IDENTIFICACIÓN DEL ENTRYPOINT DEL REPOSITORIO (2026-10-29)
 
 - Revisión de `package.json`: el repositorio expone `"nexo": "node scripts/nexo.mjs"`; `simulate` y `assistants` son entrypoints separados. Esto confirma que el runtime de este repositorio se lanza con Node.js mediante npm/script, pero **no demuestra** que la app Android Nexo M1 instalada invoque ese entrypoint.
