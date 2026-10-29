@@ -1,3 +1,13 @@
+## DELTA — PRECONDICIONES VERIFICABLES PARA EL ENTORNO RESTRINGIDO (2026-10-29)
+
+La matriz P-01 ahora incorpora nueve precondiciones de evaluación RE-01…RE-09 para convertir la decisión limitada del propietario sobre el entorno restringido en un contrato verificable: identidad/frontera de invocación, raíz→destino efectivo, clases de escritores, exclusión sostenida, disparadores externos, estado previo, publicación/ambigüedad, no continuación y vigencia de evidencia. Referencia: [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `6ebceecb9389af87b3298ac63731b373209048a7`, blob `4b7c3128b9c858cfbef640a8eefd23acea84a92f`.
+
+Esto vuelve concreta la lista de preguntas, no demuestra que exista un entorno que las satisfaga. No se eligió mecanismo ni se declaró que un launcher/workflow esté activo o inactivo sin evidencia. FB-03 sigue abierto hasta que se proponga y autorice evaluar un entorno específico; FB-01/FB-02 y los demás bloqueadores permanecen independientes. Sin inventario nuevo de callers, código, tests, CI/Actions, runtime, bootstrap ni dispositivo.
+
+Gates sin cambio: M0 INCOMPLETO; FB-01…FB-07 siguen abiertos en sus estados registrados; P01-B=C; P-05 NO RATIFICADA; raíz PENDING/UNKNOWN; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP.
+
+---
+
 ## DELTA — REFINAMIENTO TÉCNICO FB-01 (2026-10-28)
 
 El borrador FB-01 fue reconciliado con el contrato de raíz y código estático; blob verificado `62cfde7aab5ec7602c2ca9c0060d47814d1233e0`. La forma del snapshot no es ya una incógnita: `NEXO_OPERATIONAL_CONTINUITY` v1 y cinco colecciones están definidos. Las incógnitas decisivas son: (a) vínculo de la ruta efectiva a una raíz explícita validada; (b) regla/procedencia legítima del snapshot inicial, dado que `legacyMemory` permite una ruta de inicialización independiente de `allowEmptyInitialization`; (c) aislamiento de bootstrap respecto a admisión/Chronicle en la invocación completa. Esto estrecha FB-01, no lo cierra. FB-02…FB-07 no cambian. Sin código, tests, CI/Actions, bootstrap ni operaciones de dispositivo.
