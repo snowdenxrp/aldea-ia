@@ -605,3 +605,51 @@ Los nombres son ilustrativos; no representan rutas existentes ni una decisión f
 La coordinación entre el puntero de bundle activo y el ancla de frescura/anti-rollback sigue abierta. Dos escrituras independientes no forman una transacción atómica. La arquitectura debe justificar un registro de commit recuperable o mecanismo equivalente que sobreviva a fallos y restauraciones. Hasta resolverlo, A5 permanece UNKNOWN para implementación segura.
 
 **Sin cambios de código ni pruebas ejecutadas.** NCS M0 permanece fuera de alcance.
+
+
+## 18. A7 — Verificación documental de atribuciones normativas (2026-10-29)
+
+**Estado:** revisión documental parcial; no equivale a certificación ni a conformidad del producto. Se consultaron fuentes oficiales públicas. El texto íntegro de ISO 22320 no fue revisado porque la fuente pública consultada ofrece descripción y vista previa, no acceso íntegro gratuito.
+
+### NIST SP 800-57 Part 1 Rev. 5 — sección 8.2.2.2
+
+**Verificado directamente en el PDF oficial de NIST:** la sección 8.2.2.2, páginas impresas 107–108 según la paginación del documento, indica que la decisión de recuperación de claves debe evaluarse caso por caso, considerando tipo de clave, aplicación, propiedad de la clave, rol de la entidad y operación criptográfica. También expone la compensación entre continuidad operativa y riesgo de exposición si se pierde el control de la clave.
+
+Fuentes oficiales:
+- Ficha NIST SP 800-57 Part 1 Rev. 5: https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final
+- PDF oficial, sección 8.2.2.2: https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-57pt1r5.pdf
+
+**Conclusión admisible:** NIST respalda una evaluación contextual de si recuperar una clave y el análisis de riesgos asociado. La sección revisada no prescribe un quórum offline concreto, un número de custodios ni el diseño de K_backup de Atlas. Esas decisiones continúan siendo de arquitectura y gobernanza. La afirmación se limita a la sección examinada; no es una evaluación completa de conformidad con NIST SP 800-57.
+
+### ISO 22320:2018 — alcance público verificable
+
+La ficha oficial de ISO identifica la edición 2018 como vigente y describe directrices de gestión de incidentes, incluyendo principios, estructura/procesos, roles y responsabilidades, recursos, dirección conjunta y cooperación. La ficha no establece en su resumen una regla técnica específica para bloquear automáticamente rutas en caso de avisos contradictorios.
+
+Fuentes oficiales:
+- ISO 22320:2018: https://www.iso.org/standard/67851.html
+- Registro mexicano de NMX-I-22320-NYCE-2021, concordancia idéntica declarada con ISO 22320:2018: https://platiica.economia.gob.mx/normalizacion/nmx-i-22320-nyce-2021/
+
+**Conclusión admisible:** el resumen público no respalda atribuir a ISO un algoritmo de precedencia o bloqueo de rutas. Como no se examinó el texto completo de la norma, cualquier afirmación sobre cláusulas específicas permanece UNKNOWN. La política de conflicto de Atlas debe citarse como decisión propia propuesta, no como requisito de ISO.
+
+### Android SystemClock — alcance de elapsedRealtime()
+
+La documentación oficial de Android indica que elapsedRealtime() devuelve tiempo desde el arranque, incluye deep sleep y es monotónico. Esto respalda su uso para medir intervalos dentro del mismo arranque, pero no proporciona por sí mismo continuidad temporal entre reinicios.
+
+Fuente oficial: https://developer.android.com/reference/android/os/SystemClock
+
+### Registro de evidencia y límites
+
+| Afirmación | Evidencia consultada | Clasificación |
+|---|---|---|
+| NIST §8.2.2.2 recomienda evaluar recuperación de claves caso por caso | Texto de la sección en PDF oficial de NIST | VERIFICADO EN LA SECCIÓN |
+| NIST exige quórum offline para recuperación | No aparece en la sección examinada; no se afirma revisión exhaustiva de toda la publicación | NO RESPALDADO; no atribuir a NIST |
+| ISO 22320 establece bloqueo automático de rutas contradictorias | Ficha/resumen oficial consultado; texto íntegro no revisado | UNKNOWN para cláusulas específicas; no atribuir el algoritmo a ISO |
+| ISO 22320:2018 sigue siendo la edición vigente según la ficha oficial | Ficha ISO indica revisión/confirmación en 2024 | VERIFICADO EN LA FICHA OFICIAL |
+| elapsedRealtime() mide desde el arranque e incluye deep sleep | Referencia oficial Android | VERIFICADO EN DOCUMENTACIÓN DE API |
+| Cumplimiento normativo de Atlas | No hay evaluación formal ni pruebas de conformidad | NO EVALUADO |
+
+### Consecuencia para el cierre de A7
+
+A7 queda parcialmente resuelto en cuanto a la evidencia pública examinada, pero no se declara conformidad. Se conserva UNKNOWN donde el texto completo de ISO o una evaluación formal serían necesarios. No se reabre investigación general sin una nueva afirmación normativa concreta que requiera verificación.
+
+**Sin cambios de código ni pruebas ejecutadas.** Estado global PROPOSAL — NOT IMPLEMENTED; NCS M0 permanece fuera de alcance.
