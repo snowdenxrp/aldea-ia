@@ -1,3 +1,16 @@
+## DELTA — FB-04: EVALUACIÓN CONDICIONAL DE MECANISMOS DE PUBLICACIÓN (2026-10-29)
+
+- Nueva evaluación: [NCS_M0_FB04_PUBLICATION_MECHANISM_ASSESSMENT_2026-10-29.md](BUILD/NCS_M0_FB04_PUBLICATION_MECHANISM_ASSESSMENT_2026-10-29.md), commit `37fc314a90b31e939d65a1e7c0293c27c2bbc98b`.
+- Se separa primera publicación (create-if-absent/no-replace) de commits posteriores (reemplazo controlado bajo revisión y exclusión efectiva).
+- `rename(temp,destination)` después de `access()` no demuestra no-replace; lock cooperativo no excluye writers externos.
+- `open(destination,"wx")` evita crear sobre un nombre existente, pero no publica el documento completo atómicamente si se escribe directamente en el destino.
+- `link(temp,destination)` aparece solo como candidato condicional de create-if-absent; requiere soporte de hard links/mismo filesystem/permisos y no resuelve por sí mismo symlinks, sustitución de padres ni exclusión ambiental.
+- No se selecciona primitiva: falta identificar runtime/filesystem real, soporte/permisos y conjunto de writers autorizados. No cambiar globalmente `writeEnvelope`: también lo usa `commitIfCurrent`, donde reemplazo es parte de la semántica actual.
+- FB-03/FB-04 OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Solo lectura estática y evaluación documental; sin runtime, tests, CI/Actions, comandos POCO ni bootstrap real.
+
+---
+
 ## DELTA — INVENTARIO DE ENTRYPOINTS Y LAUNCHER M1 (2026-10-29)
 
 - Revisión estática registrada en [NCS_M0_FB03_REPOSITORY_LAUNCHER_INVENTORY_2026-10-29.md](BUILD/NCS_M0_FB03_REPOSITORY_LAUNCHER_INVENTORY_2026-10-29.md), commit `e567fdc25178a8f7d9756444be2e1c43f5ee5be0`.
