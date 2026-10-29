@@ -1,3 +1,36 @@
+## DELTA — CRITERIO NEGATIVO DE ACEPTACIÓN NO-CONTINUATION (2026-10-29; DOCUMENTAL, NO EJECUTADO)
+
+**Propósito:** convertir la brecha estática FB-01/FB-02 en una condición falsable para una futura verificación, sin cambiar código ni cerrar gates.
+
+### NC-01 — Bootstrap dedicado no continúa hacia operación
+
+La futura aceptación requiere evidencia ligada al SHA evaluado de que, al invocar la operación dedicada de bootstrap:
+
+1. La operación crea o detecta el estado inicial exclusivamente conforme al contrato M0 autorizado y no acepta ni proyecta `legacyMemory`.
+2. El resultado no expone un `owner` operacional ni una capacidad equivalente para admitir misiones, ejecutar pasos, preparar/dispatch efectos o persistir estado operacional.
+3. La invocación termina tras el resultado de bootstrap; no inicializa Chronicle, no admite misión y no ejecuta una segunda operación en el mismo flujo.
+4. Un fallo, conflicto, estado previo inesperado o resultado ambiguo no se transforma en continuación automática, reintento de escritura ni readmisión.
+5. Ningún entrypoint público/CLI puede usar la ruta general de inicialización para obtener el mismo efecto compuesto. En particular, la ruta estática existente `chronicle-append --initialize-continuity` debe quedar bloqueada, separada o demostrablemente fuera del alcance operacional autorizado antes de poder afirmar no-bypass. No basta con exportar la API dedicada ni con probarla aisladamente.
+6. La migración legacy existente se mantiene sin modificación en este alcance y no se presenta como bootstrap M0.
+
+### NC-02 — Evidencia de cierre exigible
+
+Para marcar NC-01 como aceptado en el futuro se requiere, de forma acumulativa:
+- contrato de alcance y frontera revisado;
+- pruebas negativas que demuestren ausencia de `owner`, ausencia de admisión/dispatch y ausencia de continuación en la invocación compuesta;
+- prueba/inspección del grafo de entrypoints que cubra el bypass conocido y los callers en alcance;
+- revisión estática del diff y de las referencias de llamada;
+- resultado de pruebas y CI vinculado al mismo SHA que contiene código y pruebas, solo tras autorización específica de ejecución;
+- registro explícito de limitaciones que no se hayan demostrado, especialmente exclusión sostenida de escritores/launchers y estado del entorno real.
+
+**Regla de fallo:** cualquier ruta que inicialice Continuity y después admita, ejecute, despache o persista operación en la misma invocación, o cualquier camino no evaluado que pueda eludir la frontera, produce `FAIL/UNKNOWN` y mantiene FB-01/FB-02 abiertos. No inferir PASS de documentación, de una prueba unitaria aislada, de CI histórico ni de la mera presencia de la API dedicada.
+
+**Estado actual:** criterio DOCUMENTADO; NO IMPLEMENTADO como prueba; NO EJECUTADO; NO AUTORIZADO para cambiar runtime/tests/CI. La brecha estática conocida sigue presente en la documentación actual. FB-01/FB-02 OPEN/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; **M0 INCOMPLETO**.
+
+**Siguiente paso después de este delta:** no repetir el mapa estático. Esperar autorización separada para cambiar código/tests y ejecutar verificación, o avanzar únicamente con evidencia documental específica de E2/E3 del entorno POCO/Android. No elegir aislamiento ni conectar el bootstrap a un launcher por inferencia.
+
+---
+
 ## DELTA — MAPA ESTÁTICO DE LLAMADAS Y BRECHA NO-BYPASS FB-01/FB-02 (2026-10-29)
 
 Alcance: lectura estática de los archivos actuales en la rama `ncs-clean-architecture`. No se ejecutaron pruebas, CI/Actions, runtime, bootstrap ni efectos protegidos. Esta delta no cambia ningún gate.
