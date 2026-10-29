@@ -16,15 +16,17 @@ import { parseNexoChronicleArguments } from "../../scripts/nexo-chronicle-sessio
 import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
+import { projectNexoContinuitySnapshot } from "../../src/nexo/core/continuity-snapshot.mjs";
 
-const emptyContinuitySnapshot = () => ({
-  schema: "NEXO_OPERATIONAL_CONTINUITY",
-  schemaVersion: 1,
-  missions: [],
-  attempts: [],
-  doNotRepeat: [],
-  executions: [],
-  effectJournal: []
+const emptyContinuitySnapshot = () => projectNexoContinuitySnapshot({
+  version: 4,
+  nexo: {
+    missions: [],
+    attempts: [],
+    doNotRepeat: [],
+    executions: [],
+    effectJournal: []
+  }
 });
 
 const publicAdmissionUnknown = publicChronicleResult({
