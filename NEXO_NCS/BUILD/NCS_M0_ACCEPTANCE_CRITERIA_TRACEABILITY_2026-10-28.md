@@ -1,3 +1,28 @@
+## DELTA — DESCOMPOSICIÓN DE BLOQUEOS M0 POR TIPO DE CIERRE (2026-10-29)
+
+Esta delta ordena el trabajo pendiente usando los contratos y evidencias ya registrados; no crea una segunda línea de meta ni cambia decisiones previas.
+
+| Bloque | Qué puede avanzar sin ejecución | Qué no puede declararse resuelto por documentación sola | Estado operativo correcto |
+|---|---|---|---|
+| FB-01 / P01-A / P01-G | Mantener la clasificación U; enlazar la regla limitada aprobada con sus límites y con el contrato del objeto. | Clasificar el objeto como L o C, legitimar un destino concreto o probar que la invocación/caller satisface la regla de autoridad sin evidencia/decisión aplicable. | OPEN / UNKNOWN; no primera creación. |
+| FB-02 / P01-B | Mantener la decisión C y fijar criterios de evaluación end-to-end sin elegir un mecanismo. | Seleccionar una opción de aislamiento, afirmar no-continuación o tratar un caller compuesto como bootstrap aislado sin decisión y evidencia exactas. | OPEN; C vigente. |
+| FB-03 / P01-C/D / E2/E3 | Usar RE-01…RE-09 como lista de evaluación, sin repetir el censo general del dispositivo. | Declarar escritores excluidos o entorno satisfecho antes de identificar y evaluar un entorno, launcher, destino y ventana concretos. | OPEN / UNKNOWN; entorno no demostrado. |
+| FB-04 / P01-E/F | Conservar los casos de estado previo y resultado ambiguo como requisitos STOP, sin inventar un protocolo. | Afirmar garantías de publicación/no-sobrescritura o recuperación que no estén ratificadas y verificadas. | OPEN / UNKNOWN. |
+| FB-05 / P-05 / D2 | Mantener bloqueo explícito y documentar la dependencia con los demás gates. | Elegir política de recuperación/readmisión en nombre del propietario o convertir una propuesta en política aprobada. | P-05 NO RATIFICADA. |
+| FB-06 / FB-07 | Reconciliar únicamente las brechas residuales contra la línea de meta y preparar la trazabilidad del SHA objetivo. | Declarar M0_BUILD_COMPLETE con gates críticos UNKNOWN, o trasladar CI histórico/estático a un SHA de cierre no evaluado. | OPEN; NOT VERIFIED. |
+
+### Orden de trabajo que se desprende
+
+1. No ampliar más el borrador de bootstrap salvo contradicción nueva. Su frontera candidata y RE-01…RE-09 ya están documentadas.
+2. Para FB-01, conservar U/UNKNOWN hasta que exista base legítima y destino efectivo identificable; la aprobación limitada no es autorización de escritura ni prueba de aplicabilidad.
+3. Para FB-02/FB-03, no elegir aislamiento por inferencia: falta el entorno concreto y la decisión P01-B continúa en C.
+4. Mantener FB-04/FB-05 bloqueados sin una política explícita y evidencia correspondiente.
+5. Solo después de resolver esos bloqueos, reconciliar FB-06 y planificar FB-07 con autorización separada para pruebas/CI sobre SHA exacto.
+
+**Gates preservados:** M0 INCOMPLETO; FB-01…FB-07 abiertos según sus estados específicos; P01-B=C; P-05 NO RATIFICADA; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Esta delta es documental; no cambia código/runtime, tests, CI/Actions, bootstrap ni dispositivo.
+
+---
+
 ## DELTA — TRAZABILIDAD DE LA FRONTERA BOOTSTRAP FB-01 / FB-02 (2026-10-28)
 
 Referencia de contrato actualizado: `NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md`, sección 10, commit `457772f1774463037291dc46e548925e487b23da`, blob verificado `cbceb420aca3cdfa817ac7904252a935f0c16536`.
