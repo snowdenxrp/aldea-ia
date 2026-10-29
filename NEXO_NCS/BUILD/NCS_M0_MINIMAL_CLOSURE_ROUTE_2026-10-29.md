@@ -1,3 +1,34 @@
+## RECONCILIACIÓN MÁS RECIENTE — ESTADO TRAS FB-03/FB-04 Y AISLAMIENTO LÚMINA (2026-10-29)
+
+Esta delta prevalece sobre cualquier instrucción histórica incompatible más abajo.
+
+### Trabajo nuevo ya documentado
+
+- FB-02: **PASS/CERRADO** en el alcance de separar bootstrap Continuity de operación Chronicle, con CI en SHA `86e73525f8c63e143b5860d77f0d191e54213976`. No repetir su prueba ni reabrir el bypass Chronicle ya corregido/validado.
+- FB-03: inventario estático del entrypoint/launcher en [NCS_M0_FB03_REPOSITORY_LAUNCHER_INVENTORY_2026-10-29.md](NCS_M0_FB03_REPOSITORY_LAUNCHER_INVENTORY_2026-10-29.md). El repo declara Node.js (`node scripts/nexo.mjs`); vínculo de app M1 → NCS y mecanismo de inicio automático permanecen UNKNOWN.
+- FB-04: brechas S1/S2/S3 registradas en [NCS_M0_FB04_STATIC_PUBLICATION_GAPS_2026-10-29.md](NCS_M0_FB04_STATIC_PUBLICATION_GAPS_2026-10-29.md). Evaluación condicional de mecanismos en [NCS_M0_FB04_PUBLICATION_MECHANISM_ASSESSMENT_2026-10-29.md](NCS_M0_FB04_PUBLICATION_MECHANISM_ASSESSMENT_2026-10-29.md): `rename` tras `access` no demuestra no-replace; `link` es solo candidato condicionado al filesystem; `open("wx")` directo no publica contenido completo atómicamente. No se seleccionó ni implementó mecanismo.
+- Lúmina: PR #110 [NCS M0: decouple Lúmina launchers from Nexo Continuity](https://github.com/snowdenxrp/aldea-ia/pull/110) permanece OPEN/DRAFT, no fusionada. CI focalizado y `npm test` pasaron en SHA `572fe085abc11c625d13beb4885a74da2d7ffd95`. El workflow activo de Lúmina no se modificó. No confundir este resultado con evidencia de M0 en POCO.
+- `NEXO_NCS/STATUS.md` es el registro canónico más reciente y prevalece sobre tablas históricas de este documento que todavía digan FB-02 OPEN.
+
+### Gates actuales
+
+- M0 **INCOMPLETO**.
+- FB-01 OPEN/UNKNOWN: raíz legítima y destino real no demostrados.
+- FB-02 PASS/CERRADO solo para la separación bootstrap/Chronicle probada en el SHA indicado.
+- FB-03 OPEN/UNKNOWN; E2/E3 UNKNOWN.
+- FB-04 OPEN/UNKNOWN; no-replace, path stability y control de writers no demostrados.
+- FB-05/P-05 NO RATIFICADA.
+- FB-06/FB-07 OPEN; aceptación final todavía requiere evidencia trazable al mismo SHA y pruebas ambientales aplicables.
+- P01-B = C — NO SELECCIONAR TODAVÍA; E4 NOT READY; D0–D3 OPEN según STATUS.
+- Raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`.
+- Primera publicación operativa de Continuity y efectos protegidos: STOP.
+
+### Próximo trabajo permitido sin nueva autorización
+
+Continuar diseño/documentación condicional de criterios de aceptación FB-04 y preparar la matriz de evidencia FB-06/FB-07. No modificar runtime/tests/workflows, no ejecutar tests/CI, no seleccionar entorno/primitiva, no usar comandos POCO, no crear Continuity real ni fusionar PR #110 sin autorización específica.
+
+---
+
 ## DELTA — EVIDENCIA ACTUALIZADA PARA FB-01 (2026-10-29)
 
 - El contrato de la API dedicada FB-01 sí pasó dentro del workflow integrado en SHA `86e73525f8c63e143b5860d77f0d191e54213976`: [integrated M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309). El workflow también pasó los tests de migración legacy: [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189).
