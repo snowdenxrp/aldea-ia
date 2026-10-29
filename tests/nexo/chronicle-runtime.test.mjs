@@ -1281,8 +1281,9 @@ try {
   assert.equal(await fs.readFile(concurrent.continuityPath, "utf8"), concurrentContinuityBeforeRetry);
   assert.equal(await fs.readFile(concurrent.chroniclePath, "utf8"), concurrentChronicleBeforeRetry);
 
-  // Concurrent first-time bootstrap is not a cross-store transaction. It may
-  // produce a blocked loser, but an explicit retry must converge to one append.
+  // FB-02: combined first-time Continuity bootstrap + Chronicle append is
+  // rejected consistently, including concurrent calls and explicit retry.
+  // No cross-store transaction or mission dispatch may begin on this route.
   const bootstrapRaceArgs = {
     continuityPath: path.join(root, "bootstrap-race-continuity.json"),
     chroniclePath: path.join(root, "bootstrap-race-chronicle.json"),
@@ -1296,22 +1297,19 @@ try {
     runNexoChronicleAppend(bootstrapRaceArgs),
     runNexoChronicleAppend(bootstrapRaceArgs)
   ]);
-  assert.ok(bootstrapRaceResults.filter(result => result.dispatchAttempted === true).length <= 1);
+  for (const result of bootstrapRaceResults) {
+    assert.equal(result.status, "blocked");
+    assert.equal(result.code, "NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
+    assert.equal(result.authorization, "NOT_EVALUATED");
+    assert.equal(result.dispatchAttempted, false);
+    assert.equal(result.redispatchAuthorized, false);
+  }
   const bootstrapRetry = await runNexoChronicleAppend(bootstrapRaceArgs);
-  assert.equal(bootstrapRetry.status, "completed");
-  assert.ok(
-    [...bootstrapRaceResults, bootstrapRetry].filter(result => result.dispatchAttempted === true).length <= 1,
-    "first-time concurrent calls plus explicit retry must dispatch at most once"
-  );
-  const bootstrapChronicle = createNexoChronicleStore({ filePath: bootstrapRaceArgs.chroniclePath });
-  assert.equal((await bootstrapChronicle.loadCurrent()).entries.length, 1);
-  const bootstrapContinuityBeforeFinalReplay = await fs.readFile(bootstrapRaceArgs.continuityPath, "utf8");
-  const bootstrapChronicleBeforeFinalReplay = await fs.readFile(bootstrapRaceArgs.chroniclePath, "utf8");
-  const bootstrapFinalReplay = await runNexoChronicleAppend(bootstrapRaceArgs);
-  assert.equal(bootstrapFinalReplay.status, "completed");
-  assert.equal(bootstrapFinalReplay.dispatchAttempted, false);
-  assert.equal(await fs.readFile(bootstrapRaceArgs.continuityPath, "utf8"), bootstrapContinuityBeforeFinalReplay);
-  assert.equal(await fs.readFile(bootstrapRaceArgs.chroniclePath, "utf8"), bootstrapChronicleBeforeFinalReplay);
+  assert.equal(bootstrapRetry.status, "blocked");
+  assert.equal(bootstrapRetry.code, "NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
+  assert.equal(bootstrapRetry.dispatchAttempted, false);
+  await assert.rejects(fs.access(bootstrapRaceArgs.continuityPath), { code: "ENOENT" });
+  await assert.rejects(fs.access(bootstrapRaceArgs.chroniclePath), { code: "ENOENT" });
 
   // Restart after the append but before lineage/settlement: recover by reading Chronicle, never redispatch.
   const interrupted = await setup("chronicle-interrupted");
