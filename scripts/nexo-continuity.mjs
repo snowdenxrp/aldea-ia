@@ -1,2 +1,2 @@
 // Compatibility re-export. Nexo continuity services live in src/nexo/core.
-export { openNexoContinuityOwner } from "../src/nexo/core/continuity-service.mjs";
+export { openNexoContinuityOwner, bootstrapNexoContinuityStore } from "../src/nexo/core/continuity-service.mjs";
