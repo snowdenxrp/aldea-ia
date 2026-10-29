@@ -1,3 +1,12 @@
+## DELTA — HANDOFF COMPLETO DE CONTINUIDAD M0 (2026-10-29)
+
+- Handoff preparado para relevo de chat: [NCS_NEXT_CHAT_2026-10-29_COMPLETE_M0_CONTINUITY.md](HANDOFF/NCS_NEXT_CHAT_2026-10-29_COMPLETE_M0_CONTINUITY.md), commit `49b33424697f3878fd6ba4b30bb6a508879e0a70`.
+- Punto de continuación: revisión acotada del cambio FB-02 y sus fixtures; no repetir el mapa estático del bypass ni auditorías ya documentadas.
+- FB-02 runtime commit `96f2095b76499eea5457443887ad4288380a51f3`; test commit `0750fe48d7d3df336c09c6a003b806416887ec95`. Tests/CI no ejecutados; cambios aún no validados.
+- Gates preservados: **M0 INCOMPLETO**; FB-01/FB-02 OPEN/UNKNOWN hasta evidencia; FB-03/FB-04 OPEN/UNKNOWN; P-01 OPEN/UNKNOWN; P01-B=C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0–D3 OPEN; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; primera publicación real y efectos protegidos STOP.
+
+---
+
 ## DELTA — FB-02: BLOQUEO DE BOOTSTRAP + OPERACIÓN EN LA MISMA INVOCACIÓN (2026-10-29)
 
 - Cambio autorizado por el propietario: `src/nexo/application/chronicle-append.mjs` bloquea `initializeContinuity: true` antes de abrir stores, inicializar, admitir misión o ejecutar pasos, con `NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED`.
