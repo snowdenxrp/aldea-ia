@@ -253,3 +253,32 @@ Este delta aporta precisión a los cinco bloques; no reabre la auditoría genera
 - Mantener abiertas: política fail-closed ante revocación expirada/reloj desconocido; evidencia KeyMint del dispositivo objetivo; protocolo multiarchivo; modelo de amenaza y gobernanza de recuperación/quórum.
 - ISO 22320 y NIST SP 800-57: afirmaciones normativas específicas permanecen UNKNOWN hasta comprobar el texto completo relevante.
 - Estado global: `PROPOSAL — NOT IMPLEMENTED`. Sin implementación ni pruebas.
+
+
+## 12. Revisión adversarial final de Claude — 2026-10-29
+
+**Límite de evidencia:** esta revisión se basa en extracción documental y no incluye el informe original de Gemini; por tanto, no permite un contraste literal con Gemini. Claude tampoco pudo leer directamente el cuerpo de las referencias Android de KeyMint/SystemClock ni el cuerpo de NIST §8.2.2.2. SQLite se contrastó mediante un espejo documental. La etiqueta “final” describe esta ronda de revisión, no el cierre de los riesgos.
+
+### Hallazgos consolidados
+
+1. **KeyMint / rollback — PARTIAL; dispositivo objetivo UNKNOWN.** La resistencia a rollback de claves no debe tratarse como garantía de version binding o anti-rollback de bundles, bases de datos y archivos de Atlas. La capacidad concreta del dispositivo y la atestación exigida para despliegue siguen sin evidencia. Decisiones pendientes: mecanismo anti-rollback propio y si la atestación específica es condición obligatoria de despliegue. No afirmar que el texto Android quedó verificado directamente en esta ronda.
+
+2. **Revocación offline tras reinicio — laguna de diseño CONFIRMADA; detalle de plataforma PARTIAL.** `elapsedRealtime()` no ofrece continuidad temporal entre reinicios. Sin política explícita, una lista antigua podría aceptarse por error como vigente. Pendiente definir estado al reiniciar sin reloj confiable, funciones que se bloquean con revocación caducada/UNKNOWN y criterio de recuperación. El umbral de 30 días sigue siendo una propuesta, no requisito de Android. El fail-closed debe especificar qué funciones se degradan o bloquean; no basta con una etiqueta abstracta.
+
+3. **Avisos/rutas contradictorias — política Atlas; atribución normativa UNKNOWN.** No atribuir a ISO 22320 una regla de bloqueo sin cláusula verificable. La revisión del alcance público no permite afirmar qué exige el texto completo de la norma. Decisión pendiente: bloquear ante conflicto o mostrar ambas fuentes con fecha/procedencia; definir autoridad prevalente y evitar dejar al usuario sin información accionable. La señalización física y las instrucciones vigentes de Protección Civil son candidatas de prioridad operativa, pero la jerarquía exacta debe documentarse y validarse localmente.
+
+4. **Bundle multiarchivo — límite técnico documentado; protocolo UNKNOWN.** WAL no garantiza atomicidad de conjunto entre bases/archivos externos, y `rename()` no constituye por sí solo un protocolo durable de commit. Una caída podría dejar manifiesto y datos en versiones distintas. Como propuesta por evaluar —no decisión aprobada— Claude sugiere un único punto de commit, recuperación al último bundle íntegro verificado o a estado “sin datos”, y considerar `synchronous=FULL` si se usa SQLite. La durabilidad real sigue dependiendo del sistema de archivos, plataforma y hardware; requiere especificación y pruebas de fallos.
+
+5. **K_backup / recuperación de claves — NO CUBIERTO; UNKNOWN.** El expediente previo no define suficientemente la existencia, propósito, custodia, recuperación, rotación ni revocación de `K_backup` ante compromiso. Antes de decidir quórum hay que definir modelo de amenazas, autoridades y procedimiento de pérdida/compromiso. El quórum es una decisión de gobernanza/arquitectura; no afirmar conformidad con NIST mientras no se verifique el cuerpo pertinente de SP 800-57 §8.2.2.2. Mantener este tema separado de NCS M0.
+
+### Decisiones pendientes para cierre Atlas
+
+- Estado y permisos tras reinicio con reloj/revocación desconocidos; caducidad offline.
+- Anti-rollback de datos y criterio de atestación del dispositivo.
+- Resolución de avisos contradictorios sin dejar al usuario sin orientación segura.
+- Protocolo de commit, validación de integridad y recuperación de bundle multiarchivo.
+- Ciclo de vida y gobernanza de `K_backup`.
+- Verificación directa del texto relevante de Android, NIST y, si se requiere una afirmación normativa, ISO 22320.
+- Recuperar/incorporar el original de Gemini para contraste literal, no reconstruirlo desde resúmenes de terceros.
+
+**Estado global:** `PROPOSAL — NOT IMPLEMENTED`. No hay implementación ni pruebas acreditadas. NCS M0 no se modificó.
