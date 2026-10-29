@@ -15,7 +15,8 @@
 ## Commits
 
 - Runtime: `96f2095b76499eea5457443887ad4288380a51f3`
-- Pruebas: `0750fe48d7d3df336c09c6a003b806416887ec95`
+- Pruebas (casos CLI + API directa): `d154cf257a54c288c55ac2cc5ea49266fba986e5`
+- Ajuste de import de fixture para usar el módulo propietario: `0750fe48d7d3df336c09c6a003b806416887ec95`
 
 Archivos:
 - `src/nexo/application/chronicle-append.mjs`
@@ -28,6 +29,12 @@ Archivos:
 - No se ejecutó bootstrap real ni se creó Continuity operacional.
 - No se cambió la autorización, la raíz legítima ni los controles de publicación.
 - No se afirma que el nuevo código compile o pase las pruebas hasta validarlo en un commit exacto.
+
+## Revisión estática posterior (sin ejecutar pruebas)
+
+- Se inspeccionaron los diffs de los commits de runtime y pruebas; el guard se encuentra al inicio del caso de uso tras extraer opciones, antes de validación de paths y de cualquier apertura/inicialización de stores.
+- La consulta de estado de checks de GitHub para `0750fe48d7d3df336c09c6a003b806416887ec95` devolvió una lista vacía. Esto no es PASS ni evidencia de ejecución; no se lanzó CI.
+- El cambio aún requiere pruebas ejecutadas y revisión de todos los callers antes de cerrar FB-02.
 
 ## Revisión necesaria antes de declarar FB-02 cerrado
 
