@@ -278,12 +278,9 @@ export async function runNexoChronicleAppend(options) {
     continuityPath, chroniclePath, missionId, stepId, content,
     initializeContinuity, initializeChronicle, lockWaitMs
   } = input;
-  // M0 safety boundary: this use case must never initialize Continuity and
-  // continue into mission admission/execution in the same invocation. The
-  // dedicated bootstrap API is intentionally separate and does not return an owner.
-  if (initializeContinuity) {
-    return blocked("NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
-  }
+  // Validate the public input contract before applying the operation-separation
+  // guard. Validation is side-effect-free; the guard still runs before opening
+  // stores, initializing files, admitting a mission, or executing a step.
   if (typeof continuityPath !== "string" || !continuityPath.trim() ||
       typeof chroniclePath !== "string" || !chroniclePath.trim() ||
       typeof missionId !== "string" || !missionId.trim() ||
@@ -292,6 +289,12 @@ export async function runNexoChronicleAppend(options) {
       typeof initializeContinuity !== "boolean" || typeof initializeChronicle !== "boolean" ||
       typeof lockWaitMs !== "number" || !Number.isFinite(lockWaitMs) || lockWaitMs <= 0) {
     return blocked("NEXO_CHRONICLE_SESSION_INPUT_INVALID");
+  }
+  // M0 safety boundary: this use case must never initialize Continuity and
+  // continue into mission admission/execution in the same invocation. The
+  // dedicated bootstrap API is intentionally separate and does not return an owner.
+  if (initializeContinuity) {
+    return blocked("NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
   }
   try { assertUtf8ByteLimit(content, NEXO_RESOURCE_LIMITS.chronicleEntryBytes, "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"); }
   catch (error) { return blocked(error?.code ?? "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED"); }
