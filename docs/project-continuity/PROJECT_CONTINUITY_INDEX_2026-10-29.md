@@ -52,3 +52,10 @@ Estos archivos se crean en una rama documental dedicada para no alterar el estad
 - A2: anti-rollback fuerte necesita un ancla de frescura que no pueda restaurarse junto con los datos; si no existe, declarar la limitación en vez de llamar seguro a un contador local restaurable.
 - A6: existencia y propósito de K_backup siguen UNKNOWN; custodios, quórum, autoridad de recuperación y reglas de rotación/revocación quedan reservados al propietario/autoridad responsable.
 - Estado: propuesta documental; no hay código ni pruebas. Próximo paso: decisiones de autoridad que deben resolverse para A1/A2/A6; después A3/A4. NCS M0 permanece intacto.
+
+
+### Delta Atlas — A3/A4 propuestos (2026-10-29)
+- Se añadió la sección 16 al expediente Atlas con estados offline explícitos: TRUST_CURRENT, TRUST_STALE, REVOCATION_STATUS_UNKNOWN, TRUST_REVOKED, BUNDLE_INVALID y NO_VERIFIABLE_BUNDLE.
+- La propuesta distingue incertidumbre por caducidad/ausencia de revocación de una revocación autenticada. No se fija plazo de caducidad; el reloj monotónico no se trata como durable entre reinicios.
+- Para avisos/rutas, se propone no presentar como segura una ruta que depende de un tramo con conflicto material sin resolver; mostrar procedencia y no inventar una alternativa. La jerarquía de fuentes queda pendiente de validación local.
+- Estado: PROPOSAL — NOT IMPLEMENTED; no hay código ni pruebas. Siguiente orden: protocolo de publicación/recuperación de bundle (A5), después verificación normativa (A7). NCS M0 sigue separado.
