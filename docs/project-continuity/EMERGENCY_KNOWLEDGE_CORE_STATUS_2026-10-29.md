@@ -283,3 +283,17 @@ Las fuentes institucionales respaldan que el número se designa/publica como con
 | B6 — actualización de guías de tsunami | UNKNOWN/PARTIAL | No afectado por este delta. |
 
 **Regla de resolución:** una búsqueda sin resultado no demuestra inexistencia; la publicación de un número no demuestra que esté operativo; un plan institucional general no demuestra por sí solo un procedimiento ciudadano detallado. Mantener el estado `PROPOSAL — NOT IMPLEMENTED`.
+
+
+## 12. Contraste con DeepSeek — 2026-10-29
+
+DeepSeek aporta una tercera revisión documental de B1–B5. Su resultado es compatible con la consolidación previa de Perplexity, con una precisión importante: en B4, “no se encontró una regla mexicana por altitud” no contradice la guía CENAPRECE que indica cinco minutos desde el primer hervor; la guía general no resuelve la altitud ni su propia vigencia.
+
+- **B1 CNSNS 01 800 111 3168:** publicación institucional y mención de atención 24 horas no prueban que responda hoy. Estado: UNKNOWN para operación actual.
+- **B2 publicación del número:** resuelto como publicación oficial reciente, no como servicio operativo probado.
+- **B3 KI/PERE:** UNKNOWN para un protocolo ciudadano específico; la mención de KI en el Informe Nacional 2022 no demuestra criterios de activación, autoridad, población cubierta ni logística de distribución. Fuente: https://www.gob.mx/cms/uploads/attachment/file/843327/Informe_Nacional-_Mexico_2022.pdf
+- **B4 hervido por altitud:** UNKNOWN para regla mexicana específica por altitud; PARTIAL para guía general de cinco minutos de CENAPRECE: http://www.cenaprece.salud.gob.mx/programas/interior/emergencias/descargas/pdf/cuidado_con_el_agua.pdf. DeepSeek no encontró ajuste por altitud en la NOM-127-SSA1-2021: http://diariooficial.segob.gob.mx/nota_detalle.php?codigo=5650705&fecha=02/05/2022. Verificar fecha, vigencia y contexto antes de convertir la guía en instrucción definitiva.
+- **B5 incendios forestales:** PARTIAL. La noticia estatal del Plan Operativo de Manejo del Fuego no demuestra un protocolo ciudadano completo con rutas, criterios y puntos de reunión: https://www.col.gob.mx/Portal/detalle_noticia/NjQ0MDk=. El programa estatal 2026 y los refugios son evidencia de planificación, no prueba de un procedimiento público específico para Manzanillo.
+- **B6 tsunami:** sin cambio.
+
+No se realizaron llamadas ni pruebas operativas. Las búsquedas negativas no demuestran inexistencia; los documentos publicados no prueban disponibilidad actual. Estado global: PROPOSAL — NOT IMPLEMENTED. Código y NCS M0 sin cambios.
