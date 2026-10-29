@@ -171,3 +171,11 @@ No repetir el inventario general de Continuity ni reauditar legacy, workflow, en
 - No inventar IDs, colas, reintentos, tombstones, wrappers transaccionales ni un objeto monolítico `GenesisRoot`.
 - No mezclar Nexo con Lúmina.
 - La meta es cerrar M0 con una línea de meta finita y verificable, no perpetuar auditorías ni ampliar alcance.
+
+
+## Actualización de validación automatizada — 2026-10-29
+
+Los tests de contrato/store de Continuity y migración legacy pasaron en CI con SHA de código `86e73525f8c63e143b5860d77f0d191e54213976`: [workflow integrado M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309) y [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189).
+
+Esto confirma PASS de la cobertura automatizada ya descrita arriba; no cierra la legitimidad de la raíz real, no resuelve TOCTOU ni demuestra exclusión de writers no cooperativos. No se ejecutó bootstrap real. FB-01 queda OPEN/UNKNOWN para el destino/raíz operacionales; FB-03/FB-04 y E2/E3 siguen OPEN/UNKNOWN. No repetir los tests ni la auditoría estática ya hecha.
+
