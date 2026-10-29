@@ -1,3 +1,13 @@
+## DELTA — RUTA MÍNIMA DE CIERRE M0 SIN REPETIR AUDITORÍAS (2026-10-29)
+
+- Nuevo artefacto: [NCS_M0_MINIMAL_CLOSURE_ROUTE_2026-10-29.md](BUILD/NCS_M0_MINIMAL_CLOSURE_ROUTE_2026-10-29.md), commit `23cab15454c5a73b725303f2d0ad04de8170db24`.
+- Reutiliza la trazabilidad NC-01/NC-02, el mapa estático de no-bypass y la brecha E2/E3 ya documentados. No se repitió el censo de código ni la auditoría de legacy/persistencia.
+- Ordena la ruta de cierre por FB-01 → FB-02 → FB-03/FB-04 → FB-05 → FB-06/FB-07, separando trabajo técnico, decisión del propietario y evidencia de ejecución. No afirma que ningún gate esté cerrado.
+- Sin cambios ejecutables: no runtime/tests/workflows modificados; no tests, CI/Actions, comandos del POCO, bootstrap real ni efectos protegidos.
+- Gates preservados: **M0 INCOMPLETO**; FB-01/FB-02 OPEN/UNKNOWN; FB-03/FB-04 OPEN/UNKNOWN; FB-06/FB-07 OPEN; P01-B=C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0–D3 OPEN; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; primera creación operativa y efectos protegidos STOP.
+
+---
+
 ## DELTA — BRECHA E2/E3 DEL POCO ACOTADA SIN REPETIR EL CENSO (2026-10-29)
 
 - Nuevo artefacto: [NCS_M0_POCO_E2_E3_EVIDENCE_GAP_2026-10-29.md](BUILD/NCS_M0_POCO_E2_E3_EVIDENCE_GAP_2026-10-29.md), commit `b839cb44d6c44d5548305de1c25d0ab25b46b2e1`.
