@@ -15,10 +15,11 @@
    - Revisión adversarial provisional de Claude añadida a Atlas: política fail-closed ante revocación expirada sigue abierta; ISO 22320 y NIST SP 800-57 quedan UNKNOWN para afirmaciones normativas específicas hasta comprobar texto completo; KeyMint del dispositivo objetivo y recuperación multiarchivo sin cierre.
 
 2. [Atlas Offline — estado de auditoría y continuidad](ATLAS_OFFLINE_AUDIT_STATUS_2026-10-29.md)
-   - Auditoría de Perplexity y el informe original de Gemini (bloques 1–5) ya están consolidados y cotejados en el expediente Atlas.
+   - Informe original de arquitectura de Gemini (bloques 1–5) recibido directamente del usuario y consolidado en la sección 13 del expediente Atlas; queda disponible para contraste literal con Claude.
    - Estado: `PROPOSAL — NOT IMPLEMENTED`.
-   - Cotejo: no aparece contradicción material central en KeyMint/rollback, reloj offline, avisos conflictivos, persistencia multiarchivo ni recuperación de claves. Se mantienen como propuestas, no requisitos de Android/ISO/NIST, los umbrales de 30 días, el bloqueo de rutas, staging/bundle_id y el quórum offline.
+   - La revisión adversarial final de Claude está registrada en el expediente. Persisten decisiones abiertas sobre anti-rollback de datos, estado tras reinicio y revocación, conflictos de rutas, commit/recuperación multiarchivo y ciclo de vida de K_backup. Afirmaciones normativas de ISO/NIST y detalles de Android que no se verificaron directamente permanecen UNKNOWN/PARTIAL.
    - Pendientes técnicos: evidencia de atestación del dispositivo objetivo; política durable de caducidad/revocación tras reinicios; reglas de autoridad y resolución de avisos; protocolo probado de publicación/recuperación multiarchivo; modelo de amenaza y gobernanza de quórum.
+   - No hay implementación ni pruebas acreditadas; no se ha declarado cierre de arquitectura. Próximo paso: contraste literal del informe Gemini ya incorporado y resolución explícita de decisiones pendientes.
    - Hallazgo local de tsunami permanece: portal municipal presenta rutas/puntos en versión preliminar y en validación comunitaria; no tratarlos como rutas validadas. Próximo paso: revisión adversarial de Claude, ya con enlaces directos y ambos informes registrados.
 
 ## Reglas comunes
