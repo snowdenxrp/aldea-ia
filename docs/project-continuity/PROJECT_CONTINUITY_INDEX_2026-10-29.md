@@ -66,3 +66,10 @@ Estos archivos se crean en una rama documental dedicada para no alterar el estad
 - Bloqueo central: coordinación del puntero de bundle activo con el ancla anti-rollback; dos escrituras independientes no constituyen una transacción atómica.
 - Se registró una matriz de fallos propuesta, incluyendo interrupciones durante staging, commit, actualización del ancla, WAL/checkpoint, falta de espacio y errores de E/S.
 - No se implementó ni probó el protocolo; sigue PROPOSAL — NOT IMPLEMENTED. Siguiente: revisar atribuciones normativas A7 y registrar exactamente qué se verificó. NCS M0 permanece separado.
+
+
+### Delta Atlas — A7, fuentes normativas (2026-10-29)
+- Se añadió la sección 18 con comprobación directa del texto oficial de NIST SP 800-57 Part 1 Rev. 5 §8.2.2.2: la recuperación de claves se evalúa caso por caso y no se prescribe allí un quórum offline específico.
+- La ficha oficial de ISO 22320:2018 confirma el alcance general de gestión de incidentes y su vigencia; el texto íntegro no se revisó, por lo que cláusulas concretas y un supuesto mandato de bloqueo de rutas siguen UNKNOWN/no atribuibles.
+- La referencia oficial de Android confirma que elapsedRealtime() cuenta desde el arranque e incluye deep sleep; no resuelve continuidad temporal entre reinicios.
+- A7 queda parcialmente documentado, no es certificación ni evaluación de conformidad. Estado global PROPOSAL — NOT IMPLEMENTED; no hay código ni pruebas; NCS M0 sigue separado.
