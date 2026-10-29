@@ -105,14 +105,14 @@ Fuentes citadas:
 
 ### Redacción conservadora
 
-No presentar el 800 como línea activa confirmada. Solicitar a CNSNS confirmación directa de vigencia y alcance. Si el proyecto conserva el número histórico, etiquetarlo claramente como no confirmado. No atribuir a CENAPRED 2026 la publicación del número sin la referencia específica.
+No presentar el 800 como línea activa confirmada. Solicitar a CNSNS confirmación directa de vigencia y alcance. Si el proyecto conserva el número histórico, etiquetarlo claramente como no confirmado. Se encontró una referencia específica de 2026: curso RIFR26048X de CENAPRED en Cursos @prende.mx. Esto acredita publicación oficial reciente del número, no que la línea siga operativa.
 
 ## 6. Bloqueos residuales
 
 | ID | Bloqueo | Estado | Acción siguiente |
 |---|---|---|---|
-| B1 | Funcionamiento y alcance actual del 01 800 111 3168 | UNKNOWN | Confirmación directa de CNSNS. |
-| B2 | Supuesto material CENAPRED 2026 con el número 800 | UNKNOWN | Obtener URL o documento específico y comprobar el pasaje. |
+| B1 | Funcionamiento y alcance actual del 01 800 111 3168 | UNKNOWN (publicado oficialmente en 2026; operación actual no comprobada) | Confirmación directa de CNSNS. |
+| B2 | Material CENAPRED 2026 con el número 800 | RESUELTO COMO PUBLICACIÓN; operación UNKNOWN | La ficha del curso RIFR26048X publica el número para reportar fuentes radiactivas perdidas/robadas; no prueba que la línea responda hoy. |
 | B3 | Protocolo mexicano de distribución de KI | UNKNOWN | Identificar fuentes oficiales públicas o registrar que requiere consulta formal. |
 | B4 | Norma mexicana de hervido por altitud | UNKNOWN | Buscar guía/NOM oficial; CDC a 2.000 m es propuesta operativa, no norma mexicana. |
 | B5 | Protocolo ciudadano de evacuación por incendio forestal | PARCIAL | Incorporar protocolos oficiales locales/estatales específicos, no extrapolar una guía general. |
@@ -130,3 +130,34 @@ No presentar el 800 como línea activa confirmada. Solicitar a CNSNS confirmaci�
 ## Estado final
 
 `PROPOSAL — NOT IMPLEMENTED`. No se declara implementación, pruebas ni validación integral. Este archivo preserva el estado y la ruta de continuación; no sustituye las fuentes primarias ni una revisión profesional de salud pública.
+
+
+## 8. Delta de evidencia verificada — 2026-10-29
+
+### B2 — Publicación oficial reciente del número CNSNS
+
+Fuente primaria consultada: https://cursos.aprende.gob.mx/courses/course-v1:CENAPRED%2BRIFR26048X%2B2026_06/about
+
+- La ficha identifica el curso como **“Radiaciones Ionizantes: fuentes radiactivas”**, de CENAPRED, código **RIFR26048X**.
+- En la sección de preguntas frecuentes, indica que ante una fuente radiactiva perdida o robada se debe alejarse y avisar a las autoridades, y publica:
+  - CNSNS: **01 800 111 3168**
+  - Centro Nacional de Comunicación y Operación de Protección Civil: **01 800 004 1300**
+  - Emergencias: **911**
+- La ficha muestra ©2026 y corresponde al curso de CENAPRED en Cursos @prende.mx. Es evidencia de que el número se seguía publicando en material institucional accesible en 2026.
+- **Límite probatorio:** no se ha probado que el 800 siga contestando, que el servicio esté activo ni que conserve el mismo alcance. No describirlo como “línea operativa confirmada”.
+- La ficha también advierte que el curso es informativo y no habilita al participante para responder por sí mismo a una emergencia radiológica. La guía del proyecto debe mantener la instrucción de alejarse, no manipular la fuente y avisar a autoridades.
+
+### B6 — Guía local de tsunami localizada; fecha y validación operativa requieren cautela
+
+Fuente municipal: https://tsunami.manzanillo.gob.mx/
+
+- El sitio se identifica como del Ayuntamiento de Manzanillo / Protección Civil y Bomberos y presenta once zonas de evacuación, mapas, rutas y puntos de encuentro.
+- La misma página marca explícitamente: **“Rutas y puntos de encuentro en validación comunitaria. Versión preliminar: sigue siempre la señalización instalada en campo.”**
+- El sitio registra actividades de 2026, incluido el simulacro del 19 de septiembre de 2026; esto prueba actividad/publicación reciente, no necesariamente la fecha de revisión de cada mapa ni que todas las rutas hayan sido validadas.
+- Tratarlo como fuente local oficial útil para consulta y para localizar mapas, pero no convertir automáticamente cada ruta/punto en dato de navegación garantizado. Conservar su advertencia de versión preliminar.
+- CENAPRED también publicó recientemente una nota sobre las lecciones de los sismos de Colima, con recomendación de evacuar a zona alta ante un sismo fuerte y prolongado en costa y no esperar la alerta; verificar la fecha exacta de publicación al consolidar la ficha final: https://www.gob.mx/cenapred/articulos/que-aprendimos-de-los-sismos-de-colima-ocurridos-hace-mas-de-20-anos
+
+## 9. Cambio neto en el registro
+
+- **B2:** deja de ser UNKNOWN respecto de la existencia de material CENAPRED 2026; queda documentada la publicación institucional. La vigencia telefónica real sigue UNKNOWN.
+- **B6:** ya hay una fuente municipal actual con materiales de evacuación por tsunami; sigue pendiente validar la fecha/versión de cada mapa y su estado operativo. No declarar cerrada toda la cuestión de “guía más reciente”.
