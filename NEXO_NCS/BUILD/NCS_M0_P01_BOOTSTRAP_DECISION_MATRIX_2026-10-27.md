@@ -1,3 +1,35 @@
+## Delta documental — contrato verificable del entorno restringido de primera publicación (2026-10-29)
+
+**Base normativa:** decisión del propietario [NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md](NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md). Esta delta operacionaliza los cinco requisitos ya establecidos en esa decisión; no elige mecanismo, no ratifica D1/D2/D3 y no autoriza ejecución.
+
+### Alcance y precondiciones que el contrato deberá hacer verificables
+
+| ID de precondición | Pregunta observable que debe contestarse antes de cualquier publicación | Condición de STOP |
+|---|---|---|
+| RE-01 — identidad de la invocación | ¿Se identifica una invocación concreta, su revisión exacta de código/contrato y el límite de inicio/fin de la operación? | Invocación, versión o frontera no identificable. |
+| RE-02 — raíz y destino efectivos | ¿La evidencia enlaza la raíz explícita validada con el `filePath` efectivo del store, sin fallback ambiental, ruta legacy ni destino supuesto? | Cualquier eslabón ausente, ambiguo o solo inferido por nombre convencional. |
+| RE-03 — actores dentro del alcance | ¿Están enumeradas las clases de procesos/escritores que pueden alcanzar el destino durante la ventana, distinguiendo actores incluidos y excluidos por una precondición concreta? | Clase relevante desconocida o exclusión afirmada sin evidencia observable. |
+| RE-04 — no intervención de actores excluidos | ¿Qué evidencia previa y mantenida demuestra que los actores excluidos no pueden escribir en el destino durante toda la ventana? | Evidencia solo puntual cuando no cubre la ventana, o posibilidad de reanudación no controlada. |
+| RE-05 — disparadores externos | ¿Se han considerado los mecanismos de lanzamiento que podrían iniciar otro escritor durante la ventana, incluidos los declarados en la configuración versionada aplicable? | Disparador pertinente no clasificado o cobertura desconocida. No se presume que un workflow esté activo ni inactivo sin evidencia. |
+| RE-06 — estado previo | ¿Puede distinguirse ausencia real de archivo existente, corrupción, formato/esquema inválido, error de permisos/lectura y conflicto? | Error interpretado como ausencia, objeto existente susceptible de sobrescritura o clasificación UNKNOWN. |
+| RE-07 — publicación única y resultado | ¿El contrato preserva cualquier estado preexistente/cambiado por otro escritor y bloquea conflicto, interrupción o resultado ambiguo sin reintento automático? | Posible overwrite, segundo inicializador no excluido o resultado no determinable. |
+| RE-08 — frontera de no continuación | ¿La operación termina sin entregar un owner operacional ni continuar a Chronicle, admisión, PREPARED, dispatch, reconciliación o mutación de dominio? | La frontera depende de disciplina del caller o no puede probarse en el flujo completo. |
+| RE-09 — vigencia y trazabilidad | ¿Cada evidencia se vincula al destino, ventana y SHA revisados, y se sabe cuándo deja de ser válida? | Evidencia de otro SHA/entorno, obsoleta o no reproducible. |
+
+Estas preguntas son requisitos para completar el contrato, no afirmaciones de que el entorno actual los satisface. No prescriben una tecnología de aislamiento, un lock, un supervisor, un comando ni una estrategia de filesystem. Esas elecciones requieren análisis posterior y autorización pertinente; ninguna puede sustituir la evidencia exigida.
+
+### Resultado del contrato de entorno
+
+- **Admisible para evaluación posterior:** todas las precondiciones aplicables están especificadas, son observables y existe evidencia válida para la invocación/destino concretos.
+- **No admisible:** cualquier precondición no definida, no observable, contradictoria o no mantenible implica `STOP / UNKNOWN`.
+- Un entorno restringido reduce el alcance de la garantía; no convierte la exclusión limitada en garantía universal ni legitima por sí mismo la creación.
+- Satisfacer RE-01…RE-09 no resuelve por sí solo P01-A/P01-G (objeto y autoridad), P01-E/P01-F (estado previo/ambigüedad), P01-H (verificación ligada al SHA) ni los contratos D0–D3.
+- P01-B conserva `C — NO SELECCIONAR TODAVÍA`; el entorno restringido aprobado como alcance no selecciona automáticamente una opción técnica de aislamiento.
+
+**Estado tras esta delta:** contrato del entorno restringido todavía incompleto; no hay evidencia de cumplimiento en un entorno real. P-01 OPEN/UNKNOWN; M0 INCOMPLETO; raíz PENDING/UNKNOWN; D1-IMPLEMENTATION NO AUTORIZADA; P-05 NO RATIFICADA; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Solo documentación; no código, pruebas, CI/Actions, runtime, bootstrap ni dispositivo.
+
+---
+
 ## Delta documental — tercera ruta de inicialización Continuity (2026-10-28)
 
 La clasificación E3 se amplía con una tercera ruta estática: `npm run nexo chronicle-append --initialize-continuity`. El router `scripts/nexo.mjs` deriva `chronicle-append` a `scripts/nexo-chronicle-session.mjs`; esa sesión reconoce `--initialize-continuity` y `src/nexo/application/chronicle-append.mjs` lo entrega como `allowEmptyInitialization` al owner de Continuity. La misma ruta continúa hacia la operación de Chronicle y ejecución owner-backed; no es bootstrap aislado. Blobs comprobados: `30a53de2f108aa255a1dfd61ce78c19788de160b`, `5a20044bcddbaee79d0117934eefaea5f3b2c3bc` y `8a6b97fcbdaa90fa51e7c9f7e498bae265aa918c`.
