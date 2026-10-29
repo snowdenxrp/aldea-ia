@@ -6,9 +6,10 @@
 ## Expedientes
 
 1. [Emergency Knowledge Core — estado y continuidad](EMERGENCY_KNOWLEDGE_CORE_STATUS_2026-10-29.md)
-   - Último material recibido: delta focalizado de Qwen + verificación oficial propia del 2026-10-29 (curso CENAPRED RIFR26048X publica el 800; operación actual sigue UNKNOWN).
+   - Último material recibido: informe focalizado de Qwen (2026-10-29), consolidado en el expediente ECK. No se repitió la auditoría general de filtros/SODIS.
    - Estado: `PROPOSAL — NOT IMPLEMENTED`.
-   - Pendientes prioritarios: protocolo mexicano de KI, norma/guía de hervido por altitud, evacuación por incendio forestal en Colima y confirmación operativa de la línea CNSNS. Revisión general de filtros/SODIS no se repite salvo contradicción.
+   - Clasificación tras el delta: B2 (publicación oficial CENAPRED 2026 del 01 800 111 3168) resuelto como publicación; B1 (operatividad actual de la línea) sigue UNKNOWN; B3 (marco KI/PERE) PARTIAL hasta validar procedimiento en fuente primaria; B4 (guía mexicana de hervido por altitud) UNKNOWN; B5 (evacuación ciudadana por incendio forestal en Colima) PARTIAL; B6 sigue pendiente.
+   - No aceptar “publicado” como equivalente a “operativo” ni búsqueda negativa como prueba de inexistencia. Los detalles y URLs están en el expediente ECK.
    - Bloqueos adicionales B1–B6 registrados en su expediente.
 
 2. [Atlas Offline — estado de auditoría y continuidad](ATLAS_OFFLINE_AUDIT_STATUS_2026-10-29.md)
