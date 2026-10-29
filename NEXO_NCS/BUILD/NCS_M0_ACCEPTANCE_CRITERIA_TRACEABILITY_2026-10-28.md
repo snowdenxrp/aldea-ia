@@ -1,3 +1,68 @@
+## DELTA — MATRIZ DE ACEPTACIÓN FINAL FB-06 / FB-07 (2026-10-29; DOCUMENTAL, NO EJECUTADA)
+
+**Propósito:** convertir la línea de meta M0 en una matriz de evidencia verificable y evitar que un PASS documental, un CI histórico o un resultado de otra rama/SHA se use como cierre global. Esta matriz no ratifica políticas ni autoriza ejecución.
+
+### 1. Distinción obligatoria
+
+- **FB-06 — aceptación/traceabilidad:** demostrar que cada requisito de salida tiene evidencia identificable, suficiente y ligada al mismo estado de código/contrato que se pretende aceptar. No equivale a ejecutar el producto en el entorno objetivo.
+- **FB-07 — verificación final reproducible:** ejecutar, con autorización específica, el conjunto final de pruebas y verificaciones contra el SHA candidato exacto; conservar resultados, workflow/run, commit, alcance y limitaciones. No equivale a autorización de publicación operativa ni a commissioning.
+- Un mismo resultado no se reutiliza como evidencia de dos propiedades distintas si no las prueba realmente. CI en Ubuntu/Node valida el comportamiento probado en ese entorno; no demuestra filesystem Android, launcher POCO, exclusión de procesos, autoridad de la raíz ni efectos protegidos.
+
+### 2. Matriz de criterios y evidencia
+
+| ID | Criterio de salida | Evidencia admisible para PASS | Evidencia insuficiente / fallo | Estado actual |
+|---|---|---|---|---|
+| A-01 | Contrato M0 y línea de meta congelados | Documento canónico ratificado, alcance explícito, autoridad/decisiones separadas de propuestas, SHA/blob y registro de aprobación | Borrador, chat, recomendación del asistente o texto contradictorio sin reconciliar | OPEN — falta ratificación/cierre de decisiones |
+| A-02 | Primera creación Continuity limitada | Código y pruebas en el mismo SHA; root explícita→destino efectivo; sin `legacyMemory`; snapshot vacío; sin owner; resultado conservador | Export de API sin caller/control de entrada; test unitario aislado; preflight sujeto a TOCTOU | OPEN / UNKNOWN — FB-01 |
+| A-03 | No-continuación y no-bypass | Grafo de entrypoints actualizado; prueba negativa de CLI/API; no admisión, Chronicle, persistencia operacional ni dispatch tras bootstrap; migración legacy preservada fuera de la ruta M0 | Solo probar función dedicada; ruta alternativa no evaluada; CI antiguo de otro SHA | FB-02 PASS en alcance Chronicle validado; cierre end-to-end queda condicionado al alcance de A-02/A-03 |
+| A-04 | Aislamiento ambiental sostenido | Entorno/launcher/destino identificados; inventario cerrado de writers; control efectivo que impida nuevos lanzamientos y escrituras durante ventana; evidencia observable de continuidad del control | Lista de procesos vacía en un instante, cerrar app, lock cooperativo, suposición sobre Termux o app M1 | OPEN / UNKNOWN — FB-03, E2/E3 |
+| A-05 | Publicación sin reemplazo ni ambigüedad | Prueba del mecanismo en filesystem objetivo; destino concurrente permanece intacto; estado previo/temporal/corrupción tratados como STOP/UNKNOWN; padres/root protegidos contra sustitución; protocolo de commit separado | `access()+rename()`, `open("wx")` con archivo parcial, hard link sin soporte demostrado, cleanup de temporales desconocidos | OPEN / UNKNOWN — FB-04 |
+| A-06 | Política de recuperación/autoridad aceptada | Decisión del propietario ratificada, semántica de STOP/UNKNOWN/reanudación, raíz legítima y límites documentados | Inferir autoridad de ruta/clave/dispositivo, aprobar P-05 por recomendación, convertir UNKNOWN en PASS | OPEN — FB-01/FB-05; P-05 no ratificada |
+| A-07 | Integridad de separación Nexo/Lúmina | Diff revisado; pruebas focalizadas; CI en SHA de PR; persistencia legacy opaca; ninguna lectura/escritura de Continuity por launchers Lúmina en el alcance acordado | Suponer que CI de PR cierra M0 o que workflow Lúmina fue desactivado | PR #110 CI PASS en SHA `572fe085abc11c625d13beb4885a74da2d7ffd95`; PR OPEN/DRAFT, no fusionada |
+| A-08 | Verificación final reproducible | Matriz de pruebas aprobada; tests focalizados + suite requerida + workflows especializados autorizados; todos ligados al SHA candidato; resultados completos y revisados | Runs de SHA anterior, CI de rama distinta, workflow definido pero no ejecutado, pruebas parciales | OPEN — FB-07 |
+| A-09 | Reconciliación final y acta de cierre | STATUS actualizado; todos los IDs PASS/NOT APPLICABLE con justificación; UNKNOWN=0 en requisitos críticos; SHA de código y documentos; riesgos residuales aceptados por autoridad competente | Checklist sin fuentes, PASS inferido, gates críticos UNKNOWN, M0_BUILD_COMPLETE por documentación | OPEN — FB-06/FB-07 |
+
+### 3. Reglas de evidencia por tipo
+
+1. **Código:** identificar ruta, símbolo y SHA exacto; distinguir implementación observada de comportamiento probado.
+2. **Tests:** identificar archivo/caso, resultado y SHA que contiene tanto implementación como test. Un test escrito pero no ejecutado es DOCUMENTED/NOT RUN.
+3. **CI:** conservar workflow, run ID, commit SHA, conclusión y jobs realmente ejecutados. No trasladar PASS entre SHAs.
+4. **Entorno POCO:** identificar runtime real, launcher, filesystem, destino, writers y ventana de control; evidencias de Android/POCO no se sustituyen con CI Ubuntu.
+5. **Autoridad:** solo decisión del propietario ratificada para decisiones reservadas; una ruta explícita no prueba legitimidad de su contenido.
+6. **Operación:** publicación real y efectos protegidos tienen autorización propia. Completar FB-06/FB-07 no concede por sí mismo permiso de ejecución operacional.
+
+### 4. Condiciones de salida M0
+
+M0 solo puede declararse completo cuando, de forma acumulativa:
+
+- los criterios A-01…A-09 aplicables tienen evidencia verificable y trazable;
+- no queda UNKNOWN en ninguna propiedad crítica de primera creación, control de writers, no-replace, autoridad o no-bypass;
+- pruebas/CI finales corresponden al mismo SHA candidato y el diff ha sido revisado;
+- decisiones reservadas están ratificadas, sin elevar propuestas a política;
+- límites y exclusiones de M0 están explícitos; M1/STEP 7 no se usan para rellenar huecos de M0;
+- existe acta de aceptación final, separada de cualquier autorización para publicar Continuity o activar efectos protegidos.
+
+**Regla:** si cualquier propiedad crítica está UNKNOWN, el resultado global es **M0 INCOMPLETO / STOP**. No existe compensación por cantidad de tests PASS ni por documentación abundante.
+
+### 5. Aplicación al estado conocido (2026-10-29)
+
+- FB-02: PASS/CERRADO en el alcance concreto validado por CI en SHA `86e73525f8c63e143b5860d77f0d191e54213976`; no extender ese PASS a entorno POCO ni a todos los callers sin evidencia adicional.
+- PR #110: CI PASS en SHA `572fe085abc11c625d13beb4885a74da2d7ffd95`; PR sigue OPEN/DRAFT y no fusionada.
+- FB-01: OPEN/UNKNOWN; legitimidad de raíz y aplicabilidad al destino real pendientes.
+- FB-03: OPEN/UNKNOWN; runtime/launcher M1→NCS y control de writers no demostrados.
+- FB-04: OPEN/UNKNOWN; mecanismo no-replace, path stability y commits seguros no demostrados.
+- FB-05/P-05: NO RATIFICADA.
+- FB-06/FB-07: OPEN; esta matriz define criterios, no aporta resultados de ejecución.
+- E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`.
+- Primera publicación Continuity y efectos protegidos: STOP.
+- **M0 INCOMPLETO.**
+
+### 6. Límites de esta actualización
+
+Solo reconciliación documental. No se modificó runtime, tests ni workflows; no se ejecutó test, CI/Actions, comando POCO ni bootstrap; no se seleccionó entorno/primitiva; no se fusionó PR #110. Para la siguiente fase ejecutable se requiere autorización separada y acotada para implementar pruebas/validaciones específicas, y no se debe confundirla con autorización de publicación real.
+
+---
+
 ## DELTA — CRITERIO NEGATIVO DE ACEPTACIÓN NO-CONTINUATION (2026-10-29; DOCUMENTAL, NO EJECUTADO)
 
 **Propósito:** convertir la brecha estática FB-01/FB-02 en una condición falsable para una futura verificación, sin cambiar código ni cerrar gates.
