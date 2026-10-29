@@ -1,3 +1,26 @@
+## DELTA — TRAZABILIDAD DE LA FRONTERA BOOTSTRAP FB-01 / FB-02 (2026-10-28)
+
+Referencia de contrato actualizado: `NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md`, sección 10, commit `457772f1774463037291dc46e548925e487b23da`, blob verificado `cbceb420aca3cdfa817ac7904252a935f0c16536`.
+
+### Reconciliación de requisitos con evidencia actual
+
+| Requisito de la frontera propuesta | Evidencia estática disponible | Qué falta para aceptación M0 | Estado correcto |
+|---|---|---|---|
+| La ruta deriva de una raíz explícita validada | `openNexoContinuityOwner` recibe `filePath`; el contrato de raíz requiere `--root` explícito | Demostrar la cadena de llamada completa hasta el destino efectivo y rechazo de fallback | UNKNOWN; FB-01 OPEN |
+| La creación usa solo el snapshot vacío M0 | `continuity-service.mjs` define el snapshot vacío v1; si existe `legacyMemory`, esa rama precede a `allowEmptyInitialization` | Un flujo de bootstrap M0 que excluya la migración legacy y evidencia negativa correspondiente, después de autorización | Discrepancia de alcance conocida; no PASS |
+| Bootstrap termina antes de operaciones posteriores | El servicio devuelve `store`, `owner` y `current`; `chronicle-append.mjs` importa el servicio y posee una ruta compuesta de ejecución | Contrato/API separado de propósito único y prueba de no continuación a Chronicle, admisión, PREPARED, dispatch o mutaciones | UNKNOWN; FB-01/FB-02 OPEN |
+| Estado previo y publicación se tratan de forma conservadora | El servicio distingue el error `NEXO_CONTINUITY_STORE_NOT_FOUND`; los resultados de inicialización se vuelven a cargar si son `committed` o `conflict` | Evidencia completa para errores distintos de ausencia, corrupción, concurrencia, interrupción y resultado ambiguo; sin sobrescritura/reintento automático | Requisitos pendientes; FB-04 OPEN/UNKNOWN |
+| Aislamiento operacional sostenido | La matriz y la inspección existente no prueban exclusión universal de escritores/launchers | Mantener P01-B=C hasta que exista decisión explícita; después evaluar el entorno y mecanismo concretos, no uno hipotético | FB-02 OPEN; E2/E3 UNKNOWN |
+| Cierre reproducible | Los documentos fijan criterios, pero no hay verificación ejecutada contra SHA de cierre | Solo después de contrato congelado y autorización específica: pruebas de no-bypass y evidencia CI vinculada al SHA evaluado, más acta de aceptación | FB-07 pendiente; M0 INCOMPLETO |
+
+### Decisión de secuencia
+
+La sección 10 del contrato se considera una **especificación candidata de requisitos**, no evidencia de implementación. El trabajo documental sobre la forma y frontera del bootstrap está suficientemente acotado para no seguir reescribiendo el mismo diseño. El próximo avance de diseño debe concentrarse en la relación entre (a) la regla de primera creación ya aprobada con límites y su aplicabilidad al destino concreto (FB-01), y (b) la decisión de aislamiento P01-B, cuyo estado vigente sigue siendo C — NO SELECCIONAR TODAVÍA (FB-02). No seleccionar un mecanismo de aislamiento por inferencia ni declarar que una propuesta satisface P01-B.
+
+No se cambió código ejecutable. No se ejecutaron tests, CI/Actions, runtime, bootstrap ni comandos del dispositivo. Esta delta no altera ningún gate.
+
+---
+
 ## DELTA — ALCANCE DE MIGRACIÓN LEGACY EN FB-01 (2026-10-28)
 
 La revisión del contrato de raíz y de separación Nexo/Lúmina confirma que la migración/cutover legacy está fuera de M0 y no puede ocurrir automáticamente. El código de `openNexoContinuityOwner` aún tiene una rama que proyecta `legacyMemory` cuando el store no existe. Esta capacidad existente no equivale a una ruta aprobada; es una discrepancia entre el comportamiento disponible y el alcance contractual objetivo. Recomendación pendiente de implementación autorizada: bootstrap M0 vacío y explícito; migración legacy separada, futura y sujeta a contrato propio. FB-01 sigue OPEN/UNKNOWN, sin cambio de gates. No ejecución.
