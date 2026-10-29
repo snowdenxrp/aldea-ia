@@ -1,3 +1,15 @@
+## DELTA — CONTRATO DE PRECONDICIONES DEL ENTORNO RESTRINGIDO (2026-10-29)
+
+La matriz P-01 se actualizó y se volvió a leer desde GitHub: [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `6ebceecb9389af87b3298ac63731b373209048a7`, blob `4b7c3128b9c858cfbef640a8eefd23acea84a92f`. La delta traduce la decisión del propietario de permitir un entorno restringido —sin elegir mecanismo— en nueve precondiciones verificables RE-01…RE-09: identidad/frontera de invocación, vínculo raíz→destino, actores escritores, exclusión sostenida, disparadores externos, estado previo, publicación/ambigüedad, no continuación operacional y trazabilidad/vigencia de evidencia.
+
+También se actualizó y verificó [NCS_M0_FINITE_BLOCKERS_AFTER_POCO_INSPECTION_2026-10-28.md](BUILD/NCS_M0_FINITE_BLOCKERS_AFTER_POCO_INSPECTION_2026-10-28.md), commit `09587e6a148215dd23f6589c4c66f601810847b0`, blob `d674a0f807fe57865032d93387076f2676779af7`, para enlazar el avance sin declarar cerrado FB-03.
+
+**Qué se consiguió:** las preguntas que definen el entorno admisible ya están enumeradas y cada una tiene una condición explícita de STOP. **Qué no se consiguió:** no hay aún un entorno concreto evaluado ni evidencia que satisfaga esas precondiciones. No se eligió filesystem, lock, launcher, mecanismo de quiescencia ni opción P01-B; no se presumió actividad/inactividad de workflows. El siguiente paso es contrastar RE-01…RE-09 contra un entorno específico solo cuando exista evidencia/autoridad para evaluarlo; si alguna precondición no puede demostrarse, conservar STOP/UNKNOWN.
+
+Gates sin cambio: M0 INCOMPLETO; FB-01/FB-02 OPEN; FB-03 OPEN; P01-B=C — NO SELECCIONAR TODAVÍA; P01-A OPEN/UNKNOWN; P01-G PENDING/UNKNOWN; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; P-05 NO RATIFICADA; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Solo documentación; no código, tests, CI/Actions, runtime, bootstrap ni dispositivo.
+
+---
+
 ## DELTA — TRAZABILIDAD FB-01/FB-02 CONTRA FRONTERA PROPUESTA DE BOOTSTRAP (2026-10-28)
 
 La matriz [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md) se actualizó y verificó: commit `9368dc5da53cfdc2913591e081e62e5d2278e1f7`, blob `2c255a7d3174611285c9c69bf302cea116eabd83`. La nueva delta cruza la sección 10 del borrador FB-01 con los requisitos de aceptación: raíz explícita ligada al `filePath`; exclusión de `legacyMemory` del bootstrap M0; fin del bootstrap antes de owner operacional/Chronicle/admisión/dispatch; estado previo/publicación ambigua; aislamiento sostenido; y verificación reproducible contra SHA exacto.
