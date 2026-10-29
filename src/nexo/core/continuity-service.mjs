@@ -147,6 +147,22 @@ export async function bootstrapNexoContinuityStore(options = {}) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
   }
 
+  // The store's general initialize path cleans stale temporary files.
+  // For M0 first publication, pre-existing temp artifacts are UNKNOWN state:
+  // stop before calling initialize rather than deleting/reusing them.
+  const parentDirectory = path.dirname(filePath);
+  const baseName = path.basename(filePath);
+  let parentEntries;
+  try {
+    parentEntries = await fs.readdir(parentDirectory, { withFileTypes: true });
+  } catch {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN");
+  }
+  if (parentEntries.some(entry => entry.isFile() &&
+      (entry.name === `${baseName}.tmp` || entry.name.startsWith(`${baseName}.tmp-`)))) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_TEMPORARY_STATE_UNKNOWN");
+  }
+
   const store = createNexoContinuityStore({
     filePath,
     ...(values.lockDeadline !== undefined ? { lockDeadline: values.lockDeadline } : {}),
