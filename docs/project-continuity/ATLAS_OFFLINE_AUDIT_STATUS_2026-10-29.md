@@ -653,3 +653,37 @@ Fuente oficial: https://developer.android.com/reference/android/os/SystemClock
 A7 queda parcialmente resuelto en cuanto a la evidencia pública examinada, pero no se declara conformidad. Se conserva UNKNOWN donde el texto completo de ISO o una evaluación formal serían necesarios. No se reabre investigación general sin una nueva afirmación normativa concreta que requiera verificación.
 
 **Sin cambios de código ni pruebas ejecutadas.** Estado global PROPOSAL — NOT IMPLEMENTED; NCS M0 permanece fuera de alcance.
+
+
+## 19. Registro de decisiones bloqueantes y puerta previa a pruebas (2026-10-29)
+
+**Estado:** registro de decisiones propuestas; ninguna decisión de autoridad se considera aprobada por su inclusión aquí. Este registro evita pasar de diseño a implementación por inercia.
+
+### Decisiones reservadas al propietario/autoridad
+
+| ID | Decisión requerida | Recomendación técnica para evaluar | Qué no debe asumirse |
+|---|---|---|---|
+| D-A1 | ¿Qué funciones requieren atestación verificable del dispositivo? | Requisito por operación, no bloqueo universal; definir modo degradado y garantías exactas. | Que el hardware objetivo soporte una propiedad aún no verificada. |
+| D-A2 | ¿Qué ancla anti-rollback está disponible y cuál es su autoridad? | Evaluar primero capacidades reales del dispositivo; si no hay ancla resistente a restauración, declarar límite de frescura fuerte. | Que un contador guardado con los datos sea suficiente. |
+| D-A3 | ¿Qué vigencia máxima tendrá la información de revocación y qué operaciones requieren estado actual? | Definir plazo a partir del modelo de amenazas y separar lectura local de cambios de confianza. | Adoptar automáticamente 30 días o tratar UNKNOWN como “no revocado”. |
+| D-A4 | ¿Quién define la precedencia de fuentes y valida el procedimiento local de conflicto? | Validación por autoridad competente; procedencia/fecha visibles; no afirmar ruta segura ante conflicto no resuelto. | Que el orden propuesto sea una regla legal universal o una obligación ISO. |
+| D-A5 | ¿Qué almacenamiento/plataforma es objetivo y cómo se coordina commit con el ancla de frescura? | Definir un único punto de commit recuperable antes de código; probar interrupciones en el hardware/almacenamiento reales. | Que rename, fsync y WAL creen una transacción global por sí solos. |
+| D-A6 | ¿Existe K_backup y qué función criptográfica cumple? | Confirmar existencia/propósito antes de diseñar custodia; separar disponibilidad local de recuperación de confianza. | Que K_backup ya exista o que un quórum sea requisito de NIST. |
+| D-A7 | ¿Se exige alguna declaración formal de conformidad normativa? | Limitar cada afirmación a texto y evidencia verificables; revisión formal si se requiere conformidad. | Que revisar fichas públicas equivalga a certificar Atlas. |
+
+### Puerta técnica antes de pruebas
+
+No comenzar pruebas de aceptación de seguridad ni declarar el diseño listo hasta que se cumplan estas condiciones:
+
+1. **Alcance y entorno:** dispositivo/versión Android, almacenamiento objetivo, modo de operación y funciones críticas identificados.
+2. **Decisiones registradas:** cada D-A1…D-A7 marcado como APPROVED, REJECTED o UNKNOWN por la autoridad pertinente, con justificación y fecha. UNKNOWN no equivale a autorización.
+3. **Diseño trazable:** cada decisión aprobada enlazada a criterios de aceptación, casos negativos y riesgo residual.
+4. **Protocolo A5 cerrado:** definido el commit recuperable y su coordinación con la frescura anti-rollback; sin esto, no probar una implementación como si el protocolo estuviera resuelto.
+5. **Pruebas autorizadas:** alcance, entorno, datos de prueba y efectos permitidos aprobados antes de ejecutar; registrar resultados y artefactos reales.
+6. **Evidencia:** distinguir explícitamente diseño documental, prueba ejecutada, resultado observado y revisión independiente.
+
+### Resultado
+
+La revisión documental A1–A7 ha permitido explicitar las lagunas y criterios candidatos, pero no ha cerrado la arquitectura ni autorizado implementación. El siguiente trabajo seguro es resolver las decisiones de autoridad que afectan a confianza y operación; después, definir el entorno de prueba. No hacer una implementación de seguridad “provisional” para llenar UNKNOWN.
+
+**Sin cambios de código ni pruebas ejecutadas.** Estado global PROPOSAL — NOT IMPLEMENTED; NCS M0 permanece fuera de alcance.
