@@ -1,3 +1,13 @@
+## DELTA — EVIDENCIA ACTUALIZADA PARA FB-01 (2026-10-29)
+
+- El contrato de la API dedicada FB-01 sí pasó dentro del workflow integrado en SHA `86e73525f8c63e143b5860d77f0d191e54213976`: [integrated M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309). El workflow también pasó los tests de migración legacy: [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189).
+- No repetir esos tests ni la inspección estática de `continuity-service.mjs`. La evidencia automatizada no acredita que una raíz real sea legítima ni que se mantenga un control contra todos los escritores.
+- FB-01 queda OPEN/UNKNOWN en cuanto a root legítima y aplicabilidad al destino real. FB-03/FB-04 siguen OPEN/UNKNOWN por E2/E3, TOCTOU y writers no cooperativos.
+- Próxima acción: documentar/obtener evidencia real del entorno y de su control de launchers/writers, con autorización específica antes de cualquier comando o instalación en el POCO. No bootstrap real ni efectos protegidos.
+- Estado global **M0 INCOMPLETO**.
+
+---
+
 ## DELTA DE CONTINUIDAD — 2026-10-29, posterior a FB-02
 
 - **FB-02 PASS/CERRADO** para separar bootstrap de Continuity y operación Chronicle en una sola invocación. SHA validado: `86e73525f8c63e143b5860d77f0d191e54213976`.
