@@ -47,3 +47,16 @@ Archivos:
 ## Gates
 
 **M0 INCOMPLETO.** FB-02 sigue OPEN/UNKNOWN hasta validación. FB-01 sigue pendiente de validación y raíz legítima PENDING/UNKNOWN. FB-03/FB-04 siguen OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`. Primera publicación operacional y efectos protegidos permanecen STOP.
+
+
+## Actualización de validación — 2026-10-29 (posterior al texto original)
+
+El estado histórico anterior “IMPLEMENTED CANDIDATE — NOT TESTED” queda supersedido por esta validación acotada.
+
+- **SHA probado:** `86e73525f8c63e143b5860d77f0d191e54213976`.
+- **PASS:** [workflow integrado M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618133), [bounded mission admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189), [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618328), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618177) y [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618334), todos con el mismo SHA.
+- La CI encontró expectativas de fixtures incompatibles con el nuevo contrato: algunas pruebas todavía esperaban que una sola invocación inicializara Continuity y luego continuara a Chronicle/dispatch. Se corrigieron para probar el rechazo de esa combinación y preparar Continuity por separado en las rutas normales. Los errores de pruebas anteriores quedaron asociados a SHAs previos; no se presentan como fallos del SHA validado.
+- Última corrección incluida en el SHA validado: `86e73525f8c63e143b5860d77f0d191e54213976`.
+- **Resultado:** FB-02 tiene evidencia de pruebas/CI PASS en ese SHA. Mantener el gate abierto hasta el cierre documental tras revisar el contrato/callers. FB-01 no se considera cerrado por estos resultados; tampoco quedan demostrados TOCTOU, exclusión de escritores, autoridad/raíz legítima ni evidencia E2/E3 del POCO.
+- No se ejecutaron bootstrap real, comandos del POCO, instalaciones ni efectos protegidos. Estado global sigue **M0 INCOMPLETO**.
+
