@@ -60,3 +60,17 @@ El estado histórico anterior “IMPLEMENTED CANDIDATE — NOT TESTED” queda s
 - **Resultado:** FB-02 tiene evidencia de pruebas/CI PASS en ese SHA. Mantener el gate abierto hasta el cierre documental tras revisar el contrato/callers. FB-01 no se considera cerrado por estos resultados; tampoco quedan demostrados TOCTOU, exclusión de escritores, autoridad/raíz legítima ni evidencia E2/E3 del POCO.
 - No se ejecutaron bootstrap real, comandos del POCO, instalaciones ni efectos protegidos. Estado global sigue **M0 INCOMPLETO**.
 
+
+
+## Cierre FB-02 — evidencia final (2026-10-29)
+
+**FB-02: PASS / CERRADO** para impedir bootstrap de Continuity + operación Chronicle dentro de una sola invocación.
+
+Revisión del límite:
+- `runNexoChronicleAppend` en `src/nexo/application/chronicle-append.mjs` aplica el guard `NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED` antes de abrir stores, inicializar, admitir misión o ejecutar pasos.
+- `scripts/nexo-chronicle-session.mjs` delega a esa API pública y pasa el flag; no sustituye el guard.
+- `tests/nexo/entrypoint.test.mjs` cubre CLI y API directa. `tests/nexo/chronicle-runtime.test.mjs` fue actualizado para que fixtures de ejecución normal inicialicen Continuity de forma separada y para rechazar la ruta combinada, incluidas llamadas concurrentes/reintentos.
+- SHA de código validado: `86e73525f8c63e143b5860d77f0d191e54213976`. Los commits documentales posteriores no alteran runtime ni tests.
+- CI PASS en el mismo SHA: [integrated M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618133), [bounded mission admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189), [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618328), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618177) y [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618334).
+
+Este cierre no cierra FB-01 ni resuelve TOCTOU/exclusión de escritores, raíz legítima, autoridad, E2/E3 o E4. **M0 sigue INCOMPLETO**. No hubo bootstrap real, comandos del POCO, instalaciones ni efectos protegidos.
