@@ -530,3 +530,78 @@ Esta lista es una hipótesis de diseño, no una determinación legal universal. 
 Se propone fail-closed de forma **selectiva**: bloquear la operación que exige confianza actual cuando esta no se puede demostrar, sin afirmar que toda lectura offline debe detenerse automáticamente. La lectura local solo puede continuar cuando la integridad de esos datos y la seguridad de la función siguen siendo verificables. La política de rutas evita certeza falsa y no sustituye a Protección Civil ni a la señalización física.
 
 **Sin cambios de código ni pruebas ejecutadas.** Estado global PROPOSAL — NOT IMPLEMENTED; NCS M0 permanece fuera de alcance.
+
+
+## 17. Protocolo candidato de publicación y recuperación de bundle (A5) — propuesta (2026-10-29)
+
+**Estado:** PROPOSAL — NOT APPROVED — NOT IMPLEMENTED. Protocolo candidato para revisión; no demuestra garantías de la plataforma objetivo y no se ha implementado ni probado.
+
+### Objetivo y límites
+
+Un bundle puede incluir manifiesto, PMTiles, bases SQLite y otros componentes. La atomicidad de un rename individual o de una transacción SQLite no crea atomicidad para el conjunto. Solo debe activarse un conjunto completo cuya identidad, autenticidad e integridad se hayan verificado.
+
+Separar:
+- **Integridad:** los bytes corresponden a los hashes declarados.
+- **Autenticidad:** el manifiesto está firmado por una autoridad admitida y la firma/cadena se valida.
+- **Frescura:** la secuencia no viola el ancla anti-rollback disponible.
+- **Commit:** punto único documentado a partir del cual la nueva versión puede considerarse publicada.
+- **Recuperación:** después de una interrupción, determinar si existe un bundle completo verificable, sin mezclar versiones.
+
+### Estructura lógica propuesta
+
+- Directorio bundles/<bundle-id>/: componentes inmutables de una versión.
+- Directorio staging/<transaction-id>/: componentes aún no publicados.
+- manifest: bundle-id, secuencia, versión de esquema, componentes obligatorios, tamaños, hashes, autoridad/clave de firma y metadatos de emisión/validez.
+- active-pointer: registro de selección de bundle, protegido según el modelo de confianza aprobado.
+- previous-valid: referencia al último bundle completo verificado, si puede preservarse sin introducir rollback silencioso.
+
+Los nombres son ilustrativos; no representan rutas existentes ni una decisión final de almacenamiento.
+
+### Secuencia candidata
+
+1. **Admisión:** validar autoridad de origen, firma del manifiesto, secuencia, esquema, lista exacta de componentes y límites de tamaño.
+2. **Staging:** escribir componentes en el área temporal; no modificar el bundle activo durante descarga/escritura.
+3. **Persistencia:** cerrar y sincronizar archivos según las garantías de la plataforma. Para SQLite, definir durabilidad, tratamiento de WAL y checkpoint. synchronous=FULL no sustituye pruebas del almacenamiento real.
+4. **Verificación del conjunto:** recalcular tamaños y hashes de todos los componentes obligatorios; verificar manifiesto, firma, esquema, secuencia y coherencia entre componentes. Un bundle-id derivado de hashes no autentica el manifiesto.
+5. **Sellado:** impedir modificaciones del candidato durante publicación; sincronizar directorios/metadata donde la plataforma lo soporte y documentar límites.
+6. **Commit único:** reemplazar el registro de selección solo si la plataforma documenta la atomicidad necesaria. Debe apuntar a un bundle ya completo y verificado. Si no puede demostrarse commit durable, no afirmar atomicidad garantizada.
+7. **Confirmación:** actualizar el ancla de frescura coordinadamente con el commit. Sigue sin resolverse cómo recuperarse si puntero y ancla se actualizan en órdenes distintos o falla la persistencia entre ambos. No implementar hasta definirlo.
+8. **Limpieza diferida:** borrar staging y bundles antiguos solo después de verificar que el bundle activo es válido y que la política no necesita la copia anterior.
+
+### Recuperación al iniciar
+
+- Validar el puntero; nunca confiar en él sin verificar su contenido.
+- Verificar manifiesto, firma, hashes, esquema y secuencia del bundle apuntado.
+- Si falla, examinar un bundle previo solo si sigue verificable y no contradice el ancla anti-rollback ni evidencia de revocación.
+- Si frescura es UNKNOWN, no escoger simplemente el bundle con mayor número encontrado en disco: el almacenamiento local puede restaurarse o manipularse.
+- Si no puede demostrarse qué bundle es admisible, entrar en NO_VERIFIABLE_BUNDLE; no mezclar archivos de versiones distintas ni crear un manifiesto sustituto.
+- Registrar causa de recuperación y evidencia relevante sin exponer secretos criptográficos.
+
+### Matriz de fallos que debe probarse
+
+| Punto de interrupción | Resultado requerido propuesto |
+|---|---|
+| Escritura de componente en staging | El activo anterior permanece intacto; staging incompleto no se activa. |
+| Después de escribir, antes de verificar hashes | El candidato no se activa. |
+| Firma inválida o verificación fallida | Rechazo explícito; activo anterior solo si sigue verificable. |
+| Después de verificar, antes del commit | Candidato no activo; recuperación puede descartarlo o volver a verificarlo. |
+| Durante reemplazo del puntero activo | Tras reinicio, seleccionar solo un puntero válido a bundle completo o declarar NO_VERIFIABLE_BUNDLE. |
+| Después del commit, antes de actualizar el ancla | Estado ambiguo: resolver con registro de commit recuperable o bloquear activación; nunca decidir silenciosamente. |
+| Durante actualización del ancla | No aceptar combinación que permita rollback; recuperar estado o declarar UNKNOWN/NO_VERIFIABLE_BUNDLE. |
+| Durante limpieza del bundle anterior | El activo nuevo permanece íntegro; limpieza idempotente y diferida. |
+| WAL incompleto o checkpoint pendiente | Aplicar recuperación SQLite documentada y verificar consistencia; no asumir que el archivo principal basta. |
+| Sin espacio, error de sincronización o error de E/S | No declarar commit exitoso sin evidencia; conservar estado previo verificable o declarar estado no verificable. |
+
+### Criterios de aceptación propuestos
+
+- La especificación identifica el único punto de commit y coordina el ancla anti-rollback.
+- El manifiesto se autentica y cada componente obligatorio se verifica individualmente y contra la identidad del bundle.
+- La inyección de fallos produce el bundle anterior completo, el nuevo completo verificado o estado explícito sin bundle verificable; nunca mezcla silenciosa.
+- Las pruebas cubren dispositivo y almacenamiento objetivo, reinicio forzado, falta de espacio, error de sincronización, WAL/checkpoint y restauración de copias antiguas.
+- Las garantías de atomicidad/durabilidad corresponden a la plataforma probada; si no pueden demostrarse, se documenta la limitación.
+
+### Bloqueo técnico principal
+
+La coordinación entre el puntero de bundle activo y el ancla de frescura/anti-rollback sigue abierta. Dos escrituras independientes no forman una transacción atómica. La arquitectura debe justificar un registro de commit recuperable o mecanismo equivalente que sobreviva a fallos y restauraciones. Hasta resolverlo, A5 permanece UNKNOWN para implementación segura.
+
+**Sin cambios de código ni pruebas ejecutadas.** NCS M0 permanece fuera de alcance.
