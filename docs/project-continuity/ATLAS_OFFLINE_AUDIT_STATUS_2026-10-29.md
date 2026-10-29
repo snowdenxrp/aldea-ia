@@ -442,3 +442,91 @@ Una firma válida o un hash válido, por sí solos, no prueban frescura. Una cop
 - **Siguiente paso del orden:** convertir las decisiones abiertas de A1/A2/A6 en una lista breve de decisiones del propietario y después pasar a A3/A4. No iniciar código ni pruebas hasta que el alcance y el entorno objetivo estén aprobados.
 
 **Sin cambios de código ni pruebas ejecutadas.** El estado global continúa PROPOSAL — NOT IMPLEMENTED; NCS M0 permanece fuera de alcance.
+
+
+## 16. Operación offline: revocación, reinicio y avisos contradictorios (A3/A4) — propuesta (2026-10-29)
+
+**Estado:** PROPOSAL — NOT APPROVED — NOT IMPLEMENTED. Se define una política candidata y sus estados observables para revisión; no se afirma que exista código ni que haya sido probada. Los plazos de caducidad, la jerarquía de autoridades y las funciones protegidas requieren aprobación explícita.
+
+### A3 — Modelo de estados para confianza offline
+
+#### Estados propuestos
+
+- **TRUST_CURRENT:** firma/cadena de confianza válida; manifiesto y componentes íntegros; versión no inferior al ancla de frescura disponible; información de revocación dentro de la política de vigencia aprobada.
+- **TRUST_STALE:** la última información de revocación verificada ha superado su periodo de vigencia, o no puede demostrarse que siga vigente.
+- **REVOCATION_STATUS_UNKNOWN:** no se dispone de información de revocación verificable suficiente, por ejemplo por ausencia, corrupción, reinicio con tiempo no confiable o estado persistente inconsistente.
+- **TRUST_REVOKED:** existe evidencia autenticada y verificable de que una clave, autoridad, paquete o versión fue revocada.
+- **BUNDLE_INVALID:** firma, manifiesto, hash, versión o componente obligatorio no pasa la validación.
+- **NO_VERIFIABLE_BUNDLE:** no existe un bundle íntegro cuya cadena de confianza y estado puedan verificarse.
+
+Estos estados no deben colapsarse en un único booleano. TRUST_STALE y REVOCATION_STATUS_UNKNOWN no significan que se haya probado un compromiso; significan que no se puede confirmar el estado actual de confianza. TRUST_REVOKED requiere evidencia autenticada, no una mera falta de conexión.
+
+#### Tabla candidata de transición y operación
+
+| Evento/condición | Estado resultante propuesto | Comportamiento mínimo propuesto |
+|---|---|---|
+| Arranque normal; firma, integridad, frescura y revocación verificadas dentro de política | TRUST_CURRENT | Permitir solo las funciones autorizadas para este nivel de confianza. |
+| Reinicio; no existe una fuente de tiempo confiable que permita calcular vigencia entre arranques | REVOCATION_STATUS_UNKNOWN o TRUST_STALE | No declarar vigente la revocación. Permitir, como máximo, lectura local de datos ya verificados cuando su integridad y uso seguro sigan siendo demostrables; bloquear actualización de confianza, aceptación de claves nuevas y otras operaciones que dependan de estado actual. |
+| La lista/paquete de revocación está ausente o corrupto | REVOCATION_STATUS_UNKNOWN | No sustituirla por “sin revocaciones”. Mantener bloqueadas las operaciones que necesitan estado de revocación actual. |
+| Periodo de vigencia aprobado expiró sin sincronización verificable | TRUST_STALE | No renovar vigencia usando solo reloj de pared no confiable o tiempo monotónico de un arranque anterior. |
+| Evidencia autenticada de revocación aplicable | TRUST_REVOKED | Rechazar el material revocado; no reactivarlo por restaurar una copia antigua. |
+| Firma, hash o manifiesto inválido | BUNDLE_INVALID | No activar el bundle. Conservar un bundle previo únicamente si su propia confianza sigue verificable. |
+| Ningún bundle disponible puede verificarse | NO_VERIFIABLE_BUNDLE | Informar claramente que no hay datos confiables verificables; no fabricar una ruta ni afirmar que la copia local es segura. |
+| Sincronización autenticada satisfactoria y estado consistente | Recalcular estado | Actualizar únicamente tras verificar firma, cadena, secuencia, revocación y componentes completos. |
+
+#### Política de tiempo: límites explícitos
+
+- elapsedRealtime() puede medir intervalos dentro del mismo arranque, pero no determina por sí solo cuánto tiempo real transcurrió entre reinicios.
+- Un timestamp firmado acredita que un emisor firmó ese valor; no hace confiable el reloj local ni prueba que el tiempo transcurrido desde su emisión sea conocido.
+- Un plazo como 30 días solo puede fijarse tras analizar el modelo de amenazas y las consecuencias de datos de revocación antiguos. No se adopta aquí ningún plazo.
+- Si la plataforma no ofrece reloj confiable entre reinicios y no hay autoridad externa disponible, el sistema debe expresar la incertidumbre. No puede prometer simultáneamente disponibilidad offline indefinida y conocimiento de revocaciones futuras.
+- El comportamiento exacto tras reinicio depende de qué funciones se intenten usar; evitar un bloqueo total indiscriminado, pero tampoco elevar a vigente un estado que no puede comprobarse.
+
+#### Decisiones pendientes de autoridad
+
+1. Periodo máximo de vigencia de revocación y quién lo determina.
+2. Operaciones permitidas por estado, especialmente lectura de mapas, navegación, publicación de bundles y aceptación/rotación de claves.
+3. Si alguna función requiere sincronización reciente obligatoria.
+4. Qué fuente temporal se considera confiable y cómo se recupera la confianza tras reinicio.
+5. Qué autoridad emite, firma, distribuye y revoca listas/paquetes de revocación.
+
+### A4 — Conflictos de avisos y rutas
+
+#### Regla candidata de seguridad
+
+- Cada aviso debe conservar procedencia, autoridad emisora, ámbito geográfico, amenaza, hora de emisión, vigencia, versión y evidencia de autenticidad cuando exista.
+- La comparación no debe basarse solo en “más reciente” ni solo en una puntuación numérica. La autoridad competente para la amenaza y el área, la aplicabilidad geográfica, la autenticidad y la vigencia deben evaluarse por separado.
+- Si dos avisos materialmente incompatibles no pueden ordenarse mediante una regla previamente aprobada, marcar el área/tramo afectado como CONFLICT_UNRESOLVED. No presentar una ruta que dependa de ese tramo como “segura” o “verificada”.
+- La interfaz debe mostrar el conflicto, la procedencia y la hora de cada aviso, y comunicar qué no se pudo verificar.
+- Si existe una alternativa cuya seguridad esté respaldada por una fuente competente y vigente, puede mostrarse con su procedencia y límites. Si no existe una alternativa verificada, declarar que Atlas no puede calcular una ruta segura y mostrar instrucciones oficiales generales que sí estén verificadas; no inventar desvíos.
+- Las señales físicas de evacuación y las instrucciones de autoridades locales competentes pueden ser críticas, pero la jerarquía exacta y el tratamiento de contradicciones deben validarse localmente. No afirmar que ISO 22320 prescribe este algoritmo.
+
+#### Precedencia candidata (requiere validación local)
+
+1. Instrucción auténtica y vigente de la autoridad legalmente competente para esa amenaza y zona.
+2. Instrucción auténtica y vigente de otra autoridad oficial con competencia aplicable, cuando no contradiga una orden superior identificada.
+3. Fuente oficial secundaria o agregador, solo si conserva procedencia, vigencia y alcance comprobables.
+4. Reporte no oficial o crowdsourced: señal complementaria; no puede por sí solo invalidar una orden oficial verificada ni certificar una ruta como segura.
+
+Esta lista es una hipótesis de diseño, no una determinación legal universal. Si no puede demostrarse competencia, autenticidad, vigencia o ámbito, la fuente no debe recibir precedencia por simple etiqueta de “oficial”.
+
+#### Criterios de aceptación propuestos para A4
+
+- Pruebas con avisos compatibles, incompatibles, caducados, fuera de zona, sin firma/verificación, con autoridad desconocida y con timestamps contradictorios.
+- Un conflicto material no resuelto nunca produce una ruta etiquetada como verificada/segura a través del tramo afectado.
+- La interfaz conserva y muestra la procedencia/tiempo de los avisos relevantes, sin ocultar incertidumbre.
+- La prueba incluye el caso de no existir alternativa segura conocida: el resultado debe ser “no se puede verificar una ruta segura”, no una ruta inventada.
+- La política de precedencia requiere revisión de una autoridad local competente antes de usarse en una emergencia real.
+
+### Decisiones del propietario/autoridad aún necesarias
+
+- Aprobar o modificar los estados y la tabla de operaciones de A3.
+- Definir la caducidad de revocación, la fuente temporal aceptada y las operaciones que requieren frescura.
+- Aprobar la política de conflicto A4 y la jerarquía de fuentes con validación local.
+- Designar la autoridad responsable de revisar y mantener esas reglas.
+
+### Resultado de la segunda pasada
+
+Se propone fail-closed de forma **selectiva**: bloquear la operación que exige confianza actual cuando esta no se puede demostrar, sin afirmar que toda lectura offline debe detenerse automáticamente. La lectura local solo puede continuar cuando la integridad de esos datos y la seguridad de la función siguen siendo verificables. La política de rutas evita certeza falsa y no sustituye a Protección Civil ni a la señalización física.
+
+**Sin cambios de código ni pruebas ejecutadas.** Estado global PROPOSAL — NOT IMPLEMENTED; NCS M0 permanece fuera de alcance.
