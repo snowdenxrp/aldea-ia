@@ -1,3 +1,12 @@
+> **ACTUALIZACIÓN MÁS RECIENTE — 2026-10-29:** Este delta supersede las instrucciones históricas más abajo que indican que FB-02 no se probó o que aún espera autorización para CI.
+>
+> - FB-02: **PASS/CERRADO** en alcance de separación bootstrap + Chronicle, SHA de código probado `86e73525f8c63e143b5860d77f0d191e54213976`.
+> - CI PASS en el mismo SHA: [integrated M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [Chronicle native](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618133), [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189), [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618328), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618177), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618334).
+> - Las pruebas de FB-02 incluyen CLI y API directa, rechazo de la operación combinada, ausencia de dispatch/escritura y fixtures normales con Continuity inicializada por separado. Migración legacy preservada.
+> - Los commits posteriores al SHA probado son solo documentación. No ejecutar bootstrap real, comandos del POCO, instalaciones ni efectos protegidos.
+> - **Próxima tarea:** avanzar por FB-01 con lectura de su handoff/contrato/tests existentes; no repetir FB-02 ni el mapa estático del bypass. No cerrar FB-01 sin evidencia vinculada al SHA exacto.
+> - Global: **M0 INCOMPLETO**; FB-01 OPEN/UNKNOWN; FB-03/FB-04 OPEN/UNKNOWN; P01-B=C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0–D3 OPEN; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP.
+
 # Handoff de continuidad — NCS M0 (2026-10-29)
 
 **Palabra de arranque para el siguiente chat:** `NCS`  
