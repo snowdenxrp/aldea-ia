@@ -1,3 +1,15 @@
+## DELTA — FB-02 VALIDACIÓN CI PASS CON SHA EXACTO (2026-10-29)
+
+- SHA validado: `86e73525f8c63e143b5860d77f0d191e54213976` (rama `ncs-clean-architecture`).
+- Workflow integrado **PASS**: [Nexo M0 — integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309). Los cinco pasos del job terminaron en success: Continuity, reconstrucción/transición protegida, Chronicle/runtime/entrypoints, crash cuts/owner recovery y verificación/clasificación.
+- Workflows especializados también **PASS en el mismo SHA**: [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618133), [bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189), [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618328), [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618177), [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618334).
+- La ejecución reveló fixtures antiguos que aún esperaban bootstrap combinado + append en una invocación. Se corrigieron para exigir bloqueo de FB-02 y para inicializar Continuity de forma independiente en los casos normales; se conserva la migración legacy. Los tests de entrada/recursos ahora verifican no-dispatch y ausencia de escritura de misión en entradas bloqueadas.
+- Commits de corrección de fixtures/runtime: `0d5b29169d7c4a4bd6055d44eb8e4991b2f07f6c`, `851cc7ec794a5fb2fac2dcae852c182a6fb67051`, `6e32bcfb15c460e3a27088f7dd411ef78ec861f6`, `de22a7c91bbfa2014b7d651432263306e53ded0c`, `86e73525f8c63e143b5860d77f0d191e54213976`.
+- **Clasificación:** evidencia de pruebas y CI para FB-02 = PASS en el SHA indicado. No se cierra automáticamente FB-01 ni otros gates. FB-02 permanece abierto solo hasta completar la revisión final de su contrato/callers y registrar el cierre formal; no hay evidencia de resolución de TOCTOU/exclusión de escritores.
+- Sin ejecución de bootstrap real, comandos del POCO, instalaciones ni efectos protegidos. Sin publicación operacional. Estado global **M0 INCOMPLETO**; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; efectos protegidos STOP.
+
+---
+
 ## DELTA — HANDOFF COMPLETO DE CONTINUIDAD M0 (2026-10-29)
 
 - Handoff preparado para relevo de chat: [NCS_NEXT_CHAT_2026-10-29_COMPLETE_M0_CONTINUITY.md](HANDOFF/NCS_NEXT_CHAT_2026-10-29_COMPLETE_M0_CONTINUITY.md), commit `49b33424697f3878fd6ba4b30bb6a508879e0a70`.
