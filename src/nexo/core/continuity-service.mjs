@@ -1,3 +1,5 @@
+import path from "node:path";
+import fs from "node:fs/promises";
 import { createNexoContinuityStore } from "./continuity-store.mjs";
 import { NEXO_DEFAULT_LOCK_WAIT_MS } from "./lock-deadline.mjs";
 import { createNexoContinuityOwner } from "./continuity-owner.mjs";
@@ -76,6 +78,91 @@ function readContinuityServiceOptions(options) {
     lockDeadline: values.lockDeadline === undefined ? null : values.lockDeadline,
     lockWaitMs: values.lockWaitMs === undefined ? NEXO_DEFAULT_LOCK_WAIT_MS : values.lockWaitMs
   };
+}
+
+/**
+ * Perform the restricted M0 first-publication operation only.
+ *
+ * The destination is derived from an explicit absolute root and a normalized
+ * relative path supplied for this invocation. This operation never accepts
+ * legacy memory, never loads/project legacy state, and never returns an
+ * operational owner. It is not an authority/root-commissioning mechanism and
+ * does not claim symlink/path-attack resistance or global writer exclusion.
+ */
+export async function bootstrapNexoContinuityStore(options = {}) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
+  }
+  let prototype;
+  try { prototype = Object.getPrototypeOf(options); }
+  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
+  if (prototype !== Object.prototype && prototype !== null) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
+  }
+
+  const allowed = new Set(["root", "relativePath", "lockDeadline", "lockWaitMs"]);
+  const values = Object.create(null);
+  let keys;
+  try { keys = Reflect.ownKeys(options); }
+  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
+  for (const key of keys) {
+    if (typeof key !== "string" || !allowed.has(key)) {
+      throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
+    }
+    let descriptor;
+    try { descriptor = Object.getOwnPropertyDescriptor(options, key); }
+    catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
+      throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
+    }
+    values[key] = descriptor.value;
+  }
+
+  const root = values.root;
+  const relativePath = values.relativePath;
+  if (typeof root !== "string" || !root.trim() || !path.isAbsolute(root) ||
+      root.includes("\\0")) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
+  }
+  if (typeof relativePath !== "string" || !relativePath.trim() ||
+      path.isAbsolute(relativePath) || relativePath.includes("\\0") ||
+      path.normalize(relativePath) !== relativePath || relativePath === "." ||
+      relativePath === ".." || relativePath.startsWith(`..${path.sep}`)) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_RELATIVE_PATH_INVALID");
+  }
+
+  const resolvedRoot = path.resolve(root);
+  const filePath = path.resolve(resolvedRoot, relativePath);
+  const relativeDestination = path.relative(resolvedRoot, filePath);
+  if (!relativeDestination || relativeDestination === ".." ||
+      relativeDestination.startsWith(`..${path.sep}`) ||
+      path.isAbsolute(relativeDestination)) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_DESTINATION_OUTSIDE_ROOT");
+  }
+
+  let rootStat;
+  try { rootStat = await fs.stat(resolvedRoot); }
+  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
+  if (!rootStat.isDirectory()) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
+  }
+
+  const store = createNexoContinuityStore({
+    filePath,
+    ...(values.lockDeadline !== undefined ? { lockDeadline: values.lockDeadline } : {}),
+    ...(values.lockWaitMs !== undefined ? { lockWaitMs: values.lockWaitMs } : {})
+  });
+  const result = await store.initialize(emptySnapshot());
+  // Preserve the store's explicit conflict/unknown/failure result. In every
+  // case this API stops here; it never loads state or constructs an owner.
+  return Object.freeze({
+    ...result,
+    destination: Object.freeze({
+      root: resolvedRoot,
+      relativePath,
+      filePath
+    })
+  });
 }
 
 export async function openNexoContinuityOwner(options = {}) {
