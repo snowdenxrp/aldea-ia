@@ -44,3 +44,11 @@ Estos archivos se crean en una rama documental dedicada para no alterar el estad
 - Tablero focalizado: [Issue #109 — ECK + Atlas Offline](https://github.com/snowdenxrp/aldea-ia/issues/109).
 - No se contactó automáticamente a las IA externas; el issue contiene tareas breves para repartir manualmente.
 - Rama documental separada; NCS M0 no se modifica.
+
+
+### Delta Atlas — primera pasada de límites de confianza (2026-10-29)
+- Se añadió la sección 15 al expediente Atlas: distinción entre autenticidad/integridad, frescura anti-rollback y disponibilidad/recuperabilidad.
+- A1: atestación KeyMint se trata por capacidad/operación; no se afirma compatibilidad sin evidencia del dispositivo objetivo. La decisión de requisito de despliegue queda abierta.
+- A2: anti-rollback fuerte necesita un ancla de frescura que no pueda restaurarse junto con los datos; si no existe, declarar la limitación en vez de llamar seguro a un contador local restaurable.
+- A6: existencia y propósito de K_backup siguen UNKNOWN; custodios, quórum, autoridad de recuperación y reglas de rotación/revocación quedan reservados al propietario/autoridad responsable.
+- Estado: propuesta documental; no hay código ni pruebas. Próximo paso: decisiones de autoridad que deben resolverse para A1/A2/A6; después A3/A4. NCS M0 permanece intacto.
