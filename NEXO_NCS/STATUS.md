@@ -1,3 +1,13 @@
+## DELTA — CLASIFICACIÓN DE BLOQUEOS POR TIPO DE CIERRE (2026-10-29)
+
+Se actualizó y releyó [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `a2f35018c7489f203963329073f7ff68a12fb3e2`, blob verificado `646762d7768109770e94bcc34d3988a77856219d`. La delta separa para FB-01…FB-07 el trabajo documental admisible de lo que exige decisión del propietario, entorno/evidencia concreta o autorización de verificación.
+
+Resultado: no seguir expandiendo el borrador bootstrap ni repetir el censo del POCO sin contradicción nueva. FB-01 conserva U/UNKNOWN; FB-02 conserva C; FB-03 no puede evaluarse sin entorno concreto; FB-04/FB-05 no se resuelven inventando política; FB-06/FB-07 no permiten declarar cierre sin evidencia ligada al SHA objetivo y autorizaciones específicas.
+
+Gates sin cambio: M0 INCOMPLETO; FB-01…FB-07 abiertos según sus estados; P01-B=C; P-05 NO RATIFICADA; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Solo documentación; sin código, tests, CI/Actions, runtime, bootstrap ni dispositivo.
+
+---
+
 ## DELTA — CONTRATO DE PRECONDICIONES DEL ENTORNO RESTRINGIDO (2026-10-29)
 
 La matriz P-01 se actualizó y se volvió a leer desde GitHub: [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `6ebceecb9389af87b3298ac63731b373209048a7`, blob `4b7c3128b9c858cfbef640a8eefd23acea84a92f`. La delta traduce la decisión del propietario de permitir un entorno restringido —sin elegir mecanismo— en nueve precondiciones verificables RE-01…RE-09: identidad/frontera de invocación, vínculo raíz→destino, actores escritores, exclusión sostenida, disparadores externos, estado previo, publicación/ambigüedad, no continuación operacional y trazabilidad/vigencia de evidencia.
