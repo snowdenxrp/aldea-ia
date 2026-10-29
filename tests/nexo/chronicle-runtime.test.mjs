@@ -17,6 +17,16 @@ import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 
+const emptyContinuitySnapshot = () => ({
+  schema: "NEXO_OPERATIONAL_CONTINUITY",
+  schemaVersion: 1,
+  missions: [],
+  attempts: [],
+  doNotRepeat: [],
+  executions: [],
+  effectJournal: []
+});
+
 const publicAdmissionUnknown = publicChronicleResult({
   status: "unknown",
   code: "NEXO_TEST_MISSION_ADMISSION_UNKNOWN",
@@ -1501,7 +1511,7 @@ try {
   // Valid invocation receives content over stdin; payload is not an argv value
   // and is not echoed to the terminal.
   const successfulCliContinuity = path.join(cliRoot, "valid-continuity.json");
-  await createNexoContinuityStore({ filePath: successfulCliContinuity }).initialize();
+  await createNexoContinuityStore({ filePath: successfulCliContinuity }).initialize(emptyContinuitySnapshot());
   const successfulCliArgs = [
     "scripts/nexo-chronicle-session.mjs",
     "--continuity", successfulCliContinuity,
@@ -1522,7 +1532,7 @@ try {
 
   const exactStdinContinuity = path.join(cliRoot, "exact-stdin-continuity.json");
   const exactStdinChronicle = path.join(cliRoot, "exact-stdin-chronicle.json");
-  await createNexoContinuityStore({ filePath: exactStdinContinuity }).initialize();
+  await createNexoContinuityStore({ filePath: exactStdinContinuity }).initialize(emptyContinuitySnapshot());
   const exactStdin = spawnSync(process.execPath, [
     "scripts/nexo-chronicle-session.mjs",
     "--continuity", exactStdinContinuity,
@@ -1566,7 +1576,7 @@ try {
 
   const directOversizeContinuity = path.join(cliRoot, "direct-oversize-continuity.json");
   const directOversizeChronicle = path.join(cliRoot, "direct-oversize-chronicle.json");
-  await createNexoContinuityStore({ filePath: directOversizeContinuity }).initialize();
+  await createNexoContinuityStore({ filePath: directOversizeContinuity }).initialize(emptyContinuitySnapshot());
   const directOversize = await runNexoChronicleAppend({
     continuityPath: directOversizeContinuity,
     chroniclePath: directOversizeChronicle,
@@ -1590,7 +1600,7 @@ try {
 const entryRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-chronicle-entry-"));
 try {
   const entryContinuityPath = path.join(entryRoot, "continuity.json");
-  await createNexoContinuityStore({ filePath: entryContinuityPath }).initialize();
+  await createNexoContinuityStore({ filePath: entryContinuityPath }).initialize(emptyContinuitySnapshot());
   const args = {
     continuityPath: entryContinuityPath,
     chroniclePath: path.join(entryRoot, "chronicle.json"),
@@ -1708,7 +1718,7 @@ try {
 
   // The fixture performs Continuity initialization as a distinct operation,
   // then invokes Chronicle append without the combined-bootstrap flag.
-  await createNexoContinuityStore({ filePath: partialBootstrapContinuityPath }).initialize();
+  await createNexoContinuityStore({ filePath: partialBootstrapContinuityPath }).initialize(emptyContinuitySnapshot());
   await fs.mkdir(lateChronicleParent);
   const recoveredBootstrap = await runNexoChronicleAppend({
     ...partialBootstrapArgs,
