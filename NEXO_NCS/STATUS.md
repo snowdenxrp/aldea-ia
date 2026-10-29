@@ -1,3 +1,13 @@
+## DELTA — TRAZABILIDAD FB-01/FB-02 CONTRA FRONTERA PROPUESTA DE BOOTSTRAP (2026-10-28)
+
+La matriz [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md) se actualizó y verificó: commit `9368dc5da53cfdc2913591e081e62e5d2278e1f7`, blob `2c255a7d3174611285c9c69bf302cea116eabd83`. La nueva delta cruza la sección 10 del borrador FB-01 con los requisitos de aceptación: raíz explícita ligada al `filePath`; exclusión de `legacyMemory` del bootstrap M0; fin del bootstrap antes de owner operacional/Chronicle/admisión/dispatch; estado previo/publicación ambigua; aislamiento sostenido; y verificación reproducible contra SHA exacto.
+
+Conclusión: el diseño candidato está acotado y no conviene seguir reescribiendo la misma propuesta. La evidencia estática todavía no demuestra cumplimiento. El siguiente tramo documental se concentra en FB-01 (aplicabilidad de la regla de primera creación al destino efectivo) y FB-02 (límite de aislamiento, manteniendo P01-B=C — NO SELECCIONAR TODAVÍA). No se selecciona un mecanismo por inferencia.
+
+Gates sin cambio: M0 INCOMPLETO; FB-01/FB-02 OPEN; P01-A OPEN/UNKNOWN; P01-B=C; P01-G PENDING/UNKNOWN; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; P-05 NO RATIFICADA; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP. Solo documentación modificada; no código, tests, CI/Actions, runtime, bootstrap ni dispositivo.
+
+---
+
 ## DELTA — FRONTERA PROPUESTA DE BOOTSTRAP CONTINUITY M0 (2026-10-28)
 
 Se amplió el borrador FB-01 con la sección 10, ahora verificada en blob `cbceb420aca3cdfa817ac7904252a935f0c16536`: [NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md](BUILD/NCS_M0_FB01_CONTINUITY_OBJECT_SEMANTIC_CONTRACT_DRAFT_2026-10-28.md), commit `457772f1774463037291dc46e548925e487b23da`.
