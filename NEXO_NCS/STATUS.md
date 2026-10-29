@@ -1,3 +1,14 @@
+## DELTA — FB-02: BLOQUEO DE BOOTSTRAP + OPERACIÓN EN LA MISMA INVOCACIÓN (2026-10-29)
+
+- Cambio autorizado por el propietario: `src/nexo/application/chronicle-append.mjs` bloquea `initializeContinuity: true` antes de abrir stores, inicializar, admitir misión o ejecutar pasos, con `NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED`.
+- La protección está en el caso de uso público, no solo en el wrapper CLI. Se añadieron pruebas al archivo `tests/nexo/entrypoint.test.mjs` para CLI/API directa y ausencia de escrituras; los fixtures normales preparan Continuity y Chronicle por separado.
+- Runtime commit: `96f2095b76499eea5457443887ad4288380a51f3`. Pruebas commit: `0750fe48d7d3df336c09c6a003b806416887ec95`. Handoff: [NCS_NEXT_CHAT_2026-10-29_FB02_SEPARATE_BOOTSTRAP_OPERATION.md](HANDOFF/NCS_NEXT_CHAT_2026-10-29_FB02_SEPARATE_BOOTSTRAP_OPERATION.md), commit `2e0287b8e2fafc9a3644ed636fb1af9f52e95307`.
+- No se ejecutaron pruebas ni CI/Actions, no se ejecutó bootstrap real ni comandos del POCO. El código es candidato implementado, no validado; revisar el diff y ejecutar validación solo bajo autorización específica.
+- Se preservó la ruta de migración legacy y no se conectó el bootstrap dedicado a un launcher. El guard no resuelve la carrera TOCTOU ni prueba exclusión de escritores.
+- Gates: **M0 INCOMPLETO**; FB-02 sigue OPEN/UNKNOWN hasta PASS validado; FB-01 pendiente de validación; FB-03/FB-04 OPEN/UNKNOWN; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; publicación real y efectos protegidos STOP.
+
+---
+
 ## DELTA — RUTA MÍNIMA DE CIERRE M0 SIN REPETIR AUDITORÍAS (2026-10-29)
 
 - Nuevo artefacto: [NCS_M0_MINIMAL_CLOSURE_ROUTE_2026-10-29.md](BUILD/NCS_M0_MINIMAL_CLOSURE_ROUTE_2026-10-29.md), commit `23cab15454c5a73b725303f2d0ad04de8170db24`.
