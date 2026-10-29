@@ -49,7 +49,14 @@ for (const path of ["src/main.js", "src/main-stable.js", "src/simulation.js", "s
   try { codeFiles[path] = await fs.readFile(new URL("../" + path, import.meta.url), "utf8"); } catch {}
 }
 
-const memory = createLearningMemory(await readJson(MEMORY_PATH, null));
+// Treat any historical Nexo payload as opaque data. Lúmina learning only receives
+// its own fields; it must not normalize, prune, interpret, or rewrite Nexo records.
+const rawMemory = await readJson(MEMORY_PATH, null);
+const memory = createLearningMemory({
+  runs: rawMemory?.runs,
+  lessons: rawMemory?.lessons,
+  patterns: rawMemory?.patterns
+});
 const debuggerReport = runDebugger({ files: codeFiles, simulation });
 const testerReport = runTester({ simulation, tick, moveAgent, setMovementTarget });
 const analystReport = analyzeLumina({
@@ -78,6 +85,9 @@ const learned = learnFromReports(
   { day: simulation.day, hour: simulation.hour, agents: simulation.agents.length }
 );
 
+if (rawMemory && Object.hasOwn(rawMemory, "nexo")) {
+  learned.nexo = structuredClone(rawMemory.nexo);
+}
 await fs.writeFile(MEMORY_PATH, JSON.stringify(learned, null, 2) + "\n", "utf8");
 const nextRevision = Number(persisted.stateRevision ?? 0) + 1;
 await persistState(STATE_PATH, simulation, Date.now(), { expectedRevision: Number(persisted.stateRevision ?? 0), stateRevision: nextRevision });
