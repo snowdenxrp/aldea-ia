@@ -159,3 +159,56 @@ Tratamiento para Atlas Offline:
 - Pendiente: extraer metadatos de los once mapas y comprobar si cada PDF declara fecha de emisión/revisión, autoridad responsable y estado de validación.
 
 Esta evidencia no resuelve los cinco bloques técnicos del informe Gemini/Perplexity; es un hallazgo local complementario y debe permanecer separado de la revisión de KeyMint, reloj offline, conflictos de avisos, consistencia multiarchivo y recuperación de claves.
+
+
+## 9. Informe original de Gemini recibido — 2026-10-29
+
+El usuario aportó el informe de arquitectura original, bloques 1–5. Se preserva su contenido como resumen de propuesta; no equivale a verificación independiente de todas las citas ni a implementación.
+
+### Bloque 1 — Android KeyMint y rollback resistance
+
+Gemini afirma que TEE/StrongBox/KeyMint pueden aplicar restricciones de uso de claves relacionadas con rollback de sistema/componentes, pero que eso no garantiza integridad, estructura ni validez semántica de archivos de aplicación como PMTiles o SQLite. Propone separar la protección del almacén de claves de la lógica de datos y añadir control de versiones/anti-rollback de aplicación vinculado a firmas verificadas por claves protegidas por KeyMint.
+
+**Reconciliación con Perplexity:** compatible en lo central. La resistencia a rollback de claves no equivale a protección general de archivos/datos. Debe evitarse el nombre genérico incorrecto `TAG_ROLLBACK_RESISTANT` cuando el tag actual es `Tag::ROLLBACK_RESISTANCE`; el campo `rollbackResistant` aparece en ciertos formatos/versiones de atestación. No asumir que el dispositivo concreto ofrece la propiedad sin evidencia de atestación del hardware objetivo.
+
+Fuentes registradas: https://source.android.com/docs/security/features/keystore/implementer-ref ; https://source.android.com/docs/security/features/keystore/attestation ; https://developer.android.com/privacy-and-security/keystore
+
+### Bloque 2 — reloj offline y revocación
+
+Gemini reconoce que `SystemClock.elapsedRealtime()` es monotónico durante el arranque y no está sujeto a cambios del reloj de pared, pero reinicia su base temporal en cada reinicio. Propone marcas relativas firmadas, un umbral heurístico de caducidad (ejemplo: 30 días) y fallback a `REVOCATION_STATUS_UNKNOWN` si expira la sincronización.
+
+**Reconciliación con Perplexity:** compatible. El umbral de 30 días es una propuesta de diseño, no un requisito de Android ni una regla normativa demostrada. Debe definirse qué ocurre después de reinicio, con estado persistente, hora manipulada y sincronización expirada; no puede tratarse `elapsedRealtime()` como reloj durable entre arranques.
+
+Fuente: https://developer.android.com/reference/android/os/SystemClock
+
+### Bloque 3 — avisos contradictorios, ISO 22320 y rutas
+
+Gemini propone una matriz de autenticidad, competencia, ámbito geográfico, amenaza y vigencia; si persiste un conflicto material entre fuentes del mismo nivel, marcar el tramo `UNKNOWN` y bloquear su uso por el enrutador.
+
+**Reconciliación con Perplexity:** no se identifica contradicción técnica central. La matriz y el bloqueo son decisiones de diseño/seguridad de Atlas; no deben atribuirse a ISO 22320 como algoritmo o mandato explícito sin cláusula verificable. La política requiere definir qué significa “mismo nivel”, autoridad para resolver conflictos, vigencia y alcance geográfico.
+
+Fuentes: https://www.iso.org/standard/67851.html ; https://committee.iso.org/sites/tc292/home/sc-1-emergency-management/projects/published/iso-22320-2018-at-a-glance.html
+
+### Bloque 4 — persistencia, rename/fsync, PMTiles y SQLite WAL
+
+Gemini advierte que atomicidad de renombrado y transacciones SQLite no garantizan atomicidad global entre manifiesto, PMTiles y varias bases de datos. Propone staging, sincronización, publicación del manifiesto por rename y validación con hash SHA-256/bundle_id al reiniciar.
+
+**Reconciliación con Perplexity:** compatible en el riesgo principal. Ajuste técnico importante: no decir que `rename()` más `fsync()` garantizan por sí solos un protocolo transaccional universal. El protocolo debe definir la secuencia y el comportamiento ante fallos; sincronizar archivos/directorios según las garantías de la plataforma, gestionar WAL/checkpoints y verificar todos los componentes antes de admitir el bundle. `bundle_id` y staging son propuestas, no implementaciones ni garantías ya demostradas.
+
+Fuentes: https://www2.sqlite.org/matrix/wal.html ; https://www2.sqlite.org/wal.html ; https://www3.sqlite.org/matrix/atomiccommit.html
+
+### Bloque 5 — pérdida/compromiso de K_backup y recuperación
+
+Gemini propone separar recuperación de disponibilidad local de recuperación de confianza. Ante compromiso, exige un paquete de revocación firmado por quórum; ante pérdida completa de K_backup, conservar lectura de datos locales pero no aceptar actualizaciones no verificadas.
+
+**Reconciliación con Perplexity:** compatible en que NIST ofrece orientación general de gestión/recuperación de claves y no impone un quórum offline específico. El quórum, los miembros, el umbral, la revocación, la rotación, la recuperación ante pérdida total y el criterio para volver a confiar son decisiones de arquitectura y gobernanza pendientes. El comportamiento de solo lectura tras pérdida/compromiso es propuesta, no una garantía implementada.
+
+Fuente: https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-57pt1r5.pdf
+
+### Resultado del cotejo Gemini + Perplexity
+
+- No aparece una contradicción material que invalide el núcleo de los cinco bloques; Perplexity respalda las principales limitaciones técnicas.
+- Se corrigen las atribuciones normativas: el bloqueo de rutas, 30 días offline, bundle_id, protocolo de staging y quórum son propuestas de diseño, no mandatos demostrados de ISO/NIST/Android.
+- Riesgo crítico transversal: varias decisiones están formuladas como arquitectura propuesta sin evidencia de implementación ni pruebas de fallo/recuperación.
+- Pendientes: atestación real del dispositivo objetivo; política temporal durable y caducidad; reglas de autoridad/conflicto de avisos; protocolo reproducible de publicación/recuperación multicomponente; modelo de amenaza y gobernanza de quórum.
+- Estado sigue `PROPOSAL — NOT IMPLEMENTED`. No se ha inspeccionado el hardware objetivo, ejecutado pruebas de persistencia ni probado recuperación de claves.
