@@ -6,10 +6,10 @@
 ## Expedientes
 
 1. [Emergency Knowledge Core — estado y continuidad](EMERGENCY_KNOWLEDGE_CORE_STATUS_2026-10-29.md)
-   - Último material recibido: informe focalizado de Qwen (2026-10-29), consolidado en el expediente ECK. No se repitió la auditoría general de filtros/SODIS.
+   - Último material recibido: informes focalizados de Qwen y verificación independiente de Perplexity (2026-10-29), consolidados en el expediente ECK. No se repitió la auditoría general de filtros/SODIS.
    - Estado: `PROPOSAL — NOT IMPLEMENTED`.
-   - Clasificación tras el delta: B2 (publicación oficial CENAPRED 2026 del 01 800 111 3168) resuelto como publicación; B1 (operatividad actual de la línea) sigue UNKNOWN; B3 (marco KI/PERE) PARTIAL hasta validar procedimiento en fuente primaria; B4 (guía mexicana de hervido por altitud) UNKNOWN; B5 (evacuación ciudadana por incendio forestal en Colima) PARTIAL; B6 sigue pendiente.
-   - No aceptar “publicado” como equivalente a “operativo” ni búsqueda negativa como prueba de inexistencia. Los detalles y URLs están en el expediente ECK.
+   - Clasificación consolidada: B2 (publicación oficial CENAPRED 2026 del 01 800 111 3168) resuelto como publicación; B1 (operatividad actual de la línea) UNKNOWN; B3 (protocolo ciudadano específico de KI/PERE) UNKNOWN por evidencia insuficiente y discrepancia entre informes; B4 (guía mexicana de hervido por altitud) PARTIAL: existe guía federal de 5 minutos desde el primer hervor, sin ajuste de altitud demostrado; B5 (evacuación ciudadana por incendio forestal en Colima) PARTIAL con programa estatal 2026, pero sin protocolo público específico de Manzanillo verificado; B6 sigue pendiente.
+   - No aceptar “publicado” como equivalente a “operativo”, un plan general como protocolo ciudadano completo ni búsqueda negativa como prueba de inexistencia. Los detalles y URLs están en el expediente ECK.
    - Bloqueos adicionales B1–B6 registrados en su expediente.
 
 2. [Atlas Offline — estado de auditoría y continuidad](ATLAS_OFFLINE_AUDIT_STATUS_2026-10-29.md)
