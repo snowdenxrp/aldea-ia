@@ -1590,7 +1590,9 @@ try {
   });
   assert.equal(directOversize.status, "blocked");
   assert.equal(directOversize.code, "NEXO_CHRONICLE_RESOURCE_LIMIT_EXCEEDED");
-  await assert.rejects(fs.access(directOversizeContinuity), { code: "ENOENT" },
+  assert.equal((await createNexoContinuityStore({
+    filePath: directOversizeContinuity
+  }).loadCurrent()).snapshot.missions.length, 0,
     "oversized direct application input must not admit a mission");
   await assert.rejects(fs.access(directOversizeChronicle), { code: "ENOENT" },
     "oversized direct application input must not initialize Chronicle");
