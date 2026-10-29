@@ -121,11 +121,11 @@ export async function bootstrapNexoContinuityStore(options = {}) {
   const root = values.root;
   const relativePath = values.relativePath;
   if (typeof root !== "string" || !root.trim() || !path.isAbsolute(root) ||
-      root.includes("\\0")) {
+      root.includes(String.fromCharCode(0))) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
   }
   if (typeof relativePath !== "string" || !relativePath.trim() ||
-      path.isAbsolute(relativePath) || relativePath.includes("\\0") ||
+      path.isAbsolute(relativePath) || relativePath.includes(String.fromCharCode(0)) ||
       path.normalize(relativePath) !== relativePath || relativePath === "." ||
       relativePath === ".." || relativePath.startsWith(`..${path.sep}`)) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_RELATIVE_PATH_INVALID");
