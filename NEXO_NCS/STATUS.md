@@ -1,3 +1,14 @@
+## DELTA — IDENTIFICACIÓN DEL ENTRYPOINT DEL REPOSITORIO (2026-10-29)
+
+- Revisión de `package.json`: el repositorio expone `"nexo": "node scripts/nexo.mjs"`; `simulate` y `assistants` son entrypoints separados. Esto confirma que el runtime de este repositorio se lanza con Node.js mediante npm/script, pero **no demuestra** que la app Android Nexo M1 instalada invoque ese entrypoint.
+- `scripts/nexo.mjs` documenta un entrypoint de comandos independiente de Lúmina; no se encontró evidencia en estos archivos de un launcher Android ni del vínculo app → Node.js.
+- Decisión: no pedir al propietario que instale/configure Node ni que ejecute comandos en el POCO. No asumir Termux ni vincular M1 con NCS por el hecho de que M1 se abra automáticamente.
+- Siguiente paso: localizar en el repositorio el empaquetado/launcher Android (si existe) mediante evidencia de archivos concretos. Si no existe, mantener la integración M1→NCS como UNKNOWN y diseñar la validación del entorno restringido aparte, sin bloquear el trabajo estático de FB-04.
+- Gates sin cambio: FB-03/FB-04 OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; FB-06/FB-07 OPEN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Solo lectura estática de `package.json` y `scripts/nexo.mjs`; no se modificó runtime ni se ejecutaron tests, CI/Actions, comandos del POCO o bootstrap real.
+
+---
+
 ## DELTA — FB-04: CARRERAS CONCRETAS DE PUBLICACIÓN IDENTIFICADAS (2026-10-29)
 
 - Nueva revisión estática: [NCS_M0_FB04_STATIC_PUBLICATION_GAPS_2026-10-29.md](BUILD/NCS_M0_FB04_STATIC_PUBLICATION_GAPS_2026-10-29.md), commit `df49ed051c7706d0eb451fe484169eec42a5a2dc`.
