@@ -282,3 +282,51 @@ Este delta aporta precisión a los cinco bloques; no reabre la auditoría genera
 - Recuperar/incorporar el original de Gemini para contraste literal, no reconstruirlo desde resúmenes de terceros.
 
 **Estado global:** `PROPOSAL — NOT IMPLEMENTED`. No hay implementación ni pruebas acreditadas. NCS M0 no se modificó.
+
+
+## 13. Informe original de arquitectura Gemini — bloques 1–5 (aportado por el usuario, 2026-10-29)
+
+**Estado:** `PROPOSAL — NOT IMPLEMENTED`. El texto original completo de los cinco bloques se ha recibido en la conversación y queda consolidado a continuación como referencia primaria de la propuesta arquitectónica. Esto resuelve la limitación previa de Claude sobre no disponer del original para contraste literal; no implica que las afirmaciones normativas o técnicas hayan sido verificadas independientemente.
+
+### Bloque 1 — Android KeyMint y Rollback Resistance
+
+- **Fuentes citadas por el informe:** AOSP, Android Keystore y KeyMint (`TAG_ROLLBACK_RESISTANT`).
+- **Tesis:** la resistencia a rollback de claves del hardware seguro (TEE/StrongBox) no garantiza integridad ni ausencia de rollback de datos arbitrarios de la aplicación, como PMTiles o SQLite.
+- **Incertidumbre:** soporte de hardware variable entre fabricantes/dispositivos.
+- **Propuesta:** control de versiones y anti-rollback a nivel de aplicación, vinculado a firmas verificadas con claves protegidas por KeyMint.
+- **Condición pendiente:** precisar la semántica exacta de los tags/campos según versión de Android/atestación y verificar el dispositivo objetivo. No afirmar que KeyMint por sí mismo valida los datos de Atlas.
+
+### Bloque 2 — Reloj offline, `elapsedRealtime()` y revocación
+
+- **Fuente citada:** documentación Android SDK de `SystemClock`.
+- **Tesis:** `elapsedRealtime()` es monotónico y útil para medir intervalos desde el arranque, pero no mantiene continuidad tras reiniciar.
+- **Incertidumbre:** reinicios o cortes de energía durante periodos offline.
+- **Propuesta:** marcas relativas firmadas en el manifiesto, umbral heurístico propuesto de 30 días y estado `REVOCATION_STATUS_UNKNOWN` si expira la sincronización sin validar la red.
+- **Condición pendiente:** un timestamp relativo firmado no establece por sí solo cuánto tiempo real transcurrió entre reinicios. Definir explícitamente el estado post-reinicio, caducidad, funciones permitidas/bloqueadas y recuperación. Los 30 días son una decisión propuesta, no un requisito de Android.
+
+### Bloque 3 — Avisos contradictorios, ISO 22320 y bloqueo de rutas
+
+- **Fuente citada:** ISO 22320:2018.
+- **Tesis:** se propone una matriz de autenticidad, competencia, ámbito, amenaza y vigencia; un conflicto material no resuelto marcaría el segmento `UNKNOWN` y bloquearía su uso por el enrutador.
+- **Incertidumbre:** directivas oficiales contradictorias o desactualizadas durante una emergencia.
+- **Condición pendiente:** la revisión adversarial no dispone del texto completo de ISO para validar las atribuciones normativas. Tratar la matriz y el bloqueo como política propia de Atlas, no como algoritmo prescrito por ISO. Definir jerarquía de autoridad, procedencia/fecha visible y conducta del producto para evitar dejar al usuario sin orientación segura.
+
+### Bloque 4 — Persistencia, `rename`/`fsync`, PMTiles y SQLite WAL
+
+- **Fuentes citadas:** POSIX.1-2008 y documentación SQLite WAL.
+- **Tesis:** las garantías de una operación sobre un archivo y las transacciones de una base no crean atomicidad global entre múltiples bases y archivos externos.
+- **Propuesta:** directorio `.stage/`, sincronización explícita, SQLite `PRAGMA synchronous = FULL`, reemplazo atómico del manifiesto y validación de un `bundle_id` basado en SHA-256 tras reiniciar.
+- **Condición pendiente:** propuesta aún no especificada ni probada. Un hash verifica coincidencia/integridad respecto al manifiesto de confianza, pero no demuestra por sí solo que el manifiesto sea auténtico, vigente o consistente con una publicación completa. Definir el punto único de commit, orden de escritura/sincronización, autenticidad del manifiesto, recuperación tras cada posible interrupción y comportamiento cuando no haya un bundle íntegro. No prometer durabilidad universal en SD/USB ni en hardware no verificado.
+
+### Bloque 5 — Pérdida/compromiso de `K_backup` y recuperación de claves
+
+- **Fuente citada:** NIST SP 800-57 Part 1 Rev. 5.
+- **Tesis:** separar recuperación de disponibilidad local (leer datos existentes) de recuperación de confianza (aceptar actualizaciones nuevas); preservar lectura local tras pérdida de clave y rechazar actualizaciones no verificadas.
+- **Propuesta:** ante compromiso, paquete de revocación firmado por quórum; ante pérdida, mantener funcionalidad local sin reinicio destructivo.
+- **Condición pendiente:** definir si `K_backup` existe en la arquitectura prevista, propósito, custodios, autoridad de recuperación, revocación/rotación, composición y umbral del quórum, y tratamiento si el quórum o la conectividad son inaccesibles. No afirmar conformidad con NIST ni atribuirle un quórum obligatorio sin verificar el texto normativo aplicable.
+
+### Contraste con la revisión adversarial final de Claude
+
+El informe original confirma que los cinco temas ya estaban planteados como propuestas e incertidumbres; no resuelve por sí solo los riesgos que Claude dejó abiertos. Se mantienen como decisiones pendientes: anti-rollback de datos; estado y permisos tras reinicio; resolución de avisos contradictorios; protocolo de commit/recuperación del bundle; ciclo de vida de `K_backup`. El texto original queda incorporado para permitir contraste literal futuro.
+
+**Sin cambios de código ni pruebas acreditadas.** Estado global `PROPOSAL — NOT IMPLEMENTED`; NCS M0 permanece fuera de alcance.
