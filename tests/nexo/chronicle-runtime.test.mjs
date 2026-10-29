@@ -1500,14 +1500,15 @@ try {
 
   // Valid invocation receives content over stdin; payload is not an argv value
   // and is not echoed to the terminal.
+  const successfulCliContinuity = path.join(cliRoot, "valid-continuity.json");
+  await createNexoContinuityStore({ filePath: successfulCliContinuity }).initialize();
   const successfulCliArgs = [
     "scripts/nexo-chronicle-session.mjs",
-    "--continuity", path.join(cliRoot, "valid-continuity.json"),
+    "--continuity", successfulCliContinuity,
     "--chronicle", path.join(cliRoot, "valid-chronicle.json"),
     "--mission", "cli-valid-mission",
     "--step", "cli-valid-step",
     "--content-stdin",
-    "--initialize-continuity",
     "--initialize-chronicle"
   ];
   assert.equal(successfulCliArgs.includes(privateContent), false);
@@ -1521,6 +1522,7 @@ try {
 
   const exactStdinContinuity = path.join(cliRoot, "exact-stdin-continuity.json");
   const exactStdinChronicle = path.join(cliRoot, "exact-stdin-chronicle.json");
+  await createNexoContinuityStore({ filePath: exactStdinContinuity }).initialize();
   const exactStdin = spawnSync(process.execPath, [
     "scripts/nexo-chronicle-session.mjs",
     "--continuity", exactStdinContinuity,
@@ -1528,7 +1530,6 @@ try {
     "--mission", "exact-stdin-mission",
     "--step", "exact-stdin-step",
     "--content-stdin",
-    "--initialize-continuity",
     "--initialize-chronicle"
   ], {
     cwd: process.cwd(),
@@ -1550,7 +1551,6 @@ try {
     "--mission", "oversized-stdin-mission",
     "--step", "oversized-stdin-step",
     "--content-stdin",
-    "--initialize-continuity",
     "--initialize-chronicle"
   ], {
     cwd: process.cwd(),
@@ -1566,13 +1566,14 @@ try {
 
   const directOversizeContinuity = path.join(cliRoot, "direct-oversize-continuity.json");
   const directOversizeChronicle = path.join(cliRoot, "direct-oversize-chronicle.json");
+  await createNexoContinuityStore({ filePath: directOversizeContinuity }).initialize();
   const directOversize = await runNexoChronicleAppend({
     continuityPath: directOversizeContinuity,
     chroniclePath: directOversizeChronicle,
     missionId: "direct-oversize-mission",
     stepId: "direct-oversize-step",
     content: "é".repeat(Math.floor(NEXO_RESOURCE_LIMITS.chronicleEntryBytes / 2) + 1),
-    initializeContinuity: true,
+    initializeContinuity: false,
     initializeChronicle: true
   });
   assert.equal(directOversize.status, "blocked");
