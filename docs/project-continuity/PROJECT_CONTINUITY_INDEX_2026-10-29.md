@@ -19,7 +19,8 @@
    - Estado: `PROPOSAL — NOT IMPLEMENTED`.
    - La revisión adversarial final de Claude está registrada en el expediente. Persisten decisiones abiertas sobre anti-rollback de datos, estado tras reinicio y revocación, conflictos de rutas, commit/recuperación multiarchivo y ciclo de vida de K_backup. Afirmaciones normativas de ISO/NIST y detalles de Android que no se verificaron directamente permanecen UNKNOWN/PARTIAL.
    - Pendientes técnicos: evidencia de atestación del dispositivo objetivo; política durable de caducidad/revocación tras reinicios; reglas de autoridad y resolución de avisos; protocolo probado de publicación/recuperación multiarchivo; modelo de amenaza y gobernanza de quórum.
-   - No hay implementación ni pruebas acreditadas; no se ha declarado cierre de arquitectura. Próximo paso: contraste literal del informe Gemini ya incorporado y resolución explícita de decisiones pendientes.
+   - Matriz de decisiones y criterios de aceptación A1–A7 añadida en la sección 14 del expediente Atlas. Incluye KeyMint/atestación, anti-rollback de datos, revocación tras reinicio, conflictos de rutas, bundle multiarchivo, K_backup y atribuciones normativas.
+   - No hay implementación ni pruebas acreditadas; no se ha declarado cierre de arquitectura. Próximo paso: revisar/aprobar la matriz y nombrar la autoridad responsable de las decisiones de diseño.
    - Hallazgo local de tsunami permanece: portal municipal presenta rutas/puntos en versión preliminar y en validación comunitaria; no tratarlos como rutas validadas. Próximo paso: revisión adversarial de Claude, ya con enlaces directos y ambos informes registrados.
 
 ## Reglas comunes
