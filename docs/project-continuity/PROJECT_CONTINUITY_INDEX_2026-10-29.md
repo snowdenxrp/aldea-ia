@@ -11,6 +11,8 @@
    - Clasificación consolidada: B2 (publicación oficial CENAPRED 2026 del 01 800 111 3168) resuelto como publicación; B1 (operatividad actual de la línea) UNKNOWN; B3 (protocolo ciudadano específico de KI/PERE) UNKNOWN por evidencia insuficiente y discrepancia entre informes; B4 (guía mexicana de hervido por altitud) PARTIAL: existe guía federal de 5 minutos desde el primer hervor, sin ajuste de altitud demostrado; B5 (evacuación ciudadana por incendio forestal en Colima) PARTIAL con programa estatal 2026, pero sin protocolo público específico de Manzanillo verificado; B6 sigue pendiente.
    - No aceptar “publicado” como equivalente a “operativo”, un plan general como protocolo ciudadano completo ni búsqueda negativa como prueba de inexistencia. Los detalles y URLs están en el expediente ECK.
    - Bloqueos adicionales B1–B6 registrados en su expediente.
+   - Revisión adversarial provisional de Claude añadida a ECK: posible inconsistencia en umbrales de KI aún no confirmada; procedencia del teléfono CNSNS inconsistente; SODIS y criterio de evacuación por sismo requieren cotejo con fuente primaria. Sin prueba de operación actual del teléfono.
+   - Revisión adversarial provisional de Claude añadida a Atlas: política fail-closed ante revocación expirada sigue abierta; ISO 22320 y NIST SP 800-57 quedan UNKNOWN para afirmaciones normativas específicas hasta comprobar texto completo; KeyMint del dispositivo objetivo y recuperación multiarchivo sin cierre.
 
 2. [Atlas Offline — estado de auditoría y continuidad](ATLAS_OFFLINE_AUDIT_STATUS_2026-10-29.md)
    - Auditoría de Perplexity y el informe original de Gemini (bloques 1–5) ya están consolidados y cotejados en el expediente Atlas.
