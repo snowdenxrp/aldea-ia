@@ -1,3 +1,43 @@
+## DELTA — MAPA ESTÁTICO DE LLAMADAS Y BRECHA NO-BYPASS FB-01/FB-02 (2026-10-29)
+
+Alcance: lectura estática de los archivos actuales en la rama `ncs-clean-architecture`. No se ejecutaron pruebas, CI/Actions, runtime, bootstrap ni efectos protegidos. Esta delta no cambia ningún gate.
+
+### Mapa de llamadas observado
+
+1. **API dedicada propuesta, sin caller operacional conocido**
+   - `src/nexo/core/continuity-service.mjs` exporta `bootstrapNexoContinuityStore({ root, relativePath, lockDeadline?, lockWaitMs? })`.
+   - Deriva `filePath` desde raíz absoluta + ruta relativa, rechaza opciones extra (incluido `legacyMemory`), inspecciona el padre/temporales conocidos y llama `store.initialize(emptySnapshot())`.
+   - Devuelve resultado + destino; no llama a `openNexoContinuityOwner`, no construye owner y termina ahí.
+   - `scripts/nexo-continuity.mjs` solo reexporta ambas APIs. La búsqueda estática en los entrypoints examinados no encontró una llamada a `bootstrapNexoContinuityStore`; exportar no equivale a usar ni a imponerla como frontera.
+
+2. **Ruta Chronicle compuesta: bypass confirmado respecto de la frontera dedicada**
+   - `scripts/nexo.mjs` acepta `chronicle-append` y deriva el proceso a `scripts/nexo-chronicle-session.mjs`.
+   - `scripts/nexo-chronicle-session.mjs` acepta `--initialize-continuity` y pasa la opción a `runNexoChronicleAppend`.
+   - `src/nexo/application/chronicle-append.mjs::runNexoChronicleAppend` preflight-ea los stores; si Continuity falta y `initializeContinuity` es true, llama a `openNexoContinuityOwner({ filePath: continuityPath, allowEmptyInitialization: initializeContinuity, ... })`. Después puede inicializar Chronicle, registrar/admitir misión mediante `opened.owner.recordMission`, ejecutar el paso owner-backed y persistir/reconciliar el resultado dentro de la misma invocación.
+   - Por tanto, el CLI histórico `nexo chronicle-append --initialize-continuity` no pasa por la API dedicada y no se detiene en una frontera de bootstrap aislada. El test estático `tests/nexo/entrypoint.test.mjs` contiene un caso que combina `--initialize-continuity` y `--initialize-chronicle` con ejecución/dispatch; **el test no se ejecutó en esta tarea**.
+   - Esto es una brecha de arquitectura/no-bypass demostrada por el grafo estático, no prueba de que el comando se haya ejecutado en el dispositivo. No conectar la nueva API a esta ruta ni modificar el CLI sin autorización separada.
+
+3. **Callers legacy/simulación que deben conservarse, pero no pueden considerarse frontera M0**
+   - `scripts/assistants.mjs` importa `openNexoContinuityOwner`, pasa `persisted.nexoMemory` como `legacyMemory` y obtiene un owner; después persiste memoria/estado y puede entrar a `runNexoRuntimeRepairSession`.
+   - `scripts/simulate.mjs` importa la misma API, pasa `state.nexoMemory` como `legacyMemory` y continúa la simulación/guardado de estado.
+   - Estos callers confirman que la API general legacy sigue accesible desde rutas que no son bootstrap M0 aislado. Su comportamiento de migración no se cambia en este alcance. No usar Lúmina/simulación/assistants como launcher de Nexo M0.
+
+4. **Entrypoints de lectura**
+   - `scripts/nexo.mjs` expone comandos de estado/consulta con ruta `--continuity`; las consultas de `src/nexo/application/continuity-queries.mjs` se describen como read-only. Esto no hace que las rutas de escritura anteriores sean no-bypass.
+
+### Conclusión de frontera
+
+- **Implementado (estático):** API dedicada de bootstrap; rechaza `legacyMemory`, deriva y devuelve la relación root→destino, no devuelve owner y se detiene tras la llamada de inicialización.
+- **Inspeccionado estáticamente:** el export no tiene caller en los entrypoints examinados; la ruta Chronicle compuesta puede inicializar por la API general y continuar a owner/admisión/dispatch; assistants/simulate mantienen rutas legacy.
+- **Probado:** no se ejecutaron pruebas en esta tarea; no se afirma PASS.
+- **Autorizado:** el cambio dedicado FB-01 fue autorizado en el alcance descrito por el handoff; esta revisión no autoriza conectar el bootstrap, cambiar callers legacy, ejecutar pruebas/CI, crear Continuity real ni activar efectos protegidos.
+
+**Resultado:** no-bypass end-to-end **NO DEMOSTRADO; existe una ruta estática de bypass**. FB-01 y FB-02 siguen OPEN/UNKNOWN; FB-03/FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; P01-B=C; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA fuera del alcance limitado; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; M0 INCOMPLETO.
+
+Siguiente acción permitida: conservar esta brecha en la trazabilidad y preparar el criterio negativo de aceptación para una futura prueba de no-continuación, sin escribir ni ejecutar esa prueba hasta autorización separada. No alterar migración legacy, no conectar la API dedicada a CLI/launcher, no seleccionar mecanismo de aislamiento ni repetir el censo del POCO.
+
+---
+
 ## DELTA — BOOTSTRAP FB-01: TEMPORALES PREEXISTENTES EN STOP/UNKNOWN (2026-10-29)
 
 La API candidata se endureció para no borrar artefactos temporales ya existentes: si el directorio padre no puede inspeccionarse o hay `<destino>.tmp` / `<destino>.tmp-*`, el bootstrap se detiene antes de llamar a la inicialización general. Evidencia: servicio blob `86b33409ca7150e45846c7c97a2d4b28780121e7`; prueba blob `6f5e706ccb6c242cc32ebc77a11dab011f217b22`. La trazabilidad se actualizó en [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `5ccc4b84570bd7132504f657f09fdc2eae24a9fc`, blob `85d12c07128d81b7b8def68e0ec3d63459ab6843`.
