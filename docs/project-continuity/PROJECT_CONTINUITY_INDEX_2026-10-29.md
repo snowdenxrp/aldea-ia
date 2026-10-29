@@ -13,9 +13,11 @@
    - Bloqueos adicionales B1–B6 registrados en su expediente.
 
 2. [Atlas Offline — estado de auditoría y continuidad](ATLAS_OFFLINE_AUDIT_STATUS_2026-10-29.md)
-   - Auditoría de Perplexity de los bloques 1–5 preservada en forma consolidada.
+   - Auditoría de Perplexity y el informe original de Gemini (bloques 1–5) ya están consolidados y cotejados en el expediente Atlas.
    - Estado: `PROPOSAL — NOT IMPLEMENTED`.
-   - Hallazgo nuevo: portal municipal de tsunami en Manzanillo con mapas y rutas explícitamente preliminares/en validación comunitaria; no tratarlos como rutas ya validadas. Pendiente principal: recuperar el informe original de Gemini; Claude revisará adversarialmente solo los residuos tras recibir informes de Qwen/Perplexity y original de Gemini.
+   - Cotejo: no aparece contradicción material central en KeyMint/rollback, reloj offline, avisos conflictivos, persistencia multiarchivo ni recuperación de claves. Se mantienen como propuestas, no requisitos de Android/ISO/NIST, los umbrales de 30 días, el bloqueo de rutas, staging/bundle_id y el quórum offline.
+   - Pendientes técnicos: evidencia de atestación del dispositivo objetivo; política durable de caducidad/revocación tras reinicios; reglas de autoridad y resolución de avisos; protocolo probado de publicación/recuperación multiarchivo; modelo de amenaza y gobernanza de quórum.
+   - Hallazgo local de tsunami permanece: portal municipal presenta rutas/puntos en versión preliminar y en validación comunitaria; no tratarlos como rutas validadas. Próximo paso: revisión adversarial de Claude, ya con enlaces directos y ambos informes registrados.
 
 ## Reglas comunes
 
