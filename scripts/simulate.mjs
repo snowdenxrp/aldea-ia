@@ -177,7 +177,7 @@ export async function loadState(statePath = STATE_PATH) {
       return state;
     }
   } catch {}
-  return { version: 5, stateRevision: 0, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null };
+  return { version: 5, stateRevision: 0, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [] };
 }
 
 export function applyState(state) {
