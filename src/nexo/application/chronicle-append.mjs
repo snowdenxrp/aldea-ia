@@ -278,6 +278,12 @@ export async function runNexoChronicleAppend(options) {
     continuityPath, chroniclePath, missionId, stepId, content,
     initializeContinuity, initializeChronicle, lockWaitMs
   } = input;
+  // M0 safety boundary: this use case must never initialize Continuity and
+  // continue into mission admission/execution in the same invocation. The
+  // dedicated bootstrap API is intentionally separate and does not return an owner.
+  if (initializeContinuity) {
+    return blocked("NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED");
+  }
   if (typeof continuityPath !== "string" || !continuityPath.trim() ||
       typeof chroniclePath !== "string" || !chroniclePath.trim() ||
       typeof missionId !== "string" || !missionId.trim() ||
