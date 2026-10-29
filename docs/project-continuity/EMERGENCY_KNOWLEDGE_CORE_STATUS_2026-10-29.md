@@ -161,3 +161,61 @@ Fuente municipal: https://tsunami.manzanillo.gob.mx/
 
 - **B2:** deja de ser UNKNOWN respecto de la existencia de material CENAPRED 2026; queda documentada la publicación institucional. La vigencia telefónica real sigue UNKNOWN.
 - **B6:** ya hay una fuente municipal actual con materiales de evacuación por tsunami; sigue pendiente validar la fecha/versión de cada mapa y su estado operativo. No declarar cerrada toda la cuestión de “guía más reciente”.
+
+
+## 10. Delta focalizado de Qwen — 2026-10-29
+
+**Origen:** informe de investigación focalizada pegado por el usuario. El informe no modificó el repositorio ni ejecutó pruebas. Sus referencias internas `[[n]]` no se tratan como citas independientes; se conservan las URLs explícitas.
+
+### B3 — KI/PERE: evidencia de marco oficial, procedimiento específico aún PARCIAL
+
+Fuentes aportadas:
+- Informe Nacional de México ante el OIEA (2022): https://www.gob.mx/cms/uploads/attachment/file/843327/Informe_Nacional-_Mexico_2022.pdf
+- Perfil Nacional de Riesgos DGE 2020: https://epidemiologia.salud.gob.mx/gobmx/salud/documentos/pnr/Perfil_Nacional_de_Riesgos_DGE2020.pdf
+- Nota periodística secundaria sobre Laguna Verde/PERE: https://elmanana.com.mx/nacional/2026/5/27/protocolo-nuclear-en-mexico-que-pasaria-si-sonara-la-alarma-en-la-central-de-laguna-verde-veracruz-173310.html
+
+**Clasificación:** `PARTIAL`, no completamente resuelto. La evidencia citada respalda que el PERE y la profilaxis con yoduro de potasio forman parte del contexto mexicano de preparación radiológica. Sin inspección de las secciones exactas del informe oficial no queda probado el procedimiento completo de distribución, quién autoriza la administración, los criterios de activación, las zonas/personas elegibles ni la logística de albergues. La nota periodística no debe usarse como fuente primaria para cerrar esos detalles.
+
+**Acción residual:** extraer y citar la sección/página exacta del informe nacional y cualquier plan oficial PERE accesible que describa distribución y activación. Mantener la regla sanitaria del proyecto: KI solo bajo instrucción expresa de autoridades competentes; no es una pauta de automedicación.
+
+### B4 — Hervido de agua por altitud: sigue UNKNOWN respecto de inexistencia
+
+Qwen revisó la NOM-127-SSA1-2021: https://dof.gob.mx/nota_detalle_popup.php?codigo=5650705 y no encontró allí tiempos domésticos de hervido según altitud.
+
+**Clasificación:** `UNKNOWN` para la pregunta amplia de si existe alguna guía mexicana oficial específica. La NOM citada regula calidad del agua y tratamientos de potabilización, pero no encontrar la regla en esa NOM no demuestra que ninguna dependencia haya publicado otra guía. La regla CDC de hervir más tiempo por encima de 6.500 pies/unos 2.000 m sigue siendo una recomendación extranjera adoptada como propuesta de diseño, no una NOM mexicana.
+
+**Acción residual:** buscar de forma focalizada en fuentes oficiales mexicanas y documentar alcance/fecha de la búsqueda; evitar afirmar “no existe” sin una base exhaustiva.
+
+### B5 — Incendios forestales en Colima: PARCIAL
+
+Fuente estatal aportada:
+https://admiweb.col.gob.mx/archivos_prensa/banco_img/file_686444f28ea21_PROGRAMAESPECIALDEESTIAJE2025.pdf
+
+La existencia del Programa Especial de Protección Civil para la Temporada de Sequía, Estiaje e Incendios Forestales 2025 queda respaldada. El informe de Qwen no demuestra que exista un procedimiento público específico de evacuación ciudadana con rutas, señales y puntos de reunión, ni demuestra su inexistencia. Los teléfonos reproducidos desde una publicación de Facebook requieren verificación en un directorio institucional actual antes de incluirse como contactos operativos del producto.
+
+**Clasificación:** `PARTIAL`. No convertir números telefónicos publicados en redes en contactos verificados actualmente.
+
+**Acción residual:** revisar el programa estatal completo y el programa municipal vigente de Manzanillo; si no publican instrucciones específicas, consultar directamente a Protección Civil estatal/municipal. Registrar fecha y respuesta.
+
+### B1/B2 — Número CNSNS 01 800 111 3168: publicación confirmada, operación UNKNOWN
+
+Fuentes oficiales aportadas:
+- Curso CENAPRED 2026: https://cursos.aprende.gob.mx/courses/course-v1:CENAPRED%2BRIFR26048X%2B2026_06/about
+- Curso CENAPRED 2025: https://cursos.aprende.gob.mx/courses/course-v1:CENAPRED%2BRIFR25047x%2B2025_04/about
+
+Ambas fichas publican el número para avisar sobre fuentes radiactivas perdidas o robadas. La ficha 2026 confirma que la institución lo seguía difundiendo en material accesible en 2026; no prueba que la llamada conecte hoy, que la línea sea atendida ni su alcance operativo vigente.
+
+**Clasificación:** B2 `RESUELTO COMO PUBLICACIÓN OFICIAL RECIENTE`; B1 `UNKNOWN` para operatividad actual. No marcar la línea como “activa” u “operativa” sin confirmación directa de CNSNS o evidencia equivalente.
+
+### Estado neto del delta Qwen
+
+| Bloque | Clasificación tras el delta | Razón |
+|---|---|---|
+| B1 — operación actual del 800 CNSNS | UNKNOWN | Material publicado no demuestra respuesta telefónica actual. |
+| B2 — publicación CENAPRED 2026 del número | RESUELTO COMO PUBLICACIÓN | Ficha oficial accesible publica el número. |
+| B3 — marco mexicano KI/PERE | PARTIAL | Hay evidencia del marco, falta validar el procedimiento operativo exacto en fuente primaria. |
+| B4 — guía/NOM mexicana de hervido por altitud | UNKNOWN | Búsqueda negativa limitada no prueba inexistencia general. |
+| B5 — evacuación ciudadana por incendios en Colima | PARTIAL | Programa estatal identificado; protocolo público específico no demostrado. |
+| B6 — actualización de guías de tsunami | UNKNOWN/PARTIAL | No fue investigado ni resuelto por este informe. |
+
+No se acepta la conclusión de Qwen de que B1 esté “RESUELTO” como teléfono operativo ni que B3 esté totalmente “RESUELTO”. Se conserva la diferencia entre publicación, existencia de marco y validación operacional.
