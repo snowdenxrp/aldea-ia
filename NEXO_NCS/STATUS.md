@@ -1,3 +1,15 @@
+## DELTA — API DEDICADA FB-01 IMPLEMENTADA, SIN EJECUCIÓN (2026-10-29)
+
+Tras autorización explícita del propietario se añadió una API de bootstrap Continuity de propósito único. La trazabilidad se actualizó en [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `acf8b30c9e4cb4b66e3bd9b72e16cac9383cb502`, blob `5644c5f8aa8dd167ac904545991521f7b1398b96`.
+
+Cambios: `src/nexo/core/continuity-service.mjs` añade `bootstrapNexoContinuityStore`; requiere raíz absoluta existente y ruta relativa normalizada, deriva y devuelve el destino efectivo, rechaza `legacyMemory` y otros argumentos no permitidos, publica solo el snapshot vacío v1 y no devuelve `owner`. `scripts/nexo-continuity.mjs` reexporta la API. `tests/nexo/continuity-contract.test.mjs` añade cobertura de contrato para destino, snapshot vacío, no-owner, no-sobrescritura/conflicto y entradas inválidas; la prueba legacy preexistente permanece intacta.
+
+**Límite de evidencia:** archivos guardados y relectura estática únicamente. Las pruebas no se ejecutaron; no se ejecutaron CI/Actions ni bootstrap operativo. La API no acredita autoridad de raíz, aislamiento sostenido de escritores, resistencia a symlinks/path attacks ni no-bypass end-to-end. No se conectó un launcher/CLI ni se creó Continuity real.
+
+Gates sin cambio: FB-01 OPEN/UNKNOWN (implementación candidata, no PASS); FB-02 OPEN/P01-B=C; FB-03 OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; M0 INCOMPLETO; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA fuera de este alcance limitado; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación operativa y efectos protegidos STOP.
+
+---
+
 ## DELTA — BRECHA FB-01 ANCLADA A FUENTE/TEST/WORKFLOW (2026-10-29)
 
 Se verificó una lectura estática específica de servicio, test y workflow y se incorporó a [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `4981b5fb6744d2bc8060efcc2507b2568fb59677`, blob verificado `9807030cc5176beeb0cfe42c615e5812d796766d`.
