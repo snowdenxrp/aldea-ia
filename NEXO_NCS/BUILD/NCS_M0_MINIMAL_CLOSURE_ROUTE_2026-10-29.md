@@ -1,3 +1,14 @@
+## DELTA DE CONTINUIDAD — 2026-10-29, posterior a FB-02
+
+- **FB-02 PASS/CERRADO** para separar bootstrap de Continuity y operación Chronicle en una sola invocación. SHA validado: `86e73525f8c63e143b5860d77f0d191e54213976`.
+- CI PASS en ese SHA: [integrated M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [Chronicle native](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618133), [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189), [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618328), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618177), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618334).
+- La ejecución y los fixtures de FB-02 están validados; no repetirlos ni volver a investigar el bypass histórico.
+- **Siguiente prioridad técnica: FB-01** — comprobar qué evidencia de contrato/tests ya existe para la API dedicada de bootstrap y cerrar solo lo que se sostenga en el SHA probado. No crear Continuity real ni conectar un launcher.
+- M0 sigue INCOMPLETO. FB-01 OPEN/UNKNOWN; FB-03/FB-04 OPEN/UNKNOWN; FB-05 pendiente; FB-06/FB-07 pendientes según STATUS. Raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; publicación real y efectos protegidos STOP.
+- No repetir auditorías estáticas, no ejecutar comandos del POCO, no hacer bootstrap real ni efectos protegidos.
+
+---
+
 # NCS M0 — ruta mínima de cierre y bloqueos no sustituibles por documentación
 
 Fecha: 2026-10-29  
