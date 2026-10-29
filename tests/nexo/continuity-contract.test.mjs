@@ -5,6 +5,7 @@ import { createNexoContinuityStore } from "../../src/nexo/core/continuity-store.
 import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
 import { recordNexoMissionInSnapshot, recordNexoExecutionInSnapshot, recordNexoOutcomeInSnapshot, reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { bootstrapNexoContinuityStore } from "../../src/nexo/core/continuity-service.mjs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -1240,4 +1241,69 @@ for (const [method, fields] of accessorCallCases) {
   const result = await readFailingOwner[method](accessorCallOptions);
   assert.equal(expectedRevisionGetterInvoked, false, `${method} must not execute option getters`);
   assert.equal(result.status, "failed", `${method} must reject accessor-backed options`);
+}
+
+
+// Dedicated M0 bootstrap contract: explicit root -> effective destination,
+// empty-only publication, no legacy projection, and no operational owner.
+{
+  const bootstrapRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-m0-bootstrap-"));
+  try {
+    const bootstrapped = await bootstrapNexoContinuityStore({
+      root: bootstrapRoot,
+      relativePath: "continuity-v1.json"
+    });
+    const expectedPath = path.resolve(bootstrapRoot, "continuity-v1.json");
+    assert.equal(bootstrapped.status, "committed");
+    assert.deepEqual(bootstrapped.destination, {
+      root: path.resolve(bootstrapRoot),
+      relativePath: "continuity-v1.json",
+      filePath: expectedPath
+    }, "bootstrap must report the exact destination derived from its explicit root");
+    assert.equal(Object.hasOwn(bootstrapped, "owner"), false,
+      "bootstrap must not return an operational owner");
+    const published = JSON.parse(await fs.readFile(expectedPath, "utf8"));
+    assert.equal(published.schema, "NEXO_CONTINUITY_STORE");
+    assert.equal(published.storeRevision, 0);
+    assert.deepEqual(published.snapshot, emptyOperationalSnapshot,
+      "first publication must be the exact empty v1 snapshot");
+
+    const beforeConflict = await fs.readFile(expectedPath, "utf8");
+    const conflict = await bootstrapNexoContinuityStore({
+      root: bootstrapRoot,
+      relativePath: "continuity-v1.json"
+    });
+    assert.equal(conflict.status, "conflict",
+      "an existing destination must block publication");
+    assert.equal(await fs.readFile(expectedPath, "utf8"), beforeConflict,
+      "bootstrap must not overwrite an existing object");
+
+    await assert.rejects(
+      bootstrapNexoContinuityStore({
+        root: bootstrapRoot,
+        relativePath: "../outside.json"
+      }),
+      error => error?.code === "NEXO_CONTINUITY_BOOTSTRAP_RELATIVE_PATH_INVALID",
+      "bootstrap must reject relative paths that escape the supplied root"
+    );
+    await assert.rejects(
+      bootstrapNexoContinuityStore({
+        root: bootstrapRoot,
+        relativePath: "legacy.json",
+        legacyMemory: validMemory
+      }),
+      error => error?.code === "NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID",
+      "the dedicated bootstrap API must not accept a legacy-memory projection input"
+    );
+    await assert.rejects(
+      bootstrapNexoContinuityStore({
+        root: "relative-root",
+        relativePath: "continuity.json"
+      }),
+      error => error?.code === "NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID",
+      "bootstrap must require an explicit absolute root"
+    );
+  } finally {
+    await fs.rm(bootstrapRoot, { recursive: true, force: true });
+  }
 }
