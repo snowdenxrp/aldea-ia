@@ -359,3 +359,86 @@ El informe original confirma que los cinco temas ya estaban planteados como prop
 Atlas no debe pasar a estado “arquitectura cerrada” hasta que cada decisión A1–A7 tenga: (a) responsable/autoridad identificada, (b) decisión explícita o justificación de UNKNOWN, (c) criterio de aceptación aprobado, (d) evidencia enlazada cuando se alegue verificación y (e) riesgos residuales documentados. El cierre documental no equivale a implementación, seguridad demostrada ni pruebas superadas.
 
 **Sin cambios de código ni pruebas ejecutadas.** NCS M0 permanece fuera de alcance.
+
+
+## 15. Resolución técnica propuesta — primera pasada de límites de confianza (2026-10-29)
+
+**Estado:** PROPOSAL — NOT APPROVED — NOT IMPLEMENTED. Este delta desarrolla A1, A2 y A6 en el orden recomendado. No aprueba autoridad, custodia, quórum ni despliegue; no acredita hardware ni pruebas.
+
+### Principio común
+
+Separar y nombrar tres propiedades que no son intercambiables:
+
+1. **Integridad/autenticidad:** los bytes y el manifiesto coinciden con una firma/cadena de confianza aceptada.
+2. **Frescura/no rollback:** la versión aceptada no es anterior a una versión que el sistema ya haya reconocido como más reciente.
+3. **Disponibilidad/recuperabilidad:** existen datos legibles y un camino de recuperación.
+
+Una firma válida o un hash válido, por sí solos, no prueban frescura. Una copia local legible no demuestra que siga siendo confiable. La indisponibilidad de una autoridad no autoriza a inventar una validación.
+
+### A1 — KeyMint y atestación del dispositivo
+
+**Recomendación técnica provisional**
+- Tratar KeyMint/Keystore como protección del material de clave y de las operaciones autorizadas, no como anti-rollback automático de PMTiles, SQLite, manifiestos o archivos arbitrarios.
+- Antes de declarar capacidades de hardware, identificar el dispositivo/versión objetivo y capturar evidencia de atestación verificable; documentar exactamente qué propiedad acredita y qué queda fuera.
+- Si la atestación está ausente, falla o no puede verificarse, el sistema no debe mostrar el dispositivo como HARDWARE-ATTESTED. Puede existir un modo degradado de lectura/verificación criptográfica local, pero no debe elevar sus garantías ni habilitar una operación que requiera explícitamente la propiedad ausente.
+- No convertir la atestación en requisito universal de toda lectura offline sin una decisión de producto/autoridad; decidir por separado qué operaciones exigen qué garantía.
+
+**Decisión que sigue abierta a la autoridad responsable**
+- ¿La atestación es requisito de despliegue para alguna o todas las funciones de confianza elevada?
+- ¿Qué funciones quedan disponibles si el dispositivo no ofrece una atestación verificable?
+
+**Criterio de aceptación propuesto**
+- Matriz dispositivo/versión/capacidad, con evidencia verificable.
+- Casos negativos: atestación ausente, inválida, no verificable o con propiedades inferiores a las requeridas; ninguno puede ser presentado como hardware validado.
+- Pruebas sobre el hardware real antes de afirmar compatibilidad. En este expediente aún no se han ejecutado.
+
+### A2 — Anti-rollback de datos Atlas
+
+**Recomendación técnica provisional**
+- Verificar firma del manifiesto y hashes de cada componente antes de activar un bundle; registrar por separado signature_valid, integrity_valid y freshness_valid.
+- El manifiesto firmado debe incluir al menos identidad de bundle, secuencia/versionado monotónico definido, versión de esquema y hashes de todos los componentes obligatorios. La firma autentica el contenido firmado, pero no prueba que sea la versión más reciente.
+- El último número de secuencia aceptado debe residir en un ancla de confianza que no pueda restaurarse junto con la copia de datos que se intenta rechazar. La tecnología concreta de esa ancla queda UNKNOWN hasta verificar las capacidades del dispositivo/plataforma.
+- Si no existe un ancla anti-rollback verificable, declarar explícitamente que el sistema solo valida autenticidad/integridad, no frescura fuerte contra restauración completa de una copia antigua. No presentar un contador guardado en el mismo almacenamiento restaurable como protección suficiente.
+- Ante secuencia inferior, estado de secuencia inconsistente, firma inválida o componente faltante/corrupto: no activar el bundle; conservar lectura del último bundle íntegro ya aceptado solo si su estado confiable sigue disponible. Si no puede determinarse cuál es el último confiable, mostrar NO_VERIFIABLE_BUNDLE y no inventar confianza.
+
+**Decisiones que siguen abiertas**
+- Qué ancla de frescura puede usarse en el dispositivo objetivo y si requiere hardware específico, autoridad externa o una combinación.
+- Qué funciones deben bloquearse cuando solo se puede demostrar integridad, pero no frescura.
+- Cómo recuperar el estado monotónico perdido sin permitir que una copia antigua se convierta silenciosamente en vigente.
+
+**Criterio de aceptación propuesto**
+- Con V2 aceptado, restaurar únicamente los archivos V1 se rechaza.
+- Restaurar juntos V1 y todo estado local que pretenda anclar la versión debe probarse como caso separado; si el diseño no puede detectarlo, la limitación se declara, no se oculta.
+- Firma inválida, versión inferior, manifiesto ausente, componente inconsistente y ancla ausente/corrupta producen estados explícitos y no activación silenciosa.
+- Instalación inicial y actualización legítima se prueban en el dispositivo y almacenamiento objetivo. Ninguna de estas pruebas está ejecutada.
+
+### A6 — K_backup y recuperación de confianza
+
+**Recomendación técnica provisional**
+- No asumir que K_backup ya existe como componente real: su existencia e implementación son UNKNOWN.
+- Si se confirma como requisito, definir su propósito exacto antes de elegir mecanismo: copia de disponibilidad, clave de descifrado, clave de firma, autoridad de recuperación o combinación. No reutilizar una sola etiqueta para funciones criptográficas distintas.
+- Separar tres flujos: (a) pérdida de una clave sin evidencia de compromiso, (b) compromiso confirmado o sospechado, (c) pérdida de todos los medios de recuperación. Cada flujo requiere política propia.
+- La lectura de datos locales puede preservarse solo cuando la integridad y las condiciones de uso sigan siendo verificables; nunca convertir “se puede leer” en “está vigente y confiable”.
+- Rechazar actualizaciones que no encadenen a una autoridad de confianza válida. La revocación/rotación requiere un mecanismo autenticado; si el sistema está permanentemente offline, documentar que no puede conocer revocaciones futuras que nunca recibió.
+- No fijar todavía número de custodios, umbral de quórum, identidades ni autoridad de sucesión. Son decisiones de gobernanza del propietario, no consecuencias técnicas automáticas de NIST.
+
+**Decisiones reservadas a la autoridad responsable**
+- Confirmar si K_backup debe existir y qué protege.
+- Nombrar custodios/autoridades y aprobar el umbral de recuperación, separación de funciones y reglas de rotación/revocación.
+- Aprobar qué capacidades siguen disponibles ante pérdida, compromiso o inaccesibilidad de la recuperación.
+
+**Criterio de aceptación propuesto**
+- Modelo de amenazas y tabla de escenarios: pérdida, sospecha/confirmación de compromiso, custodio inaccesible, quórum no disponible, rotación, revocación y dispositivo permanentemente offline.
+- Para cada escenario: autoridad que puede actuar, prueba criptográfica requerida, datos legibles, operaciones bloqueadas y ruta de recuperación.
+- Pruebas negativas: una actualización sin cadena de confianza válida nunca se acepta; la recuperación no puede restaurar silenciosamente una clave/versión revocada.
+- Ninguna autoridad, custodia ni quórum se considera aprobado por este documento.
+
+### Resultado de esta primera pasada
+
+- **Recomendación técnica:** distinguir autenticidad, frescura y disponibilidad; nunca inferir una de otra.
+- **A1:** política de atestación por capacidad, pendiente de decisión de despliegue y prueba del hardware objetivo.
+- **A2:** anti-rollback fuerte requiere un ancla de frescura independiente del conjunto de datos restaurable; si no se dispone de ella, declarar la limitación.
+- **A6:** confirmar existencia y función de K_backup antes de diseñar su ciclo de vida; custodios/quórum siguen reservados a autoridad.
+- **Siguiente paso del orden:** convertir las decisiones abiertas de A1/A2/A6 en una lista breve de decisiones del propietario y después pasar a A3/A4. No iniciar código ni pruebas hasta que el alcance y el entorno objetivo estén aprobados.
+
+**Sin cambios de código ni pruebas ejecutadas.** El estado global continúa PROPOSAL — NOT IMPLEMENTED; NCS M0 permanece fuera de alcance.
