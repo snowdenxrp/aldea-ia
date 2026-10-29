@@ -1,3 +1,14 @@
+## DELTA — FB-02 CERRADO CON EVIDENCIA CI Y REVISIÓN DEL LÍMITE PÚBLICO (2026-10-29)
+
+- **FB-02: PASS / CERRADO** para el alcance “no combinar inicialización de Continuity y operación Chronicle en una misma invocación”.
+- SHA de código probado: `86e73525f8c63e143b5860d77f0d191e54213976`. La revisión confirmó que `runNexoChronicleAppend` valida la forma de entrada y aplica el guard antes de validar/abrir stores o ejecutar el flujo; el wrapper `scripts/nexo-chronicle-session.mjs` solo pasa opciones a esa API; `tests/nexo/entrypoint.test.mjs` comprueba tanto el CLI como la llamada directa a la API y el código de bloqueo.
+- Evidencia PASS, todo en el SHA probado: [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [Chronicle native vertical](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618133), [bounded mission admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189), [deterministic persistence](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618328), [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618177), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618334).
+- El código de runtime probado no cambió después del SHA validado; los commits posteriores son actualizaciones documentales. La migración legacy se preserva. No se conectó el bootstrap dedicado a un launcher.
+- **No confundir este cierre con FB-01 ni con el cierre de M0:** FB-01 sigue OPEN/UNKNOWN; TOCTOU/exclusión de escritores no quedan demostrados por FB-02; FB-03/FB-04 OPEN/UNKNOWN; FB-06/FB-07 OPEN; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; primera publicación operacional y efectos protegidos STOP. Global **M0 INCOMPLETO**.
+- No se ejecutaron bootstrap real, comandos del POCO, instalaciones ni efectos protegidos.
+
+---
+
 ## DELTA — FB-02 VALIDACIÓN CI PASS CON SHA EXACTO (2026-10-29)
 
 - SHA validado: `86e73525f8c63e143b5860d77f0d191e54213976` (rama `ncs-clean-architecture`).
