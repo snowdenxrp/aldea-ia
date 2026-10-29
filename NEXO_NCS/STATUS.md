@@ -1,3 +1,13 @@
+## DELTA — CRITERIO NEGATIVO NC-01/NC-02 PARA NO-CONTINUATION (2026-10-29)
+
+- Trazabilidad actualizada: [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), criterio NC-01/NC-02.
+- La brecha FB-01/FB-02 permanece: el grafo estático previamente registrado demuestra una ruta Chronicle que puede inicializar Continuity y continuar a admisión/ejecución en la misma invocación; el no-bypass end-to-end no está demostrado.
+- NC-01/NC-02 es criterio documental, no prueba implementada ni ejecutada. No se modificaron runtime, tests ni workflows; no se ejecutaron tests, CI/Actions, bootstrap real ni efectos protegidos.
+- No repetir el mapa estático salvo evidencia nueva contradictoria. Próximo trabajo permitido sin autorización adicional: evidencia documental concreta de E2/E3 del entorno POCO X7 Pro/Android, reutilizando el protocolo D3 existente; no seleccionar aislamiento por inferencia.
+- Gates sin cambio: **M0 INCOMPLETO**; FB-01/FB-02 OPEN/UNKNOWN; P01-B=C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; FB-03/FB-04 OPEN/UNKNOWN; FB-06/FB-07 OPEN; D0–D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA fuera del alcance limitado; raíz PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP.
+
+---
+
 ## DELTA — MAPA ESTÁTICO DE LLAMADAS Y BRECHA NO-BYPASS FB-01/FB-02 (2026-10-29)
 
 Alcance: lectura estática de los archivos actuales en la rama `ncs-clean-architecture`. No se ejecutaron pruebas, CI/Actions, runtime, bootstrap ni efectos protegidos. Esta delta no cambia ningún gate.
