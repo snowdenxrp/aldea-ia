@@ -73,3 +73,9 @@ Estos archivos se crean en una rama documental dedicada para no alterar el estad
 - La ficha oficial de ISO 22320:2018 confirma el alcance general de gestión de incidentes y su vigencia; el texto íntegro no se revisó, por lo que cláusulas concretas y un supuesto mandato de bloqueo de rutas siguen UNKNOWN/no atribuibles.
 - La referencia oficial de Android confirma que elapsedRealtime() cuenta desde el arranque e incluye deep sleep; no resuelve continuidad temporal entre reinicios.
 - A7 queda parcialmente documentado, no es certificación ni evaluación de conformidad. Estado global PROPOSAL — NOT IMPLEMENTED; no hay código ni pruebas; NCS M0 sigue separado.
+
+
+### Delta Atlas — registro de decisiones y puerta de pruebas (2026-10-29)
+- La sección 19 del expediente Atlas reúne siete decisiones reservadas a propietario/autoridad (atestación, ancla anti-rollback, caducidad/revocación, precedencia de fuentes, commit multiarchivo, existencia/función de K_backup y necesidad de conformidad normativa).
+- Se definió una puerta previa a pruebas: entorno objetivo identificado, decisiones registradas explícitamente, criterios trazables, A5 resuelto, autorización del alcance de pruebas y evidencia de resultados reales.
+- No se aprueba ninguna decisión por documentarla. No hay implementación ni pruebas; NCS M0 sigue fuera de alcance.
