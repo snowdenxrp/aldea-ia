@@ -229,3 +229,27 @@ Este delta aporta precisión a los cinco bloques; no reabre la auditoría genera
 5. **NIST / quórum offline — CONFIRMADO como límite de atribución.** La sección 8.2.2.2 de SP 800-57 Part 1 Rev. 5 trata la función de recuperación de claves y evaluación caso por caso; no prescribe quórum offline. El quórum puede elegirse por diseño, pero exige modelo de amenazas, custodia, umbral, pérdida/compromiso y recuperación.
 
 **Resultado:** la revisión focalizada de Perplexity no presenta una contradicción material nueva con Gemini ni con el expediente previo; agrega precisión sobre borrado/rollback de claves y pérdida de alarmas tras reinicio. Las decisiones arquitectónicas permanecen propuestas. Estado global: `PROPOSAL — NOT IMPLEMENTED`; no se modificó código, no se ejecutaron pruebas y NCS M0 sigue fuera de alcance.
+
+
+## 11. Revisión adversarial provisional de Claude — 2026-10-29
+
+**Alcance y límite:** Claude informa que revisó los tres expedientes y el issue #109 por extracción, no como texto bruto completo; además considera la revisión provisional porque faltaba completar la secuencia de tareas A–D. No es cierre definitivo. No se modificó código ni NCS M0.
+
+### Riesgos y ajustes de clasificación
+
+1. **Revocación offline, reinicio y rollback — riesgo de diseño abierto.** Claude confirma que `elapsedRealtime()` no persiste entre reinicios y que aún no está cerrada la política de expiración. El riesgo de aceptar manifiestos/listas de revocación obsoletos después de reiniciar es hipotético, pero material si la aplicación falla en modo abierto. La política de rechazo ante revocación expirada/reloj desconocido debe definirse explícitamente; el ejemplo de 30 días sigue siendo propuesta, no requisito de plataforma.
+
+2. **ISO 22320 — limitar la afirmación normativa.** La página pública de alcance no basta para concluir qué cláusulas contiene el texto completo de una norma de pago. La evidencia disponible no demuestra que ISO 22320 exija bloqueo automático de rutas, pero la formulación fuerte “la norma no respalda/no contiene” queda UNKNOWN hasta revisar el texto completo o una fuente normativa autorizada con cláusulas. Por ahora, atribuir el bloqueo a una política propia de Atlas y no a ISO.
+
+3. **NIST SP 800-57 Rev. 5 §8.2.2.2 — verificación del cuerpo pendiente.** Claude pudo confirmar el título de la sección en el índice, pero no leer el cuerpo. Aunque Perplexity informa haber verificado la sección y concluye que no prescribe quórum offline, la evidencia incorporada en este expediente no debe elevarse a certeza normativa hasta cotejar directamente el texto de la sección. Estado de la afirmación “NIST no exige quórum offline”: UNKNOWN en esta revisión adversarial, no una contradicción probada. Mantener el quórum como propuesta de diseño sin atribuirlo a NIST.
+
+4. **KeyMint en el dispositivo objetivo — UNKNOWN.** La documentación de plataforma no demuestra que el teléfono de despliegue concreto tenga una configuración/atestación que soporte la propiedad requerida. La atestación y la capacidad real deben verificarse en el dispositivo objetivo antes de confiar en ellas.
+
+5. **Persistencia multiarchivo — límite técnico documental conservable, protocolo sin cierre.** La documentación SQLite WAL respalda que no hay atomicidad conjunta entre múltiples bases bajo WAL ni entre bases y archivos externos. El protocolo de publicación, sincronización y recuperación sigue pendiente de especificación y pruebas. No declarar que staging, `fsync`, `rename` o `bundle_id` ya garantizan recuperación.
+
+### Estado provisional de cierre
+
+- Se puede cerrar como decisión de diseño que el bloqueo de rutas conflictivas es una política de Atlas; no atribuirla a ISO 22320 sin cláusula verificada.
+- Mantener abiertas: política fail-closed ante revocación expirada/reloj desconocido; evidencia KeyMint del dispositivo objetivo; protocolo multiarchivo; modelo de amenaza y gobernanza de recuperación/quórum.
+- ISO 22320 y NIST SP 800-57: afirmaciones normativas específicas permanecen UNKNOWN hasta comprobar el texto completo relevante.
+- Estado global: `PROPOSAL — NOT IMPLEMENTED`. Sin implementación ni pruebas.
