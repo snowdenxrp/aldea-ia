@@ -1,3 +1,13 @@
+## DELTA — BOOTSTRAP FB-01: TEMPORALES PREEXISTENTES EN STOP/UNKNOWN (2026-10-29)
+
+La API candidata se endureció para no borrar artefactos temporales ya existentes: si el directorio padre no puede inspeccionarse o hay `<destino>.tmp` / `<destino>.tmp-*`, el bootstrap se detiene antes de llamar a la inicialización general. Evidencia: servicio blob `86b33409ca7150e45846c7c97a2d4b28780121e7`; prueba blob `6f5e706ccb6c242cc32ebc77a11dab011f217b22`. La trazabilidad se actualizó en [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `5ccc4b84570bd7132504f657f09fdc2eae24a9fc`, blob `85d12c07128d81b7b8def68e0ec3d63459ab6843`.
+
+Esto evita eliminar temporal preexistente observado, pero no cierra la carrera con escritores no cooperativos ni TOCTOU. FB-03/FB-04 siguen abiertos; no usar esta API para una publicación real hasta que entorno, contrato y evidencia de exclusión estén resueltos. Pruebas no ejecutadas; sin CI/Actions ni bootstrap operativo.
+
+Gates sin cambio: FB-01 OPEN/UNKNOWN; FB-02/P01-B=C; FB-03 OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; M0 INCOMPLETO; D0–D3 OPEN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación operativa y efectos protegidos STOP.
+
+---
+
 ## DELTA — API DEDICADA FB-01 IMPLEMENTADA, SIN EJECUCIÓN (2026-10-29)
 
 Tras autorización explícita del propietario se añadió una API de bootstrap Continuity de propósito único. La trazabilidad se actualizó en [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md), commit `acf8b30c9e4cb4b66e3bd9b72e16cac9383cb502`, blob `5644c5f8aa8dd167ac904545991521f7b1398b96`.
