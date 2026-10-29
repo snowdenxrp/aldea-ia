@@ -5,7 +5,8 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { parseNexoEntrypointArguments } from "../../scripts/nexo.mjs";
-import { openNexoContinuityOwner, createNexoChronicleStore } from "../../scripts/nexo-continuity.mjs";
+import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { createNexoChronicleStore } from "../../src/nexo/core/chronicle-store.mjs";
 import * as nexoApplication from "../../src/nexo/application/index.mjs";
 
 assert.deepEqual(Object.keys(nexoApplication).sort(), [
