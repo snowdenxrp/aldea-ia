@@ -93,3 +93,36 @@ No ejecutar comandos del POCO, instalar/configurar software, crear Continuity re
 La decisión de entorno restringido del propietario permite acotar la garantía. **El contrato de aceptación propuesto queda definido a nivel de propiedades, pero no está ratificado ni demostrado en una instalación.** El siguiente dato que desbloquea trabajo técnico es la identidad del mecanismo real que ejecutaría el bootstrap y el control verificable que puede impedir writers externos y relanzamientos en el POCO.
 
 Hasta obtener esa evidencia: E2/E3 UNKNOWN; E4 NOT READY; FB-03/FB-04 OPEN/UNKNOWN; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; M0 INCOMPLETO.
+
+
+## 9. Reconciliación de revisiones independientes (2026-10-31)
+
+La síntesis completa se conserva en [NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md](NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md). Esta sección añade precisión a los criterios anteriores; no los ratifica como procedimiento ni cambia los gates.
+
+### 9.1 FB-03 — alcance de exclusión y observabilidad
+
+- El inventario de procesos es necesariamente una observación acotada en el tiempo; no demuestra por sí solo que no aparezcan nuevos escritores, que no haya procesos diferidos ni que no existan descriptores/handles de escritura preexistentes.
+- La evidencia debe cubrir el mecanismo real de lanzamiento, componentes/servicios/tareas que pueden reactivar escritores, identidad de ejecución/UID y procesos que comparten esa identidad.
+- Debe distinguirse el acceso de otras aplicaciones ordinarias del acceso por procesos del mismo UID y de actores privilegiados. El sandbox de Android no demuestra exclusividad frente a todos ellos.
+- Un servicio en primer plano puede mejorar la continuidad operativa, pero no es prueba de supervivencia garantizada ni de control sostenido.
+- La ausencia puntual de procesos, un lock cooperativo o un registro generado por la propia aplicación no constituyen prueba independiente de exclusión universal.
+- El límite de amenaza no incluye administrador/root hostil salvo decisión posterior; esa exclusión no permite ignorar escritores ordinarios fuera del conjunto autorizado.
+
+### 9.2 FB-04 — identidad, concurrencia y publicación
+
+- Validación léxica, `realpath()` o `lstat()` aislados no eliminan TOCTOU. La evaluación debe demostrar que la identidad del objeto/directorio validado se mantiene hasta la mutación efectiva, con garantías soportadas por el runtime y filesystem observados.
+- Deben considerarse escritores que conservan descriptores abiertos, creación/relanzamiento concurrente y sustitución de directorios, enlaces o nombres de destino.
+- Lock consultivo/cooperativo no excluye un escritor que no lo respeta. La exclusión ambiental FB-03 y la condición de no-reemplazo FB-04 deben probarse por separado.
+- Atomicidad de visibilidad, no-replace y durabilidad ante fallo/energía son propiedades distintas. Las escrituras pueden ser parciales; los requisitos de flush/fsync deben derivarse del filesystem real.
+- Los temporales preexistentes o de propietario desconocido producen STOP; no se eliminan automáticamente sin evidencia de propiedad y ausencia de writers activos.
+- Hash/checksum sirve para detectar diferencias frente a un valor esperado confiable; no demuestra legitimidad, autoridad ni ausencia de modificaciones concurrentes.
+
+### 9.3 Aplicabilidad de la revisión DeepSeek
+
+La respuesta DeepSeek evaluó un patrón Windows y citó mecanismos específicos de Windows (drivers, WMI, AppContainer, ACL/MIC y minifiltros). Esos mecanismos no se consideran requisitos Android ni evidencia del POCO. Sí se retienen sus principios generales —handles preexistentes, launchers diferidos, reaparición de escritores, TOCTOU, control obligatorio frente a no cooperadores y observabilidad— traducidos al modelo Android.
+
+### 9.4 No selección y estado
+
+No se selecciona aplicación dedicada, Termux, mecanismo de launcher, API de filesystem, primitive no-replace ni estrategia de lock. La aplicación Android dedicada con almacenamiento interno privado permanece candidata por su capacidad de reducir el TCB y controlar permisos/componentes; no se afirma que su sandbox sea más fuerte que el de Termux ni que excluya automáticamente procesos del mismo UID.
+
+Hasta que la instalación, launcher, destino, filesystem y controles efectivos estén identificados y observados: E2/E3 UNKNOWN; FB-03/FB-04 OPEN/UNKNOWN; primera publicación STOP; `authorization: NOT_EVALUATED`; M0 INCOMPLETO. No se autoriza por esta reconciliación runtime, tests, CI/Actions, instalación, comandos POCO ni bootstrap real.
