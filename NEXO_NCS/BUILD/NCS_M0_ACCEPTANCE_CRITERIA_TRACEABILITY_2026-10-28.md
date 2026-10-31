@@ -1,3 +1,31 @@
+## DELTA — RECONCILIACIÓN DE TRAZABILIDAD FB-02 / A-01 / A-03 (2026-10-31; DOCUMENTAL)
+
+### Resultado de revisión independiente
+
+La revisión de Gemini no identificó una contradicción técnica nueva ni evidencia que reabra FB-02. Identificó una brecha documental concreta: faltaba una referencia cruzada explícita entre el cierre acotado de FB-02 y los criterios A-01/A-03.
+
+### Alcance exacto de FB-02
+
+- **FB-02: PASS / CERRADO** exclusivamente para la separación entre bootstrap de Continuity y operación Chronicle en una misma invocación, dentro del alcance validado en el SHA `86e73525f8c63e143b5860d77f0d191e54213976`.
+- Evidencia CI asociada al mismo SHA: integrated acceptance `40940618309`; Chronicle native `40940618133`; bounded admission/restart `40940618189`; deterministic persistence `40940618328`; STEP 4 `40940618177`; STEP 5 `40940618334`.
+- Este PASS no se extiende a rutas, callers, entornos o propiedades que no formen parte de ese alcance probado.
+
+### Relación con criterios de aceptación
+
+- **A-03:** FB-02 aporta evidencia positiva para la separación de bootstrap/operación Chronicle en el alcance indicado. No acredita por sí solo el no-bypass end-to-end de todos los entrypoints ni cierra las condiciones que siguen pendientes en A-02/A-03.
+- **A-01:** el cierre técnico de FB-02 es evidencia parcial para la línea de meta, pero no equivale a ratificación integral del contrato M0, congelación de todas las decisiones ni resolución de autoridad/legitimidad de raíz.
+- **A-06:** FB-02 no resuelve política de recuperación, legitimidad de la raíz ni P-05.
+
+### Límites y estado conservado
+
+FB-02 PASS no autoriza primera creación/publicación de Continuity, no cambia `authorization: NOT_EVALUATED`, no ratifica P-05 y no habilita efectos protegidos. No cierra FB-01, FB-03, FB-04, FB-05, FB-06 ni FB-07.
+
+A-01 permanece OPEN. A-03 conserva únicamente el PASS limitado de FB-02, sin ampliación automática. Raíz PENDING/UNKNOWN; P-05 NO RATIFICADA; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+
+**Tipo de cambio:** reconciliación documental únicamente. Sin cambios de runtime, tests, workflows o configuración; sin ejecución de tests/CI/Actions, bootstrap, comandos POCO ni efectos protegidos.
+
+---
+
 ## DELTA — MATRIZ DE ACEPTACIÓN FINAL FB-06 / FB-07 (2026-10-29; DOCUMENTAL, NO EJECUTADA)
 
 **Propósito:** convertir la línea de meta M0 en una matriz de evidencia verificable y evitar que un PASS documental, un CI histórico o un resultado de otra rama/SHA se use como cierre global. Esta matriz no ratifica políticas ni autoriza ejecución.
