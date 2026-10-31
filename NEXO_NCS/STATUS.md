@@ -1,3 +1,15 @@
+## DELTA — SÍNTESIS CRUZADA DEL ENTORNO RESTRINGIDO (2026-10-31)
+
+- Se incorporó [NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md](BUILD/NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md), commit `d4046d881032d632deb08f2b86c317913bdc3fcc`.
+- Reconciliadas las revisiones de Gemini, Qwen, Perplexity y DeepSeek. DeepSeek analizó explícitamente Windows; sus ejemplos de drivers/WMI/AppContainer/minifiltros no se trasladan literalmente a Android. Se incorporan solo los principios generales aplicables: escritores/handles preexistentes, creación o relanzamiento diferido, TOCTOU, identidad estable del objeto y límites de locks cooperativos.
+- Convergencia: FB-03/E2/E3 (control sostenido del entorno, launchers y writers) y FB-04 (no-replace, estabilidad de ruta, temporales, escrituras parciales y resultado ambiguo) son problemas independientes; ninguno queda probado por sandbox, inventario puntual, lock cooperativo o CI Ubuntu.
+- La aplicación Android dedicada con almacenamiento interno privado permanece CANDIDATA; no está seleccionada, instalada ni vinculada al launcher real. Termux tampoco queda demostrado como entorno/launcher.
+- No se selecciona primitiva de publicación ni mecanismo de aislamiento. No se cambia el modelo de amenaza aprobado ni se exige resistencia a administrador/root hostil; los límites deben declararse.
+- Estados sin cambio: FB-03/FB-04 OPEN/UNKNOWN; E2/E3 UNKNOWN; FB-05/P-05 NO RATIFICADA; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Cambio documental únicamente: nueva síntesis, STATUS y contrato de aceptación. Sin cambios runtime/tests/workflows/configuración; sin tests, CI/Actions, comandos POCO, instalación, bootstrap ni efectos protegidos.
+
+---
+
 ## DELTA — REVISIÓN GEMINI: TRAZABILIDAD FB-02 / A-01 / A-03 (2026-10-31)
 
 - Revisión independiente: no se identificó contradicción técnica nueva ni evidencia para reabrir FB-02.
