@@ -3187,3 +3187,17 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - El paquete define preflight, orden D1 → D4 → D5, pruebas negativas requeridas y límites. Es preparación documental, no implementación ni autorización de ejecución.
 - Sin cambios de runtime/tests/workflows/configuración; no se ejecutaron tests, CI/Actions, scripts, bootstrap, comandos POCO ni efectos protegidos.
 - Estados sin cambio: M0 INCOMPLETO; D1/D4 implementación pendiente; D5 candidata no integrada; FB-01 OPEN/UNKNOWN; FB-02 PASS/CERRADO solo en alcance/SHA previamente validado; FB-03/FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
+
+
+---
+
+## DELTA — PREFLIGHT D1/D4: DEPENDENCIA D5 Y RUTA AUXILIAR REPAIR (2026-10-31)
+
+- Se amplió el paquete [NCS_M0_D1_D4_IMPLEMENTATION_PACKET_2026-10-31.md](BUILD/NCS_M0_D1_D4_IMPLEMENTATION_PACKET_2026-10-31.md), commit `d8a9c57186c47636cba096684c6a09367007b7be`.
+- **Orden corregido:** D5 debe integrarse antes de endurecer D1, porque los launchers de la rama base `assistants.mjs` y `simulate.mjs` aún llaman open con `legacyMemory/allowEmptyInitialization`; PR #110 los desacopla. Alternativa: coordinar ambos cambios sin duplicar PR. D1 primero sobre la base actual rompería esos callers.
+- **Migración legacy:** el comportamiento actual debe extraerse a una operación explícita separada, conservando la proyección/validación; nunca invocarse desde open-existing, bootstrap o Lúmina. Los tests de importación real se separan de los tests que usan legacyMemory solo como fixture; estos últimos deben sembrar snapshots explícitos sin perder cobertura.
+- **D4 ampliado:** además de service → entrypoint → settlement, `scripts/nexo-repair-session.mjs` también exige store y llama `runNexoRepairOnce`. Las pruebas `repair-session` muestran invocación directa que espera dispatch/settlement fuera de `runNexoRuntimeRepairSession`, cuyo gate Option A sí bloquea. Por tanto, Option A no debe describirse como bloqueo universal mientras la API auxiliar siga accesible.
+- Se identificaron dependencias en `continuity-migration`, `continuity-service-options-input-guard`, `chronicle-runtime`, `repair-owner-lifecycle`, `repair-session`, `repair-mission-verification` y `repair-settlement-crash-cuts`. La suite de repair contiene pruebas del protocolo auxiliar; preservar su alcance histórico solo si queda explícitamente fuera de M0 y sin ruta M0 de ejecución. De lo contrario, convertir en pruebas negativas de bloqueo, no relajar gates.
+- La búsqueda REST de Code Search no devolvió resultados y no se considera exhaustiva. El inventario estático fue dirigido sobre los 12 módulos de scripts y los tests Nexo indicados; no prueba el inventario ambiental ni todos los consumidores externos.
+- Estados sin cambio: M0 INCOMPLETO; D1/D4 implementación pendiente; D5 candidata no integrada; FB-01 OPEN/UNKNOWN; FB-02 PASS/CERRADO solo en alcance/SHA previamente validado; FB-03/FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
+- Solo documentación/preflight estático. Sin cambios runtime/tests/workflows/configuración; no se ejecutaron tests, CI/Actions, scripts, bootstrap, comandos POCO ni efectos protegidos.
