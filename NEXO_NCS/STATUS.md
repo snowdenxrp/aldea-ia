@@ -1,3 +1,14 @@
+## DELTA — PRECISIÓN D10: PRESERVACIÓN DE PREPARED LEGADO (2026-10-31)
+
+- Corrección al complemento U-B06: la inspección de `tests/nexo/continuity-migration.test.mjs` muestra casos ya escritos para preservar PREPARED como obligación no resuelta, exigir `environmentStateRevision` para repair lineage, impedir lineage sin PREPARED y bloquear intentos no compatibles/no verificados; también hay casos de reconstrucción Chronicle. Los tests no se ejecutaron en esta revisión.
+- D10 se mantiene como brecha confirmada de validación/procedencia porque la proyección permite datos que no pasan por `recordPrepared`; no debe interpretarse como prueba de despacho protegido ni como autorización para borrar PREPARED.
+- Se corrige el contrato futuro: preservar la obligación histórica reconocida como no resuelta; validar esquema/identidad; no convertirla en permiso, no redespachar y detener la migración sin alterar la fuente si su semántica no puede validarse. No se adopta el rechazo indiscriminado de todo PREPARED.
+- Documento corregido: [NCS_M0_UB06_WORKFLOWS_AND_LEGACY_IMPORT_FINDINGS_2026-10-31.md](BUILD/NCS_M0_UB06_WORKFLOWS_AND_LEGACY_IMPORT_FINDINGS_2026-10-31.md), commit `5ab3bfd81bc9f5c829bc9db2ddc43b1aa4466509`.
+- Estados sin cambio: M0 INCOMPLETO; FB-01 OPEN/UNKNOWN en aplicabilidad; FB-02 PASS/CERRADO solo en alcance/SHA previos; FB-03 OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
+- Solo documentación; sin runtime/tests/workflows, sin tests, CI/Actions, comandos POCO, bootstrap ni efectos protegidos.
+
+---
+
 ## DELTA — U-B06: WORKFLOWS CI Y CADENA DE IMPORTACIÓN LEGADA (2026-10-31)
 
 - Complemento consolidado en [NCS_M0_UB06_WORKFLOWS_AND_LEGACY_IMPORT_FINDINGS_2026-10-31.md](BUILD/NCS_M0_UB06_WORKFLOWS_AND_LEGACY_IMPORT_FINDINGS_2026-10-31.md), commit documental `a64ec451c720b7ace130efe08f642003e2b43353`.
