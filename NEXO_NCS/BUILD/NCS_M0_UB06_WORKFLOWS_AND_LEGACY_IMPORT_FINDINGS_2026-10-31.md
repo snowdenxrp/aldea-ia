@@ -14,8 +14,8 @@ Resultados principales:
 - Solo `lumina-simulation.yml` ejecuta directamente `npm run assistants` y `npm run simulate`, que pueden alcanzar `openNexoContinuityOwner`. Los demás workflows invocan tests; no se ejecutaron.
 - El workflow de Lúmina puede crear Continuity en un runner efímero si el código y `world-state.json` ejecutados corresponden a la rama inspeccionada. El almacén no se añade a Git. El contenido efectivo de `main` no fue inspeccionado y permanece NO DEMOSTRADO.
 - La proyección legada copia las cinco colecciones operacionales con `structuredClone`; filtra las claves que no pertenecen a esas colecciones, pero no sanea semánticamente el contenido copiado.
-- La validación de forma permite PREPARED legado sin pasar por `recordPrepared`; también deja sin validar el contenido de varias colecciones y entradas de journal con otros estados.
-- Ninguno de estos hechos demuestra por sí solo que se haya despachado un efecto protegido. La persistencia de una obligación PREPARED sin procedencia es un defecto de integridad y de recuperación; el alcance exacto aguas abajo permanece acotado por los bloqueos y verificaciones descritos en §4.
+- La validación de forma permite PREPARED legado sin pasar por `recordPrepared`; también deja sin validar el contenido de varias colecciones y entradas de journal con otros estados. Esto es una brecha de validación/procedencia, pero no autoriza a eliminar ni cambiar la semántica histórica de migración.
+- Los tests existentes contienen casos explícitos para preservar PREPARED como obligación no resuelta y bloquear lineage/ejecución no sustentados. No se ejecutaron en esta revisión. La persistencia de PREPARED no equivale a permiso de despacho; el alcance residual se describe en §3.2.
 
 **Estados preservados:** M0 INCOMPLETO; FB-04 OPEN/UNKNOWN; `authorization: NOT_EVALUATED`; Root PENDING/UNKNOWN; First publication STOP; Protected effects STOP.
 
@@ -93,15 +93,17 @@ La proyección copia las cinco colecciones con `structuredClone`. No las normali
 - Para `chronicle_append`, un PREPARED existente puede alcanzar la ruta de observación/reconciliación; no equivale a autorización para redespachar. La ruta necesita un verificador y conserva el resultado no resuelto cuando no puede demostrar la observación.
 - Para otras acciones, el runtime canónico inspeccionado bloquea la ejecución.
 
-**NO DEMOSTRADO:** comportamiento exhaustivo de cada rama de `reconcilePrepared` frente a toda forma de obligación plantada, historial ausente o consumidor externo/antiguo. No se ejecutaron los tests de migración ni se trazaron rutas fuera del alcance declarado.
+**Cobertura existente no ejecutada:** `tests/nexo/continuity-migration.test.mjs` contiene casos que preservan PREPARED, exigen `environmentStateRevision` para repair lineage, impiden lineage sin PREPARED, bloquean intentos incompatibles/no verificados y verifican condiciones de reconstrucción de Chronicle. Son evidencia de intención/cobertura escrita, no resultados PASS de esta revisión.
 
-Conclusión: la importación puede crear una obligación operativa sin procedencia verificable. No hay evidencia en este complemento de que eso autorice o produzca por sí mismo un efecto protegido.
+**NO DEMOSTRADO:** comportamiento exhaustivo de cada rama de `reconcilePrepared` frente a toda forma de obligación plantada, historial ausente o consumidor externo/antiguo. No se ejecutaron los tests ni se trazaron todas las rutas fuera del alcance declarado.
+
+Conclusión: la importación puede preservar una obligación operativa cuya procedencia histórica no queda autenticada por la proyección. El owner la trata como obligación no resuelta; los tests existentes incluyen bloqueos que evitan convertirla en lineage/ejecución sin condiciones. Esto no autentica su origen ni demuestra despacho protegido. No se debe borrar ni reinterpretar PREPARED como un estado terminal.
 
 ## 4. Registro de hallazgos D10–D14
 
 | ID | Hallazgo | Estado documental | Clasificación / tratamiento |
 |---|---|---|---|
-| D10 | La proyección permite PREPARED y journal/colecciones con contenido no validado, fuera de `recordPrepared` | RESUELTO como hecho de código | Defecto del contrato de importación; efectos protegidos aguas abajo no demostrados |
+| D10 | La vía legada preserva PREPARED y otras colecciones sin aplicar la validación de escritura nueva de `recordPrepared`; algunas colecciones/journal quedan insuficientemente validadas | RESUELTO como hecho de código; alcance normativo pendiente | Brecha de validación/procedencia; preservar obligaciones históricas y evitar convertirlas en permiso o lineage no demostrado |
 | D11 | CI puede crear Continuity desde checkout limpio con memoria legada presente | PARCIAL | Condicionado a que `main` contenga el código y datos inspeccionados; el almacén no se persiste en el commit descrito |
 | D12 | `persistState` no serializa `nexoMemory` | RESUELTO para el código inspeccionado | La causa histórica del `world-state.json` versionado queda NO DEMOSTRADA |
 | D13 | No se valida `memory.version`; claves desconocidas se descartan | RESUELTO | Riesgo de reinterpretación silenciosa de esquemas incompatibles |
@@ -119,7 +121,7 @@ Contrato objetivo de separación (propuesta documental, no implementada):
 2. La operación de bootstrap no acepta `legacyMemory`, no proyecta memoria histórica, no devuelve owner operacional y termina antes de admisión, PREPARED, dispatch, reconciliación o mutaciones de dominio.
 3. La apertura ordinaria debe distinguir “abrir existente” de “crear”. Una API de apertura no debe inicializar por ausencia.
 4. La migración legacy existente no se borra ni se reinterpreta como bootstrap. Debe quedar como operación separada, explícita y fuera del camino M0 hasta que tenga contrato y autorización propios.
-5. Ningún dato PREPARED se importa automáticamente. No se debe descartar una obligación sin resolver; su presencia debe detener la migración y exigir resolución separada.
+5. PREPARED legado no debe eliminarse, reinterpretarse como terminal ni convertirse en un PREPARED nuevo. Si una migración futura conserva esa obligación histórica, debe preservarla explícitamente como no resuelta y validar su identidad/esquema. Si no puede validar su significado, la migración se detiene sin alterar la fuente. Su existencia nunca constituye permiso para redespachar.
 6. La ruta de CI de Lúmina no debe confundirse con el bootstrap M0 ni tomarse como evidencia de entorno restringido o primera publicación legítima.
 7. La persistencia de `world-state.json` y la de Continuity son dominios separados. No prometer atomicidad conjunta ni asumir que la memoria legada estará disponible en ejecuciones futuras.
 
@@ -128,7 +130,7 @@ Contrato objetivo de separación (propuesta documental, no implementada):
 Si en el futuro se autoriza una migración, deberá especificar como mínimo:
 - versión de origen obligatoria y explícita;
 - esquema validado de cada colección operacional;
-- política para PREPARED y todos los estados de journal;
+- política para PREPARED y todos los estados de journal: preservar las obligaciones históricas reconocidas como no resueltas, validar su esquema/identidad y bloquear toda conversión en permiso de ejecución; no descartar estados desconocidos;
 - validación completa de misión/admisión y campos que consumen reconstrucción/runtime;
 - tratamiento explícito de claves desconocidas;
 - preservación de la fuente hasta confirmar la importación;
@@ -143,7 +145,7 @@ No se recomienda implementar ahora una migración “segura” completa: primero
 - **D1:** confirmado: `openNexoContinuityOwner` puede crear al faltar el store mediante legacy o empty-init.
 - **D4:** confirmado por la exposición del store y el writer de settlement identificado en el informe anterior.
 - **D5:** confirmado: divergencia de resolución de ruta entre `assistants` y `simulate`.
-- **D10–D14:** contrato legacy; no abrir FB-04 por estos puntos ni duplicar defectos de publicación.
+- **D10–D14:** contrato legacy; D10 es brecha de validación/procedencia que debe reconciliarse con los tests de preservación ya existentes; no abrir FB-04 por estos puntos ni duplicar defectos de publicación.
 - **FB-03/E2/E3:** permanecen OPEN/UNKNOWN. La lectura de workflows no demuestra el entorno operativo POCO ni el conjunto completo de escritores.
 - **FB-04:** permanece OPEN/UNKNOWN. La cadena legacy no resuelve no-replace, estabilidad de ruta, exclusión ambiental ni durabilidad.
 - **FB-05/P-05:** NO RATIFICADA.
