@@ -3173,3 +3173,17 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Resultado de E2: UNKNOWN; la inspección estática no prueba control de detención ni prevención de reinicio. El protocolo D3 existente sigue siendo criterio de evidencia, no prueba de quiescencia para este bootstrap.
 - Próximo paso limitado: establecer documentalmente si el bootstrap previsto tiene un entorno Node.js/CLI realmente disponible en el POCO y qué mecanismo lo lanzaría; solo después se podrá evaluar E2/E3. No instalar Node/Termux, no configurar ni ejecutar el CLI, y no elegir primitiva de filesystem por inferencia.
 - Gates intactos: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo lectura estática y documentación; no tests/CI/Actions ni cambios runtime/dispositivo.
+
+
+---
+
+## DELTA — PAQUETE DE IMPLEMENTACIÓN D1 / D4 PREPARADO (2026-10-31)
+
+- Paquete técnico creado: [NCS_M0_D1_D4_IMPLEMENTATION_PACKET_2026-10-31.md](BUILD/NCS_M0_D1_D4_IMPLEMENTATION_PACKET_2026-10-31.md), commit documental `3f6d462d0183185573db9507a3e12700f9aaa64d`.
+- D1 queda acotado a convertir `openNexoContinuityOwner` en open-existing estricto: sin `legacyMemory`, sin `allowEmptyInitialization`, sin inicialización ante NOT_FOUND y sin fallback ante corrupción. El bootstrap M0 existente permanece separado. La migración legacy no se implementa ni activa en este paquete; se preservan proyección/validadores y PREPARED.
+- D4 queda acotado al bypass real: service expone `store`; repair entrypoint lo recibe/propaga; settlement auxiliar llama `commitIfCurrent`. Se retira esa capacidad de la superficie de aplicación y se mantiene repair bloqueado bajo Option A.
+- Corrección Qwen preservada: `reconcilePrepared` ya es owner-owned por cierre privado; no reescribir owner como clase ni añadir settlement permisivo.
+- D5: PR #110 sigue OPEN/DRAFT/no merged; head `572fe085abc11c625d13beb4885a74da2d7ffd95`; CI run `40972888688` successful según el estado registrado. Antes de integración hay que reconciliar la base del PR (`4d6432cd74af7c24c15b5a3c4bd1dbb79f181bc8`) con HEAD actual observado (`31ae3e91c749255af153675229dbb64ca06a581c`). No duplicar ni mergear en este paquete.
+- El paquete define preflight, orden D1 → D4 → D5, pruebas negativas requeridas y límites. Es preparación documental, no implementación ni autorización de ejecución.
+- Sin cambios de runtime/tests/workflows/configuración; no se ejecutaron tests, CI/Actions, scripts, bootstrap, comandos POCO ni efectos protegidos.
+- Estados sin cambio: M0 INCOMPLETO; D1/D4 implementación pendiente; D5 candidata no integrada; FB-01 OPEN/UNKNOWN; FB-02 PASS/CERRADO solo en alcance/SHA previamente validado; FB-03/FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
