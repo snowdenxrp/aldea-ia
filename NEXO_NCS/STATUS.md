@@ -1,3 +1,16 @@
+## DELTA — RECONCILIACIÓN PR #110: D5 YA TIENE IMPLEMENTACIÓN CANDIDATA (2026-10-31)
+
+- Revisión del PR #110: [NCS M0: decouple Lúmina launchers from Nexo Continuity](https://github.com/snowdenxrp/aldea-ia/pull/110).
+- Estado consultado: OPEN / DRAFT / no merged; mergeable=true. Head `572fe085abc11c625d13beb4885a74da2d7ffd95`, base `ncs-clean-architecture` en `4d6432cd74af7c24c15b5a3c4bd1dbb79f181bc8`.
+- El PR retira la apertura de Continuity y el registro de misión Nexo de `assistants.mjs`, retira la apertura de Continuity de `simulate.mjs`, conserva `nexoMemory` legado como dato opaco y no siembra campo Nexo en estados nuevos. El workflow `lumina-simulation.yml` no se modifica.
+- CI del SHA exacto: run `40972888688` completed/success; cuatro check-runs visibles completed/success. El cuerpo del PR reporta suite completa `npm test` exitosa. Esto es CI de software, no verificación Android/POCO.
+- Cobertura residual: test estático del launcher assistants y round-trip de memoria opaca; no hay test end-to-end que lance el main de simulate y compruebe ausencia de creación de Continuity. No inferir cobertura adicional.
+- **D5:** implementación candidata + CI PASS en PR, pero no integrada; no cerrar D5 en la rama base hasta integrar y verificar. No duplicar trabajo ni modificar/mergear el PR en esta revisión.
+- Contrato arquitectónico actualizado: [NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md](BUILD/NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md), commit `2a10a326b356e4e580acb838798a69bcdfdef663`.
+- D1 y D4 continúan pendientes de implementación. Estados globales sin cambio: M0 INCOMPLETO; FB-01 OPEN/UNKNOWN en aplicabilidad; FB-02 PASS/CERRADO solo en alcance/SHA previos; FB-03 OPEN/UNKNOWN, E2/E3 UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
+
+---
+
 ## DELTA — CONTRATO ARQUITECTÓNICO D1 / D4 / D5 (2026-10-31)
 
 - Contrato documental creado: [NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md](BUILD/NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md), commit `cd2fce162ad71157f05c77e6a1bb77c707e18b55`.
