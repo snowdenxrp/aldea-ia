@@ -1,3 +1,15 @@
+## DELTA — CONTRATO ARQUITECTÓNICO D1 / D4 / D5 (2026-10-31)
+
+- Contrato documental creado: [NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md](BUILD/NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md), commit `cd2fce162ad71157f05c77e6a1bb77c707e18b55`.
+- **D1:** separar apertura de store existente, bootstrap M0 vacío y migración legacy explícita. `openNexoContinuityOwner` actualmente puede inicializar por ausencia mediante `legacyMemory` o `allowEmptyInitialization`; contrato objetivo: open-existing no crea ni migra.
+- **D4:** el service devuelve `store` junto con owner; `nexo-repair-settlement.mjs` realiza `commitIfCurrent` directamente. Contrato objetivo: store/commit privados y escrituras semánticas solo por owner. Precisión: runtime M0 actual bloquea repair por Option A; no se afirma dispatch desde la ruta de producto actual.
+- **D5:** `assistants.mjs` y `simulate.mjs` abren Continuity desde procesos Lúmina; el primero respeta `NEXO_CONTINUITY_PATH`, el segundo usa ruta fija. Recomendación: eliminar acceso ordinario de Lúmina a Continuity y mover admisión de misión a entrypoint Nexo explícito. No limitarse a igualar las dos rutas.
+- Se fijaron criterios D1-A…F, D4-A…F y D5-A…G, orden de implementación, no-objetivos y límites. PREPARED histórico debe conservarse como obligación no resuelta; no se elimina ni se convierte en permiso.
+- Este documento es PROPUESTA/CONTRATO OBJETIVO, no implementación ni autorización de cambios runtime/tests. No se modificaron código, tests, workflows, configuración ni dispositivo; no se ejecutaron tests, CI/Actions, scripts, bootstrap ni efectos protegidos.
+- Estados sin cambio: M0 INCOMPLETO; FB-01 OPEN/UNKNOWN en aplicabilidad; FB-02 PASS/CERRADO solo en alcance/SHA previos; FB-03 OPEN/UNKNOWN, E2/E3 UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
+
+---
+
 ## DELTA — PRECISIÓN D10: PRESERVACIÓN DE PREPARED LEGADO (2026-10-31)
 
 - Corrección al complemento U-B06: la inspección de `tests/nexo/continuity-migration.test.mjs` muestra casos ya escritos para preservar PREPARED como obligación no resuelta, exigir `environmentStateRevision` para repair lineage, impedir lineage sin PREPARED y bloquear intentos no compatibles/no verificados; también hay casos de reconstrucción Chronicle. Los tests no se ejecutaron en esta revisión.
