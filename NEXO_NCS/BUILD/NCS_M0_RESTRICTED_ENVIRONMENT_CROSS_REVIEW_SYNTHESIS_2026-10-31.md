@@ -80,3 +80,57 @@ No se selecciona O_EXCL, flock, FileChannel.lock, link, renameat2, openat, O_NOF
 - **NCS M0 INCOMPLETO.**
 
 **Tipo de cambio:** síntesis documental. No cambia código/runtime, tests, workflows, configuración del dispositivo ni autoridad. No se ejecutaron pruebas, CI/Actions, comandos POCO ni bootstrap real.
+
+
+## 8. DELTA — SEGUNDA REVISIÓN GEMINI: CONCURRENCIA Y LÍMITES ANDROID (2026-10-31)
+
+**Clasificación:** revisión técnica documental; parcialmente confirmada, con correcciones. No es evidencia del POCO ni autorización de implementación.
+
+### 8.1 Confirmado con límites
+
+- Android asigna normalmente UID por aplicación y aplica sandbox a nivel de kernel; almacenamiento interno es privado por defecto frente a otras aplicaciones ordinarias. Fuentes: [AOSP Application Sandbox](https://source.android.com/docs/security/app-sandbox), [Android security tips — internal storage](https://developer.android.com/privacy-and-security/security-tips).
+- Los servicios en primer plano son más difíciles de terminar que procesos en segundo plano, pero no garantizan continuidad absoluta. El diseño debe tolerar muerte y reinicio del proceso. Fuente: [Android process lifecycle](https://developer.android.com/guide/components/activities/process-lifecycle).
+- PackageManager aporta datos de paquetes/componentes/firma/UID, pero no es inventario de actividad dinámica ni de descriptores abiertos.
+- Una inspección de /proc es puntual y puede estar limitada por permisos/SELinux; no se asumirá que la app ordinaria puede inspeccionar descriptores de otros procesos. La disponibilidad exacta debe verificarse en el dispositivo y dominio SELinux concretos; no se eleva la afirmación de Gemini a una imposibilidad universal sin esa evidencia.
+- Procesos/componentes con el mismo UID comparten el límite de acceso al almacenamiento privado. Una Activity y un Service no crean por sí solos una frontera de almacenamiento distinta.
+
+### 8.2 Corrección importante: FileChannel.lock()
+
+La propuesta Gemini dice que FileChannel.lock() coordina hilos de la misma JVM y procesos externos. Debe corregirse:
+
+- La documentación Android especifica que los file locks se mantienen en nombre de toda la JVM y que no son adecuados para controlar acceso entre varios hilos de la misma JVM.
+- OverlappingFileLockException es una salvaguarda de la API/JVM para solapamientos locales, no un mecanismo de exclusión global de todos los escritores.
+- La semántica nativa depende de la plataforma; la documentación FileLock recomienda tratar los locks como advisory para portabilidad.
+- Por tanto, FileChannel.lock() no será considerado control E2 suficiente, ni sustituye un mutex/serializador interno para hilos, ni excluye escritores no cooperativos.
+
+Fuentes: [Android FileChannel](https://developer.android.com/reference/java/nio/channels/FileChannel), [Android FileLock platform dependencies](https://developer.android.com/reference/java/nio/channels/FileLock).
+
+### 8.3 Corrección de la propuesta E2/E3
+
+- **E2:** un registro de unicidad de PID o trazas de serialización de la propia aplicación no demuestra exclusión ambiental. Debe acreditarse el control sobre todos los escritores autorizados durante la ventana, la detección de pérdida del control y el comportamiento STOP. Un mutex de aplicación solo coordina los participantes que pasan por él; un control de versión solo es seguro frente a carreras si la comparación y publicación constituyen una operación atómica real.
+- **E3:** firma del paquete, manifiesto, hashes y SBOM/inventario de dependencias pueden acreditar identidad e integridad esperada del artefacto dentro de su alcance. No demuestran por sí solos la totalidad de procesos, entrypoints, código dinámico, dependencias efectivamente cargadas ni escritores reales. El inventario debe vincularse a la instalación, launcher, UID y destino observados.
+- Los hashes verificados por el propio proceso no son evidencia independiente frente a compromiso de código dentro del mismo UID. No se presume que el proceso de arranque tenga una raíz de confianza independiente.
+- La restricción de /proc obliga a no basar E3 en inspección live de /proc/[pid]/fd; tampoco autoriza sustituir esa evidencia por una afirmación de inventario exhaustivo basada solo en PackageManager.
+
+### 8.4 Corrección de la arquitectura mínima propuesta
+
+La Activity principal + Service acoplado al almacenamiento privado puede ser una forma de empaquetar la aplicación, pero no constituye por sí misma exclusividad: ambos comparten UID y almacenamiento. Deben minimizarse componentes exportados, procesos adicionales, permisos, dependencias y canales IPC; la política exacta queda pendiente de diseño.
+
+El esquema `state.json + journal temporal` no se acepta todavía como reemplazo de FileLock ni como commit atómico. Antes necesita especificar y demostrar:
+1. serialización real de todos los escritores autorizados, incluidos hilos/procesos propios;
+2. operación atómica de compare-and-publish o single-writer impuesto, no solo lectura de revision seguida de escritura;
+3. protocolo WAL completo para orden de escritura, flush/fsync, cortes en cada frontera y recuperación;
+4. manejo de temporales desconocidos, escritores que reaparecen y COMMIT.UNKNOWN sin retry automático;
+5. pruebas negativas en el filesystem/runtime objetivo.
+
+No se adopta WAL, JSON de estado, journal, hash-on-start ni transacciones idempotentes como solución ya suficiente. Son propuestas que requieren contrato y pruebas.
+
+### 8.5 Efecto sobre gates
+
+- La candidatura Android dedicada queda técnicamente mejor delimitada, pero no seleccionada.
+- E2 no pasa: la serialización propuesta no está implementada ni probada.
+- E3 permanece UNKNOWN: faltan instalación, launcher, UID, artefacto y escritores reales observados.
+- FB-03/FB-04 permanecen OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY.
+- Raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+
+**Límites:** no cambios de runtime/tests/workflows, no ejecución de pruebas/CI/Actions, no instalación ni comandos POCO, no bootstrap ni efectos protegidos.
