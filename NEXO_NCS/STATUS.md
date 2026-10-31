@@ -1,3 +1,17 @@
+## DELTA — REVISIÓN GEMINI: TRAZABILIDAD FB-02 / A-01 / A-03 (2026-10-31)
+
+- Revisión independiente: no se identificó contradicción técnica nueva ni evidencia para reabrir FB-02.
+- Hallazgo: faltaba una referencia cruzada explícita entre FB-02 PASS/CERRADO y los criterios A-01/A-03.
+- Clasificación: brecha documental de trazabilidad; no es un defecto nuevo de runtime ni una ampliación del alcance probado.
+- Reconciliación incorporada en [NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md](BUILD/NCS_M0_ACCEPTANCE_CRITERIA_TRACEABILITY_2026-10-28.md).
+- FB-02 permanece PASS/CERRADO únicamente para la separación bootstrap Continuity / operación Chronicle en SHA `86e73525f8c63e143b5860d77f0d191e54213976`, con los seis runs CI ya registrados en la matriz.
+- A-01 permanece OPEN; A-03 no recibe ampliación automática; A-06 y P-05 no cambian.
+- FB-01, FB-03, FB-04, FB-05, FB-06 y FB-07 conservan sus estados previos. Raíz PENDING/UNKNOWN; P-05 NO RATIFICADA; E2/E3 UNKNOWN; E4 NOT READY.
+- `authorization: NOT_EVALUATED`; primera publicación Continuity y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Cambio documental únicamente en STATUS y la matriz indicada. Sin cambios de runtime/tests/workflows/configuración; sin tests, CI/Actions, bootstrap, comandos POCO ni efectos protegidos.
+
+---
+
 ## DELTA — COORDINACIÓN DE REVISIONES PARALELAS CON OTRAS IA (2026-10-29)
 
 - Se creó [NCS_M0_PARALLEL_AI_WORK_ORDERS_2026-10-29.md](BUILD/NCS_M0_PARALLEL_AI_WORK_ORDERS_2026-10-29.md), commit `8663815a373ebf150dcb385ac038226af76cdbe9`.
