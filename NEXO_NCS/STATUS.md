@@ -3201,3 +3201,15 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - La búsqueda REST de Code Search no devolvió resultados y no se considera exhaustiva. El inventario estático fue dirigido sobre los 12 módulos de scripts y los tests Nexo indicados; no prueba el inventario ambiental ni todos los consumidores externos.
 - Estados sin cambio: M0 INCOMPLETO; D1/D4 implementación pendiente; D5 candidata no integrada; FB-01 OPEN/UNKNOWN; FB-02 PASS/CERRADO solo en alcance/SHA previamente validado; FB-03/FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
 - Solo documentación/preflight estático. Sin cambios runtime/tests/workflows/configuración; no se ejecutaron tests, CI/Actions, scripts, bootstrap, comandos POCO ni efectos protegidos.
+
+
+---
+
+## DELTA — HANDOFF D1 PARA CAMBIO DE CHAT (2026-10-31)
+
+- Se creó [NCS_NEXT_CHAT_2026-10-31_D1_CONTINUITY_OPEN_BOOTSTRAP.md](HANDOFF/NCS_NEXT_CHAT_2026-10-31_D1_CONTINUITY_OPEN_BOOTSTRAP.md), commit `56bc5056458bbdb81d6f50c0f415f8346a2b771e`.
+- El handoff preserva el estado M0, principios/autoridad, hallazgos D1/D4/D5, evidencia de código revisada, PR #110, pruebas propuestas no ejecutadas, límites y ruta exacta de continuidad.
+- Punto de continuación: inventario exhaustivo read-only de consumidores D1 en SHA actual; después preparar el cambio mínimo para que openNexoContinuityOwner solo abra stores existentes, sin legacyMemory ni allowEmptyInitialization.
+- Se documenta expresamente que el barrido exhaustivo de consumidores intentado en el chat no se completó por límite de llamadas de herramientas. No se declara inventario completo.
+- No se modificaron runtime, tests, workflows ni configuración. No se ejecutaron tests, CI/Actions, scripts, bootstrap, comandos POCO ni efectos protegidos.
+- Estados sin cambio: M0 INCOMPLETO; D1/D4 implementación pendiente; D5 candidato en PR #110 OPEN/DRAFT/no merged; FB-01 OPEN/UNKNOWN; FB-02 PASS solo en alcance/SHA previo; FB-03/FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; authorization NOT_EVALUATED; First publication STOP; Protected effects STOP.
