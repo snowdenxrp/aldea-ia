@@ -33,7 +33,7 @@ Archivo src/nexo/core/continuity-service.mjs, blob inspeccionado 86b33409ca7150e
    - propagar NOT_FOUND sin inicializar, proyectar, crear lock/temporal de publicación ni crear directorios;
    - propagar corrupción/incompatibilidad sin fallback.
 2. Mantener bootstrapNexoContinuityStore como única ruta de primera creación M0. No devolver owner ni store operativo.
-3. No implementar ni activar migración legacy en este paquete. Conservar projectNexoContinuitySnapshot y sus validadores sin borrarlos; la ruta de migración se mantiene fuera del flujo M0 y no se invoca desde open/bootstrap/Lúmina. Antes de exponer una operación migratoria pública separada se necesita contrato y autorización propios.
+3. Extraer la rama legacy actual a una operación con nombre/intención explícitos (por ejemplo, migrateLegacyNexoContinuityStore), conservando sin reinterpretar la proyección y validación existentes. No invocarla desde open-existing, bootstrap ni Lúmina. La operación queda fuera del camino M0 y no se activa automáticamente; su uso operativo futuro requiere contrato/autorización propios. No borrar projectNexoContinuitySnapshot ni sus validadores.
 4. Inventariar todos los callers de openNexoContinuityOwner en el commit objetivo antes de cambiar firmas. Adaptar cada caller a open-existing o bootstrap explícito; no conservar flags de compatibilidad que reintroduzcan creación implícita.
 5. Mantener un código único y estable para NOT_FOUND. No capturar NOT_FOUND para crear estado.
 
@@ -44,7 +44,7 @@ Archivo src/nexo/core/continuity-service.mjs, blob inspeccionado 86b33409ca7150e
 - Store corrupto/incompatible: falla sin leer legacy ni sustituir el archivo.
 - Opciones con legacyMemory o allowEmptyInitialization: rechazadas como opciones desconocidas/inválidas, no ignoradas.
 - Bootstrap vacío: sigue su propio contrato y no devuelve owner/store.
-- Tests de migración existentes: conservar y adaptar al entrypoint explícito correspondiente solo cuando ese entrypoint tenga contrato; no borrarlos ni convertir PREPARED en terminal.
+- Tests de migración existentes: separar los casos que prueban importación real (deben llamar únicamente al API explícito de migración) de los numerosos casos que usan legacyMemory solo como fixture de semilla (deben inicializar snapshots de test directamente mediante store.initialize o helper de test). No borrar cobertura ni convertir PREPARED en terminal.
 - Búsqueda estática: ninguna apertura ordinaria inicializa ni llama projectNexoContinuitySnapshot.
 
 ## 3. D4 — cierre de capacidad de escritura
@@ -61,7 +61,7 @@ Archivo src/nexo/core/continuity-service.mjs, blob inspeccionado 86b33409ca7150e
 1. Una vez que D1 esté estable, el resultado público del service será { owner, current }; no incluir store.
 2. Eliminar store de la firma/validación de runNexoRepairOnce y retirar sus dos propagaciones a settlePreparedRepairFromPersistedState.
 3. La ruta auxiliar de settlement queda bloqueada/inaccesible bajo M0 Option A. No sustituirla por un método owner permisivo ni reubicar su commit directo dentro del owner. No despachar repair.
-4. Retirar la exportación/capacidad invocable del settlement externo o convertir la ruta fuera de M0 en un bloqueo explícito sin escritura. Elegir el cambio mínimo compatible con los callers comprobados; no borrar historial PREPARED ni alterar el runtime de producto ya bloqueado.
+4. Retirar la exportación/capacidad invocable del settlement externo o convertir la ruta fuera de M0 en un bloqueo explícito sin escritura. La revisión encontró que runNexoRepairSession → runNexoRepairOnce puede despachar si se invoca directamente con owner+store, aunque runNexoRuntimeRepairSession bloquee por Option A. Por tanto, Option A no debe describirse como bloqueo universal mientras esa API auxiliar siga exportada y operativa. Elegir el cambio mínimo compatible con el alcance M0; no borrar historial PREPARED ni alterar su semántica.
 5. La composición interna puede seguir creando store y pasándolo al constructor del owner. La meta no es prohibir el módulo físico de store dentro del proceso, sino impedir que capas de aplicación/entrypoints reciban una capacidad genérica de commit.
 6. No reescribir continuity-owner.mjs como clase #store: el patrón de cierres actual ya oculta la referencia y no se ha demostrado que sea el defecto.
 7. No añadir force, timeout rollback/commit, RepairExecuted, recovery/replay genérico, ni una nueva API de settlement.
@@ -97,11 +97,11 @@ PR: https://github.com/snowdenxrp/aldea-ia/pull/110
 3. Enumerar tests que dependen de legacy/empty-init y separar los tests de migración histórica.
 4. Confirmar que el diff propuesto no toca Chronicle/FB-02, workflows, bootstrap real, root ni entorno.
 
-**Fase 1 — D1:** implementar API open-existing; adaptar callers autorizados; escribir pruebas negativas. No ejecutar tests hasta autorización de ejecución.
+**Fase 1 — D5:** reconciliar PR #110 con base vigente e integrarlo solo tras decisión de autoridad específica. Es dependencia previa: assistants.mjs y simulate.mjs aún llaman open con legacyMemory/allowEmptyInitialization en la rama base; el PR los retira sin duplicar ese trabajo. Verificar CI ligado al SHA integrado.
 
-**Fase 2 — D4:** retirar store del resultado público; bloquear la ruta auxiliar de settlement; pruebas estáticas/negativas. No activar repair.
+**Fase 2 — D1:** con los launchers Lúmina desacoplados, implementar open-existing estricto y extraer la migración legacy a API explícita separada; adaptar fixtures/tests sin perder cobertura. No ejecutar tests hasta autorización de ejecución.
 
-**Fase 3 — D5:** reconciliar PR #110 con base vigente; integración solo tras decisión de autoridad específica; verificar CI ligado al SHA integrado.
+**Fase 3 — D4:** retirar store del resultado público; cerrar/inutilizar la ruta auxiliar de settlement y las APIs de repair de bajo nivel para M0 Option A; pruebas estáticas/negativas. No activar repair.
 
 **Fase 4 — evidencia:** revisar diff, imports, archivos afectados y resultados de tests/CI autorizados. Registrar cada estado como IMPLEMENTED / TESTED / CI / DEVICE, sin mezclarlos.
 
@@ -127,3 +127,39 @@ PR: https://github.com/snowdenxrp/aldea-ia/pull/110
 - Root PENDING/UNKNOWN; authorization NOT_EVALUATED; First publication STOP; Protected effects STOP.
 
 **Trabajo de este documento:** preparación técnica documental. No modifica runtime, tests, workflows ni configuración. No ejecuta tests, CI/Actions, scripts, bootstrap, comandos POCO ni efectos protegidos.
+
+
+## 8. Preflight estático adicional (2026-10-31)
+
+Inspección de los 12 módulos .mjs de scripts y de los tests Nexo más directamente relacionados. No se ejecutó ningún test.
+
+### 8.1 Dependencia de orden D5 → D1
+
+- En la rama base, scripts/assistants.mjs llama openNexoContinuityOwner con legacyMemory y allowEmptyInitialization.
+- scripts/simulate.mjs también llama openNexoContinuityOwner con legacyMemory y allowEmptyInitialization.
+- El PR #110 retira esas aperturas de Continuity de ambos launchers. Por ello, **D5 debe integrarse antes de endurecer la firma D1**, o ambas modificaciones deben coordinarse en un único cambio sin duplicar el PR. Si D1 se aplica primero sobre la base actual, rompe los launchers ordinarios.
+- scripts/nexo-continuity.mjs solo reexporta open y bootstrap. scripts/nexo-chronicle-session.mjs no contiene llamada directa al service en la inspección dirigida.
+- La búsqueda REST de GitHub Code Search devolvió cero resultados para los símbolos consultados y no se toma como inventario exhaustivo. El inventario de scripts es de lectura directa de los 12 módulos listados por el árbol del repositorio.
+
+### 8.2 Impacto sobre tests
+
+- tests/nexo/continuity-migration.test.mjs tiene 38 referencias a openNexoContinuityOwner y 44 referencias a legacyMemory en el archivo inspeccionado. El primer bloque prueba migración real; muchas secciones posteriores usan legacyMemory para sembrar escenarios de owner/Chronicle. No deben tratarse todas como tests de migración.
+- tests/nexo/continuity-service-options-input-guard.test.mjs verifica accessors, opciones heredadas y actualmente la creación por legacyMemory; deberá separar el contrato de open-existing del API explícito de migración.
+- tests/nexo/chronicle-runtime.test.mjs usa open y también createNexoContinuityStore directamente; parte de los tests deben conservarse con stores de fixture explícitos.
+- tests/nexo/repair-owner-lifecycle.test.mjs, repair-session.test.mjs, repair-mission-verification.test.mjs y repair-settlement-crash-cuts.test.mjs importan rutas de repair de bajo nivel y/o pasan store directamente. Esos tests describen un protocolo auxiliar más amplio que el runtime Option A. No prueban que Option A cierre todas las rutas.
+- scripts/nexo-repair-session.mjs también exige store.loadCurrent y store.commitIfCurrent y llama runNexoRepairOnce. No limitar D4 a nexo-repair-entrypoint: revisar esta API hermana y los módulos repair relacionados.
+- La revisión dirigida encontró que tests/nexo/repair-session.test.mjs invoca directamente runNexoRepairSession con owner+store y espera settlement completado; por ello existe una ruta programática de bajo nivel capaz de despachar fuera de runNexoRuntimeRepairSession. Esto debe reflejarse como superficie auxiliar real, sin afirmar que el launcher de producto la invoque actualmente.
+- tests/nexo/repair-settlement-crash-cuts.test.mjs y repair-owner-lifecycle.test.mjs dependen de commitIfCurrent directo para inyectar fallos/cortes. Preservar su valor como pruebas de protocolo solo si el protocolo queda explícitamente fuera de M0 y sin ruta de ejecución M0; de lo contrario, reemplazar por pruebas negativas del bloqueo, no relajar el gate.
+
+### 8.3 Consecuencia para D4
+
+D4 debe cerrar la capacidad en toda la cadena de entrada, no solo ocultar store en el resultado del service:
+1. scripts/nexo-repair-entrypoint.mjs;
+2. scripts/nexo-repair-session.mjs;
+3. scripts/nexo-repair-settlement.mjs;
+4. cualquier launcher o adapter que pueda invocar esos módulos;
+5. pruebas que actualmente demuestran dispatch/settlement en la ruta auxiliar.
+
+La corrección no es mover commitIfCurrent al owner. Bajo M0 Option A, el resultado correcto es no-dispatch/STOP y ninguna mutación de settlement desde rutas de aplicación. PREPARED y UNKNOWN permanecen preservados.
+
+**Límite:** esta inspección cubrió módulos de scripts y tests Nexo seleccionados desde el árbol actual y lectura dirigida de archivos. No es prueba de inventario de todo el proceso en tiempo de ejecución ni de writers ambientales; FB-03/FB-04 permanecen OPEN/UNKNOWN.
