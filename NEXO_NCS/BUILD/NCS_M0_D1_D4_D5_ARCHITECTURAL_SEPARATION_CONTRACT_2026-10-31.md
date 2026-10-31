@@ -77,6 +77,37 @@ Reglas:
 5. No se añade un método genérico como `owner.commit(candidate)`, `owner.updateSnapshot(callback)` o `owner.mutate(collection)`; eso trasladaría la capacidad sin encapsular invariantes.
 6. La capacidad de bootstrap sigue separada y no entrega owner/store operacional al llamador.
 
+### 3.2.1 Revisión adversarial Qwen y correcciones de precisión (2026-10-31)
+
+Qwen advirtió correctamente que retirar `store` del retorno del service no cierra por sí solo una capacidad que siga filtrándose por otros parámetros/importaciones. Sin embargo, su inventario mezcla una ruta real con una ruta ya encapsulada:
+
+| Afirmación Qwen | Verificación contra el código | Dictamen |
+|---|---|---|
+| `nexo-repair-entrypoint.mjs` recibe `store` y lo pasa a settlement | Confirmado: la firma recibe `owner, store`; el flujo invoca `settlePreparedRepairFromPersistedState({store,...})` | Bypass real por composición/capacidad filtrada |
+| `nexo-repair-settlement.mjs` llama `store.commitIfCurrent` | Confirmado: carga, clona snapshot, cambia journal y ejecuta commit condicional directo | Escritor externo real |
+| `reconcilePrepared` recibe store crudo y escribe fuera del owner | Incorrecto: es una función interna de `createNexoContinuityOwner`; usa `loadStoreCurrent` y `commitStoreIfCurrent` capturados en el cierre privado | No es bypass externo |
+| `reconcilePrepared` puede cerrar PREPARED de repair | Incorrecto: bloquea explícitamente acciones de repair con `NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED`; el settlement de repair es ruta separada | No crear un segundo reconciler ni relajar ese bloqueo |
+| Existen varios métodos store como `appendEvent`/`forceWrite` | No demostrado en la API inspeccionada; el store expone `loadCurrent`, `initialize`, `commitIfCurrent` | No inventar métodos/capacidades |
+| El owner debe convertirse en clase con campo `#store` | No necesario para el patrón actual: `createNexoContinuityOwner` captura referencias validadas a métodos del store en cierres y solo retorna métodos semánticos | Preferir mínimo cambio; no reescribir owner por estilo |
+
+**Superficie real confirmada:** el service devuelve `store` junto a `owner`; el entrypoint de repair exige ese store; el settlement externo lo usa para commit. La corrección mínima de D4 es eliminar esa exposición y retirar/aislar la ruta externa, no rediseñar `reconcilePrepared`.
+
+**No introducir las mitigaciones especulativas de Qwen:**
+- No añadir `force`, validaciones relajadas, rollback/commit por timeout ni eliminación automática de PREPARED. El vencimiento temporal no demuestra si un efecto ocurrió.
+- No añadir `RepairExecuted` ni un log/event stream nuevo sin contrato, fuente de verdad y autorización. El registro de observación existente no acredita causalidad.
+- No crear `repairSettlement` owner-owned ahora: la reparación permanece fuera de M0 Option A y el runtime de producto la bloquea.
+- No crear `recoverFromSnapshot`/replay genérico que reintroduzca mutación irrestricta.
+- No exigir que el módulo físico de store sea literalmente inaccesible en todo el proceso como condición de seguridad: el objetivo es que ninguna capa de aplicación/entrypoint reciba capacidad de commit; el módulo de composición debe poder construir store y owner.
+
+**Tests negativos corregidos:**
+1. El resultado de `openNexoContinuityOwner` no expone `store`.
+2. El owner no expone `commitIfCurrent` ni un mutador genérico.
+3. `reconcilePrepared` permanece owner-owned; sus argumentos no aceptan store y sus gates/UNKNOWN se conservan.
+4. `nexo-repair-entrypoint` deja de requerir/propagar store.
+5. Ningún módulo fuera de store/owner/composición importa `createNexoContinuityStore` o llama `commitIfCurrent` directamente.
+6. El settlement auxiliar no puede persistir fuera del owner; dado que repair está excluido en M0, debe permanecer inaccesible/bloqueado, no ser sustituido por un método permisivo.
+7. PREPARED no se elimina ni se resuelve por timeout; UNKNOWN no se transforma en éxito ni en permiso de redispatch.
+
 ### 3.3 Criterios de aceptación D4
 
 - D4-A: `openExistingNexoContinuityOwner` no devuelve propiedad `store` ni referencia equivalente.
