@@ -14,35 +14,28 @@ function snapshot(missionId, stepId) {
     attempts: [], doNotRepeat: [], executions: [], effectJournal: []
   };
 }
-
 function deferred() {
   let resolve;
   const promise = new Promise((res) => { resolve = res; });
   return { promise, resolve };
 }
-
 class Gate {
   constructor() {
     this.opened = false;
     this.promise = new Promise((resolve) => { this.resolve = resolve; });
   }
-  open() {
-    if (!this.opened) { this.opened = true; this.resolve(); }
-  }
+  open() { if (!this.opened) { this.opened = true; this.resolve(); } }
   async wait() { if (!this.opened) await this.promise; }
 }
-
 const settle = (promise) => promise.then(
   (value) => ({ status: 'fulfilled', value }),
   (reason) => ({ status: 'rejected', reason })
 );
-
 function normalizePath(value) {
   if (typeof value === 'string') return path.resolve(value);
   if (value instanceof URL) return path.resolve(value.pathname);
   return value;
 }
-
 function bytes(value) {
   if (value == null) return new Uint8Array();
   if (value instanceof Uint8Array) return new Uint8Array(value);
@@ -52,26 +45,21 @@ function bytes(value) {
   if (typeof value === 'object') return new TextEncoder().encode(JSON.stringify(value));
   return new TextEncoder().encode(String(value));
 }
-
 function sameBytes(a, b) {
   return Boolean(a && b) && Buffer.compare(Buffer.from(a), Buffer.from(b)) === 0;
 }
-
 async function readOrNull(filePath) {
   try { return await realFs.readFile(filePath); } catch { return null; }
 }
-
 function equalSnapshots(a, b) {
   try { assert.deepStrictEqual(a, b); return true; } catch { return false; }
 }
-
 async function currentIfLoaded(store) {
   const result = await settle(store.loadCurrent());
   return result.status === 'fulfilled' && result.value?.status === 'loaded'
     ? { ok: true, value: result.value }
     : { ok: false, result };
 }
-
 function classify(result, label) {
   if (result.status === 'rejected') return { label, outcome: 'rejected', reason: result.reason };
   const value = result.value;
@@ -82,7 +70,6 @@ function classify(result, label) {
     value
   };
 }
-
 function instrumentFs(hooks, observed) {
   const fsModule = { constants: fsConstants };
   for (const name of Object.getOwnPropertyNames(realFs)) {
@@ -92,13 +79,12 @@ function instrumentFs(hooks, observed) {
       const p0 = normalizePath(args[0]);
       const p1 = normalizePath(args[1]);
       observed.calls.push({ name, path: p0, to: p1 });
-
       if (name === 'access' || name === 'writeFile' || name === 'rename') {
         const isAccess = name === 'access';
         const isWrite = name === 'writeFile';
-        const info = isAccess
-          ? { path: p0, args }
-          : isWrite ? { path: p0, data: args[1], options: args[2], args } : { from: p0, to: p1, args };
+        const info = isAccess ? { path: p0, args }
+          : isWrite ? { path: p0, data: args[1], options: args[2], args }
+            : { from: p0, to: p1, args };
         const hook = hooks[name];
         if (isWrite) observed.writes.push(info);
         if (name === 'rename') observed.renames.push(info);
@@ -126,7 +112,6 @@ function instrumentFs(hooks, observed) {
   fsModule.promises = fsModule;
   return fsModule;
 }
-
 async function makeEnv(t, configureHooks = () => ({})) {
   const root = await realFs.mkdtemp(path.join(tmpdir(), 'ncs-fb04-qwen-'));
   const filePath = path.join(root, 'continuity.snapshot');
@@ -140,7 +125,6 @@ async function makeEnv(t, configureHooks = () => ({})) {
     'rmdir', 'unlink', 'stat', 'lstat', 'readFile']) {
     assert.equal(typeof fsModule[method], 'function', 'fsModule no expone ' + method + '().');
   }
-
   // lockWaitMs es duración. Sin lockDeadline, el store crea el deadline monotónico.
   const store = createNexoContinuityStore({ filePath, fsModule, lockWaitMs: 20_000 });
   assert.equal(typeof store.loadCurrent, 'function');
@@ -157,7 +141,6 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
     const gate = new Gate();
     const renameSeen = deferred();
     let heldEvidence = null;
-
     const env = await makeEnv(t, ({ filePath, tempPath }) => ({
       access: { before: ({ path: p }) => { if (p === filePath) counters.accessFilePath++; } },
       writeFile: { before: ({ path: p, data }) => {
@@ -172,11 +155,9 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
         gate
       }
     }));
-
     const storeSnapshot = snapshot('fb04-race-store', 'step-store');
     const externalContent = JSON.stringify(snapshot('fb04-external-writer', 'step-external'));
     const initPromise = settle(env.store.initialize(storeSnapshot));
-
     try {
       const reached = await Promise.race([
         initPromise.then(() => 'done'),
@@ -191,12 +172,10 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
       assert.ok(heldEvidence.tempWrite > 0, 'UNKNOWN: writeFile(tempPath) no observado.');
       assert.equal(heldEvidence.call.from, env.tempPath);
       assert.equal(heldEvidence.call.to, env.filePath);
-      // Escritor externo no cooperativo: publica tras access y antes de reanudar rename.
       await realFs.writeFile(env.filePath, externalContent, 'utf8');
     } finally {
       gate.open();
     }
-
     const init = await initPromise;
     const initStatus = init.status === 'fulfilled'
       ? (init.value?.status ?? 'fulfilled-without-status')
@@ -207,18 +186,16 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
       .filter((r) => r.from === env.tempPath && r.to === env.filePath).at(-1);
     t.diagnostic('initialize(): ' + initStatus);
     t.diagnostic('rename(): ' + (rename?.status ?? 'not-observed'));
-
     if (!finalBytes) assert.fail('UNKNOWN: no existe archivo final después de la carrera.');
     const finalIsExternal = sameBytes(finalBytes, bytes(externalContent));
     const tempData = tempWrites.at(-1);
     const finalIsTemp = tempData !== undefined && sameBytes(finalBytes, bytes(tempData));
     const currentIsStore = current.ok && equalSnapshots(current.value.snapshot, storeSnapshot);
-
     if (rename?.status === 'success' && !finalIsExternal && (finalIsTemp || currentIsStore)) {
       assert.fail('VULNERABILITY_REPRODUCED: rename() sobrescribió el archivo externo creado después de access(filePath).');
     }
     if (rename?.status === 'error' && finalIsExternal) {
-      t.skip('INCONCLUSIVE: rename falló y el archivo externo sobrevivió; esto no demuestra por sí solo no-replace.');
+      return t.skip('INCONCLUSIVE: rename falló y el archivo externo sobrevivió; esto no demuestra por sí solo no-replace.');
     }
     assert.fail('UNKNOWN: no se demostró protección ni vulnerabilidad concluyente. initialize=' + initStatus +
       ', rename=' + (rename?.status ?? 'not-observed') + ', finalIsExternal=' + finalIsExternal +
@@ -240,20 +217,17 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
         } catch (error) { symlinkError = error; }
       } } };
     });
-
     const victimOriginal = JSON.stringify(snapshot('fb04-victim-original', 'step-victim'));
     const candidate = snapshot('fb04-symlink-attack', 'step-attack');
     await realFs.writeFile(victimPath, victimOriginal, 'utf8');
     const init = await settle(env.store.initialize(candidate));
     const attempts = env.observed.writeFileResults.filter((r) => r.path === env.tempPath);
     const lastAttempt = attempts.at(-1);
-
     if (!symlinkCreated) {
-      t.skip('INCONCLUSIVE: no se pudo crear symlink en filePath.tmp: ' +
+      return t.skip('INCONCLUSIVE: no se pudo crear symlink en filePath.tmp: ' +
         (symlinkError?.message ?? 'desconocido'));
     }
-    if (!lastAttempt) t.skip('INCONCLUSIVE: writeFile(temp) no se ejecutó; initialize=' + init.status);
-
+    if (!lastAttempt) return t.skip('INCONCLUSIVE: writeFile(temp) no se ejecutó; initialize=' + init.status);
     const victimFinal = await readOrNull(victimPath);
     if (!victimFinal) assert.fail('UNKNOWN: no se pudo leer la víctima después del intento.');
     const victimIsOriginal = sameBytes(victimFinal, bytes(victimOriginal));
@@ -261,34 +235,29 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
     const tempBytes = tempData === undefined ? null : bytes(tempData);
     const victimIsAttack = sameBytes(victimFinal, bytes(JSON.stringify(candidate))) ||
       Boolean(tempBytes && sameBytes(victimFinal, tempBytes));
-
     let destinationIsSymlink = false;
     let destinationLink = null;
     try {
       const stat = await realFs.lstat(env.filePath);
       destinationIsSymlink = stat.isSymbolicLink();
       if (destinationIsSymlink) destinationLink = await realFs.readlink(env.filePath);
-    } catch { /* el destino puede no existir si no hubo publicación */ }
-
+    } catch { /* destino ausente si no hubo publicación */ }
     t.diagnostic('writeFile(temp): ' + lastAttempt.status);
     t.diagnostic('victimOriginal=' + victimIsOriginal + ', victimAttack=' + victimIsAttack +
       ', destinationIsSymlink=' + destinationIsSymlink + ', destinationLink=' + (destinationLink ?? 'n/a'));
-
     if (lastAttempt.status === 'error') {
       if (!victimIsOriginal) assert.fail('UNKNOWN: writeFile falló pero la víctima cambió; causalidad no demostrada.');
-      t.skip('INCONCLUSIVE: writeFile(temp) falló; no demuestra protección.');
+      return t.skip('INCONCLUSIVE: writeFile(temp) falló; no demuestra protección.');
     }
     if (victimIsAttack || destinationIsSymlink) {
       assert.fail('VULNERABILITY_REPRODUCED: el symlink redirigió la escritura a la víctima o terminó publicado en el destino.');
     }
-
     const renameSucceeded = env.observed.renameResults.some((r) =>
       r.from === env.tempPath && r.to === env.filePath && r.status === 'success');
     const finalBytes = await readOrNull(env.filePath);
     const current = await currentIfLoaded(env.store);
     const initializeCommitted = init.status === 'fulfilled' && init.value?.status === 'committed';
     const finalIsStore = current.ok && equalSnapshots(current.value.snapshot, candidate);
-
     if (victimIsOriginal && renameSucceeded && finalBytes && initializeCommitted && finalIsStore) {
       t.diagnostic('PROPERTY_VERIFIED: víctima intacta y destino final no es symlink.');
       return;
@@ -305,12 +274,10 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
     if (initial.status !== 'fulfilled' || initial.value?.status !== 'committed') {
       assert.fail('UNKNOWN: initialize inicial no confirmó committed.');
     }
-
     const loaded = await currentIfLoaded(env.store);
     if (!loaded.ok) assert.fail('UNKNOWN: loadCurrent inicial no devolvió loaded.');
     const expectedRevision = loaded.value.storeRevision;
     assert.notEqual(expectedRevision, undefined, 'UNKNOWN: falta storeRevision.');
-
     const writeBaseline = env.observed.writeFileResults.length;
     const renameBaseline = env.observed.renameResults.length;
     const candidateA = snapshot('fb04-candidate-a', 'step-a');
@@ -323,13 +290,11 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
     const resultB = classify(settledB, 'B');
     t.diagnostic('commitIfCurrent A: ' + resultA.outcome);
     t.diagnostic('commitIfCurrent B: ' + resultB.outcome);
-
     const committed = [resultA, resultB].filter((r) => r.outcome === 'committed');
     const conflicts = [resultA, resultB].filter((r) => r.outcome === 'conflict');
     if (committed.length !== 1 || conflicts.length !== 1) {
       assert.fail('UNKNOWN: se esperaba un committed y un conflict; A=' + resultA.outcome + ', B=' + resultB.outcome);
     }
-
     const writes = env.observed.writeFileResults.slice(writeBaseline)
       .filter((r) => r.path === env.tempPath && r.status === 'success');
     const renames = env.observed.renameResults.slice(renameBaseline)
@@ -337,12 +302,10 @@ test('FB-04 Qwen publication adversarial', { concurrency: 1, timeout: 60_000 }, 
     if (writes.length < 1 || renames.length < 1) {
       assert.fail('UNKNOWN: committed sin writeFile(temp) y rename(temp,dest) exitosos observados.');
     }
-
     const after = await currentIfLoaded(env.store);
     if (!after.ok) assert.fail('UNKNOWN: loadCurrent final no devolvió loaded.');
     assert.equal(after.value.storeRevision, expectedRevision + 1,
       'UNKNOWN: la revisión final no avanzó exactamente una unidad.');
-
     const winner = committed[0];
     const winningSnapshot = winner.label === 'A' ? candidateA : candidateB;
     const losingSnapshot = winner.label === 'A' ? candidateB : candidateA;
