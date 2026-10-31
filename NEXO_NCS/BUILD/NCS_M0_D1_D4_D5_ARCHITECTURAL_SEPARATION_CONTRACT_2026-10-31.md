@@ -125,6 +125,22 @@ No se propone seleccionar Termux, app Android, launcher ni filesystem aquí. El 
 - D5-F: ausencia, ruta relativa ambigua o discrepancia produce STOP; no fallback silencioso.
 - D5-G: no hay importaciones cruzadas que hagan que una simulación ordinaria escriba Continuity.
 
+### 4.4 Estado del trabajo D5 ya existente — PR #110
+
+La revisión del PR #110 (`NCS M0: decouple Lúmina launchers from Nexo Continuity`) encontró una implementación candidata ya preparada en la rama `ncs-lumina-decoupling-2026-10-29`:
+
+- Head: `572fe085abc11c625d13beb4885a74da2d7ffd95`.
+- Base declarada: `ncs-clean-architecture`, SHA `4d6432cd74af7c24c15b5a3c4bd1dbb79f181bc8`.
+- Estado consultado: OPEN, DRAFT, no merged; GitHub informa mergeable=true.
+- Archivos: workflow de validación dedicado, `scripts/assistants.mjs`, `scripts/simulate.mjs`, `tests/assistant-squad-audit.test.mjs`.
+- Cambios: elimina del launcher assistants la apertura de Continuity, registro de misión Nexo y sesión repair; elimina de simulate la apertura de Continuity; conserva `nexoMemory` histórico como subárbol opaco en round-trip y evita sembrarlo en estados nuevos.
+- CI run `40972888688`: completed/success en el SHA exacto; cuatro check-runs visibles, todos completed/success, incluyendo focused-regression, sany y mission-admission-continuity. La descripción del PR informa que también pasó `npm test` completo.
+- El workflow activo `.github/workflows/lumina-simulation.yml` permanece sin cambios; una vez incorporado el PR, sus comandos assistants/simulate ya no deberían abrir Continuity desde esas rutas.
+
+**Clasificación:** D5 tiene implementación candidata y CI PASS en PR, pero no está incorporada a la rama base. No se marca D5 como cerrado en `ncs-clean-architecture` hasta que el PR se integre y el estado resultante se verifique. El test actual incluye una aserción estática sobre assistants y round-trip de memoria opaca; no ejecuta el main de simulate como proceso para probar ausencia de creación, por lo que D5-A/B no reciben cobertura end-to-end separada.
+
+**Acción:** no duplicar ni reimplementar D5. Mantener PR #110 como unidad existente; no hacer merge ni alterar la rama del PR en esta revisión. D1 y D4 siguen sin implementación candidata equivalente identificada.
+
 ## 5. Orden de implementación recomendado
 
 No implementar los tres cambios como un parche monolítico. Secuencia:
