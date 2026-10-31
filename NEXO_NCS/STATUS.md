@@ -1,3 +1,16 @@
+## DELTA — U-B06: WORKFLOWS CI Y CADENA DE IMPORTACIÓN LEGADA (2026-10-31)
+
+- Complemento consolidado en [NCS_M0_UB06_WORKFLOWS_AND_LEGACY_IMPORT_FINDINGS_2026-10-31.md](BUILD/NCS_M0_UB06_WORKFLOWS_AND_LEGACY_IMPORT_FINDINGS_2026-10-31.md), commit documental `a64ec451c720b7ace130efe08f642003e2b43353`.
+- Se cubren los 28 workflows inspeccionados y la cadena `legacyMemory → validator → projection → initialize` para el commit `fce8bc9824d7db65f0cf8416463f1aeb0ca146a2`, con los límites declarados: los dos workflows Kafka se inspeccionaron por comandos dirigidos; los tests no se ejecutaron; el contenido real de `main` y los permisos efectivos de GitHub quedan fuera.
+- Solo `lumina-simulation.yml` ejecuta directamente `assistants` y `simulate`, capaces de alcanzar `openNexoContinuityOwner`. Puede crear Continuity en un runner efímero bajo el código/datos de la rama inspeccionada; el workflow no añade `.nexo-continuity.json` al commit. Ejecución efectiva en `main`: NO DEMOSTRADA.
+- La proyección legacy copia cinco colecciones operacionales con `structuredClone`, sin saneamiento semántico completo. Se confirma que puede introducir PREPARED sin pasar por `recordPrepared`; esto demuestra una obligación potencial sin procedencia, no un despacho protegido. Alcance completo aguas abajo: parcialmente NO DEMOSTRADO.
+- D10–D14 quedan registrados como defectos/limitaciones del contrato legacy, separados de FB-04. La migración legacy se mantiene fuera del bootstrap M0; no se autoriza implementarla ni activarla. Bootstrap M0 objetivo: snapshot vacío, explícito, sin `legacyMemory`, sin owner operacional y sin continuación.
+- U-B06: complemento documental cubierto en el alcance inspeccionado; no equivale a prueba de entorno POCO ni inventario ambiental completo de escritores.
+- Estados sin cambio: M0 INCOMPLETO; FB-01 OPEN/UNKNOWN en aplicabilidad; FB-02 PASS/CERRADO solo en alcance y SHA previos; FB-03 OPEN/UNKNOWN, E2/E3 UNKNOWN; FB-04 OPEN/UNKNOWN; FB-05/P-05 NO RATIFICADA; FB-06/FB-07 OPEN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
+- Cambio documental únicamente: nuevo informe U-B06 y STATUS. Sin runtime/tests/workflows/configuración; sin pruebas, CI/Actions, comandos POCO, bootstrap ni efectos protegidos.
+
+---
+
 ## DELTA — SEGUNDA REVISIÓN GEMINI: CONCURRENCIA Y LÍMITES ANDROID (2026-10-31)
 
 - Reconciliación técnica añadida a [NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md](BUILD/NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md), commit `3a6984ffccff163ce71146c334bc9ea640522093`.
