@@ -1,3 +1,15 @@
+## DELTA — SEGUNDA REVISIÓN GEMINI: CONCURRENCIA Y LÍMITES ANDROID (2026-10-31)
+
+- Reconciliación técnica añadida a [NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md](BUILD/NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md), commit `3a6984ffccff163ce71146c334bc9ea640522093`.
+- Corrección: Android FileChannel.lock() no es un serializador de hilos de la misma JVM; los locks se mantienen en nombre de la JVM y la documentación recomienda tratarlos como advisory. No cierra E2 ni excluye escritores no cooperativos.
+- FGS no garantiza supervivencia; la recuperación debe tolerar terminación/reinicio. PackageManager, firma, manifiesto y hashes no prueban por sí solos el inventario completo de escritores reales.
+- Activity y Service comparten UID/almacenamiento; no crean una frontera de seguridad entre sí. /proc no se acepta como requisito de observación live; su disponibilidad depende del dispositivo/dominio y una captura puntual no prueba exclusión sostenida.
+- `state.json + journal`, mutex, revision check, WAL e idempotencia permanecen propuestas: necesitan compare-and-publish atómico o single-writer impuesto, protocolo de durabilidad/recuperación y pruebas específicas. No se adoptan como solución.
+- Estados sin cambio: E2 NO IMPLEMENTADO/UNKNOWN; E3 UNKNOWN; FB-03/FB-04 OPEN/UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; **M0 INCOMPLETO**.
+- Solo documentación. Sin runtime/tests/workflows, tests/CI/Actions, instalación, comandos POCO, bootstrap ni efectos protegidos.
+
+---
+
 ## DELTA — SÍNTESIS CRUZADA DEL ENTORNO RESTRINGIDO (2026-10-31)
 
 - Se incorporó [NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md](BUILD/NCS_M0_RESTRICTED_ENVIRONMENT_CROSS_REVIEW_SYNTHESIS_2026-10-31.md), commit `d4046d881032d632deb08f2b86c317913bdc3fcc`.
