@@ -1,3 +1,16 @@
+## DELTA — D4: CONTRASTE ADVERSARIAL QWEN Y SUPERFICIE REAL DE BYPASS (2026-10-31)
+
+- Informe Qwen recibido y contrastado contra `continuity-owner.mjs`, `continuity-service.mjs`, `nexo-repair-entrypoint.mjs` y `nexo-repair-settlement.mjs`.
+- **Confirmado:** service expone `store`; repair entrypoint recibe y propaga `store`; settlement auxiliar llama `store.commitIfCurrent` directamente. Es el bypass externo concreto.
+- **Corrección:** `reconcilePrepared` NO recibe store crudo. Es función interna del owner, usa cierres privados `loadStoreCurrent/commitStoreIfCurrent`, y bloquea acciones repair con `NEXO_REPAIR_SETTLEMENT_CONTRACT_REQUIRED`. No contarlo como escritor externo ni rehacerlo.
+- La sugerencia de clase con `#store` no es necesaria: el owner actual ya captura métodos en cierres. Preferir retirar el store del resultado de composición y eliminar la propagación al settlement.
+- No adoptar `force`, validación relajada, timeout auto-rollback/commit, evento nuevo `RepairExecuted` ni recovery genérico. No hay evidencia/autoridad para alterar la semántica PREPARED. UNKNOWN-STOP.
+- Tests negativos D4 corregidos en contrato: ausencia de store en retorno; ausencia de commit genérico en owner; reconciliación sigue owner-owned; repair entrypoint no recibe store; búsqueda estática de escritores/importaciones; settlement externo bloqueado/inaccesible bajo M0 Option A; PREPARED no se elimina ni se resuelve por timeout.
+- Contrato actualizado: [NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md](BUILD/NCS_M0_D1_D4_D5_ARCHITECTURAL_SEPARATION_CONTRACT_2026-10-31.md), commit `a7583d8d91c3e96043af70d24f7963a4e4413c6a`.
+- Solo documentación; sin cambios de código/tests/workflows/CI/dispositivo. Estados globales sin cambio: M0 INCOMPLETO; D4 implementación pendiente; FB-03 OPEN/UNKNOWN; FB-04 OPEN/UNKNOWN; Root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; First publication STOP; Protected effects STOP.
+
+---
+
 ## DELTA — RECONCILIACIÓN PR #110: D5 YA TIENE IMPLEMENTACIÓN CANDIDATA (2026-10-31)
 
 - Revisión del PR #110: [NCS M0: decouple Lúmina launchers from Nexo Continuity](https://github.com/snowdenxrp/aldea-ia/pull/110).
