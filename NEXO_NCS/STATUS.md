@@ -1,3 +1,14 @@
+## DELTA — REVISIÓN ACOTADA DEL GUARD DE GRAFO: COBERTURA DE ROOTS NO EXHAUSTIVA (2026-10-31)
+
+- Revisión del diff de PR #110 posterior al CI PASS: el test `tests/nexo/m0-import-graph-guard.test.mjs` recorre imports relativos estáticamente resolubles desde cinco roots declaradas. La política funciona para esas roots en el SHA de código `36c4d1191ba9b5d670e18799f8fe7ca475c1855d`.
+- Hallazgo: `classifiedRoots.size === productRoots.length` solo detecta duplicados dentro de la lista; **no demuestra que el inventario de roots esté completo** ni detecta automáticamente un nuevo entrypoint Nexo/Lúmina no clasificado. El scanner tampoco resuelve imports computados ni aliases no relativos. Por tanto, el guard no debe describirse como cobertura exhaustiva del grafo de producto.
+- Este hallazgo **no invalida** los tres workflows PASS del SHA `36c4d1191ba9b5d670e18799f8fe7ca475c1855d`; limita la conclusión a las cinco roots y dependencias relativas resolubles cubiertas por el test.
+- El commit `0a48acae9a640b6218d8f18e8e921fc3ee77cbc9` solo actualizó este STATUS. No hay workflows asociados a ese commit documental; no atribuirle CI nuevo. PR #110 sigue OPEN / DRAFT / NOT MERGED.
+- Próxima corrección técnica acotada: hacer que el test descubra o inventarie explícitamente todos los entrypoints ejecutables del producto, clasifique también los wrappers/gates internos que deben permanecer accesibles, y falle ante roots nuevas sin política. Mantener separados los grafos Nexo y Lúmina y declarar los límites de resolución de imports. Después ejecutar CI sobre el nuevo SHA.
+- Estado global sin cambio: **NCS M0 INCOMPLETO**; `authorization: NOT_EVALUATED`; raíz PENDING/UNKNOWN; primera publicación y efectos protegidos STOP. No se amplía autoridad ni se fusiona PR.
+
+---
+
 ## DELTA — EXCLUSIÓN DE EFECTOS LÚMINA EN NCS M0: IMPLEMENTACIÓN Y CI PASS (2026-10-31)
 
 - Rama de trabajo: `ncs-lumina-decoupling-2026-10-29`; PR [#110](https://github.com/snowdenxrp/aldea-ia/pull/110), base `ncs-clean-architecture`; HEAD exacto validado: `36c4d1191ba9b5d670e18799f8fe7ca475c1855d`.
