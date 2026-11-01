@@ -1266,6 +1266,39 @@ for (const [method, fields] of accessorCallCases) {
   }
 }
 
+
+ // The service preflight can race with an artifact appearing before the
+ // store lock is acquired. The exclusive store must recheck without deleting it.
+{
+  const temporaryStateDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-temp-state-"));
+  const temporaryStatePath = path.join(temporaryStateDirectory, "continuity.json");
+  const racedTemporaryPath = `${temporaryStatePath}.tmp-raced`;
+  try {
+    const temporaryStateFs = {
+      ...fs,
+      opendir: async directory => {
+        await fs.writeFile(racedTemporaryPath, "external ambiguous temporary state", { flag: "wx" });
+        return fs.opendir(directory);
+      }
+    };
+    const temporaryStateStore = createNexoContinuityStore({
+      filePath: temporaryStatePath,
+      fsModule: temporaryStateFs
+    });
+    const result = await temporaryStateStore.initializeExclusive(emptySnapshot);
+    assert.equal(result.status, "failed");
+    assert.equal(result.code, "NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN");
+    assert.equal(await fs.readFile(racedTemporaryPath, "utf8"), "external ambiguous temporary state");
+    await assert.rejects(
+      () => fs.access(temporaryStatePath),
+      error => error?.code === "ENOENT",
+      "the store must stop before publishing when a temporary artifact appears during the lock-protected check"
+    );
+  } finally {
+    await fs.rm(temporaryStateDirectory, { recursive: true, force: true });
+  }
+}
+
 // Simulate a non-cooperating writer creating the destination after the initial
 // access check but immediately before link(). The external bytes must survive.
 {
