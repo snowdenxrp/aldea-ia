@@ -8,7 +8,8 @@ import { repairProtocolTestCapabilities } from "./repair-protocol-test-capabilit
 const runNexoRepairSessionProtocol = options => runNexoRepairSessionProtocolBase({ ...repairProtocolTestCapabilities, ...options });
 const dispatchPreparedRepairProtocol = options => dispatchPreparedRepairProtocolBase({ ...repairProtocolTestCapabilities, ...options });
 import { runNexoRuntimeRepairSession } from "../../scripts/nexo-runtime-session.mjs";
-import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
+import { prepareRepairAgainstPersistedState as prepareRepairAgainstPersistedStateBase } from "../../scripts/nexo-repair-preparation.mjs";
+const prepareRepairAgainstPersistedState = options => prepareRepairAgainstPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
 
