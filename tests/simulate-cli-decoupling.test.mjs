@@ -83,7 +83,8 @@ test("simulate CLI persists in an isolated sandbox and preserves Nexo field pres
           assert.deepEqual(persisted.nexoMemory, scenario.nexoMemory,
             "Historical Nexo data must survive the CLI round-trip exactly.");
         }
-        assert.equal(await fs.stat(path.join(directory, "world-state.json")).then(() => true), true);
+        await assert.rejects(fs.access(path.join(directory, ".nexo-continuity.json")), { code: "ENOENT" },
+          "The simulation launcher must not create a Continuity store in its sandbox.");
       } finally {
         await fs.rm(directory, { recursive: true, force: true });
       }

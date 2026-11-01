@@ -9,7 +9,9 @@ import { createInitialAgents } from "../src/agents.js";
 import { world } from "../src/world.js";
 
 const repoRoot = fileURLToPath(new URL("../", import.meta.url));
-const launcher = path.join(repoRoot, "scripts", "assistants.mjs");
+const sourceDirectory = path.join(repoRoot, "src");
+const assistantsLauncher = path.join(repoRoot, "scripts", "assistants.mjs");
+const simulateLauncher = path.join(repoRoot, "scripts", "simulate.mjs");
 
 function runNode(args, options) {
   return new Promise((resolve, reject) => {
@@ -51,8 +53,17 @@ test("assistants CLI keeps historical Nexo opaque and never invents it", async t
     await t.test(scenario.name, async () => {
       const directory = await fs.mkdtemp(path.join(os.tmpdir(), "ncs-assistant-cli-"));
       try {
+        // Run the actual launcher from a disposable project copy. This keeps any
+        // legacy/default Continuity path inside the sandbox rather than the checkout.
+        await fs.cp(sourceDirectory, path.join(directory, "src"), { recursive: true });
+        await fs.mkdir(path.join(directory, "scripts"), { recursive: true });
+        await fs.copyFile(assistantsLauncher, path.join(directory, "scripts", "assistants.mjs"));
+        await fs.copyFile(simulateLauncher, path.join(directory, "scripts", "simulate.mjs"));
+        await fs.writeFile(path.join(directory, "package.json"), JSON.stringify({ type: "module" }));
+
         const statePath = path.join(directory, "world-state.json");
         const memoryPath = path.join(directory, "lumina-memory.json");
+        const continuityPath = path.join(directory, ".nexo-continuity.json");
         const historicalNexo = structuredClone(scenario.memory.nexo);
         await fs.writeFile(statePath, JSON.stringify({
           version: 5,
@@ -66,12 +77,13 @@ test("assistants CLI keeps historical Nexo opaque and never invents it", async t
         }));
         await fs.writeFile(memoryPath, JSON.stringify(scenario.memory));
 
-        const result = await runNode([launcher], {
+        const result = await runNode(["scripts/assistants.mjs"], {
           cwd: directory,
           env: {
             ...process.env,
             NEXO_STATE_PATH: statePath,
-            NEXO_LUMINA_MEMORY_PATH: memoryPath
+            NEXO_LUMINA_MEMORY_PATH: memoryPath,
+            NEXO_CONTINUITY_PATH: continuityPath
           },
           stdio: ["ignore", "pipe", "pipe"]
         });
@@ -100,6 +112,8 @@ test("assistants CLI keeps historical Nexo opaque and never invents it", async t
         });
         assert.equal(learningProjection.includes("__NCS_OPAQUE_NEXO_SENTINEL__"), false,
           "The Nexo sentinel must not enter Lúmina learning fields.");
+        await assert.rejects(fs.access(continuityPath), { code: "ENOENT" },
+          "The assistant launcher must not create a Continuity store in its sandbox.");
       } finally {
         await fs.rm(directory, { recursive: true, force: true });
       }
