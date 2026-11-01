@@ -14,6 +14,12 @@ on:
       - "tests/assistant-squad-audit.test.mjs"
       - "tests/assistant-cli-decoupling.test.mjs"
       - "tests/simulate-cli-decoupling.test.mjs"
+      - "src/lumina/**"
+      - "src/shared/effect-adapter.mjs"
+      - "src/nexo/effect-adapter.js"
+      - "tests/nexo/runtime.test.mjs"
+      - "tests/nexo/simulation-adapter.test.mjs"
+      - "tests/nexo/m0-import-graph-guard.test.mjs"
       - "package.json"
       - ".github/workflows/ncs-lumina-decoupling-validation.yml"
 
