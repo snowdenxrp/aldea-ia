@@ -6,6 +6,7 @@ const simulation={
   world:{resources:{wood:{amount:-5},water:{amount:10}}}
 };
 const adapter=createLuminaEffectAdapter(simulation);
+assert.ok(Array.isArray(simulation.luminaEffectJournal), "the simulation owns its effect journal");
 
 const repaired=await adapter.execute({
   missionId:"m1",stepId:"s1",action:"repair_agent_state",target:"alex",idempotencyKey:"m1:s1",
@@ -15,6 +16,7 @@ const repaired=await adapter.execute({
 assert.equal(repaired.status,"completed");
 assert.equal(repaired.verified,true);
 assert.equal(simulation.luminaSimulationRevision,1);
+assert.equal(simulation.luminaEffectJournal[0].status,"completed");
 
 const needs=await adapter.execute({
   missionId:"m1",stepId:"s2",action:"repair_agent_needs",target:"alex",idempotencyKey:"m1:s2",
@@ -155,14 +157,17 @@ console.log("Lúmina: adaptador de simulación aislado con consecuencias reales,
 // Reject accessors from descriptors before ordinary field reads can execute them.
 let simulationBootstrapGetterCalls = 0;
 const accessorSimulationOptions = {};
-Object.defineProperty(accessorSimulationOptions, "luminaExecutionJournal", {
+Object.defineProperty(accessorSimulationOptions, "persistPreparedLuminaIntent", {
   enumerable: true,
   get() {
     simulationBootstrapGetterCalls += 1;
-    throw new Error("simulation adapter option getter must not execute");
+    throw new Error("external writer callback getter must not execute");
   }
 });
-assert.throws(() => createLuminaEffectAdapter({ agents: [], world: {} }, accessorSimulationOptions), /enumerable data fields/);
+assert.throws(
+  () => createLuminaEffectAdapter({ agents: [], world: {} }, accessorSimulationOptions),
+  /accepts only the simulation root/
+);
 assert.equal(simulationBootstrapGetterCalls, 0);
 
 const accessorSimulationRoot = { world: {} };
@@ -176,7 +181,10 @@ Object.defineProperty(accessorSimulationRoot, "agents", {
 assert.throws(() => createLuminaEffectAdapter(accessorSimulationRoot), /campos de datos/);
 assert.equal(simulationBootstrapGetterCalls, 0);
 
-assert.throws(() => createLuminaEffectAdapter({ agents: [], world: {} }, { persistPreparedLuminaIntent: true }), /must be a function or null/);
+assert.throws(
+  () => createLuminaEffectAdapter({ agents: [], world: {} }, { luminaExecutionJournal: [] }),
+  /accepts only the simulation root/
+);
 
 const frozenSimulationRoot = Object.freeze({ agents: [], world: {} });
 assert.throws(() => createLuminaEffectAdapter(frozenSimulationRoot), /permitir la revisión mutable/);
@@ -190,8 +198,3 @@ Object.defineProperty(readonlyRevisionSimulation, "luminaSimulationRevision", {
 });
 assert.throws(() => createLuminaEffectAdapter(readonlyRevisionSimulation), /luminaSimulationRevision debe ser mutable/);
 
-const legacyNexoOptions = { executionJournal: [] };
-assert.throws(
-  () => createLuminaEffectAdapter({ agents: [], world: {} }, legacyNexoOptions),
-  /unsupported field/
-);
