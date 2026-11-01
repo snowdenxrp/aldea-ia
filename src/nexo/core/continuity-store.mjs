@@ -218,11 +218,42 @@ async function writeEnvelope(fsModule, filePath, envelope) {
 }
 
 
+
+async function assertNoTemporaryArtifacts(fsModule, filePath) {
+  const directory = path.dirname(filePath);
+  const baseName = path.basename(filePath);
+  const stableTempName = `${baseName}.tmp`;
+  const legacyPrefix = `${baseName}.tmp-`;
+  let entryCount = 0;
+  let directoryHandle;
+  try {
+    directoryHandle = await fsModule.opendir(directory);
+    for await (const entry of directoryHandle) {
+      entryCount += 1;
+      if (entryCount > NEXO_RESOURCE_LIMITS.temporaryDirectoryEntries) {
+        throw storeError("NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN");
+      }
+      if (entry.isFile() && (entry.name === stableTempName || entry.name.startsWith(legacyPrefix))) {
+        throw storeError("NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN");
+      }
+    }
+  } catch (error) {
+    if (error?.code === "NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN") throw error;
+    throw storeError("NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN");
+  } finally {
+    if (directoryHandle) await directoryHandle.close().catch(() => {});
+  }
+}
+
 async function writeInitialEnvelope(fsModule, filePath, envelope) {
   assertContinuityResourceLimits(envelope.snapshot, envelope.storeRevision);
   if (serializedUtf8Bytes(envelope) > NEXO_RESOURCE_LIMITS.continuityDocumentBytes) {
     throw storeError("NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED");
   }
+  // Recheck ambiguous temporary state while holding the store lock. The
+  // service-level preflight is only an early filter and is not race protection.
+  await assertNoTemporaryArtifacts(fsModule, filePath);
+
   // Create a unique temporary file exclusively, then hard-link it to the
   // destination. link() cannot replace a destination created after access().
   const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -380,7 +411,10 @@ export function createNexoContinuityStore(options = {}) {
         if (exclusivePublication) return await writeInitialEnvelope(fsModule, filePath, envelope);
         await writeEnvelope(fsModule, filePath, envelope);
         return { status: "committed", storeRevision: 0, snapshot: structuredClone(envelope.snapshot) };
-      } catch {
+      } catch (writeError) {
+        if (exclusivePublication && writeError?.code === "NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN") {
+          return { status: "failed", code: writeError.code };
+        }
         try {
           const observed = await readEnvelope(fsModule, filePath);
           if (observed.storeRevision === envelope.storeRevision &&
