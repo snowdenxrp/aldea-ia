@@ -75,7 +75,8 @@ async function runIsolated({ repair }) {
       // Nexo runtime gate blocks without dispatch or an environment rewrite.
       const reopened = await openNexoContinuityOwner({
         filePath: continuityPath,
-        legacyMemory: null
+        legacyMemory: null,
+        allowEmptyInitialization: true
       });
       replay = await runNexoRuntimeRepairSession({
         continuity: reopened,
