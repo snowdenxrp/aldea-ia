@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { buildNexoMission } from "../../src/nexo/orchestrator.js";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
-import { executeNexoStep, executeNexoStepWithContinuityOwner, executeLuminaNexoStep, replanPersistedNexoMission } from "../../src/nexo/runtime.js";
+import { executeNexoStep, executeNexoStepWithContinuityOwner, replanPersistedNexoMission } from "../../src/nexo/runtime.js";
+import { executeLuminaNexoStep } from "../../src/lumina/runtime-bridge.mjs";
 import { createNexoMissionMemory, recordNexoPlan } from "../../src/nexo/mission-memory.mjs";
 
 function canonicalSnapshot(missions, effectJournal = []) {
