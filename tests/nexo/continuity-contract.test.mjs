@@ -1267,7 +1267,50 @@ for (const [method, fields] of accessorCallCases) {
 }
 
 
- // The service preflight can race with an artifact appearing before the
+ 
+// Store API readers must wait while exclusive first publication is copying the
+// complete temporary envelope into its create-only destination.
+{
+  const readerDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-reader-lock-"));
+  const readerPath = path.join(readerDirectory, "continuity.json");
+  let signalCopyStarted;
+  const copyStarted = new Promise(resolve => { signalCopyStarted = resolve; });
+  let allowCopy;
+  const copyGate = new Promise(resolve => { allowCopy = resolve; });
+  try {
+    const gatedFs = {
+      ...fs,
+      copyFile: async (sourcePath, destinationPath, flags) => {
+        signalCopyStarted();
+        await copyGate;
+        return fs.copyFile(sourcePath, destinationPath, flags);
+      }
+    };
+    const gatedStore = createNexoContinuityStore({ filePath: readerPath, fsModule: gatedFs });
+    const initializePromise = gatedStore.initializeExclusive(emptySnapshot);
+    await copyStarted;
+
+    let readSettled = false;
+    const readPromise = gatedStore.loadCurrent().then(value => {
+      readSettled = true;
+      return value;
+    });
+    await new Promise(resolve => setTimeout(resolve, 25));
+    assert.equal(readSettled, false,
+      "loadCurrent must not expose a destination while exclusive publication is incomplete");
+
+    allowCopy();
+    const [initialized, loaded] = await Promise.all([initializePromise, readPromise]);
+    assert.equal(initialized.status, "committed");
+    assert.equal(loaded.status, "loaded");
+    assert.equal(loaded.storeRevision, 0);
+  } finally {
+    allowCopy?.();
+    await fs.rm(readerDirectory, { recursive: true, force: true });
+  }
+}
+
+// The service preflight can race with an artifact appearing before the
  // store lock is acquired. The exclusive store must recheck without deleting it.
 {
   const temporaryStateDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-temp-state-"));
@@ -1300,7 +1343,7 @@ for (const [method, fields] of accessorCallCases) {
 }
 
 // Simulate a non-cooperating writer creating the destination after the initial
-// access check but immediately before link(). The external bytes must survive.
+// access check but immediately before copyFile(COPYFILE_EXCL). The external bytes must survive.
 {
   const raceDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-race-"));
   const racePath = path.join(raceDirectory, "continuity.json");
@@ -1308,9 +1351,9 @@ for (const [method, fields] of accessorCallCases) {
   try {
     const racingFs = {
       ...fs,
-      link: async (temporaryPath, destinationPath) => {
+      copyFile: async (temporaryPath, destinationPath, flags) => {
         await fs.writeFile(destinationPath, externalContents, { flag: "wx" });
-        return fs.link(temporaryPath, destinationPath);
+        return fs.copyFile(temporaryPath, destinationPath, flags);
       }
     };
     const racingStore = createNexoContinuityStore({ filePath: racePath, fsModule: racingFs });
