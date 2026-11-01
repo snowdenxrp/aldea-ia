@@ -80,6 +80,8 @@ function forbidden(file, domain) {
   if (domain === "nexo") {
     return relative.startsWith("scripts/nexo-repair-") ||
       relative === "scripts/nexo-m0-gate.mjs" ||
+      relative === "scripts/assistants.mjs" ||
+      relative === "scripts/simulate.mjs" ||
       relative.startsWith("src/lumina/") ||
       relative === "src/nexo/simulation-adapter.js";
   }
