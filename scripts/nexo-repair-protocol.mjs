@@ -1,9 +1,4 @@
 import { isDeepStrictEqual } from "node:util";
-import { loadStateStrict, persistState } from "./simulate.mjs";
-import {
-  createLuminaEffectAdapter,
-  createLuminaEffectPostcondition
-} from "../src/lumina/simulation-adapter.mjs";
 import { prepareRepairAgainstPersistedState } from "./nexo-repair-preparation.mjs";
 import { settlePreparedRepairFromPersistedState } from "./nexo-repair-settlement.mjs";
 
@@ -26,10 +21,17 @@ export async function dispatchPreparedRepairProtocol({
   owner,
   idempotencyKey,
   savedAt = Date.now(),
-  adapterFactory = createLuminaEffectAdapter
+  loadStateStrict,
+  persistState,
+  createSimulationContext,
+  adapterFactory,
+  postconditionFactory
 } = {}) {
   if (!owner || typeof owner.loadCurrent !== "function" ||
-      typeof idempotencyKey !== "string" || !idempotencyKey.trim()) {
+      typeof idempotencyKey !== "string" || !idempotencyKey.trim() ||
+      typeof loadStateStrict !== "function" || typeof persistState !== "function" ||
+      typeof createSimulationContext !== "function" || typeof adapterFactory !== "function" ||
+      typeof postconditionFactory !== "function") {
     return { status: "blocked", code: "NEXO_PREPARED_OWNER_AND_KEY_REQUIRED", persisted: false };
   }
 
@@ -75,14 +77,7 @@ export async function dispatchPreparedRepairProtocol({
 
   // Keep this repair-only execution object tied to the exact strict-loaded
   // snapshot. Do not use applyState(), which performs broader simulation recovery.
-  const simulation = {
-    world: snapshot.world,
-    agents: snapshot.agents,
-    day: Number(snapshot.day) || snapshot.world.day || 1,
-    hour: Number.isFinite(Number(snapshot.hour)) ? Number(snapshot.hour) : (snapshot.world.timeOfDay || 8),
-    events: Array.isArray(snapshot.events) ? snapshot.events : [],
-    nexoEffectRevision: 0
-  };
+  const simulation = createSimulationContext(snapshot);
   let result;
   try {
     const adapter = adapterFactory(simulation);
@@ -92,7 +87,7 @@ export async function dispatchPreparedRepairProtocol({
       action,
       target,
       idempotencyKey: preparedOperation.idempotencyKey,
-      postcondition: createLuminaEffectPostcondition(simulation, action, target)
+      postcondition: postconditionFactory(simulation, action, target)
     });
   } catch (error) {
     // The adapter may have applied an effect before throwing. Keep PREPARED
@@ -169,9 +164,17 @@ export async function runNexoRepairOnceProtocol({
   statePath,
   expectedContinuityRevision,
   operation,
-  savedAt = Date.now()
+  savedAt = Date.now(),
+  loadStateStrict,
+  persistState,
+  createSimulationContext,
+  adapterFactory,
+  postconditionFactory
 } = {}) {
   if (!owner || typeof owner.loadCurrent !== "function" ||
+      typeof loadStateStrict !== "function" || typeof persistState !== "function" ||
+      typeof createSimulationContext !== "function" || typeof adapterFactory !== "function" ||
+      typeof postconditionFactory !== "function" ||
       !store || typeof store.loadCurrent !== "function" ||
       typeof store.commitIfCurrent !== "function" ||
       !Number.isSafeInteger(expectedContinuityRevision) || expectedContinuityRevision < 0 ||
@@ -282,7 +285,12 @@ export async function runNexoRepairOnceProtocol({
     owner,
     statePath,
     idempotencyKey: operation.idempotencyKey,
-    savedAt
+    savedAt,
+    loadStateStrict,
+    persistState,
+    createSimulationContext,
+    adapterFactory,
+    postconditionFactory
   });
   if (dispatch.status !== "completed") {
     return { status: "blocked", code: dispatch.code ?? "NEXO_REPAIR_DISPATCH_NOT_CONFIRMED", dispatch, persisted: dispatch.persisted === true };
@@ -448,9 +456,17 @@ export async function runNexoRepairSessionProtocol({
   statePath,
   missionId,
   stepId,
-  savedAt = Date.now()
+  savedAt = Date.now(),
+  loadStateStrict,
+  persistState,
+  createSimulationContext,
+  adapterFactory,
+  postconditionFactory
 } = {}) {
   if (!owner || typeof owner.loadCurrent !== "function" ||
+      typeof loadStateStrict !== "function" || typeof persistState !== "function" ||
+      typeof createSimulationContext !== "function" || typeof adapterFactory !== "function" ||
+      typeof postconditionFactory !== "function" ||
       !store || typeof store.loadCurrent !== "function" ||
       typeof store.commitIfCurrent !== "function" ||
       typeof statePath !== "string" || !statePath.trim() ||
@@ -507,6 +523,11 @@ export async function runNexoRepairSessionProtocol({
     statePath,
     expectedContinuityRevision: current.storeRevision,
     operation,
-    savedAt
+    savedAt,
+    loadStateStrict,
+    persistState,
+    createSimulationContext,
+    adapterFactory,
+    postconditionFactory
   });
 }
