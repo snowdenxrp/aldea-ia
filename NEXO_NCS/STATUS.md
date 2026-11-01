@@ -1,3 +1,22 @@
+## DELTA — EXCLUSIÓN DE EFECTOS LÚMINA EN NCS M0: IMPLEMENTACIÓN Y CI PASS (2026-10-31)
+
+- Rama de trabajo: `ncs-lumina-decoupling-2026-10-29`; PR [#110](https://github.com/snowdenxrp/aldea-ia/pull/110), base `ncs-clean-architecture`; HEAD exacto validado: `36c4d1191ba9b5d670e18799f8fe7ca475c1855d`.
+- PR #110 permanece **OPEN / DRAFT / NOT MERGED**. Esta delta registra cambios dentro de esa rama; no promueve ni fusiona el PR.
+- Implementación: se añadió `scripts/nexo-m0-gate.mjs`; las APIs públicas `runNexoRepairSession`, `runNexoRepairOnce` y `dispatchPreparedRepair` devuelven bloqueo `NEXO_M0_OPTION_A_EFFECT_EXCLUDED` antes de acceder a argumentos/dependencias. La ruta `runNexoRuntimeRepairSession` conserva su gate preexistente.
+- El protocolo operativo de reparación quedó separado en `scripts/nexo-repair-protocol.mjs` para conservar pruebas del protocolo. Las pruebas internas ahora importan ese módulo directamente; esto no lo convierte en una frontera de seguridad contra cualquier importador con acceso al repositorio.
+- Se trasladaron `executeLuminaNexoStep` a `src/lumina/runtime-bridge.mjs` y el adaptador a `src/lumina/simulation-adapter.mjs`; `src/nexo/runtime.js` deja de importar el adaptador y de exportar el puente Lúmina. Se eliminó `src/nexo/simulation-adapter.js`.
+- Se añadieron `tests/nexo/m0-effect-exclusion.test.mjs` y `tests/nexo/m0-import-graph-guard.test.mjs`; se migraron las pruebas de protocolo/runtime/adaptador afectadas y se registraron en `npm test`.
+- **CI PASS ligado al HEAD exacto anterior**:
+  - [Nexo — M0 non-authority core contracts](https://github.com/snowdenxrp/aldea-ia/actions/runs/41270005016) — SUCCESS.
+  - [Nexo AB104.598 TLA SANY Gate](https://github.com/snowdenxrp/aldea-ia/actions/runs/41270005019) — SUCCESS.
+  - [NCS Lúmina Decoupling Validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41270005046) — SUCCESS; el job completó regresión focalizada y suite completa del repositorio.
+- **Alcance de lo demostrado:** las tres API públicas bloqueadas no leen los argumentos instrumentados ni tocan dependencias en las pruebas; las pruebas de protocolo preservan el flujo interno; el grafo recursivo de los entrypoints de producto clasificados satisface las políticas declaradas. No se afirma aislamiento frente a código arbitrario que importe directamente el módulo de protocolo, ni frente a adaptadores genéricos compuestos externamente.
+- **No demostrado / no incluido:** aislamiento absoluto de módulos, eliminación de todo vocabulario/acción Lúmina del dominio Nexo, seguridad frente a cualquier importador, autoridad de raíz, exclusión de escritores Continuity, TOCTOU, entorno operativo POCO, bootstrap real o efectos protegidos.
+- **Estado global sin cambio:** NCS M0 **INCOMPLETO**; gates D0/D1/D2/D3 y los pendientes ambientales/de raíz continúan según sus estados canónicos; `authorization: NOT_EVALUATED`; raíz legítima PENDING/UNKNOWN; primera publicación y efectos protegidos STOP. CI PASS de esta rama no cierra esos gates.
+- **Siguiente paso:** revisión independiente y acotada del diff de PR #110 contra la base, en especial de los nuevos módulos y el guard de grafo. No repetir el inventario previo. Resolver cualquier hallazgo concreto y volver a ejecutar CI sobre el SHA resultante. No fusionar ni declarar M0 cerrado por esta validación.
+
+---
+
 ## DELTA — FB-01 CONTRATO DE BOOTSTRAP VALIDADO; GATE AMBIENTAL AÚN ABIERTO (2026-10-29)
 
 - En el SHA de código `86e73525f8c63e143b5860d77f0d191e54213976`, el workflow integrado M0 pasó los tests de contrato/store de Continuity y el test de migración legacy. Evidencia: [integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309), [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189).
