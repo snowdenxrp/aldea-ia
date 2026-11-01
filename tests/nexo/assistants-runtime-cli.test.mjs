@@ -37,7 +37,8 @@ async function runIsolated({ repair }) {
     const statePath = path.join(root, "world-state.json");
     const memoryPath = path.join(root, "lumina-memory.json");
     const continuityPath = path.join(root, "nexo-continuity.json");
-    await fs.writeFile(statePath, JSON.stringify(fixtureState()), "utf8");
+    const initialState = fixtureState();
+    await fs.writeFile(statePath, JSON.stringify(initialState), "utf8");
     const args = [scriptPath];
     if (repair) args.push("--nexo-repair-once");
     const child = spawnSync(process.execPath, args, {
@@ -55,6 +56,8 @@ async function runIsolated({ repair }) {
     const report = JSON.parse(child.stdout);
     assert.equal(child.status, report.status === "error" ? 1 : 0, child.stderr || child.stdout);
     const state = JSON.parse(await fs.readFile(statePath, "utf8"));
+    assert.deepEqual(state.nexoMemory, initialState.nexoMemory,
+      "Lúmina must preserve legacy Nexo memory as opaque data without rewriting it");
     let continuityExists = true;
     try {
       await fs.access(continuityPath);
@@ -79,6 +82,6 @@ assert.equal(defaultRun.continuityExists, false);
 const optInRun = await runIsolated({ repair: true });
 assert.equal(optInRun.state.stateRevision, 1);
 assert.equal(optInRun.continuityExists, false);
-assert.equal("nexoMemory" in optInRun.state, false);
+assert.ok(optInRun.state.nexoMemory, "opaque legacy Nexo payload remains present");
 
 console.log("Lúmina assistants CLI: no Nexo runtime invocation or Continuity creation, including the legacy repair flag.");
