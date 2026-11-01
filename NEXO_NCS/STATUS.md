@@ -1,3 +1,15 @@
+## DELTA — GUARD DE GRAFO: ROOTS NEXO CLASIFICADAS Y REGRESIÓN PASS (2026-10-31)
+
+- Se corrigió el hallazgo de cobertura: `tests/nexo/m0-import-graph-guard.test.mjs` ahora descubre todos los archivos `scripts/nexo*.mjs` presentes y compara el inventario real con cuatro categorías explícitas: roots de producto, wrappers de reparación gated, módulos internos de reparación y gate utility. Un nuevo archivo `scripts/nexo*.mjs` sin clasificar hace fallar la prueba.
+- Se añadieron como roots Nexo `scripts/nexo-continuity.mjs` y `scripts/nexo-runtime-session.mjs`, además de `scripts/nexo.mjs` y `scripts/nexo-chronicle-session.mjs`. Los roots Lúmina siguen siendo `scripts/assistants.mjs` y `scripts/simulate.mjs`.
+- Los tres wrappers públicos de reparación tienen una política propia: solo pueden importar el gate y el protocolo interno; la prueba conductual separada verifica que el gate se ejecuta antes de leer argumentos/dependencias.
+- SHA exacto probado: `4f76e5d4879109bdb75c2f84504e9bff42624b71`. Workflow [NCS Lúmina Decoupling Validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41270387003) — **SUCCESS**; pasos de regresión focalizada y suite completa `npm test` completados. En el mismo SHA, STEP 4 y STEP 5 también reportaron SUCCESS: [STEP 4](https://github.com/snowdenxrp/aldea-ia/actions/runs/41270386955), [STEP 5](https://github.com/snowdenxrp/aldea-ia/actions/runs/41270386968). Los workflows M0 core contracts y SANY del SHA anterior `36c4d119...` no se atribuyen a este SHA nuevo.
+- Límite residual del guard: recorre imports/reexports y `import()` con specifier literal y dependencias relativas resolubles; no prueba imports dinámicos computados ni aliases no relativos. La clasificación completa se refiere a los módulos `scripts/nexo*.mjs` del árbol actual, no a todo módulo futuro fuera de ese patrón.
+- PR #110 sigue OPEN / DRAFT / NOT MERGED. El commit documental posterior al CI del SHA `0a48acae...` y esta corrección de código quedan en la misma rama; el HEAD de código validado es el SHA indicado arriba.
+- Estado global sin cambio: **NCS M0 INCOMPLETO**; `authorization: NOT_EVALUATED`; raíz PENDING/UNKNOWN; primera publicación y efectos protegidos STOP. Esta mejora del guard no cierra gates de bootstrap, autoridad ni Continuity.
+
+---
+
 ## DELTA — REVISIÓN ACOTADA DEL GUARD DE GRAFO: COBERTURA DE ROOTS NO EXHAUSTIVA (2026-10-31)
 
 - Revisión del diff de PR #110 posterior al CI PASS: el test `tests/nexo/m0-import-graph-guard.test.mjs` recorre imports relativos estáticamente resolubles desde cinco roots declaradas. La política funciona para esas roots en el SHA de código `36c4d1191ba9b5d670e18799f8fe7ca475c1855d`.
