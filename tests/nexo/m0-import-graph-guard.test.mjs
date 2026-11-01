@@ -123,6 +123,38 @@ async function collectSourceFiles(directory) {
   return files;
 }
 
+function forbiddenNexoDependency(file) {
+  const relative = path.relative(root, file).split(path.sep).join("/");
+  return relative === "scripts/assistants.mjs" ||
+    relative === "scripts/simulate.mjs" ||
+    relative.startsWith("src/assistants/") ||
+    relative.startsWith("src/lumina/");
+}
+
+// Scan every Nexo source module independently, including internal repair modules
+// that are not reachable from a normal product launcher.
+const nexoSourceRoots = [
+  ...await collectSourceFiles(path.join(root, "src/nexo")),
+  ...((await fs.readdir(scriptsDir)).filter(name => name.startsWith("nexo") && name.endsWith(".mjs"))
+    .map(name => path.join(scriptsDir, name)))
+];
+for (const entry of nexoSourceRoots) {
+  const visited = new Set();
+  const pending = [entry];
+  while (pending.length) {
+    const file = pending.pop();
+    if (visited.has(file)) continue;
+    visited.add(file);
+    assert.equal(forbiddenNexoDependency(file), false,
+      `Nexo source reaches forbidden Lúmina dependency ${path.relative(root, file)}`);
+    const source = await fs.readFile(file, "utf8");
+    for (const specifier of importsOf(source)) {
+      const dependency = await resolveLocal(file, specifier);
+      if (dependency) pending.push(dependency);
+    }
+  }
+}
+
 // Every Lúmina source module is independently checked as a graph root.
 for (const entry of await collectSourceFiles(path.join(root, "src/lumina"))) {
   const visited = new Set();
