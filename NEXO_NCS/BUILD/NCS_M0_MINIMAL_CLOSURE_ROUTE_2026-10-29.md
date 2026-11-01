@@ -1,3 +1,33 @@
+## DELTA — RUTA ACTUALIZADA TRAS AUTORIZACIÓN Y CIERRE PARCIAL DE FRONTERA (2026-11-01)
+
+Esta actualización supersede las notas históricas de este documento que indicaban que no había autorización para modificar runtime/tests/CI. El propietario autorizó el 2026-11-01 todo el trabajo técnico necesario para terminar M0.
+
+### Bloque técnico ejecutado
+
+- Frontera Nexo/Lúmina implementada en PR #110, HEAD de código `b83534356bac4f398b6d25ff29f4564da0b7cff9`.
+- El puente heredado ya no exporta capacidad ejecutable; el journal de simulación pertenece al estado Lúmina y no acepta writers externos; los protocolos Nexo usan capacidades explícitas inyectadas solo por composición de tests.
+- Guard ampliado para recorrer todos los módulos fuente Nexo y Lúmina.
+- NCS full suite y reparación crash cuts PASS en el HEAD indicado; M0 integrated acceptance PASS en `c5a4b9520014003c6cde20fbad98e0d53c27a039`; effect/settlement regressions PASS en `00441baa5ef844ea4c0f0bdcf6ca091544af38ba`. Los SHA y runs exactos constan en `NEXO_NCS/STATUS.md`.
+- Esto cierra únicamente la subfrontera técnica descrita. No demuestra root legítima, entorno POCO, exclusión de todos los writers, TOCTOU ni publicación real.
+
+### Ruta restante — orden de trabajo
+
+1. **FB-01 / P-01 — raíz legítima y aplicabilidad.** El contrato de bootstrap y sus tests previos no sustituyen evidencia de una raíz legítima ni prueban su vínculo con el destino efectivo. Mantener UNKNOWN hasta evidencia/decisión concreta.
+2. **FB-03 — E2/E3 POCO X7 Pro.** Resolver mecanismo real de lanzamiento, inventario de writers/relanzadores aplicables y control demostrable de detención/bloqueo. Reutilizar el gap E2/E3 y protocolo D3; no repetir el censo de código.
+3. **FB-04 — publicación segura.** Resolver TOCTOU y cobertura de writers dentro del entorno restringido aceptado. No inferir que el lock cooperativo protege frente a writers no cooperativos.
+4. **P-05 / D2-D3.** Reconciliar release incierto, reconciliación y readmisión solo con las decisiones aceptadas. No crear estados ni políticas nuevos.
+5. **FB-06/FB-07 y aceptación final.** Ejecutar las pruebas faltantes en el SHA candidato, revisar el diff completo y completar la trazabilidad requisito→test→SHA→run. No fusionar ni declarar M0 terminado antes de la aceptación criterio por criterio.
+
+### Límites sin cambio
+
+- La autorización técnica no convierte `authorization: NOT_EVALUATED` en autorización operacional.
+- Raíz legítima PENDING/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; `ROOT_READY` no habilitado.
+- Primera publicación de Continuity y efectos protegidos STOP.
+- No se ejecutaron comandos en el POCO, instalaciones, bootstrap real ni commissioning.
+- **NCS M0 continúa INCOMPLETO.**
+
+---
+
 ## DELTA — EVIDENCIA ACTUALIZADA PARA FB-01 (2026-10-29)
 
 - El contrato de la API dedicada FB-01 sí pasó dentro del workflow integrado en SHA `86e73525f8c63e143b5860d77f0d191e54213976`: [integrated M0](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618309). El workflow también pasó los tests de migración legacy: [bounded admission/restart](https://github.com/snowdenxrp/aldea-ia/actions/runs/40940618189).
