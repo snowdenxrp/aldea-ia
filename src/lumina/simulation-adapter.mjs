@@ -79,7 +79,7 @@ function assertSimulationRoot(simulation) {
 }
 
 export function createLuminaEffectAdapter(simulation, options = {}) {
-  const { luminaExecutionJournal, persistPreparedLuminaIntent } = readSimulationAdapterOptions(options);
+  const { executionJournal, persistPreparedIntent } = readSimulationAdapterOptions(options);
   assertSimulationRoot(simulation);
   const handlers={
     repair_agent_state:async({target})=>{
