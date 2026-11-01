@@ -256,6 +256,7 @@ export async function runNexoRepairOnceProtocol({
     const observed = await settlePreparedRepairFromPersistedState({
       store,
       statePath,
+      loadStateStrict,
       idempotencyKey: operation.idempotencyKey,
       expectedContinuityRevision: current.storeRevision
     });
