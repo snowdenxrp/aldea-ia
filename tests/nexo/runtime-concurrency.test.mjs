@@ -34,7 +34,7 @@ assert.equal(a.memory,memory);
 assert.equal(b.memory,memory);
 assert.equal(a.mission.steps[0].status,"completed");
 assert.equal(b.mission.steps[1].status,"completed");
-const finalMission = (await import("../../src/assistants/memory.js")).reconstructNexoMission(memory, mission.missionId);
+const finalMission = (await import("../../src/nexo/mission-memory.mjs")).reconstructNexoMission(memory, mission.missionId);
 assert.equal(finalMission.steps[0].status,"completed");
 assert.equal(finalMission.steps[1].status,"completed");
 console.log("Nexo: concurrent runtime mission commits converge without lost step outcomes.");
