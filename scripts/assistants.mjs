@@ -85,8 +85,13 @@ const learned = learnFromReports(
   { day: simulation.day, hour: simulation.hour, agents: simulation.agents.length }
 );
 
+// learnFromReports() normalizes through createLearningMemory(), which creates a
+// Nexo projection by default. The Lúmina launcher must not introduce that field
+// when the historical memory file did not contain it.
 if (rawMemory && Object.hasOwn(rawMemory, "nexo")) {
   learned.nexo = structuredClone(rawMemory.nexo);
+} else {
+  delete learned.nexo;
 }
 await fs.writeFile(MEMORY_PATH, JSON.stringify(learned, null, 2) + "\n", "utf8");
 const nextRevision = Number(persisted.stateRevision ?? 0) + 1;

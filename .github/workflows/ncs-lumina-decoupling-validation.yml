@@ -10,7 +10,10 @@ on:
     paths:
       - "scripts/assistants.mjs"
       - "scripts/simulate.mjs"
+      - "src/assistants/memory.js"
       - "tests/assistant-squad-audit.test.mjs"
+      - "tests/assistant-cli-decoupling.test.mjs"
+      - "tests/simulate-cli-decoupling.test.mjs"
       - "package.json"
       - ".github/workflows/ncs-lumina-decoupling-validation.yml"
 
