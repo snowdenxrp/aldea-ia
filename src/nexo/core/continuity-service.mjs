@@ -147,9 +147,8 @@ export async function bootstrapNexoContinuityStore(options = {}) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
   }
 
-  // The store's general initialize path cleans stale temporary files.
-  // For M0 first publication, pre-existing temp artifacts are UNKNOWN state:
-  // stop before calling initialize rather than deleting/reusing them.
+  // For M0 first publication, pre-existing temp artifacts are UNKNOWN state.
+  // The exclusive store path never cleans or reuses them; stop before calling it.
   const parentDirectory = path.dirname(filePath);
   const baseName = path.basename(filePath);
   let parentEntries;
@@ -168,7 +167,7 @@ export async function bootstrapNexoContinuityStore(options = {}) {
     ...(values.lockDeadline !== undefined ? { lockDeadline: values.lockDeadline } : {}),
     ...(values.lockWaitMs !== undefined ? { lockWaitMs: values.lockWaitMs } : {})
   });
-  const result = await store.initialize(emptySnapshot());
+  const result = await store.initializeExclusive(emptySnapshot());
   // Preserve the store's explicit conflict/unknown/failure result. In every
   // case this API stops here; it never loads state or constructs an owner.
   return Object.freeze({
