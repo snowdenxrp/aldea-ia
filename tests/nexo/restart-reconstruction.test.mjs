@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { createLearningMemory, recordNexoPlan, recordNexoExecution, recordNexoOutcome, reconstructNexoMission, learnFromReports } from "../../src/assistants/memory.js";
+import { createNexoMissionMemory, recordNexoPlan, recordNexoExecution, recordNexoOutcome, reconstructNexoMission } from "../../src/nexo/mission-memory.mjs";
+import { createLearningMemory, learnFromReports } from "../../src/assistants/memory.js";
 
 const mission={
   version:4, missionId:"restart-mission", parentMissionId:null, replanReason:null,
@@ -8,7 +9,7 @@ const mission={
     {id:"step-2",action:"repair_visual_mesh",target:"alex",status:"planned",dependsOn:["step-1"]}
   ], generatedAt:"2026-09-26T00:00:00.000Z"
 };
-let memory=recordNexoPlan(createLearningMemory(),mission);
+let memory=recordNexoPlan(createNexoMissionMemory(),mission);
 memory=recordNexoOutcome(memory,{missionId:mission.missionId,stepId:"step-1",action:"repair_agent_state",target:"alex",status:"completed",evidence:{verified:true,kind:"agent-state",agentId:"alex"}});
 const reconstructed=reconstructNexoMission(memory,mission.missionId);
 assert.equal(reconstructed.steps[0].status,"completed");
@@ -39,7 +40,7 @@ assert.equal(executionOnlyReconstruction.objective,"repair_visual_mesh");
 
 // Mixed restart frontier: completed + execution-only + blocked + failed history must
 // reconstruct conservatively, with the failed step dominating mission status.
-let mixedMemory=recordNexoPlan(createLearningMemory(),{
+let mixedMemory=recordNexoPlan(createNexoMissionMemory(),{
   ...mission,
   missionId:"mixed-restart-mission",
   steps:[
@@ -80,7 +81,7 @@ const contextualMission = {
     context: { action: { name: "drink", amount: 2 }, observationId: "obs-17" }
   }]
 };
-const contextualMemory = recordNexoPlan(createLearningMemory(), contextualMission);
+const contextualMemory = recordNexoPlan(createNexoMissionMemory(), contextualMission);
 const reconstructedContextual = reconstructNexoMission(contextualMemory, contextualMission.missionId);
 assert.equal(reconstructedContextual.steps[0].reason, "acción propuesta por evidencia");
 assert.equal(reconstructedContextual.steps[0].source, "BehaviorAgent");
@@ -102,7 +103,7 @@ const boundedAdmissionMission = {
   admission: { candidateStepCount: 9, admittedStepCount: 8, omittedStepCount: 1, truncated: true },
   steps: [{ id: "step-1", action: "inspect_and_collect_evidence", target: "other-0", status: "planned", dependsOn: [] }]
 };
-const boundedAdmissionMemory = recordNexoPlan(createLearningMemory(), boundedAdmissionMission);
+const boundedAdmissionMemory = recordNexoPlan(createNexoMissionMemory(), boundedAdmissionMission);
 assert.deepEqual(
   reconstructNexoMission(boundedAdmissionMemory, boundedAdmissionMission.missionId).admission,
   boundedAdmissionMission.admission
@@ -153,7 +154,7 @@ const retainedPreparedJournal = [{
   target: "agent-0",
   status: "prepared"
 }];
-const retentionMemory = createLearningMemory({
+const retentionMemory = createNexoMissionMemory({
   nexo: { missions: retainedMissionPlans, effectJournal: retainedPreparedJournal }
 });
 assert.equal(retentionMemory.nexo.missions.length, 50);
@@ -182,7 +183,7 @@ const unknownEffectStatus = {
   target: "agent-0",
   status: "future_unrecognized_state"
 };
-const unknownEffectRetentionMemory = createLearningMemory({
+const unknownEffectRetentionMemory = createNexoMissionMemory({
   nexo: {
     missions: retainedMissionPlans,
     effectJournal: [
@@ -233,7 +234,7 @@ const longMissionExecutions = Array.from({length: 220}, (_, index) => ({
   target: "agent-120",
   result: {status:"completed",verified:true}
 }));
-const longPreparedMemory = createLearningMemory({
+const longPreparedMemory = createNexoMissionMemory({
   nexo: {
     missions: [{
       missionId: longMissionId, version:4, status:"planned",
@@ -260,7 +261,7 @@ assert.equal(reconstructNexoMission(afterUnrelatedAttempt,longMissionId).steps[0
 
 // Even after the prepared journal becomes terminal/empty, the retained mission
 // still needs all of its attempts to reconstruct completed dependencies safely.
-const longCompletedMemory = createLearningMemory({
+const longCompletedMemory = createNexoMissionMemory({
   nexo: {
     missions: longPreparedMemory.nexo.missions,
     attempts: longMissionAttempts,
