@@ -139,6 +139,9 @@ for (const entry of await collectSourceFiles(path.join(root, "src/lumina"))) {
   }
 }
 
+const legacyLuminaBridge = await fs.readFile(path.join(root, "src/lumina/runtime-bridge.mjs"), "utf8");
+assert.equal(legacyLuminaBridge.includes("export"), false,
+  "the retired cross-domain bridge must not regain a public execution API");
 const runtimeSource = await fs.readFile(path.join(root, "src/nexo/runtime.js"), "utf8");
 assert.equal(runtimeSource.includes("executeLuminaNexoStep"), false);
 assert.equal(runtimeSource.includes("simulation-adapter"), false);
