@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
-import { runNexoRepairSession } from "../../scripts/nexo-repair-session.mjs";
+import { runNexoRepairSessionProtocol, dispatchPreparedRepairProtocol } from "../../scripts/nexo-repair-protocol.mjs";
 import { runNexoRuntimeRepairSession } from "../../scripts/nexo-runtime-session.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
 import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
@@ -98,7 +98,7 @@ try {
 
   // Exercise the lower-level repair protocol in isolation; it is not wired
   // through the current Option A product-runtime entrypoint.
-  const result = await runNexoRepairSession({
+  const result = await runNexoRepairSessionProtocol({
     owner: opened.owner,
     store: opened.store,
     statePath,
@@ -132,7 +132,7 @@ try {
     });
     const dependencyStatePath = path.join(dependencyRoot, "world-state.json");
     await fs.writeFile(dependencyStatePath, JSON.stringify(environment(65)), "utf8");
-    const dependencyBlocked = await runNexoRepairSession({
+    const dependencyBlocked = await runNexoRepairSessionProtocol({
       owner: dependency.owner,
       store: dependency.store,
       statePath: dependencyStatePath,
@@ -173,7 +173,7 @@ try {
       }
     });
     assert.equal(prepared.status, "committed");
-    const dispatched = await dispatchPreparedRepair({
+    const dispatched = await dispatchPreparedRepairProtocol({
       owner: initial.owner,
       statePath: recoveryStatePath,
       idempotencyKey: "mission-session:step-session",
@@ -187,7 +187,7 @@ try {
       filePath: recoveryNexoPath,
       legacyMemory: null
     });
-    const recovered = await runNexoRepairSession({
+    const recovered = await runNexoRepairSessionProtocol({
       owner: reopened.owner,
       store: reopened.store,
       statePath: recoveryStatePath,
@@ -216,7 +216,7 @@ try {
       legacyMemory: legacyMemory("execute_lumina_action")
     });
     await fs.writeFile(unsupportedStatePath, JSON.stringify(environment(70)), "utf8");
-    const blocked = await runNexoRepairSession({
+    const blocked = await runNexoRepairSessionProtocol({
       owner: unsupported.owner,
       store: unsupported.store,
       statePath: unsupportedStatePath,

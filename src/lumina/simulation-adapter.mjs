@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "node:util";
 import { executeAction } from "../actions.js";
-import { createEffectAdapter } from "./effect-adapter.js";
+import { createEffectAdapter } from "../nexo/effect-adapter.js";
 function normalizeCoordinate(value){const n=Number(value);return Number.isFinite(n)?n:0;}
 function clamp(value,min=0,max=100){const n=Number(value);return Number.isFinite(n)?Math.max(min,Math.min(max,n)):min;}
 function stateVersion(simulation){simulation.nexoEffectRevision=Number(simulation.nexoEffectRevision??0);return simulation.nexoEffectRevision;}

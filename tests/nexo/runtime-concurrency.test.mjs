@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { executeNexoStep } from "../../src/nexo/runtime.js";
 import { createEffectAdapter } from "../../src/nexo/effect-adapter.js";
 import { buildNexoMission } from "../../src/nexo/orchestrator.js";
-import { createLearningMemory } from "../../src/assistants/memory.js";
+import { createNexoMissionMemory } from "../../src/nexo/mission-memory.mjs";
 
 const mission=buildNexoMission({reports:[{findings:[
   {severity:"error",code:"AGENT_POSITION",agent:"alex",message:"primer paso"},
@@ -10,7 +10,7 @@ const mission=buildNexoMission({reports:[{findings:[
 ]}]});
 mission.steps[0].action="repair_a";
 mission.steps[1].action="repair_b";
-const memory=createLearningMemory();
+const memory=createNexoMissionMemory();
 let version=0;
 const adapter=createEffectAdapter({
   getStateVersion:()=>version,
@@ -34,7 +34,7 @@ assert.equal(a.memory,memory);
 assert.equal(b.memory,memory);
 assert.equal(a.mission.steps[0].status,"completed");
 assert.equal(b.mission.steps[1].status,"completed");
-const finalMission = (await import("../../src/assistants/memory.js")).reconstructNexoMission(memory, mission.missionId);
+const finalMission = (await import("../../src/nexo/mission-memory.mjs")).reconstructNexoMission(memory, mission.missionId);
 assert.equal(finalMission.steps[0].status,"completed");
 assert.equal(finalMission.steps[1].status,"completed");
 console.log("Nexo: concurrent runtime mission commits converge without lost step outcomes.");

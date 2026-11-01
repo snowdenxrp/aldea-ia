@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { openNexoContinuityOwner } from "./nexo-continuity.mjs";
 import path from "node:path";
 import { world as defaultWorld } from "../src/world.js";
 import { createInitialAgents } from "../src/agents.js";
@@ -8,7 +7,6 @@ import { createSimulation, tick } from "../src/simulation.js";
 import { setMovementTarget, moveAgent } from "../src/movement.js";
 
 const STATE_PATH = new URL("../world-state.json", import.meta.url);
-const NEXO_CONTINUITY_PATH = fileURLToPath(new URL("../.nexo-continuity.json", import.meta.url));
 const MAX_CATCHUP_SECONDS = 12 * 60 * 60;
 let tempSequence = 0;
 
@@ -179,7 +177,7 @@ export async function loadState(statePath = STATE_PATH) {
       return state;
     }
   } catch {}
-  return { version: 5, stateRevision: 0, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [], nexoMemory: null };
+  return { version: 5, stateRevision: 0, savedAt: Date.now(), day: defaultWorld.day, hour: defaultWorld.timeOfDay, world: clone(defaultWorld), agents: createInitialAgents(), events: [] };
 }
 
 export function applyState(state) {
@@ -190,6 +188,9 @@ export function applyState(state) {
   simulation.day = Number(state.day) || world.day || 1;
   simulation.hour = Number.isFinite(Number(state.hour)) ? Number(state.hour) : (world.timeOfDay || 8);
   simulation.events = Array.isArray(state.events) ? state.events.slice(-500) : [];
+  // Preserve legacy Nexo data as an opaque field only; Lúmina never reads,
+  // interprets, migrates, or writes into it.
+  if (Object.hasOwn(state, "nexoMemory")) simulation.legacyNexoMemory = clone(state.nexoMemory);
   simulation.world.day = simulation.day;
   simulation.world.timeOfDay = simulation.hour;
   return simulation;
@@ -236,6 +237,9 @@ export async function persistState(statePath, simulation, savedAt, { expectedRev
     agents: simulation.agents,
     events: simulation.events.slice(-500),
   };
+  if (Object.hasOwn(simulation, "legacyNexoMemory")) {
+    payload.nexoMemory = clone(simulation.legacyNexoMemory);
+  }
   const tempPrefix = `${normalizedStatePath}.tmp-`;
   try {
     const siblings = await fs.readdir(path.dirname(normalizedStatePath));
@@ -259,11 +263,6 @@ async function main() {
   let stateExists = true;
   try { await fs.access(STATE_PATH); } catch (error) { if (error?.code === "ENOENT") stateExists = false; else throw error; }
   const state = stateExists ? await loadStateStrict(STATE_PATH) : await loadState(STATE_PATH);
-  const continuity = await openNexoContinuityOwner({
-    filePath: NEXO_CONTINUITY_PATH,
-    legacyMemory: state.nexoMemory ?? null,
-    allowEmptyInitialization: !stateExists
-  });
   const now = Date.now();
   const previousSavedAt = Number(state.savedAt) || now;
   const elapsedSeconds = Math.max(0, Math.min((now - previousSavedAt) / 1000, MAX_CATCHUP_SECONDS));
@@ -273,7 +272,7 @@ async function main() {
 
   await persistState(STATE_PATH, simulation, persistedSavedAt, { expectedRevision: state.stateRevision, stateRevision: state.stateRevision + 1 });
 
-  console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive), nexoContinuityStoreRevision: continuity.current.storeRevision }));
+  console.log(JSON.stringify({ simulatedSeconds: Math.round(elapsedSeconds), day: simulation.day, hour: Number(simulation.hour.toFixed(3)), agents: simulation.agents.length, coreAlive: simulation.agents.filter(a => ["alex", "bruno"].includes(a.id)).every(a => a.alive) }));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

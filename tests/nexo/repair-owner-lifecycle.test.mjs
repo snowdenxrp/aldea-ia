@@ -4,8 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
-import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
-import { runNexoRepairOnce } from "../../scripts/nexo-repair-entrypoint.mjs";
+import { dispatchPreparedRepairProtocol, runNexoRepairOnceProtocol } from "../../scripts/nexo-repair-protocol.mjs";
 import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
 import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
@@ -85,7 +84,7 @@ try {
 
   // Phase 2: dispatch is allowed only from the durable PREPARED record and
   // conditionally persists against the exact environment revision.
-  const dispatched = await dispatchPreparedRepair({
+  const dispatched = await dispatchPreparedRepairProtocol({
     owner: opened.owner,
     statePath,
     idempotencyKey: "mission-owner-lifecycle:step-repair",
@@ -154,7 +153,7 @@ try {
 
   // Replay after settlement must fail closed before the repair adapter runs.
   // The journal is terminal for dispatch even though settlement makes no causal claim.
-  const replay = await dispatchPreparedRepair({
+  const replay = await dispatchPreparedRepairProtocol({
     owner: opened.owner,
     statePath,
     idempotencyKey: "mission-owner-lifecycle:step-repair",
@@ -228,7 +227,7 @@ try {
 
     // Simulate another writer committing revision 21 after PREPARED.
     await fs.writeFile(staleStatePath, JSON.stringify(environment(21)), "utf8");
-    const staleDispatch = await dispatchPreparedRepair({
+    const staleDispatch = await dispatchPreparedRepairProtocol({
       owner: staleOpened.owner,
       statePath: staleStatePath,
       idempotencyKey: "mission-owner-lifecycle:step-repair",
@@ -274,7 +273,7 @@ try {
       }
     });
     assert.equal(recoveryPrepared.status, "committed");
-    const recoveryDispatch = await dispatchPreparedRepair({
+    const recoveryDispatch = await dispatchPreparedRepairProtocol({
       owner: recoveryInitial.owner,
       statePath: recoveryStatePath,
       idempotencyKey: "mission-owner-lifecycle:step-repair",
@@ -292,7 +291,7 @@ try {
     const beforeRecoverySettlement = await recovered.owner.loadCurrent();
     assert.equal(beforeRecoverySettlement.storeRevision, 1);
     assert.equal(beforeRecoverySettlement.snapshot.effectJournal[0].status, "prepared");
-    const mismatchedRecovery = await runNexoRepairOnce({
+    const mismatchedRecovery = await runNexoRepairOnceProtocol({
       owner: recovered.owner,
       store: recovered.store,
       statePath: recoveryStatePath,
@@ -309,7 +308,7 @@ try {
     assert.equal(mismatchedRecovery.code, "NEXO_REPAIR_OPERATION_CONTEXT_MISMATCH");
     assert.equal((await loadStateStrict(recoveryStatePath)).stateRevision, 31,
       "mismatched caller context must not trigger recovery or dispatch");
-    const recoverySettlement = await runNexoRepairOnce({
+    const recoverySettlement = await runNexoRepairOnceProtocol({
       owner: recovered.owner,
       store: recovered.store,
       statePath: recoveryStatePath,
@@ -334,7 +333,7 @@ try {
     assert.equal(afterRecoverySettlement.snapshot.effectJournal[0].status, "settled_observed");
 
     // Once recovery settles the observed invariant, a replay must not dispatch.
-    const recoveryReplay = await dispatchPreparedRepair({
+    const recoveryReplay = await dispatchPreparedRepairProtocol({
       owner: recovered.owner,
       statePath: recoveryStatePath,
       idempotencyKey: "mission-owner-lifecycle:step-repair",
@@ -377,7 +376,7 @@ try {
       filePath: beforeDispatchNexoPath,
       legacyMemory: null
     });
-    const recoveredBeforeDispatch = await runNexoRepairOnce({
+    const recoveredBeforeDispatch = await runNexoRepairOnceProtocol({
       owner: afterCrashBeforeDispatch.owner,
       store: afterCrashBeforeDispatch.store,
       statePath: beforeDispatchStatePath,
@@ -430,7 +429,7 @@ try {
       }
     });
     assert.equal(prepared.status, "committed");
-    const dispatch = await dispatchPreparedRepair({
+    const dispatch = await dispatchPreparedRepairProtocol({
       owner: firstOwner.owner,
       statePath: lineageStatePath,
       idempotencyKey: "mission-owner-lifecycle:step-repair",
@@ -496,7 +495,7 @@ try {
     assert.equal(beforeRecovery.snapshot.effectJournal[0].status, "prepared",
       "lineage must not settle the PREPARED obligation");
 
-    const recovered = await runNexoRepairOnce({
+    const recovered = await runNexoRepairOnceProtocol({
       owner: reopened.owner,
       store: reopened.store,
       statePath: lineageStatePath,
@@ -534,7 +533,7 @@ try {
       legacyMemory: legacyMemory()
     });
     await fs.writeFile(alreadySatisfiedStatePath, JSON.stringify(environment(50, { x: 1, z: 2 })), "utf8");
-    const noOp = await runNexoRepairOnce({
+    const noOp = await runNexoRepairOnceProtocol({
       owner: alreadySatisfied.owner,
       store: alreadySatisfied.store,
       statePath: alreadySatisfiedStatePath,
@@ -590,7 +589,7 @@ try {
     recordPrepared: opened.owner.recordPrepared,
     recordExecutionLineage: opened.owner.recordExecutionLineage
   };
-  const result = await runNexoRepairOnce({
+  const result = await runNexoRepairOnceProtocol({
     owner,
     store: opened.store,
     statePath,
@@ -637,7 +636,7 @@ try {
       throw error;
     }
   };
-  const result = await runNexoRepairOnce({
+  const result = await runNexoRepairOnceProtocol({
     owner,
     store: opened.store,
     statePath,
@@ -682,7 +681,7 @@ try {
       throw error;
     }
   };
-  const result = await runNexoRepairOnce({
+  const result = await runNexoRepairOnceProtocol({
     owner: opened.owner,
     store,
     statePath,
@@ -728,7 +727,7 @@ try {
       throw error;
     }
   };
-  const result = await runNexoRepairOnce({
+  const result = await runNexoRepairOnceProtocol({
     owner,
     store: opened.store,
     statePath,
@@ -777,7 +776,7 @@ try {
     }
   });
   assert.equal(prepared.status, "committed");
-  const result = await dispatchPreparedRepair({
+  const result = await dispatchPreparedRepairProtocol({
     owner: opened.owner,
     statePath,
     idempotencyKey: "mission-owner-lifecycle:step-repair",
