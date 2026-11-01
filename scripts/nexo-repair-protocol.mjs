@@ -202,7 +202,8 @@ export async function runNexoRepairOnceProtocol({
       owner,
       statePath,
       expectedContinuityRevision,
-      operation
+      operation,
+      loadStateStrict
     });
     if (preparation.status !== "committed" || preparation.preparedCommitted !== true) {
       return {
