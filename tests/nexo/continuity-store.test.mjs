@@ -317,8 +317,15 @@ assert.deepEqual(
   },
   "stale lock recovery must remain fail-closed under the shared structured result contract"
 );
-assert.equal((await staleStore.loadCurrent()).storeRevision, 0);
+await assert.rejects(
+  () => staleStore.loadCurrent(),
+  error => error?.code === "NEXO_CONTINUITY_STORE_LOCK_STALE_RECOVERY_REQUIRED",
+  "loadCurrent must not read through a stale lock whose publication outcome may be uncertain"
+);
 assert.equal((await fs.readFile(path.join(staleLockDir, "owner.json"), "utf8")).includes("dead-owner"), true);
+await fs.rm(staleLockDir, { recursive: true, force: true });
+assert.equal((await staleStore.loadCurrent()).storeRevision, 0,
+  "loadCurrent resumes only after explicit stale-lock recovery");
 
 // Cross-process characterization: a live lock owner makes another process wait
 // while the lock is present, then the contender resumes when the lock is explicitly
@@ -474,8 +481,9 @@ assert.deepEqual(persistentReleaseResult, {
     initialCode: "EACCES"
   }
 }, "persistent cleanup failure must expose persisted state but block successful handoff");
-assert.equal((await createNexoContinuityStore({ filePath: persistentReleasePath }).loadCurrent()).storeRevision, 0,
-  "independent read confirms canonical persistence despite persistent cleanup failure");
+const persistentReleaseObserved = JSON.parse(await fs.readFile(persistentReleasePath, "utf8"));
+assert.equal(persistentReleaseObserved.storeRevision, 0,
+  "out-of-band test observation confirms canonical persistence while the unresolved lock blocks store readers");
 await assert.doesNotReject(
   () => fs.access(persistentReleasePath + ".lock"),
   "persistent cleanup failure leaves a lock requiring explicit recovery"
@@ -694,9 +702,10 @@ assert.deepEqual(
   },
   "a not-owned lock release must block successful handoff while preserving confirmed persistence"
 );
-const notOwnedObserved = await notOwnedBase.loadCurrent();
+const notOwnedObserved = JSON.parse(await fs.readFile(notOwnedLockPath, "utf8"));
 assert.equal(notOwnedObserved.storeRevision, 1);
-assert.deepEqual(notOwnedObserved.snapshot, candidateA);
+assert.deepEqual(notOwnedObserved.snapshot, candidateA,
+  "out-of-band test observation confirms persisted bytes while the unowned lock blocks store readers");
 await fs.rm(notOwnedLockPath + ".lock", { recursive: true, force: true });
 
 const lockStatFailureDir = path.join(directory, "lock-stat-failure");
@@ -766,8 +775,15 @@ assert.deepEqual(await timeoutCommitStore.commitIfCurrent(0, emptySnapshot), {
   phase: "lock_acquisition",
   writeStarted: false
 });
-assert.equal((await timeoutCommitBase.loadCurrent()).storeRevision, 0);
+const timeoutCommitReadStore = createNexoContinuityStore({ filePath: timeoutCommitPath, lockWaitMs: 25 });
+await assert.rejects(
+  () => timeoutCommitReadStore.loadCurrent(),
+  error => error?.code === "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT",
+  "loadCurrent must honor an existing live lock rather than read without coordination"
+);
 await fs.rm(timeoutCommitLock, { recursive: true, force: true });
+assert.equal((await timeoutCommitBase.loadCurrent()).storeRevision, 0,
+  "loadCurrent resumes after the live lock is explicitly released");
 
 // If mkdir resolves after the deadline, the store must release its own late lock and never write.
 const lateAcquirePath = path.join(directory, "late-acquire", "continuity.json");
