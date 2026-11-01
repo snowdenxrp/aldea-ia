@@ -85,9 +85,8 @@ const learned = learnFromReports(
   { day: simulation.day, hour: simulation.hour, agents: simulation.agents.length }
 );
 
-// learnFromReports() normalizes through createLearningMemory(), which creates a
-// Nexo projection by default. The Lúmina launcher must not introduce that field
-// when the historical memory file did not contain it.
+// Preserve any historical Nexo payload as opaque data. The Lúmina learning
+// module no longer creates, normalizes, or interprets operational Nexo memory.
 if (rawMemory && Object.hasOwn(rawMemory, "nexo")) {
   learned.nexo = structuredClone(rawMemory.nexo);
 } else {
