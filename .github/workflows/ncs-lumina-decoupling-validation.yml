@@ -23,6 +23,7 @@ on:
       - "scripts/nexo-repair-protocol.mjs"
       - "scripts/nexo-repair-preparation.mjs"
       - "scripts/nexo-repair-settlement.mjs"
+      - "scripts/nexo-repair-mission-verification.mjs"
       - "tests/nexo/repair-protocol-test-capabilities.mjs"
       - "tests/nexo/repair-session.test.mjs"
       - "tests/nexo/repair-owner-lifecycle.test.mjs"
