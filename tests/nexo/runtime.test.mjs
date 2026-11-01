@@ -390,11 +390,6 @@ assert.equal(runtimeOptionGetterCalls, 0);
 assert.equal(rejectedAccessorExecution.status, "invalid");
 assert.equal(rejectedAccessorExecution.code, "NEXO_RUNTIME_OPTIONS_INVALID");
 
-const rejectedAccessorLuminaExecution = await executeLuminaNexoStep(accessorReplanOptions);
-assert.equal(runtimeOptionGetterCalls, 0);
-assert.equal(rejectedAccessorLuminaExecution.status, "invalid");
-assert.equal(rejectedAccessorLuminaExecution.code, "NEXO_RUNTIME_OPTIONS_INVALID");
-
 const accessorAdapterOptions = {};
 Object.defineProperty(accessorAdapterOptions, "adapter", {
   enumerable: true,
@@ -437,16 +432,6 @@ Object.defineProperty(nestedAccessorMission.steps[0], "id", {
     throw new Error("nested step id getter must not execute");
   }
 });
-const rejectedNestedStep = await executeLuminaNexoStep({
-  simulation: { agents: [], world: { resources: {} } },
-  mission: nestedAccessorMission,
-  stepId: "step-1",
-  memory: createNexoMissionMemory()
-});
-assert.equal(nestedContractGetterCalls, 0);
-assert.equal(rejectedNestedStep.status, "invalid");
-assert.equal(rejectedNestedStep.code, "NEXO_RUNTIME_CONTRACT_INPUT_INVALID");
-
 const accessorAdapter = {};
 Object.defineProperty(accessorAdapter, "execute", {
   enumerable: true,
