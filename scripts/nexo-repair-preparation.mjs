@@ -1,5 +1,3 @@
-import { loadStateStrict } from "./simulate.mjs";
-
 const REPAIR_ACTIONS = new Set([
   "repair_agent_state",
   "repair_agent_needs",
@@ -15,8 +13,12 @@ export async function prepareRepairAgainstPersistedState({
   owner,
   statePath,
   expectedContinuityRevision,
-  operation
+  operation,
+  loadStateStrict
 } = {}) {
+  if (typeof loadStateStrict !== "function") {
+    return { status: "blocked", code: "NEXO_PERSISTED_STATE_READER_REQUIRED", preparedCommitted: false };
+  }
   if (!owner || typeof owner.recordPrepared !== "function") {
     return { status: "blocked", code: "NEXO_CONTINUITY_OWNER_REQUIRED", preparedCommitted: false };
   }
