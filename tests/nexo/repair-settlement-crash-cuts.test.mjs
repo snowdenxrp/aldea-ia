@@ -3,7 +3,9 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
-import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
+import { settlePreparedRepairFromPersistedState as settlePreparedRepairFromPersistedStateBase } from "../../scripts/nexo-repair-settlement.mjs";
+import { repairProtocolTestCapabilities } from "./repair-protocol-test-capabilities.mjs";
+const settlePreparedRepairFromPersistedState = options => settlePreparedRepairFromPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
 import { createNexoContinuityOwner } from "../../src/nexo/core/continuity-owner.mjs";
 
 function legacyMemory({ existingCompletedAttempt = false } = {}) {
