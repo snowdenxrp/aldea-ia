@@ -3,14 +3,14 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
-import { repairProtocolTestCapabilities } from "./repair-protocol-test-capabilities.mjs";
-const prepareRepairAgainstPersistedState = options => prepareRepairAgainstPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
-const verifyRepairMissionGoalFromPersistedState = options => verifyRepairMissionGoalFromPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
 import { runNexoRepairSessionProtocol as runNexoRepairSessionProtocolBase } from "../../scripts/nexo-repair-protocol.mjs";
-import { repairProtocolTestCapabilities } from "./repair-protocol-test-capabilities.mjs";
-const runNexoRepairSession = options => runNexoRepairSessionProtocolBase({ ...repairProtocolTestCapabilities, ...options });
 import { prepareRepairAgainstPersistedState as prepareRepairAgainstPersistedStateBase } from "../../scripts/nexo-repair-preparation.mjs";
 import { verifyRepairMissionGoalFromPersistedState as verifyRepairMissionGoalFromPersistedStateBase } from "../../scripts/nexo-repair-mission-verification.mjs";
+import { repairProtocolTestCapabilities } from "./repair-protocol-test-capabilities.mjs";
+
+const runNexoRepairSession = options => runNexoRepairSessionProtocolBase({ ...repairProtocolTestCapabilities, ...options });
+const prepareRepairAgainstPersistedState = options => prepareRepairAgainstPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
+const verifyRepairMissionGoalFromPersistedState = options => verifyRepairMissionGoalFromPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
 
 function legacyMemory() {
   return {
