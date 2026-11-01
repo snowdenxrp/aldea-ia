@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
+import { createLuminaEffectAdapter } from "../../src/lumina/simulation-adapter.mjs";
 
 const simulation={
   agents:[{id:"alex",alive:true,position:{x:NaN,z:4},needs:{hunger:120,thirst:-4},inventory:[],skills:[]}],
