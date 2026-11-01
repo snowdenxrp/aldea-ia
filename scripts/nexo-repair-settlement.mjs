@@ -1,4 +1,3 @@
-import { loadStateStrict } from "./simulate.mjs";
 import { observePersistedRepairInvariant } from "../src/nexo/adapters/persisted-repair-observation.mjs";
 import { assertNexoContinuitySnapshot } from "../src/nexo/core/continuity-snapshot.mjs";
 
@@ -20,9 +19,11 @@ export async function settlePreparedRepairFromPersistedState({
   store,
   statePath,
   idempotencyKey,
-  expectedContinuityRevision
+  expectedContinuityRevision,
+  loadStateStrict
 } = {}) {
-  if (!store || typeof store.loadCurrent !== "function" || typeof store.commitIfCurrent !== "function" ||
+  if (typeof loadStateStrict !== "function" ||
+      !store || typeof store.loadCurrent !== "function" || typeof store.commitIfCurrent !== "function" ||
       typeof idempotencyKey !== "string" || !idempotencyKey.trim() ||
       !Number.isSafeInteger(expectedContinuityRevision) || expectedContinuityRevision < 0) {
     return { status: "blocked", code: "NEXO_REPAIR_SETTLEMENT_CONTEXT_INVALID", verified: false };
