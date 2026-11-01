@@ -1,3 +1,17 @@
+## DELTA — CANDIDATO CONCRETO PARA E2/E3 DEL POCO (2026-11-01)
+
+- Se creó el perfil `BUILD/NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md`.
+- Recomendación técnica: evaluar Termux + Node.js, invocación manual en primer plano y destino dentro del sandbox privado de Termux. No es una selección ratificada ni prueba del entorno.
+- Se reutiliza el objetivo ya identificado: POCO X7 Pro / Android. El último estado registrado indicaba que Nexo M1 estaba instalada; el mecanismo M0 de lanzamiento seguía sin configurar/verificar. No se presume que Termux esté instalado ahora.
+- Precondiciones propuestas: sin Termux:Boot/Widget/Float, servicios, jobs, cron, Tasker ni relanzadores; sin procesos/sesiones adicionales; destino privado no compartido con M1; Verified Boot green, bootloader bloqueado y ausencia de root; entrypoint dedicado que termine antes de cualquier admisión o efecto.
+- E2 y E3 permanecen UNKNOWN hasta obtener evidencia del dispositivo y del modo de lanzamiento real. E4 NOT READY.
+- No se instalaron herramientas, no se ejecutaron comandos del POCO, no se seleccionó ruta real, no se creó Continuity y no se ejecutó bootstrap.
+- Próximo paso: confirmar el estado actual de Termux en el POCO y, si no está instalado, preparar su instalación oficial antes de recopilar evidencia E2/E3. La instalación no se declara realizada ni se infiere de la autorización técnica.
+
+Gates: M0 INCOMPLETO; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; `ROOT_READY` no habilitado; primera publicación y efectos protegidos STOP.
+
+---
+
 ## DELTA — FRONTERA NEXO/LÚMINA IMPLEMENTADA Y VALIDADA; SIGUIENTE BLOQUE M0 (2026-11-01)
 
 ### Autorización y estado del trabajo
