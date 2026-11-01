@@ -101,25 +101,27 @@ import { setMovementTarget, moveAgent } from "../src/movement.js";
 console.log("Lúmina assistants: todas las pruebas pasaron.\n");
 
 
-// Regression: createLearningMemory must detach nested Nexo records from source snapshots.
+// Regression: Lúmina learning memory must not normalize or project Nexo state.
 {
-  const { createLearningMemory } = await import("../src/assistants/memory.js");
+  const { createLearningMemory, learnFromReports } = await import("../src/assistants/memory.js");
   const source = {
+    runs: [{ status: "ok" }],
+    lessons: [{ trigger: "t", rule: "r" }],
+    patterns: [{ signature: "p", seen: 1 }],
     nexo: {
-      missions: [{ missionId: "m1", steps: [{ id: "s1", context: { nested: { value: 1 } } }] }],
-      attempts: [{ missionId: "m1", result: { evidence: { values: [1] } } }],
-      executions: [{ missionId: "m1", result: { details: { nested: true } } }],
-      effectJournal: [{ idempotencyKey: "m1:s1", status: "prepared", target: { position: { x: 1 } } }]
+      missions: [{ missionId: "opaque-mission" }],
+      effectJournal: [{ idempotencyKey: "opaque-effect", status: "prepared" }]
     }
   };
   const normalized = createLearningMemory(source);
-  assert.notEqual(normalized.nexo.missions[0], source.nexo.missions[0]);
-  assert.notEqual(normalized.nexo.missions[0].steps[0].context.nested, source.nexo.missions[0].steps[0].context.nested);
-  assert.notEqual(normalized.nexo.attempts[0].result.evidence.values, source.nexo.attempts[0].result.evidence.values);
-  assert.notEqual(normalized.nexo.executions[0].result.details, source.nexo.executions[0].result.details);
-  assert.notEqual(normalized.nexo.effectJournal[0].target.position, source.nexo.effectJournal[0].target.position);
-  normalized.nexo.effectJournal[0].target.position.x = 99;
-  normalized.nexo.missions[0].steps[0].context.nested.value = 99;
-  assert.equal(source.nexo.effectJournal[0].target.position.x, 1, "La mutación del journal normalizado no debe cruzar al snapshot de origen.");
-  assert.equal(source.nexo.missions[0].steps[0].context.nested.value, 1, "La mutación de la misión normalizada no debe cruzar al snapshot de origen.");
+  assert.deepEqual(Object.keys(normalized).sort(), ["lessons", "patterns", "runs", "version"]);
+  assert.equal(Object.hasOwn(normalized, "nexo"), false,
+    "Lúmina memory normalization must not create or retain an operational Nexo projection");
+  const learned = learnFromReports(normalized, [{ findings: [], conclusions: [], results: [] }]);
+  assert.equal(Object.hasOwn(learned, "nexo"), false,
+    "Lúmina report learning must not introduce Nexo operational memory");
+  assert.deepEqual(source.nexo.effectJournal, [{ idempotencyKey: "opaque-effect", status: "prepared" }],
+    "Lúmina learning must not mutate historical Nexo payloads supplied by callers");
 }
+
+console.log("Lúmina assistants: todas las pruebas pasaron.\n");
