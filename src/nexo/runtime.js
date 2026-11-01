@@ -1,5 +1,5 @@
 import { beginNexoStep, advanceNexoMission, replanNexoMission } from "./orchestrator.js";
-import { recordNexoOutcome, recordNexoExecution, recordNexoPlan, reconstructNexoMission } from "../assistants/memory.js";
+import { recordNexoOutcome, recordNexoExecution, recordNexoPlan, reconstructNexoMission } from "./mission-memory.mjs";
 import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLuminaEffectPostcondition } from "./simulation-adapter.js";
 import { assertNexoContinuityMemoryShape } from "./core/continuity-contract.mjs";
 import { assertContractInput } from "./core/contracts.mjs";
