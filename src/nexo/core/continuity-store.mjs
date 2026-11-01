@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import { constants as fsConstants } from "node:fs";
 import path from "node:path";
 import { NEXO_DEFAULT_LOCK_WAIT_MS, resolveNexoLockDeadline, remainingNexoLockWaitMs, nexoLockDeadlineExpired } from "./lock-deadline.mjs";
 import { assertNexoContinuitySnapshot } from "./continuity-snapshot.mjs";
@@ -254,8 +255,10 @@ async function writeInitialEnvelope(fsModule, filePath, envelope) {
   // service-level preflight is only an early filter and is not race protection.
   await assertNoTemporaryArtifacts(fsModule, filePath);
 
-  // Create a unique temporary file exclusively, then hard-link it to the
-  // destination. link() cannot replace a destination created after access().
+  // Write and close a unique temporary file before copying it to the destination
+  // with COPYFILE_EXCL. The copy is not an atomic visibility operation: every
+  // cooperating reader therefore takes this same store lock in loadCurrent().
+  // COPYFILE_EXCL prevents replacing a destination created after access().
   const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
   let fileHandle = null;
   let tempCreated = false;
@@ -276,7 +279,7 @@ async function writeInitialEnvelope(fsModule, filePath, envelope) {
     await fileHandle.close();
     fileHandle = null;
     try {
-      await fsModule.link(tempPath, filePath);
+      await fsModule.copyFile(tempPath, filePath, fsConstants.COPYFILE_EXCL);
       published = true;
     } catch (error) {
       if (error?.code !== "EEXIST") throw error;
@@ -352,12 +355,41 @@ export function createNexoContinuityStore(options = {}) {
   }
 
   async function loadCurrent() {
-    const envelope = await readEnvelope(fsModule, filePath);
-    return {
-      status: "loaded",
-      storeRevision: envelope.storeRevision,
-      snapshot: structuredClone(envelope.snapshot)
-    };
+    const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
+    let releaseLock;
+    try {
+      releaseLock = await acquireLock(
+        fsModule,
+        filePath,
+        deadlineAt,
+        "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT"
+      );
+    } catch (error) {
+      if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
+        throw storeError("NEXO_CONTINUITY_STORE_NOT_FOUND");
+      }
+      throw error;
+    }
+
+    let loaded;
+    let readError;
+    try {
+      const envelope = await readEnvelope(fsModule, filePath);
+      loaded = {
+        status: "loaded",
+        storeRevision: envelope.storeRevision,
+        snapshot: structuredClone(envelope.snapshot)
+      };
+    } catch (error) {
+      readError = error;
+    }
+
+    const lockRelease = await releaseLock();
+    if (lockRelease?.status === "failed" || lockRelease?.status === "not_owned") {
+      throw storeError("NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED");
+    }
+    if (readError) throw readError;
+    return loaded;
   }
 
   async function initialize(snapshot) {
