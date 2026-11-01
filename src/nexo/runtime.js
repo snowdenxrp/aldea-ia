@@ -1,6 +1,5 @@
 import { beginNexoStep, advanceNexoMission, replanNexoMission } from "./orchestrator.js";
 import { recordNexoOutcome, recordNexoExecution, recordNexoPlan, reconstructNexoMission } from "./mission-memory.mjs";
-import { createLuminaEffectAdapter, createLuminaActionPostcondition, createLuminaEffectPostcondition } from "./simulation-adapter.js";
 import { assertNexoContinuityMemoryShape } from "./core/continuity-contract.mjs";
 import { assertContractInput } from "./core/contracts.mjs";
 export { executeNexoStepWithContinuityOwner } from "./core/owner-backed-runtime.mjs";
@@ -149,33 +148,3 @@ export async function executeNexoStep(options = {}) {
   return commitRuntimeOutcome(memory,mission,stepId,adapterResult,outcome,evidence,started);
 }
 
-/**
- * Canonical owner-backed execution slice for actions with a trusted verifier.
- * PREPARED must be committed before adapter dispatch. Any ambiguous result keeps
- * the obligation open; this path never retries and never declares a terminal
- * mission outcome from adapter status alone.
- *
- * Repair actions remain on their dedicated revision-bound settlement path.
- */
-export async function executeLuminaNexoStep(options = {}) {
-  const input = readRuntimeOptions(options, ["simulation", "mission", "stepId", "memory", "context", "precondition", "postcondition", "persistPreparedIntent"]);
-  if (!input) return { mission: null, memory: null, adapterResult: null, status: "invalid", code: "NEXO_RUNTIME_OPTIONS_INVALID" };
-  const simulation = input.simulation;
-  const mission = input.mission;
-  const stepId = input.stepId;
-  const memory = input.memory === undefined ? null : input.memory;
-  const context = input.context === undefined ? {} : input.context;
-  const precondition = input.precondition;
-  const postcondition = input.postcondition;
-  const persistPreparedIntent = input.persistPreparedIntent === undefined ? null : input.persistPreparedIntent;
-  if (!isValidContractRecord(mission, "mission")) {
-    return { mission: null, memory, adapterResult: null, status: "invalid", code: "NEXO_RUNTIME_CONTRACT_INPUT_INVALID" };
-  }
-  if(!simulation)return{mission:null,memory,adapterResult:null,status:"invalid"};
-  const runtimeMemory=memory ?? null;
-  const executionJournal=Array.isArray(runtimeMemory?.nexo?.effectJournal)?runtimeMemory.nexo.effectJournal:[];
-  const adapter=createLuminaEffectAdapter(simulation,{executionJournal,persistPreparedIntent});
-  const step=mission?.steps?.find(s=>s.id===stepId); const actionIntent=step?.context?.action??context?.action??null;
-  const effectivePostcondition=postcondition??(step?.action==="execute_lumina_action"&&actionIntent?createLuminaActionPostcondition(simulation,actionIntent,step.target):["repair_agent_state","repair_agent_needs","repair_resource_state"].includes(step?.action)?createLuminaEffectPostcondition(simulation,step.action,step.target):undefined);
-  return executeNexoStep({mission,stepId,adapter,memory:runtimeMemory,context,precondition,postcondition:effectivePostcondition});
-}
