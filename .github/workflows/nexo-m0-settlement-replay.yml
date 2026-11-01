@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - ncs-clean-architecture
+      - ncs-lumina-decoupling-2026-10-29
     paths:
       - "src/nexo/effect-adapter.js"
+      - "src/shared/effect-adapter.mjs"
+      - "src/lumina/**"
       - "src/nexo/core/continuity-owner.mjs"
       - "src/nexo/runtime.js"
       - "scripts/nexo-repair-settlement.mjs"
       - "tests/nexo/effect-adapter.test.mjs"
+      - "tests/nexo/simulation-adapter.test.mjs"
       - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
       - ".github/workflows/nexo-m0-settlement-replay.yml"
   workflow_dispatch:
