@@ -56,7 +56,7 @@ test("simulate CLI persists in an isolated sandbox and preserves Nexo field pres
         const initialState = {
           version: 5,
           stateRevision: 0,
-          savedAt: Date.now(),
+          savedAt: Date.now() - 10_000,
           day: 1,
           hour: 8,
           world: structuredClone(world),
@@ -73,7 +73,7 @@ test("simulate CLI persists in an isolated sandbox and preserves Nexo field pres
         });
         assert.equal(result.code, 0, `simulate.mjs failed (signal=${result.signal}). stderr: ${result.stderr}`);
         const output = JSON.parse(result.stdout);
-        assert.ok(Number.isFinite(output.simulatedSeconds));
+        assert.ok(output.simulatedSeconds > 0, "The CLI must report a positive simulated-time advance.");
 
         const persisted = JSON.parse(await fs.readFile(path.join(directory, "world-state.json"), "utf8"));
         assert.equal(persisted.stateRevision, 1, "The sandbox state revision must advance.");
