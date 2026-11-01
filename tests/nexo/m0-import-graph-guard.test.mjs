@@ -4,21 +4,59 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const scriptsDir = path.join(root, "scripts");
+
+// Every executable/product root and every internal Nexo script module must be
+// classified. A newly added scripts/nexo*.mjs file fails until a policy is chosen.
 const productRoots = [
   { file: "scripts/nexo.mjs", domain: "nexo" },
   { file: "scripts/nexo-chronicle-session.mjs", domain: "nexo" },
-  { file: "src/nexo/application/index.mjs", domain: "nexo" },
+  { file: "scripts/nexo-continuity.mjs", domain: "nexo" },
+  { file: "scripts/nexo-runtime-session.mjs", domain: "nexo" },
   { file: "scripts/assistants.mjs", domain: "lumina" },
   { file: "scripts/simulate.mjs", domain: "lumina" }
 ];
-const classifiedRoots = new Set(productRoots.map(item => item.file));
-assert.equal(classifiedRoots.size, productRoots.length, "each product entrypoint must be classified exactly once");
+const gatedRepairWrappers = [
+  "scripts/nexo-repair-session.mjs",
+  "scripts/nexo-repair-entrypoint.mjs",
+  "scripts/nexo-repair-dispatch.mjs"
+];
+const repairInternals = [
+  "scripts/nexo-repair-protocol.mjs",
+  "scripts/nexo-repair-preparation.mjs",
+  "scripts/nexo-repair-settlement.mjs",
+  "scripts/nexo-repair-mission-verification.mjs"
+];
+const gateUtilities = ["scripts/nexo-m0-gate.mjs"];
+
+const discoveredNexoScripts = (await fs.readdir(scriptsDir))
+  .filter(name => name.startsWith("nexo") && name.endsWith(".mjs"))
+  .map(name => `scripts/${name}`)
+  .sort();
+const classifiedNexoScripts = [
+  ...productRoots.filter(item => item.file.startsWith("scripts/nexo")).map(item => item.file),
+  ...gatedRepairWrappers,
+  ...repairInternals,
+  ...gateUtilities
+].sort();
+assert.deepEqual(
+  discoveredNexoScripts,
+  classifiedNexoScripts,
+  "every scripts/nexo*.mjs module must have exactly one explicit product/internal classification"
+);
+const allClassified = [
+  ...productRoots.map(item => item.file),
+  ...gatedRepairWrappers,
+  ...repairInternals,
+  ...gateUtilities
+];
+assert.equal(new Set(allClassified).size, allClassified.length, "classification entries must be unique");
 
 function importsOf(source) {
   const found = new Set();
   const patterns = [
-    /(?:^|\n)\s*(?:import|export)\s+(?:[\s\S]*?\s+from\s*)?["']([^"']+)["']/g,
-    /\bimport\(\s*["']([^"']+)["']\s*\)/g
+    /(?:^|\\n)\\s*(?:import|export)\\s+(?:[\\s\\S]*?\\s+from\\s*)?["']([^"']+)["']/g,
+    /\\bimport\\(\\s*["']([^"']+)["']\\s*\\)/g
   ];
   for (const pattern of patterns) {
     let match;
@@ -63,7 +101,16 @@ for (const entry of productRoots) {
     }
   }
 }
+
+// Public repair APIs are intentionally retained only as gated wrappers.
+// Their imports are restricted to the gate and the private protocol module;
+// behavioral tests prove the gate executes before arguments/dependencies.
+for (const file of gatedRepairWrappers) {
+  const source = await fs.readFile(path.join(root, file), "utf8");
+  const imports = importsOf(source).sort();
+  assert.deepEqual(imports, ["./nexo-m0-gate.mjs", "./nexo-repair-protocol.mjs"].sort(), file);
+}
 const runtimeSource = await fs.readFile(path.join(root, "src/nexo/runtime.js"), "utf8");
 assert.equal(runtimeSource.includes("executeLuminaNexoStep"), false);
 assert.equal(runtimeSource.includes("simulation-adapter"), false);
-console.log("NCS M0: recursive product import graph excludes repair and cross-domain effect modules.");
+console.log("NCS M0: all Nexo scripts are classified; product roots satisfy their domain import policies.");
