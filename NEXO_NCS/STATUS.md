@@ -1,3 +1,35 @@
+## DELTA — AUTORIZACIÓN DEL PROPIETARIO PARA CIERRE TÉCNICO NCS M0 (2026-11-01)
+
+El propietario autorizó expresamente: “Queda autorizado todo lo que sea para terminar M0”.
+
+### Alcance de la autorización
+
+- Quedan autorizados los cambios necesarios de implementación en runtime, contratos, entrypoints, adaptadores, pruebas, guardas, workflows de CI y documentación para cerrar los criterios de salida NCS M0.
+- Quedan autorizadas la ejecución de pruebas automatizadas, validaciones locales disponibles y workflows/CI necesarios para obtener evidencia ligada al SHA exacto.
+- Queda autorizado continuar y corregir PR #110 y otros cambios acotados de la rama M0, preservando historial, migraciones legacy y trazabilidad.
+- No se requiere pedir una autorización repetida para cada decisión técnica ordinaria dentro del alcance M0. Las decisiones de autoridad/propietario siguen reservadas al propietario.
+
+### Límites que esta autorización NO modifica
+
+- No establece por sí misma una raíz criptográfica legítima ni cambia su estado PENDING/UNKNOWN.
+- No convierte authorization: NOT_EVALUATED en una autorización operacional ni habilita ROOT_READY.
+- No autoriza a inferir una ceremonia de génesis, seleccionar hardware/clave, inventar una identidad raíz, ni declarar válida una raíz no demostrada.
+- No se considera evidencia de que el entorno POCO X7 Pro/Android esté configurado, que E2/E3 estén resueltos, ni que los escritores/relanzadores relevantes estén excluidos.
+- No equivale a ejecutar la primera publicación real de Continuity ni efectos protegidos. Esas operaciones continúan sujetas a sus precondiciones verificables y al estado de autoridad correspondiente.
+- No se harán cambios destructivos ni se eliminará el comportamiento de migración legacy por conveniencia.
+
+### Directiva de ejecución
+
+1. Continuar desde el HEAD actual de PR #110 y la ruta M0 ya documentada; no repetir auditorías cerradas.
+2. Resolver la frontera Lúmina/Nexo en el alcance ya identificado y añadir pruebas negativas que impidan su regresión.
+3. Reconciliar los cambios con los gates FB-01…FB-07, D0…D3 y P-01/P-05; no declarar cierres por documentación o inferencia.
+4. Ejecutar las pruebas pertinentes y CI especializado sobre cada SHA candidato; registrar SHA, workflow, run y resultado exacto.
+5. Mantener UNKNOWN-STOP: cualquier condición de raíz, entorno, escritor o resultado no demostrada permanece UNKNOWN/BLOCKED.
+6. Actualizar este STATUS y el handoff canónico después de cada bloque verificable.
+
+**Estado al emitir esta delta:** PR #110 OPEN / DRAFT / NOT MERGED; HEAD e5add4d3984e5d4d02b5fc657bf174b197d124e2. La autorización amplía el permiso de trabajo técnico, no la evidencia ni el estado operacional. NCS M0 sigue INCOMPLETO hasta satisfacer y demostrar todos sus criterios de salida.
+
+---
 ## DELTA — GUARD DE GRAFO: ROOTS NEXO CLASIFICADAS Y REGRESIÓN PASS (2026-10-31)
 
 - Se corrigió el hallazgo de cobertura: `tests/nexo/m0-import-graph-guard.test.mjs` ahora descubre todos los archivos `scripts/nexo*.mjs` presentes y compara el inventario real con cuatro categorías explícitas: roots de producto, wrappers de reparación gated, módulos internos de reparación y gate utility. Un nuevo archivo `scripts/nexo*.mjs` sin clasificar hace fallar la prueba.
