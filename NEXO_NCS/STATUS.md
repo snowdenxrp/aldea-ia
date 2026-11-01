@@ -1,3 +1,48 @@
+## DELTA — FRONTERA NEXO/LÚMINA IMPLEMENTADA Y VALIDADA; SIGUIENTE BLOQUE M0 (2026-11-01)
+
+### Autorización y estado del trabajo
+
+- Se aplica la autorización del propietario del 2026-11-01 para cambios técnicos, pruebas y CI necesarios para terminar M0. `D1-IMPLEMENTATION` queda **AUTORIZADA PARA EL TRABAJO TÉCNICO M0**; esto no cambia `authorization: NOT_EVALUATED` como gate de autoridad operacional.
+- Rama: `ncs-lumina-decoupling-2026-10-29`; PR [#110](https://github.com/snowdenxrp/aldea-ia/pull/110) sigue OPEN / DRAFT / NOT MERGED.
+- HEAD actual de trabajo: `b83534356bac4f398b6d25ff29f4564da0b7cff9`.
+
+### Implementación observada
+
+1. El protocolo genérico de efectos vive en `src/shared/effect-adapter.mjs`; `src/nexo/effect-adapter.js` conserva la API Nexo como re-export. Nexo y Lúmina no importan entre sí para usar esta implementación neutral.
+2. `src/lumina/simulation-adapter.mjs` importa la capa compartida, conserva `luminaSimulationRevision` y mantiene `luminaEffectJournal` dentro del objeto de simulación. Ya no acepta journal externo ni callback de persistencia inyectado.
+3. `src/lumina/runtime-bridge.mjs` quedó como módulo retirado sin exports. Se eliminaron sus pruebas de integración con memoria/journal Nexo; las pruebas propias del runtime Nexo permanecen.
+4. `scripts/nexo-repair-protocol.mjs`, preparación, settlement y verificación ya no importan directamente `src/lumina` ni `scripts/simulate.mjs`. Sus capacidades de lectura/escritura del estado de simulación y su adaptador se inyectan desde un composition helper exclusivo de tests; las entrypoints públicas siguen bloqueadas por Option A.
+5. El guard recorre como raíces independientes todos los módulos `src/nexo`, `scripts/nexo*.mjs` y `src/lumina`. Detecta dependencias estáticas relativas hacia el otro dominio y hacia los launchers Lúmina.
+6. `tests/nexo/assistants-runtime-cli.test.mjs` verifica que el launcher Lúmina no invoque Nexo ni cree Continuity, incluso con el antiguo flag de reparación; la memoria Nexo heredada se conserva como dato opaco sin reescritura.
+
+### Evidencia CI ligada a SHA
+
+- HEAD `b83534356bac4f398b6d25ff29f4564da0b7cff9`:
+  - [NCS Lúmina Decoupling Validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41281318585) — SUCCESS; regresión focalizada y suite completa `npm test`.
+  - [Nexo M0 — repair settlement crash cuts](https://github.com/snowdenxrp/aldea-ia/actions/runs/41281318605) — SUCCESS.
+  - [STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41281318589) — SUCCESS.
+  - [STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/41281318630) — SUCCESS.
+- SHA `c5a4b9520014003c6cde20fbad98e0d53c27a039`:
+  - [Nexo M0 — integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/41281084398) — SUCCESS; los seis grupos del job, incluidos Continuity, Chronicle, crash cuts/owner recovery y verificación, finalizaron correctamente.
+- SHA `00441baa5ef844ea4c0f0bdcf6ca091544af38ba`:
+  - [Nexo M0 — effect and settlement contract regressions](https://github.com/snowdenxrp/aldea-ia/actions/runs/41280959645) — SUCCESS.
+- No atribuir el SANY PASS anterior del SHA `36c4d119...` al HEAD actual; no se modificó el modelo TLA en este bloque.
+
+### Alcance exacto del cierre parcial
+
+- **PASS:** desacoplamiento estático Nexo/Lúmina en los grafos fuente inspeccionados por el guard; adaptador de simulación con journal propio y sin callback externo; pruebas de launcher; suite completa y workflows indicados.
+- **No equivale a:** aislamiento absoluto frente a imports dinámicos computados/aliases no relativos, garantía de filesystem, autoridad de raíz, exclusión ambiental de todos los writers, bootstrap real ni efectos protegidos.
+- No se ejecutaron comandos en el POCO, instalaciones, primera publicación de Continuity ni commissioning.
+
+### Siguiente bloque de cierre M0
+
+- Retomar la ruta ya documentada de FB-01/FB-03/FB-04 y P-01: legitimidad de raíz y aplicabilidad del destino real, más evidencia E2/E3 del mecanismo de lanzamiento y control de writers del POCO X7 Pro.
+- Reutilizar `NCS_M0_POCO_E2_E3_EVIDENCE_GAP_2026-10-29.md` y el protocolo D3; no repetir censos ni auditorías cerradas.
+- E2/E3 siguen UNKNOWN; E4 NOT READY; P-01 y P01-B siguen OPEN/UNKNOWN; P-05 no ratificada; D0–D3 continúan abiertos según sus registros.
+- `authorization: NOT_EVALUATED`; raíz legítima PENDING/UNKNOWN; `ROOT_READY` no habilitado; primera publicación y efectos protegidos STOP. **NCS M0 sigue INCOMPLETO.**
+
+---
+
 ## DELTA — AUTORIZACIÓN DEL PROPIETARIO PARA CIERRE TÉCNICO NCS M0 (2026-11-01)
 
 El propietario autorizó expresamente: “Queda autorizado todo lo que sea para terminar M0”.
