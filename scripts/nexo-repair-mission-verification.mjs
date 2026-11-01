@@ -1,4 +1,3 @@
-import { loadStateStrict } from "./simulate.mjs";
 import { observePersistedRepairInvariant } from "../src/nexo/adapters/persisted-repair-observation.mjs";
 
 const REPAIR_ACTIONS = new Set([
@@ -18,9 +17,11 @@ const REPAIR_ACTIONS = new Set([
 export async function verifyRepairMissionGoalFromPersistedState({
   store,
   statePath,
-  missionId
+  missionId,
+  loadStateStrict
 } = {}) {
-  if (!store || typeof store.loadCurrent !== "function" ||
+  if (typeof loadStateStrict !== "function" ||
+      !store || typeof store.loadCurrent !== "function" ||
       typeof missionId !== "string" || !missionId.trim()) {
     return { status: "unknown", code: "NEXO_REPAIR_MISSION_VERIFICATION_CONTEXT_INVALID", verified: false };
   }
