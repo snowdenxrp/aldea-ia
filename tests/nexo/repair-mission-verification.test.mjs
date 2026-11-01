@@ -3,9 +3,12 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
+import { repairProtocolTestCapabilities } from "./repair-protocol-test-capabilities.mjs";
+const prepareRepairAgainstPersistedState = options => prepareRepairAgainstPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
+const verifyRepairMissionGoalFromPersistedState = options => verifyRepairMissionGoalFromPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
 import { runNexoRepairSession } from "../../scripts/nexo-repair-session.mjs";
-import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
-import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
+import { prepareRepairAgainstPersistedState as prepareRepairAgainstPersistedStateBase } from "../../scripts/nexo-repair-preparation.mjs";
+import { verifyRepairMissionGoalFromPersistedState as verifyRepairMissionGoalFromPersistedStateBase } from "../../scripts/nexo-repair-mission-verification.mjs";
 
 function legacyMemory() {
   return {
