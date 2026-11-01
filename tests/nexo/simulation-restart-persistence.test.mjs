@@ -9,10 +9,10 @@ import { createInitialAgents } from "../../src/agents.js";
 import { persistState, loadState, loadStateStrict, applyState } from "../../scripts/simulate.mjs";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
 import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
-import { dispatchPreparedRepair } from "../../scripts/nexo-repair-dispatch.mjs";
+import { dispatchPreparedRepairProtocol } from "../../scripts/nexo-repair-protocol.mjs";
 import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
 import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
-import { createLuminaEffectAdapter } from "../../src/nexo/simulation-adapter.js";
+import { createLuminaEffectAdapter } from "../../src/lumina/simulation-adapter.mjs";
 import { observePersistedRepairInvariant, comparePersistedRepairRevision } from "../../src/nexo/adapters/persisted-repair-observation.mjs";
 
 const dir = await fs.mkdtemp(path.join(os.tmpdir(), "lumina-nexo-restart-"));
@@ -280,7 +280,7 @@ assert.equal(preparedIntent.preparedCommitted, true);
 assert.equal(preparedIntent.environmentStateRevision, 0, "PREPARED revision must be derived from strict persisted state");
 assert.equal(preparedIntent.environmentRevisionSource, "strict-persisted-world-state");
 
-const repairedEffect = await dispatchPreparedRepair({
+const repairedEffect = await dispatchPreparedRepairProtocol({
   statePath: repairStatePath,
   owner: repairContinuity.owner,
   idempotencyKey: "repair-crash-cut:step-1",
@@ -294,7 +294,7 @@ assert.equal(durableRepairSnapshot.stateRevision, 1);
 assert.equal(durableRepairSnapshot.agents[0].position.x, 0);
 assert.equal(durableRepairSnapshot.agents[0].alive, true);
 
-const staleDispatch = await dispatchPreparedRepair({
+const staleDispatch = await dispatchPreparedRepairProtocol({
   statePath: repairStatePath,
   owner: repairContinuity.owner,
   idempotencyKey: "repair-crash-cut:step-1",
@@ -305,7 +305,7 @@ assert.equal(staleDispatch.code, "NEXO_PREPARED_ENVIRONMENT_REVISION_STALE");
 assert.equal(staleDispatch.persisted, false);
 assert.equal((await loadStateStrict(repairStatePath)).stateRevision, 1);
 
-const unpreparedDispatch = await dispatchPreparedRepair({
+const unpreparedDispatch = await dispatchPreparedRepairProtocol({
   statePath: repairStatePath,
   owner: repairContinuity.owner,
   idempotencyKey: "repair-crash-cut:not-prepared",
