@@ -121,7 +121,7 @@ assert.equal(staleMissionMemory.nexo.effectJournal.find(
   entry=>entry.idempotencyKey===`${unknownRuntimeMission.missionId}:step-1`
 )?.status,"prepared");
 
-console.log("Nexo: runtime bridge + automatic evidence + failure/replan + persisted idempotency + lineage OK.");
+console.log("Nexo: runtime automatic evidence + failure/replan + persisted idempotency + lineage OK.");
 
 // Runtime boundary regression: an adapter's terminal label cannot create a
 // completed mission when its result lacks the two verification signals.
