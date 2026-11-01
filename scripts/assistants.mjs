@@ -19,7 +19,18 @@ const MEMORY_PATH = process.env.NEXO_LUMINA_MEMORY_PATH
   : new URL("../.lumina-assistant-memory.json", import.meta.url);
 
 async function readJson(path, fallback) {
-  try { return JSON.parse(await fs.readFile(path, "utf8")); } catch { return fallback; }
+  let contents;
+  try {
+    contents = await fs.readFile(path, "utf8");
+  } catch (error) {
+    if (error?.code === "ENOENT") return fallback;
+    throw error;
+  }
+  try {
+    return JSON.parse(contents);
+  } catch (error) {
+    throw new SyntaxError(`Invalid JSON in ${path}: ${error.message}`, { cause: error });
+  }
 }
 
 function normalizeCoreAgents(agents) {

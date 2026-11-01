@@ -46,6 +46,11 @@ test("assistants CLI keeps historical Nexo opaque and never invents it", async t
       name: "does not add Nexo when historical memory has no Nexo field",
       memory: { runs: [], lessons: [], patterns: [] },
       expectedNexo: false
+    },
+    {
+      name: "initializes Lúmina memory only when the file is absent",
+      memory: null,
+      expectedNexo: false
     }
   ];
 
@@ -64,7 +69,7 @@ test("assistants CLI keeps historical Nexo opaque and never invents it", async t
         const statePath = path.join(directory, "world-state.json");
         const memoryPath = path.join(directory, "lumina-memory.json");
         const continuityPath = path.join(directory, ".nexo-continuity.json");
-        const historicalNexo = structuredClone(scenario.memory.nexo);
+        const historicalNexo = scenario.memory?.nexo === undefined ? undefined : structuredClone(scenario.memory.nexo);
         await fs.writeFile(statePath, JSON.stringify({
           version: 5,
           stateRevision: 0,
@@ -75,7 +80,7 @@ test("assistants CLI keeps historical Nexo opaque and never invents it", async t
           agents: structuredClone(createInitialAgents()),
           events: []
         }));
-        await fs.writeFile(memoryPath, JSON.stringify(scenario.memory));
+        if (scenario.memory !== null) await fs.writeFile(memoryPath, JSON.stringify(scenario.memory));
 
         const result = await runNode(["scripts/assistants.mjs"], {
           cwd: directory,
@@ -118,5 +123,57 @@ test("assistants CLI keeps historical Nexo opaque and never invents it", async t
         await fs.rm(directory, { recursive: true, force: true });
       }
     });
+  }
+});
+
+
+test("assistants CLI fails closed on malformed memory without overwriting either persisted file", async () => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "ncs-assistant-invalid-memory-"));
+  try {
+    await fs.cp(sourceDirectory, path.join(directory, "src"), { recursive: true });
+    await fs.mkdir(path.join(directory, "scripts"), { recursive: true });
+    await fs.copyFile(assistantsLauncher, path.join(directory, "scripts", "assistants.mjs"));
+    await fs.copyFile(simulateLauncher, path.join(directory, "scripts", "simulate.mjs"));
+    await fs.writeFile(path.join(directory, "package.json"), JSON.stringify({ type: "module" }));
+
+    const statePath = path.join(directory, "world-state.json");
+    const memoryPath = path.join(directory, "lumina-memory.json");
+    const continuityPath = path.join(directory, ".nexo-continuity.json");
+    const originalState = Buffer.from(JSON.stringify({
+      version: 5,
+      stateRevision: 7,
+      savedAt: Date.now(),
+      day: 1,
+      hour: 8,
+      world: structuredClone(world),
+      agents: structuredClone(createInitialAgents()),
+      events: []
+    }));
+    const originalMemory = Buffer.from('{ "runs": [broken JSON and Nexo bytes must remain untouched');
+    await fs.writeFile(statePath, originalState);
+    await fs.writeFile(memoryPath, originalMemory);
+
+    const result = await runNode(["scripts/assistants.mjs"], {
+      cwd: directory,
+      env: {
+        ...process.env,
+        NEXO_STATE_PATH: statePath,
+        NEXO_LUMINA_MEMORY_PATH: memoryPath,
+        NEXO_CONTINUITY_PATH: continuityPath
+      },
+      stdio: ["ignore", "pipe", "pipe"]
+    });
+
+    assert.notEqual(result.code, 0, "Malformed existing memory must stop the launcher.");
+    assert.match(result.stderr, /Invalid JSON in .*lumina-memory\.json/,
+      "The failure must identify the invalid memory file.");
+    assert.deepEqual(await fs.readFile(memoryPath), originalMemory,
+      "Malformed memory bytes must remain exactly unchanged.");
+    assert.deepEqual(await fs.readFile(statePath), originalState,
+      "State persistence must not proceed after memory parsing fails.");
+    await assert.rejects(fs.access(continuityPath), { code: "ENOENT" },
+      "The failed launcher must not create a Continuity store.");
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
   }
 });
