@@ -189,7 +189,7 @@ assert.throws(
 );
 
 const frozenSimulationRoot = Object.freeze({ agents: [], world: {} });
-assert.throws(() => createLuminaEffectAdapter(frozenSimulationRoot), /permitir la revisión mutable/);
+assert.throws(() => createLuminaEffectAdapter(frozenSimulationRoot), /permitir estado operacional propio/);
 
 const readonlyRevisionSimulation = { agents: [], world: {} };
 Object.defineProperty(readonlyRevisionSimulation, "luminaSimulationRevision", {
