@@ -55,8 +55,8 @@ assert.equal(new Set(allClassified).size, allClassified.length, "classification 
 function importsOf(source) {
   const found = new Set();
   const patterns = [
-    /(?:^|\\n)\\s*(?:import|export)\\s+(?:[\\s\\S]*?\\s+from\\s*)?["']([^"']+)["']/g,
-    /\\bimport\\(\\s*["']([^"']+)["']\\s*\\)/g
+    /(?:^|\n)\s*(?:import|export)\s+(?:[\s\S]*?\s+from\s*)?["']([^"']+)["']/g,
+    /\bimport\(\s*["']([^"']+)["']\s*\)/g
   ];
   for (const pattern of patterns) {
     let match;
