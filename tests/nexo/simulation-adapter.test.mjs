@@ -14,7 +14,7 @@ const repaired=await adapter.execute({
 });
 assert.equal(repaired.status,"completed");
 assert.equal(repaired.verified,true);
-assert.equal(simulation.nexoEffectRevision,1);
+assert.equal(simulation.luminaSimulationRevision,1);
 
 const needs=await adapter.execute({
   missionId:"m1",stepId:"s2",action:"repair_agent_needs",target:"alex",idempotencyKey:"m1:s2",
@@ -23,7 +23,7 @@ const needs=await adapter.execute({
 });
 assert.equal(needs.status,"completed");
 assert.equal(needs.verified,true);
-assert.equal(simulation.nexoEffectRevision,2);
+assert.equal(simulation.luminaSimulationRevision,2);
 
 // A second normalization with a distinct operation key is convergent:
 // it must not manufacture a state revision when no data actually changes.
@@ -35,7 +35,7 @@ const needsAgain=await adapter.execute({
 assert.equal(needsAgain.status,"completed");
 assert.equal(needsAgain.verified,true);
 assert.equal(needsAgain.effectResult.stateChanged,false);
-assert.equal(simulation.nexoEffectRevision,2,"idempotent normalization must not fabricate a revision");
+assert.equal(simulation.luminaSimulationRevision,2,"idempotent normalization must not fabricate a revision");
 
 const stale=await adapter.execute({
   missionId:"m1",stepId:"s3",action:"repair_resource_state",target:"wood",idempotencyKey:"m1:s3",
@@ -53,7 +53,7 @@ const resource=await adapter.execute({
 });
 assert.equal(resource.status,"completed");
 assert.equal(resource.verified,true);
-assert.equal(simulation.nexoEffectRevision,3);
+assert.equal(simulation.luminaSimulationRevision,3);
 
 const sparseResourceSimulation={
   agents:[{id:"alex",alive:true,position:{x:0,z:0},needs:{hunger:50,thirst:50,energy:50,social:50,safety:50,health:100},inventory:[],skills:[]}],
@@ -68,7 +68,7 @@ const sparseResource=await sparseResourceAdapter.execute({
 assert.equal(sparseResource.status,"completed");
 assert.equal(sparseResource.verified,true);
 assert.equal(sparseResourceSimulation.world.resources.wood.amount,0);
-assert.equal(sparseResourceSimulation.nexoEffectRevision,1);
+assert.equal(sparseResourceSimulation.luminaSimulationRevision,1);
 
 const deadAgentSimulation={
   agents:[{id:"dead",alive:false,position:{x:NaN,z:Infinity},needs:{hunger:50,thirst:50,energy:50,social:50,safety:50,health:100},inventory:[],skills:[]}],
@@ -85,7 +85,7 @@ assert.equal(deadRepair.verified,true);
 assert.equal(deadAgentSimulation.agents[0].alive,false,"repair must not resurrect a dead agent");
 assert.equal(deadAgentSimulation.agents[0].position.x,0);
 assert.equal(deadAgentSimulation.agents[0].position.z,0);
-assert.equal(deadAgentSimulation.nexoEffectRevision,1);
+assert.equal(deadAgentSimulation.luminaSimulationRevision,1);
 
 const unknownLifeSimulation={
   agents:[{id:"unknown-life",position:{x:NaN,z:Infinity},needs:{hunger:50,thirst:50,energy:50,social:50,safety:50,health:100},inventory:[],skills:[]}],
@@ -101,7 +101,7 @@ assert.equal(unknownLifeRepair.status,"blocked");
 assert.equal(unknownLifeRepair.code,"EFFECT_OUTCOME_UNKNOWN");
 assert.equal(unknownLifeSimulation.agents[0].alive,undefined,"unknown life state must not be inferred as alive");
 assert.equal(Number.isNaN(unknownLifeSimulation.agents[0].position.x),true,"unknown life state blocks before mutation");
-assert.equal(unknownLifeSimulation.nexoEffectRevision,0);
+assert.equal(unknownLifeSimulation.luminaSimulationRevision,0);
 
 const action=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s5",
@@ -115,7 +115,7 @@ const action=await adapter.execute({
 assert.equal(action.status,"completed");
 assert.equal(action.verified,true);
 assert.equal(action.evidence.verified,true);
-assert.equal(simulation.nexoEffectRevision,4);
+assert.equal(simulation.luminaSimulationRevision,4);
 
 const denied=await adapter.execute({
   missionId:"m1",stepId:"s5",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s6",
@@ -146,16 +146,16 @@ const failed=await depletedAdapter.execute({
 assert.equal(failed.status,"blocked");
 assert.equal(failed.code,"EFFECT_OUTCOME_UNKNOWN");
 assert.equal(failed.uncertainty,"effect_may_or_may_not_have_occurred");
-assert.equal(depletedSimulation.nexoEffectRevision,0);
+assert.equal(depletedSimulation.luminaSimulationRevision,0);
 
-console.log("Nexo: adaptador concreto de Lúmina con consecuencias reales, whitelist y evidencia OK.");
+console.log("Lúmina: adaptador de simulación aislado con consecuencias reales, whitelist y evidencia OK.");
 
 
 // Bootstrap configuration and simulation roots are caller-owned public inputs.
 // Reject accessors from descriptors before ordinary field reads can execute them.
 let simulationBootstrapGetterCalls = 0;
 const accessorSimulationOptions = {};
-Object.defineProperty(accessorSimulationOptions, "executionJournal", {
+Object.defineProperty(accessorSimulationOptions, "luminaExecutionJournal", {
   enumerable: true,
   get() {
     simulationBootstrapGetterCalls += 1;
@@ -176,16 +176,22 @@ Object.defineProperty(accessorSimulationRoot, "agents", {
 assert.throws(() => createLuminaEffectAdapter(accessorSimulationRoot), /campos de datos/);
 assert.equal(simulationBootstrapGetterCalls, 0);
 
-assert.throws(() => createLuminaEffectAdapter({ agents: [], world: {} }, { persistPreparedIntent: true }), /must be a function or null/);
+assert.throws(() => createLuminaEffectAdapter({ agents: [], world: {} }, { persistPreparedLuminaIntent: true }), /must be a function or null/);
 
 const frozenSimulationRoot = Object.freeze({ agents: [], world: {} });
 assert.throws(() => createLuminaEffectAdapter(frozenSimulationRoot), /permitir la revisión mutable/);
 
 const readonlyRevisionSimulation = { agents: [], world: {} };
-Object.defineProperty(readonlyRevisionSimulation, "nexoEffectRevision", {
+Object.defineProperty(readonlyRevisionSimulation, "luminaSimulationRevision", {
   enumerable: true,
   configurable: true,
   writable: false,
   value: 0
 });
-assert.throws(() => createLuminaEffectAdapter(readonlyRevisionSimulation), /nexoEffectRevision debe ser mutable/);
+assert.throws(() => createLuminaEffectAdapter(readonlyRevisionSimulation), /luminaSimulationRevision debe ser mutable/);
+
+const legacyNexoOptions = { executionJournal: [] };
+assert.throws(
+  () => createLuminaEffectAdapter({ agents: [], world: {} }, legacyNexoOptions),
+  /unsupported field/
+);
