@@ -116,7 +116,7 @@ async function collectSourceFiles(directory) {
   for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
     const full = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...await collectSourceFiles(full));
-    else if (entry.isFile() && /\\.(mjs|js|cjs)$/.test(entry.name)) files.push(full);
+    else if (entry.isFile() && /\.(mjs|js|cjs)$/.test(entry.name)) files.push(full);
   }
   return files;
 }
