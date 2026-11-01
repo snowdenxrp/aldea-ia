@@ -217,6 +217,68 @@ async function writeEnvelope(fsModule, filePath, envelope) {
   }
 }
 
+
+async function writeInitialEnvelope(fsModule, filePath, envelope) {
+  assertContinuityResourceLimits(envelope.snapshot, envelope.storeRevision);
+  if (serializedUtf8Bytes(envelope) > NEXO_RESOURCE_LIMITS.continuityDocumentBytes) {
+    throw storeError("NEXO_CONTINUITY_STORE_RESOURCE_LIMIT_EXCEEDED");
+  }
+  // Create a unique temporary file exclusively, then hard-link it to the
+  // destination. link() cannot replace a destination created after access().
+  const tempPath = `${filePath}.tmp-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  let fileHandle = null;
+  let tempCreated = false;
+  let published = false;
+  const removeOwnedTemporary = async () => {
+    try {
+      await fsModule.unlink(tempPath);
+      tempCreated = false;
+      return null;
+    } catch (error) {
+      return { status: "failed", code: error?.code ?? "NEXO_CONTINUITY_STORE_TEMPORARY_CLEANUP_FAILED" };
+    }
+  };
+  try {
+    fileHandle = await fsModule.open(tempPath, "wx", 0o600);
+    tempCreated = true;
+    await fileHandle.writeFile(JSON.stringify(envelope, null, 2) + "\n", "utf8");
+    await fileHandle.close();
+    fileHandle = null;
+    try {
+      await fsModule.link(tempPath, filePath);
+      published = true;
+    } catch (error) {
+      if (error?.code !== "EEXIST") throw error;
+      const temporaryCleanup = await removeOwnedTemporary();
+      return {
+        status: "conflict",
+        code: "NEXO_CONTINUITY_STORE_ALREADY_EXISTS",
+        ...(temporaryCleanup ? { temporaryCleanup } : {})
+      };
+    }
+    const temporaryCleanup = await removeOwnedTemporary();
+    if (temporaryCleanup) {
+      return {
+        status: "failed",
+        code: "NEXO_CONTINUITY_STORE_TEMPORARY_CLEANUP_FAILED",
+        persistenceStatus: "committed",
+        storeRevision: envelope.storeRevision,
+        temporaryCleanup
+      };
+    }
+    return {
+      status: "committed",
+      storeRevision: envelope.storeRevision,
+      snapshot: structuredClone(envelope.snapshot)
+    };
+  } catch (error) {
+    if (fileHandle) await fileHandle.close().catch(() => {});
+    if (tempCreated && !published) await fsModule.unlink(tempPath).catch(() => {});
+    throw error;
+  }
+}
+
+
 /**
  * Nexo-owned operational continuity file store.
  *
@@ -268,6 +330,14 @@ export function createNexoContinuityStore(options = {}) {
   }
 
   async function initialize(snapshot) {
+    return initializeWithMode(snapshot, false);
+  }
+
+  async function initializeExclusive(snapshot) {
+    return initializeWithMode(snapshot, true);
+  }
+
+  async function initializeWithMode(snapshot, exclusivePublication) {
     assertNexoContinuitySnapshot(snapshot);
     assertContinuityResourceLimits(snapshot, 0);
     const deadlineAt = resolveNexoLockDeadline(lockDeadline, lockWaitMs);
@@ -307,6 +377,7 @@ export function createNexoContinuityStore(options = {}) {
         snapshot: structuredClone(snapshot)
       };
       try {
+        if (exclusivePublication) return await writeInitialEnvelope(fsModule, filePath, envelope);
         await writeEnvelope(fsModule, filePath, envelope);
         return { status: "committed", storeRevision: 0, snapshot: structuredClone(envelope.snapshot) };
       } catch {
@@ -339,7 +410,7 @@ export function createNexoContinuityStore(options = {}) {
       return {
         status: "failed",
         code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
-        persistenceStatus: result?.status ?? "unknown",
+        persistenceStatus: result?.persistenceStatus ?? result?.status ?? "unknown",
         ...(Number.isSafeInteger(result?.storeRevision) ? { storeRevision: result.storeRevision } : {}),
         lockRelease
       };
@@ -430,7 +501,7 @@ export function createNexoContinuityStore(options = {}) {
       return {
         status: "failed",
         code: "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED",
-        persistenceStatus: result?.status ?? "unknown",
+        persistenceStatus: result?.persistenceStatus ?? result?.status ?? "unknown",
         ...(Number.isSafeInteger(result?.storeRevision) ? { storeRevision: result.storeRevision } : {}),
         lockRelease
       };
@@ -439,5 +510,5 @@ export function createNexoContinuityStore(options = {}) {
     return result;
   }
 
-  return Object.freeze({ loadCurrent, initialize, commitIfCurrent });
+  return Object.freeze({ loadCurrent, initialize, initializeExclusive, commitIfCurrent });
 }
