@@ -17,6 +17,7 @@ assert.equal(repaired.status,"completed");
 assert.equal(repaired.verified,true);
 assert.equal(simulation.luminaSimulationRevision,1);
 assert.equal(simulation.luminaEffectJournal[0].status,"completed");
+assert.equal(structuredClone(simulation).luminaEffectJournal[0].status,"completed", "simulation snapshots retain only their own Lúmina journal");
 
 const needs=await adapter.execute({
   missionId:"m1",stepId:"s2",action:"repair_agent_needs",target:"alex",idempotencyKey:"m1:s2",
@@ -104,6 +105,7 @@ assert.equal(unknownLifeRepair.code,"EFFECT_OUTCOME_UNKNOWN");
 assert.equal(unknownLifeSimulation.agents[0].alive,undefined,"unknown life state must not be inferred as alive");
 assert.equal(Number.isNaN(unknownLifeSimulation.agents[0].position.x),true,"unknown life state blocks before mutation");
 assert.equal(unknownLifeSimulation.luminaSimulationRevision,0);
+assert.equal(unknownLifeSimulation.luminaEffectJournal[0].status,"prepared");
 
 const action=await adapter.execute({
   missionId:"m1",stepId:"s4",action:"execute_lumina_action",target:"alex",idempotencyKey:"m1:s5",
