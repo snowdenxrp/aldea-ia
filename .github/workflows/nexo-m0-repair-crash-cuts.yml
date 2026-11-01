@@ -2,7 +2,7 @@ name: Nexo M0 — repair settlement crash cuts
 
 on:
   push:
-    branches: [ncs-clean-architecture]
+    branches: [ncs-clean-architecture, ncs-lumina-decoupling-2026-10-29]
     paths:
       - "scripts/nexo-repair-preparation.mjs"
       - "scripts/nexo-repair-dispatch.mjs"
@@ -20,6 +20,7 @@ on:
       - "tests/nexo/continuity-migration.test.mjs"
       - "tests/nexo/repair-owner-lifecycle.test.mjs"
       - "tests/nexo/repair-session.test.mjs"
+      - "tests/nexo/simulation-restart-persistence.test.mjs"
       - "tests/nexo/assistants-runtime-cli.test.mjs"
       - "tests/nexo/repair-mission-verification.test.mjs"
       - ".github/workflows/nexo-m0-repair-crash-cuts.yml"
