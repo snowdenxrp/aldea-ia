@@ -1244,6 +1244,111 @@ for (const [method, fields] of accessorCallCases) {
 }
 
 
+
+// M0 first publication must use create-only publication, not the general
+// replace-capable initialize path.
+{
+  const concurrentDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-concurrent-"));
+  try {
+    const concurrentStore = createNexoContinuityStore({
+      filePath: path.join(concurrentDirectory, "continuity.json")
+    });
+    const results = await Promise.all([
+      concurrentStore.initializeExclusive(emptySnapshot),
+      concurrentStore.initializeExclusive(emptySnapshot)
+    ]);
+    assert.equal(results.filter(result => result.status === "committed").length, 1);
+    assert.equal(results.filter(result => result.status === "conflict").length, 1);
+    assert.equal((await concurrentStore.loadCurrent()).storeRevision, 0);
+    assert.deepEqual((await fs.readdir(concurrentDirectory)).filter(name => name.startsWith("continuity.json.tmp-")), []);
+  } finally {
+    await fs.rm(concurrentDirectory, { recursive: true, force: true });
+  }
+}
+
+// Simulate a non-cooperating writer creating the destination after the initial
+// access check but immediately before link(). The external bytes must survive.
+{
+  const raceDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-race-"));
+  const racePath = path.join(raceDirectory, "continuity.json");
+  const externalContents = "external writer destination";
+  try {
+    const racingFs = {
+      ...fs,
+      link: async (temporaryPath, destinationPath) => {
+        await fs.writeFile(destinationPath, externalContents, { flag: "wx" });
+        return fs.link(temporaryPath, destinationPath);
+      }
+    };
+    const racingStore = createNexoContinuityStore({ filePath: racePath, fsModule: racingFs });
+    const result = await racingStore.initializeExclusive(emptySnapshot);
+    assert.equal(result.status, "conflict");
+    assert.equal(await fs.readFile(racePath, "utf8"), externalContents);
+    assert.deepEqual((await fs.readdir(raceDirectory)).filter(name => name.startsWith("continuity.json.tmp-")), []);
+  } finally {
+    await fs.rm(raceDirectory, { recursive: true, force: true });
+  }
+}
+
+// A post-publication temporary cleanup failure must expose the committed fact.
+{
+  const cleanupDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-cleanup-"));
+  const cleanupPath = path.join(cleanupDirectory, "continuity.json");
+  try {
+    const cleanupFs = {
+      ...fs,
+      unlink: async targetPath => {
+        if (String(targetPath).startsWith(`${cleanupPath}.tmp-`)) {
+          const error = new Error("simulated temporary cleanup failure");
+          error.code = "EACCES";
+          throw error;
+        }
+        return fs.unlink(targetPath);
+      }
+    };
+    const cleanupStore = createNexoContinuityStore({ filePath: cleanupPath, fsModule: cleanupFs });
+    const result = await cleanupStore.initializeExclusive(emptySnapshot);
+    assert.equal(result.status, "failed");
+    assert.equal(result.code, "NEXO_CONTINUITY_STORE_TEMPORARY_CLEANUP_FAILED");
+    assert.equal(result.persistenceStatus, "committed");
+    assert.equal(JSON.parse(await fs.readFile(cleanupPath, "utf8")).storeRevision, 0);
+    assert.equal((await fs.readdir(cleanupDirectory)).filter(name => name.startsWith("continuity.json.tmp-")).length, 1);
+  } finally {
+    await fs.rm(cleanupDirectory, { recursive: true, force: true });
+  }
+}
+
+// A lock-release failure must not erase the fact that exclusive publication committed.
+{
+  const releaseDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-release-"));
+  const releasePath = path.join(releaseDirectory, "continuity.json");
+  let releaseAttempts = 0;
+  try {
+    const releaseFs = {
+      ...fs,
+      rm: async (targetPath, options) => {
+        if (targetPath === `${releasePath}.lock`) {
+          releaseAttempts += 1;
+          const error = new Error("simulated lock release failure");
+          error.code = "EACCES";
+          throw error;
+        }
+        return fs.rm(targetPath, options);
+      }
+    };
+    const releaseStore = createNexoContinuityStore({ filePath: releasePath, fsModule: releaseFs });
+    const result = await releaseStore.initializeExclusive(emptySnapshot);
+    assert.equal(result.status, "failed");
+    assert.equal(result.code, "NEXO_CONTINUITY_STORE_LOCK_RELEASE_FAILED");
+    assert.equal(result.persistenceStatus, "committed");
+    assert.equal(result.lockRelease.status, "failed");
+    assert.equal(releaseAttempts, 2);
+  } finally {
+    await fs.rm(`${releasePath}.lock`, { recursive: true, force: true });
+    await fs.rm(releaseDirectory, { recursive: true, force: true });
+  }
+}
+
 // Dedicated M0 bootstrap contract: explicit root -> effective destination,
 // empty-only publication, no legacy projection, and no operational owner.
 {
