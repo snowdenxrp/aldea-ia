@@ -28,6 +28,7 @@ on:
       - "tests/nexo/repair-session.test.mjs"
       - "tests/nexo/repair-owner-lifecycle.test.mjs"
       - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
+      - "tests/nexo/simulation-restart-persistence.test.mjs"
       - "package.json"
       - ".github/workflows/ncs-lumina-decoupling-validation.yml"
 
