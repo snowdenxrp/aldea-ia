@@ -83,7 +83,7 @@ function forbidden(file, domain) {
       relative.startsWith("src/lumina/") ||
       relative === "src/nexo/simulation-adapter.js";
   }
-  return relative.startsWith("src/nexo/") || relative.startsWith("scripts/nexo-");
+  return relative.startsWith("src/nexo/") || relative.startsWith("scripts/nexo");
 }
 for (const entry of productRoots) {
   const visited = new Set();
@@ -110,6 +110,35 @@ for (const file of gatedRepairWrappers) {
   const imports = importsOf(source).sort();
   assert.deepEqual(imports, ["./nexo-m0-gate.mjs", "./nexo-repair-protocol.mjs"].sort(), file);
 }
+
+async function collectSourceFiles(directory) {
+  const files = [];
+  for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+    const full = path.join(directory, entry.name);
+    if (entry.isDirectory()) files.push(...await collectSourceFiles(full));
+    else if (entry.isFile() && /\\.(mjs|js|cjs)$/.test(entry.name)) files.push(full);
+  }
+  return files;
+}
+
+// Every Lúmina source module is independently checked as a graph root.
+for (const entry of await collectSourceFiles(path.join(root, "src/lumina"))) {
+  const visited = new Set();
+  const pending = [entry];
+  while (pending.length) {
+    const file = pending.pop();
+    if (visited.has(file)) continue;
+    visited.add(file);
+    assert.equal(forbidden(file, "lumina"), false,
+      `Lúmina source reaches forbidden ${path.relative(root, file)}`);
+    const source = await fs.readFile(file, "utf8");
+    for (const specifier of importsOf(source)) {
+      const dependency = await resolveLocal(file, specifier);
+      if (dependency) pending.push(dependency);
+    }
+  }
+}
+
 const runtimeSource = await fs.readFile(path.join(root, "src/nexo/runtime.js"), "utf8");
 assert.equal(runtimeSource.includes("executeLuminaNexoStep"), false);
 assert.equal(runtimeSource.includes("simulation-adapter"), false);
