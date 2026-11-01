@@ -11,8 +11,9 @@ const dispatchPreparedRepairProtocol = options => dispatchPreparedRepairProtocol
 const runNexoRepairOnceProtocol = options => runNexoRepairOnceProtocolBase({ ...repairProtocolTestCapabilities, ...options });
 import { settlePreparedRepairFromPersistedState as settlePreparedRepairFromPersistedStateBase } from "../../scripts/nexo-repair-settlement.mjs";
 const settlePreparedRepairFromPersistedState = options => settlePreparedRepairFromPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
-import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
+import { verifyRepairMissionGoalFromPersistedState as verifyRepairMissionGoalFromPersistedStateBase } from "../../scripts/nexo-repair-mission-verification.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
+const verifyRepairMissionGoalFromPersistedState = options => verifyRepairMissionGoalFromPersistedStateBase({ ...options, loadStateStrict });
 
 function legacyMemory() {
   return {
