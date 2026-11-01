@@ -20,6 +20,13 @@ on:
       - "tests/nexo/runtime.test.mjs"
       - "tests/nexo/simulation-adapter.test.mjs"
       - "tests/nexo/m0-import-graph-guard.test.mjs"
+      - "scripts/nexo-repair-protocol.mjs"
+      - "scripts/nexo-repair-preparation.mjs"
+      - "scripts/nexo-repair-settlement.mjs"
+      - "tests/nexo/repair-protocol-test-capabilities.mjs"
+      - "tests/nexo/repair-session.test.mjs"
+      - "tests/nexo/repair-owner-lifecycle.test.mjs"
+      - "tests/nexo/repair-settlement-crash-cuts.test.mjs"
       - "package.json"
       - ".github/workflows/ncs-lumina-decoupling-validation.yml"
 
