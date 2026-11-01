@@ -1,13 +1,14 @@
 import assert from "node:assert/strict";
 import { buildNexoMission, replanNexoMission, beginNexoStep, advanceNexoMission, verifyNexoMission, planNexoExecution } from "../../src/nexo/orchestrator.js";
-import { createLearningMemory, recordNexoPlan, recordNexoOutcome, reconstructNexoMission } from "../../src/assistants/memory.js";
+import { createNexoMissionMemory, recordNexoPlan, recordNexoOutcome, reconstructNexoMission } from "../../src/nexo/mission-memory.mjs";
 
 const reports=[{assistant:"Debugger",findings:[
   {severity:"warning",code:"AGENT_POSITION",message:"posición inválida",agent:"alex"},
   {severity:"error",code:"MESH_MISSING",message:"mesh ausente",agent:"alex"}
 ]}];
-const mission=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports,memory:{patterns:[{}],nexo:{attempts:[],doNotRepeat:[]}}});
+const mission=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports,memory:{nexo:{attempts:[],doNotRepeat:[]}}});
 assert.equal(mission.version,4);
+assert.equal(Object.hasOwn(mission.memorySignals,"patterns"),false,"Nexo mission diagnostics must not expose Lúmina learning patterns");
 assert.equal(mission.status,"planned");
 assert.equal(mission.steps[0].action,"repair_visual_mesh");
 assert.equal(mission.steps[0].priority,3);
@@ -46,14 +47,14 @@ assert.equal(missingEvidence.steps[1].status, "blocked");
 assert.equal(missingEvidence.steps[1].blockReason, "MISSING_VERIFIED_EVIDENCE");
 assert.equal(planNexoExecution(missingEvidence).actions.length, 0);
 
-const replan=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports:[{findings:[{severity:"error",code:"MESH_MISSING",agent:"alex",message:"mesh sigue ausente"}]}],memory:createLearningMemory(),parentMissionId:failed.missionId,replanReason:"MESH_REPAIR_FAILED"});
+const replan=buildNexoMission({simulation:{agents:[{id:"alex"}]},reports:[{findings:[{severity:"error",code:"MESH_MISSING",agent:"alex",message:"mesh sigue ausente"}]}],memory:createNexoMissionMemory(),parentMissionId:failed.missionId,replanReason:"MESH_REPAIR_FAILED"});
 assert.equal(replan.parentMissionId,failed.missionId);
 assert.equal(replan.replanReason,"MESH_REPAIR_FAILED");
 assert.notEqual(replan.missionId,failed.missionId);
 assert.notEqual(replan.missionId,failed.missionId);
 
 // A terminal failure can be turned into a successor plan without hand-written lineage.
-const failedMemory = recordNexoOutcome(createLearningMemory(), {
+const failedMemory = recordNexoOutcome(createNexoMissionMemory(), {
   missionId: failed.missionId, stepId: failed.steps[0].id, action: failed.steps[0].action,
   target: failed.steps[0].target, status: "failed",
   evidence: { verified: false, kind: "effect-result", code: "MESH_REPAIR_FAILED" }
