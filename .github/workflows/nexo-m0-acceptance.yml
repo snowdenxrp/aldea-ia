@@ -4,9 +4,13 @@ on:
   push:
     branches:
       - ncs-clean-architecture
+      - ncs-lumina-decoupling-2026-10-29
     paths:
       - "src/nexo/application/**"
       - "src/nexo/core/**"
+      - "src/shared/effect-adapter.mjs"
+      - "src/lumina/**"
+      - "src/nexo/effect-adapter.js"
       - "scripts/nexo.mjs"
       - "scripts/nexo-chronicle-session.mjs"
       - "scripts/nexo-continuity.mjs"
@@ -21,6 +25,10 @@ on:
       - "tests/nexo/continuity-migration.test.mjs"
       - "tests/nexo/repair-owner-lifecycle.test.mjs"
       - "tests/nexo/repair-session.test.mjs"
+      - "tests/nexo/simulation-restart-persistence.test.mjs"
+      - "tests/nexo/simulation-adapter.test.mjs"
+      - "tests/nexo/runtime.test.mjs"
+      - "tests/nexo/m0-import-graph-guard.test.mjs"
       - "tests/nexo/repair-mission-verification.test.mjs"
       - "tests/nexo/final-semantic-validator.test.mjs"
       - "tests/nexo/outcome-classifier.test.mjs"
