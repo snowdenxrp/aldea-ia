@@ -59,12 +59,20 @@ async function runIsolated({ repair }) {
     // diagnostic report can set exitCode=1 even when the repair itself settles.
     assert.equal(child.status, report.status === "error" ? 1 : 0, child.stderr || child.stdout);
     const state = JSON.parse(await fs.readFile(statePath, "utf8"));
-    const continuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
+    let continuityExists = true;
+    try {
+      await fs.access(continuityPath);
+    } catch (error) {
+      if (error?.code === "ENOENT") continuityExists = false;
+      else throw error;
+    }
+    assert.equal(continuityExists, false,
+      "ordinary Lúmina launcher must not create a Nexo Continuity store");
+    let continuity = null;
     let replay = null;
     if (repair) {
-      // Option A excludes runtime repair effects in M0. Reopen the persisted
-      // owner and confirm the same runtime gate still blocks without dispatch,
-      // journal creation, or a second environment write.
+      // The test creates a store only after launcher exit, then verifies the
+      // Nexo runtime gate blocks without dispatch or an environment rewrite.
       const reopened = await openNexoContinuityOwner({
         filePath: continuityPath,
         legacyMemory: null
@@ -74,18 +82,17 @@ async function runIsolated({ repair }) {
         statePath
       });
       const afterReplayState = JSON.parse(await fs.readFile(statePath, "utf8"));
-      const afterReplayContinuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
+      continuity = JSON.parse(await fs.readFile(continuityPath, "utf8"));
       assert.equal(afterReplayState.stateRevision, state.stateRevision,
         "excluded runtime repair must not write the environment again");
-      assert.equal(afterReplayContinuity.snapshot.effectJournal.length, continuity.snapshot.effectJournal.length,
+      assert.equal(continuity.snapshot.effectJournal.length, 0,
         "excluded runtime repair must not create an effect obligation");
-      assert.equal(afterReplayContinuity.snapshot.effectJournal.length, 0);
       assert.equal(replay.status, "blocked");
       assert.equal(replay.code, "NEXO_M0_OPTION_A_EFFECT_EXCLUDED");
       assert.equal(replay.persisted, false);
       assert.equal(replay.dispatchAttempted, false);
     }
-    return { report, state, continuity, replay };
+    return { report, state, continuity, replay, continuityExists };
   } finally {
     await fs.rm(root, { recursive: true, force: true });
   }
@@ -94,7 +101,7 @@ async function runIsolated({ repair }) {
 const defaultRun = await runIsolated({ repair: false });
 assert.equal("nexoRuntimeSession" in defaultRun.report, false);
 assert.equal(defaultRun.state.stateRevision, 1);
-assert.equal(defaultRun.continuity.snapshot.effectJournal.length, 0);
+assert.equal(defaultRun.continuityExists, false);
 
 const optInRun = await runIsolated({ repair: true });
 assert.ok(optInRun.report.nexoRuntimeSession, "opt-in run must report the runtime session gate");
@@ -106,8 +113,8 @@ assert.equal(optInRun.report.nexoRuntimeSession.dispatchAttempted, false);
 assert.equal(optInRun.report.stateRevision, optInRun.state.stateRevision);
 assert.equal(optInRun.state.stateRevision, 1);
 assert.equal(optInRun.continuity.snapshot.effectJournal.length, 0);
-assert.equal(optInRun.continuity.snapshot.missions.length, 1,
-  "mission planning may persist while the protected repair effect remains excluded");
+assert.equal(optInRun.continuity.snapshot.missions.length, 0,
+  "Lúmina launcher must not create Nexo missions or persist mission plans");
 assert.equal("nexoMemory" in optInRun.state, false);
 assert.equal(optInRun.replay.status, "blocked", JSON.stringify(optInRun.replay));
 assert.equal(optInRun.replay.code, "NEXO_M0_OPTION_A_EFFECT_EXCLUDED");
