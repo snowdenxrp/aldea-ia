@@ -3,12 +3,14 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { openNexoContinuityOwner } from "../../scripts/nexo-continuity.mjs";
-import { prepareRepairAgainstPersistedState } from "../../scripts/nexo-repair-preparation.mjs";
+import { prepareRepairAgainstPersistedState as prepareRepairAgainstPersistedStateBase } from "../../scripts/nexo-repair-preparation.mjs";
+const prepareRepairAgainstPersistedState = options => prepareRepairAgainstPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
 import { dispatchPreparedRepairProtocol as dispatchPreparedRepairProtocolBase, runNexoRepairOnceProtocol as runNexoRepairOnceProtocolBase } from "../../scripts/nexo-repair-protocol.mjs";
 import { repairProtocolTestCapabilities } from "./repair-protocol-test-capabilities.mjs";
 const dispatchPreparedRepairProtocol = options => dispatchPreparedRepairProtocolBase({ ...repairProtocolTestCapabilities, ...options });
 const runNexoRepairOnceProtocol = options => runNexoRepairOnceProtocolBase({ ...repairProtocolTestCapabilities, ...options });
-import { settlePreparedRepairFromPersistedState } from "../../scripts/nexo-repair-settlement.mjs";
+import { settlePreparedRepairFromPersistedState as settlePreparedRepairFromPersistedStateBase } from "../../scripts/nexo-repair-settlement.mjs";
+const settlePreparedRepairFromPersistedState = options => settlePreparedRepairFromPersistedStateBase({ ...options, loadStateStrict: repairProtocolTestCapabilities.loadStateStrict });
 import { verifyRepairMissionGoalFromPersistedState } from "../../scripts/nexo-repair-mission-verification.mjs";
 import { loadStateStrict } from "../../scripts/simulate.mjs";
 
