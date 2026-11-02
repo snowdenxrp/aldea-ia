@@ -3333,3 +3333,22 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Evidencia Termux existente sigue parcial: no hay inventario completo de paquetes/UID add-ons; servicios `ssh-agent`/`sshd` no tienen estado efectivo demostrado; captura de procesos puntual; ruta destino y launcher M0 no definidos.
 - No se seleccionó entorno ni ruta, no se implementó launcher, no se ejecutó bootstrap ni se creó Continuity.
 - E2/E3 UNKNOWN; E4 NOT READY; P01-G PENDING/UNKNOWN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; STOP; M0 INCOMPLETO.
+
+
+---
+
+## ESTADO VIGENTE — RE-01/RE-02 IMPLEMENTADOS; PUBLICACIÓN SIGUE STOP (2026-11-02)
+
+- Implementación técnica RE-01/RE-02: **IMPLEMENTED** en PR #110, rama ncs-lumina-decoupling-2026-10-29.
+- Entry point dedicado: scripts/nexo-continuity-bootstrap.mjs; no se amplió scripts/nexo.mjs.
+- Preflight read-only y resolución compartida: preflightNexoContinuityBootstrap() / resolveBootstrapInputs() en src/nexo/core/continuity-service.mjs.
+- La confirmación interactiva está ligada a root canónica, ruta relativa, destino efectivo, snapshot inicial, SHA-256 y ventana foreground de cinco minutos. El bootstrap vuelve a resolver y exige coincidencia exacta del destino presentado.
+- CI completo: GitHub Actions NCS Lúmina Decoupling Validation, run 41520427582, SHA a8de84deeeb4e28cf22a5b40c182143d49754293 — **SUCCESS**; incluye regresión focalizada y npm test completo.
+- El test de contrato solo inicializa una ruta temporal de fixture en CI. No se ejecutó bootstrap real, no se creó Continuity productiva y no se modificó el POCO.
+- Límites: CI no prueba Termux/POCO, control operacional real de escritores, eliminación de TOCTOU, exclusión global ni resistencia frente a procesos maliciosos con el mismo UID.
+- P01-G: RULE RATIFIED BY OWNER; no equivale a aprobación de una instancia concreta.
+- E2/E3: PARTIAL / NOT CLOSED; E4: NOT READY.
+- authorization: NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN.
+- Primera creación/publicación real: STOP. Commissioning: STOP. Efectos protegidos: STOP.
+- NCS M0: **INCOMPLETO**. PR #110: OPEN / DRAFT / NOT MERGED.
+- Expediente técnico: NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md, sección 11.
