@@ -1,3 +1,13 @@
+## DELTA — P01-A/P01-G: SEMÁNTICA OPERACIONAL DEL OBJETO CONTINUITY (2026-11-01)
+
+- Análisis incorporado en [NCS_M0_P01_CONTINUITY_OBJECT_AUTHORITY_SEMANTICS_DELTA_2026-11-01.md](BUILD/NCS_M0_P01_CONTINUITY_OBJECT_AUTHORITY_SEMANTICS_DELTA_2026-11-01.md), commit `dcaede387097e44d7304f5d149bbba2870a0141b`.
+- Evidencia estática: Continuity contiene misiones, intentos, `doNotRepeat`, linaje de ejecuciones y `effectJournal`; afecta admisión, planificación, PREPARED y recuperación. No es dato inerte.
+- En el código inspeccionado no establece una raíz/credencial constitucional ni evalúa autoridad de efectos: resultados relevantes mantienen `authorization: NOT_EVALUATED`, `redispatchAuthorized: false`; el owner no liquida efectos por una mera afirmación de resultado.
+- Distinción propuesta para decisión del propietario: `L) podría significar persistencia operacional local con influencia acotada, pero sin establecer identidad/Constitución/autoridad ni permiso de efectos. Si `L) significa sin influencia operacional, el objeto no satisface esa definición.
+- No se altera la elección previa del propietario `U` ni la decisión de mantener STOP. P01-A sigue U/OPEN/UNKNOWN; P01-G PENDING/UNKNOWN; primera creación STOP. La aprobación de la regla provisional no es autorización de escritura ni establece raíz legítima.
+
+---
+
 ## DELTA — P01-B: SEPARACIÓN OPERACIONAL IMPLEMENTADA Y CI-VERIFICADA (2026-11-01)
 
 - Reconciliación incorporada a [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `09c87f02edb3cf41baf8006476e26701ba26549c`.
