@@ -1,3 +1,35 @@
+## DELTA — CONTINUITY STORE: LOCK-AWARE READS, TERMUX COPYFILE_EXCL Y CI PASS (2026-11-01)
+
+### SHA y cambios
+- Rama: `ncs-lumina-decoupling-2026-10-29`; PR #110 continúa OPEN / DRAFT / NOT MERGED.
+- SHA de código validado: `7a7f3ffa56af116a4f7222d22ff7638c9b470f92`.
+- El commit `38990a7a` sustituyó la publicación por hardlink en `src/nexo/core/continuity-store.mjs` por `copyFile(..., COPYFILE_EXCL)`, que conserva no-overwrite en Termux, donde `fs.link` devolvió EACCES. `loadCurrent()` adquiere el lock del store para coordinar lectores cooperativos con la publicación.
+- El commit `7a7f3ffa` modifica solo `tests/nexo/continuity-store.test.mjs`: alinea las expectativas con la semántica lock-aware. Bajo lock stale/live o release bloqueado, las pruebas ya no esperan una lectura que ignore el lock; verifican el error de lock o leen bytes crudos solo como observación de fixture. No modifica runtime.
+- Merge local fast-forward confirmado por el propietario; HEAD y FETCH_HEAD coincidían en `7a7f3ffa`; `git status --short` vacío.
+
+### Evidencia local exacta
+- `node tests/nexo/continuity-store.test.mjs`: PASS, ejecutado dos veces en el SHA `7a7f3ffa`.
+- `npm test`: PASS completo en el mismo SHA; el proceso llegó al prompt sin errores. Últimas pruebas observadas: Continuity service options input guard y Open Loops bounded read-only projection/privacy/UNKNOWN linkage.
+
+### Evidencia CI exacta — los cinco workflows SUCCESS en el SHA indicado
+- [Nexo — bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046792) — SUCCESS.
+- [Nexo M0 — integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046788) — SUCCESS.
+- [NCS Lúmina Decoupling Validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046842) — SUCCESS.
+- [Nexo — STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046791) — SUCCESS.
+- [Nexo — STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046808) — SUCCESS.
+- Los cinco registros devuelven `head_sha=7a7f3ffa56af116a4f7222d22ff7638c9b470f92`, `status=completed`, `conclusion=success`.
+
+### Límites y estado que NO cambian
+- `COPYFILE_EXCL` protege frente a reemplazo de destino existente, pero no ofrece publicación atómica visible a lectores externos que no cooperen con el mismo lock. No se afirma fsync, durabilidad ante pérdida de energía, protección frente a escritores arbitrarios/no cooperativos ni cierre de TOCTOU global.
+- El hardlink no está disponible en el entorno Termux probado (EACCES). La prueba de APIs filesystem no autoriza symlink como sustituto; no se selecciona symlink por su riesgo de resolución/escape de ruta.
+- Evidencia Termux/Node disponible y pruebas ejecutadas en Termux no demuestran exclusión de todos los writers/launchers ni el control del entorno de primera publicación. E2/E3 permanecen UNKNOWN; E4 NOT READY.
+- No se ejecutó bootstrap real, primera creación/publicación de Continuity, ni efectos protegidos. No se creó una Continuity operacional.
+- PR #110 sigue OPEN / DRAFT / NOT MERGED; no se fusionó.
+- Estado global: **NCS M0 INCOMPLETO**. D0/D1/D2/D3 y los pendientes FB/P-01/P-05 permanecen según sus registros; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; `ROOT_READY` no habilitado; primera publicación y efectos protegidos STOP.
+- Esta delta registra PASS de implementación/pruebas/CI en un SHA; no declara cierre global de M0 ni altera autoridad operacional.
+
+---
+
 ## DELTA — CANDIDATO CONCRETO PARA E2/E3 DEL POCO (2026-11-01)
 
 - Se creó el perfil `BUILD/NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md`.
