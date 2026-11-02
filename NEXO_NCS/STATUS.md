@@ -3247,4 +3247,5 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - El resultado no demuestra eliminación de TOCTOU, exclusión de writers/readers no cooperativos, resistencia a procesos hostiles con mismo UID, fsync ni durabilidad ante pérdida de energía.
 - No se ejecutó bootstrap real, primera creación/publicación de Continuity, commissioning ni efectos protegidos.
 - Estado canónico sin cambios: M0 INCOMPLETO; P01-A = L DECIDED BY OWNER; P01-G PENDING/UNKNOWN; P01-C/D OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; PR #110 OPEN / DRAFT / NOT MERGED.
+- Handoff actualizado con el resultado y los límites exactos: [NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md](HANDOFF/NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md), commit `b4841cd2c9e3645e5df725d51a5b6f07b06da2ca`.
 - Este delta es documental; no modifica runtime/tests/workflows ni cambia gates de autoridad.
