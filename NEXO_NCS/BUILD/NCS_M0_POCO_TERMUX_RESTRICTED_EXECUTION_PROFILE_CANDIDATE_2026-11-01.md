@@ -51,3 +51,32 @@ E2 requiere demostrar que se pueden detener todos los escritores relevantes e im
 Termux + Node.js: CANDIDATO, no se afirma instalación. E1: POCO X7 Pro/Android identificado. E2/E3: UNKNOWN. E4: NOT READY. Raíz legítima: PENDING/UNKNOWN. authorization: NOT_EVALUATED. Primera publicación y efectos protegidos: STOP. NCS M0: INCOMPLETO.
 
 Este documento no instala software, no ejecuta comandos, no inicializa Continuity y no autoriza commissioning.
+
+---
+
+## DELTA — bootstrap API existe; launcher M0 todavía no existe (2026-11-02)
+
+Inspección estática sobre SHA `5988d9b4c6caa22ec093986a25db80ca842902cc`:
+
+- `src/nexo/core/continuity-service.mjs` exporta `bootstrapNexoContinuityStore(options)`. La API exige `root` absoluto y `relativePath` normalizado, admite solo opciones de lock, deriva `filePath` desde la raíz explícita, rechaza symlinks en la raíz/componentes relativos y devuelve resultado/destino sin crear ni devolver owner operacional.
+- `scripts/nexo-continuity.mjs` solo re-exporta `openNexoContinuityOwner` y `bootstrapNexoContinuityStore`; no implementa un comando CLI.
+- `scripts/nexo.mjs` no reconoce un subcomando de bootstrap. Su parser expone status, mission status/plan/previews y delegación Chronicle; cualquier comando no soportado se bloquea.
+- `package.json` no declara un script de bootstrap M0.
+- Por tanto, existe una **API de bootstrap probada con fixtures**, pero no hay una invocación/launcher M0 dedicada que pueda identificarse como operación real del POCO. RE-01 permanece UNKNOWN; RE-02 también permanece UNKNOWN hasta fijar y comprobar raíz/ruta efectivas en una invocación concreta. Esto no se resuelve llamando manualmente a la API desde un script improvisado.
+
+### Recomendación técnica — no ratificada
+
+Mantener Termux + Node.js como candidato de entorno restringido: una invocación manual en primer plano, un solo proceso/sesión controlados, destino bajo el almacenamiento privado de Termux y sin ruta compartida con Nexo M1. No declarar el entorno seleccionado ni admisible todavía.
+
+Antes de implementar/exponer un launcher que pueda crear el archivo, deben quedar cerrados el contrato de primera creación/P01-G y la delimitación exacta del entorno aceptado. La autorización técnica para cambios M0 no equivale a autorización de primera publicación. No crear un CLI que pueda interpretarse como autorización implícita.
+
+### Estado
+
+- API bootstrap: IMPLEMENTED; contratos/fixtures y path/temp negative tests incluidos en LOCAL FULL-SUITE PASS en SHA `5988d9b4...`.
+- Launcher/CLI dedicado: NOT IMPLEMENTED.
+- Entorno Termux: instalado y usado para pruebas; candidato no ratificado.
+- RE-01/RE-02: UNKNOWN; E2/E3: UNKNOWN; E4: NOT READY.
+- P01-A = L: DECIDED BY OWNER; P01-G: PENDING/UNKNOWN.
+- Raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; M0 INCOMPLETO.
+
+No se ejecutó bootstrap ni se creó Continuity real.
