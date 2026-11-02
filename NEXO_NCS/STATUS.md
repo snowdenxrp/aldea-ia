@@ -3249,3 +3249,14 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Estado canónico sin cambios: M0 INCOMPLETO; P01-A = L DECIDED BY OWNER; P01-G PENDING/UNKNOWN; P01-C/D OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; PR #110 OPEN / DRAFT / NOT MERGED.
 - Handoff actualizado con el resultado y los límites exactos: [NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md](HANDOFF/NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md), commit `b4841cd2c9e3645e5df725d51a5b6f07b06da2ca`.
 - Este delta es documental; no modifica runtime/tests/workflows ni cambia gates de autoridad.
+
+---
+
+## DELTA — BRECHA DE INVOCACIÓN M0 Y APLICABILIDAD DEL CANDIDATO TERMUX (2026-11-02)
+
+- Inspección estática ligada a SHA `5988d9b4c6caa22ec093986a25db80ca842902cc`: `bootstrapNexoContinuityStore(options)` existe como API de servicio; `scripts/nexo-continuity.mjs` solo la re-exporta; `scripts/nexo.mjs` no reconoce un subcomando bootstrap y `package.json` no define un script de bootstrap M0.
+- Conclusión: API implementada y probada con fixtures ≠ launcher/invocación operacional. RE-01 (invocación identificable) y RE-02 (raíz/destino efectivos ligados a esa invocación) permanecen UNKNOWN. No improvisar un script de ejecución ni ejecutar bootstrap.
+- Se incorporó esta brecha y la recomendación no ratificada Termux + Node, sesión manual foreground y destino bajo almacenamiento privado Termux en [NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md](BUILD/NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md), commit `202046bd97647d9b1b5f82e8753ea8769b05c231`.
+- La recomendación no selecciona entorno, ruta ni launcher. Primero deben quedar resueltos P01-G y el contrato de primera creación; la autorización técnica de M0 no autoriza primera publicación.
+- E2/E3 UNKNOWN; E4 NOT READY; P01-A = L DECIDED BY OWNER; P01-G PENDING/UNKNOWN; P01-C/D OPEN/UNKNOWN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; STOP; M0 INCOMPLETO.
+- Solo documentación; sin cambios runtime/tests/workflows, sin bootstrap ni Continuity real.
