@@ -39,6 +39,11 @@ try {
   await assert.rejects(fs.access(path.join(root, "not-created.json")), { code: "ENOENT" });
   const fixtureRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-m0-bootstrap-fixture-"));
   try {
+    await assert.rejects(
+      bootstrapNexoContinuityStore({ root: fixtureRoot, relativePath: "fixture-continuity.json", expectedDestination: path.join(fixtureRoot, "different.json") }),
+      error => error && error.code === "NEXO_CONTINUITY_BOOTSTRAP_DESTINATION_CHANGED"
+    );
+    await assert.rejects(fs.access(path.join(fixtureRoot, "fixture-continuity.json")), { code: "ENOENT" });
     const result = await bootstrapNexoContinuityStore({ root: fixtureRoot, relativePath: "fixture-continuity.json" });
     assert.equal(result.status, "committed");
     assert.equal(result.destination.filePath, path.join(await fs.realpath(fixtureRoot), "fixture-continuity.json"));
