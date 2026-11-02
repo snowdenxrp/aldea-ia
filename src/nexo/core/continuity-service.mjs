@@ -80,130 +80,102 @@ function readContinuityServiceOptions(options) {
   };
 }
 
-/**
- * Perform the restricted M0 first-publication operation only.
- *
- * The destination is derived from an explicit absolute root and a normalized
- * relative path supplied for this invocation. This operation never accepts
- * legacy memory, never loads/project legacy state, and never returns an
- * operational owner. It is not an authority/root-commissioning mechanism and
- * does not claim symlink/path-attack resistance or global writer exclusion.
- */
-export async function bootstrapNexoContinuityStore(options = {}) {
-  if (!options || typeof options !== "object" || Array.isArray(options)) {
-    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
-  }
+function readBootstrapOptions(options) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
   let prototype;
-  try { prototype = Object.getPrototypeOf(options); }
-  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
-  if (prototype !== Object.prototype && prototype !== null) {
-    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
-  }
-
+  try { prototype = Object.getPrototypeOf(options); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
+  if (prototype !== Object.prototype && prototype !== null) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
   const allowed = new Set(["root", "relativePath", "lockDeadline", "lockWaitMs"]);
   const values = Object.create(null);
   let keys;
-  try { keys = Reflect.ownKeys(options); }
-  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
+  try { keys = Reflect.ownKeys(options); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
   for (const key of keys) {
-    if (typeof key !== "string" || !allowed.has(key)) {
-      throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
-    }
+    if (typeof key !== "string" || !allowed.has(key)) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
     let descriptor;
-    try { descriptor = Object.getOwnPropertyDescriptor(options, key); }
-    catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
-    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) {
-      throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
-    }
+    try { descriptor = Object.getOwnPropertyDescriptor(options, key); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
+    if (!descriptor || !descriptor.enumerable || !("value" in descriptor)) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
     values[key] = descriptor.value;
   }
+  return values;
+}
 
+async function resolveBootstrapInputs(options) {
+  const values = readBootstrapOptions(options);
   const root = values.root;
   const relativePath = values.relativePath;
-  if (typeof root !== "string" || !root.trim() || !path.isAbsolute(root) ||
-      root.includes(String.fromCharCode(0))) {
+  if (typeof root !== "string" || !root.trim() || !path.isAbsolute(root) || root.includes(String.fromCharCode(0))) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
   }
-  if (typeof relativePath !== "string" || !relativePath.trim() ||
-      path.isAbsolute(relativePath) || relativePath.includes(String.fromCharCode(0)) ||
-      path.normalize(relativePath) !== relativePath || relativePath === "." ||
-      relativePath === ".." || relativePath.startsWith(`..${path.sep}`)) {
+  if (typeof relativePath !== "string" || !relativePath.trim() || path.isAbsolute(relativePath) ||
+      relativePath.includes(String.fromCharCode(0)) || path.normalize(relativePath) !== relativePath ||
+      relativePath === "." || relativePath === ".." || relativePath.startsWith(".." + path.sep)) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_RELATIVE_PATH_INVALID");
   }
-
   const lexicalRoot = path.resolve(root);
   let rootStat;
-  try { rootStat = await fs.lstat(lexicalRoot); }
-  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
-  if (rootStat.isSymbolicLink()) {
-    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK");
-  }
-  if (!rootStat.isDirectory()) {
-    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
-  }
-
-  // Canonicalize the explicit anchor so platform aliases in its ancestors do
-  // not change the effective destination after validation. The anchor itself
-  // and every relative parent component must be real directories, not symlinks.
+  try { rootStat = await fs.lstat(lexicalRoot); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
+  if (rootStat.isSymbolicLink()) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK");
+  if (!rootStat.isDirectory()) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
   let resolvedRoot;
-  try { resolvedRoot = await fs.realpath(lexicalRoot); }
-  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
-
+  try { resolvedRoot = await fs.realpath(lexicalRoot); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
   const relativeDirectory = path.dirname(relativePath);
   let parentDirectory = resolvedRoot;
   if (relativeDirectory !== ".") {
     for (const segment of relativeDirectory.split(path.sep)) {
       parentDirectory = path.join(parentDirectory, segment);
       let parentStat;
-      try { parentStat = await fs.lstat(parentDirectory); }
-      catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN"); }
-      if (parentStat.isSymbolicLink()) {
-        throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK");
-      }
-      if (!parentStat.isDirectory()) {
-        throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN");
-      }
+      try { parentStat = await fs.lstat(parentDirectory); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN"); }
+      if (parentStat.isSymbolicLink()) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK");
+      if (!parentStat.isDirectory()) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN");
     }
   }
-
   const filePath = path.resolve(resolvedRoot, relativePath);
   const relativeDestination = path.relative(resolvedRoot, filePath);
-  if (!relativeDestination || relativeDestination === ".." ||
-      relativeDestination.startsWith(`..${path.sep}`) ||
-      path.isAbsolute(relativeDestination)) {
+  if (!relativeDestination || relativeDestination === ".." || relativeDestination.startsWith(".." + path.sep) || path.isAbsolute(relativeDestination)) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_DESTINATION_OUTSIDE_ROOT");
   }
-
-  // For M0 first publication, every pre-existing reserved temp name is
-  // ambiguous, regardless of whether it names a file, directory, or symlink.
   const baseName = path.basename(filePath);
   let parentEntries;
-  try {
-    parentEntries = await fs.readdir(parentDirectory, { withFileTypes: true });
-  } catch {
-    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN");
-  }
-  if (parentEntries.some(entry =>
-      entry.name === `${baseName}.tmp` || entry.name.startsWith(`${baseName}.tmp-`))) {
+  try { parentEntries = await fs.readdir(parentDirectory, { withFileTypes: true }); }
+  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN"); }
+  if (parentEntries.some(entry => entry.name === baseName + ".tmp" || entry.name.startsWith(baseName + ".tmp-"))) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_TEMPORARY_STATE_UNKNOWN");
   }
+  return { values, destination: Object.freeze({ root: resolvedRoot, relativePath, filePath }) };
+}
 
+/**
+ * Read-only preflight. It neither creates nor reserves filesystem objects.
+ * Bootstrap resolves and validates the same root/path contract again before
+ * calling the store's exclusive initializer.
+ */
+export async function preflightNexoContinuityBootstrap(options = {}) {
+  const { destination } = await resolveBootstrapInputs(options);
+  try {
+    await fs.lstat(destination.filePath);
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_DESTINATION_EXISTS");
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  try {
+    await fs.lstat(destination.filePath + ".lock");
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_LOCK_STATE_UNKNOWN");
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  return Object.freeze({ status: "prepared", destination });
+}
+
+/** Restricted M0 first publication; never opens an owner or continues to Chronicle. */
+export async function bootstrapNexoContinuityStore(options = {}) {
+  const { values, destination } = await resolveBootstrapInputs(options);
   const store = createNexoContinuityStore({
-    filePath,
+    filePath: destination.filePath,
     ...(values.lockDeadline !== undefined ? { lockDeadline: values.lockDeadline } : {}),
     ...(values.lockWaitMs !== undefined ? { lockWaitMs: values.lockWaitMs } : {})
   });
   const result = await store.initializeExclusive(emptySnapshot());
-  // Preserve the store's explicit conflict/unknown/failure result. In every
-  // case this API stops here; it never loads state or constructs an owner.
-  return Object.freeze({
-    ...result,
-    destination: Object.freeze({
-      root: resolvedRoot,
-      relativePath,
-      filePath
-    })
-  });
+  return Object.freeze({ ...result, destination });
 }
 
 export async function openNexoContinuityOwner(options = {}) {
