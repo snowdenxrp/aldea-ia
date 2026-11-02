@@ -90,7 +90,7 @@ No se requiere cerrar apps IA de otros UID ni desinstalar componentes sin una re
 - Destino candidato ratificado por el propietario: `$HOME/.nexo-continuity.json`.
 - La ruta resuelve conceptualmente dentro del HOME privado de Termux, fuera del repositorio y separada de Lúmina.
 - La ratificación fija el destino previsto; **no autoriza crearlo, inicializarlo ni publicarlo**.
-- No se ha ejecutado el launcher contra ese destino y no se ha creado el archivo.
+- El launcher sí se ejecutó contra el destino real para preflight; se presentó el destino y la operación se canceló antes de intentar escribir (`writeAttempted: false`). No se ha demostrado una inicialización ni se hizo lectura independiente post-ejecución del archivo.
 - P01-G = RULE RATIFIED BY OWNER; no es autorización para una instancia concreta.
 - `authorization: NOT_EVALUATED`.
 - Raíz constitucional legítima: PENDING / UNKNOWN.
@@ -109,3 +109,28 @@ No repetir el inventario ni las pruebas focalizadas ya ejecutadas. El siguiente 
 - criterios de salida y verificación disponibles.
 
 Hasta entonces: STOP. Este documento no altera runtime, tests, workflows ni configuración del dispositivo.
+
+## 7. Evidencia adicional — preflight del destino ratificado (2026-11-02)
+
+El propietario ejecutó el launcher dedicado desde Termux contra el destino real ratificado, sin autorizar publicación:
+
+- Comando: `node scripts/nexo-continuity-bootstrap.mjs --root "$HOME" --relative-path .nexo-continuity.json`.
+- Raíz canónica presentada: `/data/data/com.termux/files/home`.
+- Ruta relativa: `.nexo-continuity.json`.
+- Destino efectivo presentado: `/data/data/com.termux/files/home/.nexo-continuity.json`.
+- Snapshot presentado: NEXO_CONTINUITY v1 vacío.
+- Ventana presentada: `2026-11-02T22:59:14.486Z` a `2026-11-02T23:04:14.494Z`.
+- SHA-256 presentado: `b8a44d37b957d6e8b91c38df81dcf288dfaf839bbd582e735ff1110452f0d941`.
+- Respuesta literal tras introducir `CANCELAR`:
+  `{"status":"blocked","code":"NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED","writeAttempted":false}`.
+
+### Alcance probatorio
+
+- **RE-02 aumenta a IMPLEMENTED / EXERCISED: REAL-DESTINATION PREFLIGHT; PUBLICATION NOT ATTEMPTED.** El launcher aceptó la ruta real, presentó el destino y el SHA, y la cancelación fue rechazada como confirmación de publicación antes de intentar escribir.
+- Esto confirma el comportamiento no publicador del launcher en esta ejecución y la resolución del destino. No es evidencia de inicialización, contenido persistido ni estado post-ejecución verificado por una lectura independiente del archivo.
+- No eleva E2/E3 a PASS ni cierra E4: no demuestra quiescencia sostenida, prevención de relanzamiento, control de actores durante una ventana de publicación ni admisibilidad operacional completa.
+- No se introdujo `PUBLICAR`; no se solicitó ni concedió autorización específica para esta instancia. `authorization: NOT_EVALUATED`.
+- Primera publicación real, commissioning y efectos protegidos permanecen STOP. M0 permanece INCOMPLETO.
+
+La evidencia fue recibida directamente del output de Termux compartido por el propietario. No se repitió el launcher y no se hizo lectura posterior del destino.
+
