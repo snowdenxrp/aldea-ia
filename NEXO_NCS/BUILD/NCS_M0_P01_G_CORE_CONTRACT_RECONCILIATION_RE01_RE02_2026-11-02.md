@@ -212,3 +212,27 @@ Autorización del propietario: implementación técnica RE-01/RE-02 con el alcan
 - NCS M0: INCOMPLETO; PR #110 continúa OPEN / DRAFT / NOT MERGED.
 
 La propuesta de las secciones anteriores queda superada en cuanto a implementación RE-01/RE-02. Sus límites y requisitos normativos no quedan anulados.
+
+---
+
+## 12. Evidencia POCO/Termux posterior — preflight real cancelado (2026-11-02)
+
+Esta sección supersede las frases anteriores que indicaban que el launcher no se había probado en Termux o que el destino real no estaba fijado. No cambia E2/E3 ni autoriza publicación.
+
+El propietario ejecutó manualmente en una sesión interactiva Termux:
+`node scripts/nexo-continuity-bootstrap.mjs --root "$HOME" --relative-path .nexo-continuity.json`.
+
+El launcher presentó raíz canónica `/data/data/com.termux/files/home`, ruta relativa `.nexo-continuity.json`, destino efectivo `/data/data/com.termux/files/home/.nexo-continuity.json`, snapshot NEXO_CONTINUITY v1 vacío, ventana `2026-11-02T22:59:14.486Z`–`2026-11-02T23:04:14.494Z` y SHA-256 `b8a44d37b957d6e8b91c38df81dcf288dfaf839bbd582e735ff1110452f0d941`.
+
+El propietario introdujo `CANCELAR`. Respuesta literal: `{"status":"blocked","code":"NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED","writeAttempted":false}`.
+
+### Clasificación
+- RE-01: IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX. La invocación manual foreground con TTY llegó a la presentación de confirmación y terminó por cancelación.
+- RE-02: IMPLEMENTED / CI-VERIFIED / REAL-DESTINATION PREFLIGHT EXERCISED. Raíz explícita, ruta relativa y destino canónico fueron presentados y vinculados en una ejecución real no publicadora.
+- La cancelación confirma que no se intentó escribir en esta ejecución. No prueba inicialización, contenido persistido ni lectura independiente posterior del destino.
+- E2/E3 permanecen PARTIAL / NOT CLOSED: la sesión cancelada no constituye ventana de publicación y no demuestra quiescencia sostenida ni prevención de relanzamiento.
+- E4 permanece NOT READY hasta completar la evaluación de propiedades del destino y precondiciones aplicables a la instancia.
+
+P01-G continúa RULE RATIFIED BY OWNER; no existe aprobación de esta instancia para publicar. `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; primera publicación, commissioning y efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+
+No se repitió launcher. No se creó ni leyó el archivo productivo. Sin cambios de runtime, tests, CI, workflows ni configuración del POCO.
