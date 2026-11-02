@@ -1,3 +1,18 @@
+## DELTA VIGENTE — PRIMERA PUBLICACIÓN REAL Y VERIFICACIÓN POST-ESCRITURA (2026-11-02)
+
+- El propietario autorizó explícitamente una única inicialización restringida de Continuity M0 en el destino ratificado `$HOME/.nexo-continuity.json`; no se amplió la autorización a commissioning, autoridad constitucional ni efectos protegidos.
+- Sesión: Termux reabierto manualmente; checkout `ncs-lumina-decoupling-2026-10-29`, HEAD local observado `d6b657c81fae518fef214c727b9130ca0a40cac8`, `git status --short` vacío antes de la operación.
+- Launcher `scripts/nexo-continuity-bootstrap.mjs --root "$HOME" --relative-path .nexo-continuity.json` presentó raíz canónica `/data/data/com.termux/files/home`, destino efectivo `/data/data/com.termux/files/home/.nexo-continuity.json`, snapshot inicial vacío, ventana `2026-11-02T23:25:28.960Z`–`2026-11-02T23:30:28.968Z` y SHA-256 de operación `2a9114a056eaa483d72dc08243c29f7e7d85b8b8fe194a60c77fda8e81a6d7e9`.
+- El propietario introdujo la confirmación exacta `PUBLICAR 2a9114a056eaa483d72dc08243c29f7e7d85b8b8fe194a60c77fda8e81a6d7e9`. El launcher devolvió `status: committed`, `storeRevision: 0`, snapshot `NEXO_OPERATIONAL_CONTINUITY` v1 con arrays vacíos, destino correcto, `authorization: NOT_EVALUATED` y `continuation: STOPPED`.
+- Verificación independiente posterior (nuevo proceso Node, solo lectura): `lstat` y `realpath` confirman archivo regular, no symlink, ruta canónica exacta; UID coincide con Termux; permisos `0600`; tamaño 283 bytes; SHA-256 del archivo `3a1d5f25f00c7ba0e030fe8b99dda074b48f9b7950bd80d8a86f46de36236a81`.
+- Contenido persistido confirmado: envelope raíz `NEXO_CONTINUITY_STORE`, versión 1, `storeRevision: 0`; propiedad `snapshot` contiene `NEXO_OPERATIONAL_CONTINUITY`, versión 1, con `missions`, `attempts`, `doNotRepeat`, `executions` y `effectJournal` como arrays vacíos. La comprobación inicial que comparó claves/arrays en la raíz fue incorrecta: el snapshot está anidado en el envelope. La inspección JSON completa reconcilia la estructura con la salida del launcher; no se detectó corrupción.
+- Evaluación: RE-01/RE-02 IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX; primera publicación restringida COMPLETED; objeto real y permisos post-escritura VERIFICADOS en el alcance observado. E4: REAL-DESTINATION POST-WRITE OBJECT CHECK VERIFIED (ruta, tipo, propietario, modo, tamaño, hash y estructura); no se afirma durabilidad ante pérdida de energía ni resistencia frente a escritores no cooperativos.
+- E2/E3 permanecen PARTIAL / NOT CLOSED: el procedimiento R1 y el inventario puntual no prueban exclusión sostenida ni prevención de relanzamiento fuera de la ventana observada. No elevarlos a PASS por el éxito de la escritura.
+- Gates sin cambio: `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; `ROOT_READY` no establecido; commissioning STOP; efectos protegidos STOP; no se ejecutó runtime ni continuación posterior. NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+- No repetir bootstrap ni el inventario genérico. Próximo trabajo: registrar la evidencia, evaluar únicamente el gap residual E2/E3 y mantener STOP para cualquier operación posterior no autorizada.
+
+---
+
 ## DELTA VIGENTE — RECONCILIACIÓN FINAL DE EVIDENCIA TERMUX (2026-11-02)
 
 - R1 ACCEPTED BY OWNER; destino candidato ratificado: `$HOME/.nexo-continuity.json`.
