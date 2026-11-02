@@ -9,13 +9,17 @@ import { parseNexoContinuityBootstrapArguments } from "../../scripts/nexo-contin
 assert.deepEqual(parseNexoContinuityBootstrapArguments(["--root", "/tmp/root", "--relative-path", "continuity/store.json"]), {
   status: "ready", root: "/tmp/root", relativePath: "continuity/store.json"
 });
-for (const argv of [[], ["--root", "/tmp/root"], ["--root", "/tmp/root", "--relative-path", "../escape"],
+for (const argv of [[], ["--root", "/tmp/root"],
   ["--root", "/tmp/root", "--root", "/tmp/other", "--relative-path", "continuity.json"],
   ["--root", "/tmp/root", "--relative-path", "continuity.json", "--unexpected"]]) {
   assert.equal(parseNexoContinuityBootstrapArguments(argv).status, "blocked");
 }
 const root = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-m0-bootstrap-preflight-"));
 try {
+  await assert.rejects(
+    preflightNexoContinuityBootstrap({ root, relativePath: "../escape.json" }),
+    error => error && error.code === "NEXO_CONTINUITY_BOOTSTRAP_RELATIVE_PATH_INVALID"
+  );
   const options = { root, relativePath: "continuity-v1.json" };
   const prepared = await preflightNexoContinuityBootstrap(options);
   assert.equal(prepared.status, "prepared");
