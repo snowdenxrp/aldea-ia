@@ -3235,3 +3235,16 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Resultado de E2: UNKNOWN; la inspección estática no prueba control de detención ni prevención de reinicio. El protocolo D3 existente sigue siendo criterio de evidencia, no prueba de quiescencia para este bootstrap.
 - Próximo paso limitado: establecer documentalmente si el bootstrap previsto tiene un entorno Node.js/CLI realmente disponible en el POCO y qué mecanismo lo lanzaría; solo después se podrá evaluar E2/E3. No instalar Node/Termux, no configurar ni ejecutar el CLI, y no elegir primitiva de filesystem por inferencia.
 - Gates intactos: M0 INCOMPLETO; alcance U; P-01 OPEN/UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING/UNKNOWN; authorization NOT_EVALUATED; primera creación y efectos protegidos STOP. Solo lectura estática y documentación; no tests/CI/Actions ni cambios runtime/dispositivo.
+
+---
+
+## DELTA — SUITE COMPLETA LOCAL PASS Y PRUEBAS DE PATH/TEMP BOOTSTRAP EJECUTADAS (2026-11-02)
+
+- El propietario ejecutó `npm test` completo en Termux / POCO / Node.js v26.4.0 sobre SHA exacto `5988d9b4c6caa22ec093986a25db80ca842902cc`; el proceso llegó al prompt final sin error. `git status --short` no devolvió entradas antes de la ejecución.
+- La cadena completa incluye `tests/nexo/continuity-contract.test.mjs`; por tanto, la ejecución cubrió también los casos negativos añadidos en `773d6fd82661df53e235277c296991ab46f15b62`.
+- Se reconcilia y supera el aviso anterior NOT YET EXECUTED del delta de path/temp guards: el SHA probado contiene los commits `a19da46da8942091bdfe0496b13f57414e63eaad`, `834f77d01dee9c99977d86015d7f6fdc9237ed2e` y `773d6fd82661df53e235277c296991ab46f15b62`, según comparación con base `534ddb856df93de3065d6db92089904fce1bf9d4`.
+- Clasificación: **LOCAL FULL-SUITE TESTED — PASS** en ese SHA y entorno. No es CI-VERIFIED; las consultas de status/workflows disponibles no aportaron runs/status para ese SHA.
+- El resultado no demuestra eliminación de TOCTOU, exclusión de writers/readers no cooperativos, resistencia a procesos hostiles con mismo UID, fsync ni durabilidad ante pérdida de energía.
+- No se ejecutó bootstrap real, primera creación/publicación de Continuity, commissioning ni efectos protegidos.
+- Estado canónico sin cambios: M0 INCOMPLETO; P01-A = L DECIDED BY OWNER; P01-G PENDING/UNKNOWN; P01-C/D OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; PR #110 OPEN / DRAFT / NOT MERGED.
+- Este delta es documental; no modifica runtime/tests/workflows ni cambia gates de autoridad.
