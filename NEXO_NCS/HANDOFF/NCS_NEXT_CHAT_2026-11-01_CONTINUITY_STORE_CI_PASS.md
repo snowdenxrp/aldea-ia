@@ -177,3 +177,16 @@ The owner previously permitted a restricted environment but did not specify whic
 This is a recommendation, not an owner decision. Android documentation distinguishes package Force stop from Task Manager Stop; Task Manager Stop does not prevent scheduled jobs/alarms from running. See the source links in the profile. No claim is made that the current POCO meets R1.
 
 The exact owner decision needed is whether to accept this limited threat boundary. Acceptance would not authorize bootstrap, first publication, commissioning or protected effects. RE-01/RE-02 remain UNKNOWN because no dedicated M0 launcher or effective destination is defined.
+
+
+---
+
+## Addendum — owner ratified R1 and bounded E2/E3 evidence (2026-11-02)
+
+- Owner explicitly accepted R1 and the bounded operational E2/E3 acceptance criterion. The sole authorized launcher during the first-publication window is the owner in one manually started interactive Termux session; no other writer is authorized. Detection of a relevant uncontrolled writer/launcher triggers STOP. The window runs from pre-operation checks through verification of the result. Reboot, update or relevant environment change invalidates the evidence.
+- Threat boundary excludes compromised/rooted OS or equivalent privileges and malicious processes sharing Termux UID/trust domain. It does not require universal proof of absence of actors outside the observable scope or an exhaustive Android mechanism inventory. Relevant residual risks remain explicitly UNKNOWN.
+- New Termux evidence: private HOME/PREFIX with 0700 permissions and unchanged canonical paths; filtered process snapshot showed only current bash shell and no node/nexo; shell jobs empty; inspected profiles without launch references; no `~/.termux/boot`; scheduler available with `--pending` = `No jobs found`; wake-lock command available; service supervisor commands unavailable; `ssh-agent` and `sshd` service definitions exist with `down` markers but effective state unverified; package query returned no matches with limited visibility.
+- Classification: E2 PARTIAL / NOT CLOSED; E3 PARTIAL / NOT CLOSED. E4 NOT READY. RE-01/RE-02 UNKNOWN because no dedicated M0 bootstrap launcher or effective root/destination is defined. P01-G and root remain PENDING/UNKNOWN.
+- Do not repeat the generic Termux process/profile/job/caller inventory absent environment change or concrete contradiction. Continue existing P01-G / RE-01 / RE-02 work; do not improvise or run a launcher.
+- No runtime/tests/workflows/CI/device changes. No bootstrap, real Continuity creation/publication, commissioning or protected effects. `authorization: NOT_EVALUATED`; M0 INCOMPLETE; STOP remains.
+- Full evidence record: [NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md](../BUILD/NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md).
