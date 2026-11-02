@@ -1,3 +1,16 @@
+## DELTA — DECISIÓN DEL PROPIETARIO P01-A = L Y RECONCILIACIÓN ADVERSARIAL (2026-11-01)
+
+- El propietario aprobó P01-A = **L**: Continuity M0 es persistencia operacional local con influencia acotada sobre el flujo de Nexo, sin establecer identidad, Constitución ni autoridad constitucional, y sin conceder por sí misma permiso para efectos protegidos.
+- Esta decisión reemplaza la clasificación provisional U de P01-A. No convierte el store en dato inerte y no autoriza primera creación/publicación, commissioning ni efectos protegidos.
+- Reconciliación del informe Qwen: su falta de acceso al HEAD actual no invalida evidencia previamente inspeccionada y ligada a SHA; tampoco permite proyectarla al HEAD actual sin verificar cambios. C1 tiene evidencia de API/fixtures y CI en SHA `7a7f3ffa56af116a4f7222d22ff7638c9b470f92`; C2–C4 conservan conclusiones estáticas acotadas, sin declarar cobertura universal.
+- No se adoptan automáticamente cuotas/allowlists, hash chain, firma/attestation ni un workflow redundante como gates nuevos. Deben derivarse de una brecha concreta y falsable.
+- P01-G permanece PENDING/UNKNOWN: falta cerrar objeto/ruta efectiva, estado previo/UNKNOWN, condiciones de primera escritura y exclusión verificable de escritores/launchers en la ventana concreta.
+- P01-C/D OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera creación y efectos protegidos STOP; M0 INCOMPLETO.
+- Detalle: [NCS_M0_P01_OWNER_DECISION_L_AND_QWEN_RECONCILIATION_2026-11-01.md](BUILD/NCS_M0_P01_OWNER_DECISION_L_AND_QWEN_RECONCILIATION_2026-11-01.md).
+- Solo documentación; no runtime, tests, CI, bootstrap, Continuity real ni cambios del dispositivo.
+
+---
+
 ## DELTA — P01-A/P01-G: SEMÁNTICA OPERACIONAL DEL OBJETO CONTINUITY (2026-11-01)
 
 - Análisis incorporado en [NCS_M0_P01_CONTINUITY_OBJECT_AUTHORITY_SEMANTICS_DELTA_2026-11-01.md](BUILD/NCS_M0_P01_CONTINUITY_OBJECT_AUTHORITY_SEMANTICS_DELTA_2026-11-01.md), commit `dcaede387097e44d7304f5d149bbba2870a0141b`.
