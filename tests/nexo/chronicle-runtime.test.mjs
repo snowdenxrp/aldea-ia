@@ -17,6 +17,8 @@ import { NEXO_RESOURCE_LIMITS } from "../../src/nexo/core/resource-limits.mjs";
 import { executeNexoStepWithContinuityOwner } from "../../src/nexo/runtime.js";
 import { reconstructNexoMissionFromSnapshot } from "../../src/nexo/core/continuity-operations.mjs";
 import { projectNexoContinuitySnapshot } from "../../src/nexo/core/continuity-snapshot.mjs";
+import { createNexoLockDeadline } from "../../src/nexo/core/lock-deadline.mjs";
+import { withVirtualTime, assertVirtualTimeEffective } from "./helpers/virtual-time.mjs";
 
 const emptyContinuitySnapshot = () => projectNexoContinuitySnapshot({
   version: 4,
@@ -158,7 +160,8 @@ const invalidInitializationType = await runNexoChronicleAppend({
 assert.equal(invalidInitializationType.status, "blocked");
 assert.equal(invalidInitializationType.code, "NEXO_CHRONICLE_SESSION_INPUT_INVALID");
 
-// Application-boundary timeout from Chronicle initialization preserves phase evidence.
+// Application-boundary Chronicle lock timeout. Virtual time removes the
+// scheduler-dependent 20 ms real-time race while retaining real filesystem I/O.
 const appChronicleTimeoutRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-app-chronicle-timeout-"));
 try {
   const continuityPath = path.join(appChronicleTimeoutRoot, "continuity.json");
@@ -168,24 +171,97 @@ try {
     missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: []
   };
   assert.equal((await createNexoContinuityStore({ filePath: continuityPath }).initialize(snapshot)).status, "committed");
+  const continuityBefore = await fs.readFile(continuityPath);
   const chronicleLock = chroniclePath + ".lock";
+  const chronicleOwnerPath = path.join(chronicleLock, "owner.json");
   await fs.mkdir(chronicleLock);
-  await fs.writeFile(path.join(chronicleLock, "owner.json"), JSON.stringify({
+  await fs.writeFile(chronicleOwnerPath, JSON.stringify({
     pid: process.pid, token: "application-timeout-owner"
   }), "utf8");
-  const result = await runNexoChronicleAppend({
-    continuityPath, chroniclePath, missionId: "app-timeout", stepId: "step-1",
-    content: "must not initialize", initializeChronicle: true, lockWaitMs: 20
+  const ownerBefore = await fs.readFile(chronicleOwnerPath);
+
+  const timed = await withVirtualTime(async clock => {
+    assertVirtualTimeEffective(clock, createNexoLockDeadline);
+    const result = await runNexoChronicleAppend({
+      continuityPath, chroniclePath, missionId: "app-timeout", stepId: "step-1",
+      content: "must not initialize", initializeChronicle: true, lockWaitMs: 20
+    });
+    return { result, sleeps: [...clock.sleeps], virtualElapsedMs: clock.elapsed() };
   });
+  const { result } = timed;
+  assert.deepEqual(timed.sleeps, [10, 10]);
+  assert.equal(timed.virtualElapsedMs, 20);
   assert.equal(result.status, "blocked");
   assert.equal(result.code, "NEXO_CHRONICLE_LOCK_ACQUISITION_TIMEOUT");
+  assert.equal(result.authorization, "NOT_EVALUATED");
   assert.equal(result.phase, "lock_acquisition");
   assert.equal(result.writeStarted, false);
   assert.equal(result.dispatchAttempted, false);
   assert.equal(result.redispatchAuthorized, false);
+  await assert.rejects(fs.access(chroniclePath), { code: "ENOENT" });
+  assert.deepEqual(await fs.readFile(continuityPath), continuityBefore);
+  assert.deepEqual(await fs.readFile(chronicleOwnerPath), ownerBefore);
+  await fs.access(chronicleLock);
+  const names = await fs.readdir(appChronicleTimeoutRoot);
+  assert.equal(names.some(name =>
+    name === "chronicle.json.tmp" || name.startsWith("chronicle.json.tmp-") ||
+    name === "continuity.json.tmp" || name.startsWith("continuity.json.tmp-")
+  ), false, "timeout must not leave temporary store artifacts");
   await fs.rm(chronicleLock, { recursive: true, force: true });
 } finally {
   await fs.rm(appChronicleTimeoutRoot, { recursive: true, force: true });
+}
+
+// Application-boundary Continuity preflight timeout remains a Continuity error;
+// it must not be relabeled as a later Chronicle initialization timeout.
+const appContinuityLockTimeoutRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-app-continuity-lock-timeout-"));
+try {
+  const continuityPath = path.join(appContinuityLockTimeoutRoot, "continuity.json");
+  const chroniclePath = path.join(appContinuityLockTimeoutRoot, "chronicle.json");
+  const snapshot = {
+    schema: "NEXO_OPERATIONAL_CONTINUITY", schemaVersion: 1,
+    missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: []
+  };
+  assert.equal((await createNexoContinuityStore({ filePath: continuityPath }).initialize(snapshot)).status, "committed");
+  assert.equal((await createNexoChronicleStore({ filePath: chroniclePath }).initialize()).status, "committed");
+  const continuityBefore = await fs.readFile(continuityPath);
+  const chronicleBefore = await fs.readFile(chroniclePath);
+  const continuityLock = continuityPath + ".lock";
+  const continuityOwnerPath = path.join(continuityLock, "owner.json");
+  await fs.mkdir(continuityLock);
+  await fs.writeFile(continuityOwnerPath, JSON.stringify({
+    pid: process.pid, token: "application-continuity-timeout-owner"
+  }), "utf8");
+  const ownerBefore = await fs.readFile(continuityOwnerPath);
+
+  const timed = await withVirtualTime(async clock => {
+    assertVirtualTimeEffective(clock, createNexoLockDeadline);
+    const result = await runNexoChronicleAppend({
+      continuityPath, chroniclePath, missionId: "app-continuity-timeout", stepId: "step-1",
+      content: "must not append", lockWaitMs: 20
+    });
+    return { result, sleeps: [...clock.sleeps], virtualElapsedMs: clock.elapsed() };
+  });
+  const { result } = timed;
+  assert.deepEqual(timed.sleeps, [10, 10]);
+  assert.equal(timed.virtualElapsedMs, 20);
+  assert.equal(result.status, "blocked");
+  assert.equal(result.code, "NEXO_CONTINUITY_STORE_LOCK_ACQUISITION_TIMEOUT");
+  assert.equal(result.authorization, "NOT_EVALUATED");
+  assert.equal(result.dispatchAttempted, false);
+  assert.equal(result.redispatchAuthorized, false);
+  assert.deepEqual(await fs.readFile(continuityPath), continuityBefore);
+  assert.deepEqual(await fs.readFile(chroniclePath), chronicleBefore);
+  assert.deepEqual(await fs.readFile(continuityOwnerPath), ownerBefore);
+  await fs.access(continuityLock);
+  const names = await fs.readdir(appContinuityLockTimeoutRoot);
+  assert.equal(names.some(name =>
+    name === "chronicle.json.tmp" || name.startsWith("chronicle.json.tmp-") ||
+    name === "continuity.json.tmp" || name.startsWith("continuity.json.tmp-")
+  ), false, "timeout must not leave temporary store artifacts");
+  await fs.rm(continuityLock, { recursive: true, force: true });
+} finally {
+  await fs.rm(appContinuityLockTimeoutRoot, { recursive: true, force: true });
 }
 
 // A combined Continuity bootstrap + Chronicle operation is rejected before store access,
