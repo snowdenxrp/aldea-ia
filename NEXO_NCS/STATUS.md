@@ -1,3 +1,28 @@
+## DELTA VIGENTE — CRITERIOS DE ACEPTACIÓN E2/E3 Y GAPS RESIDUALES (2026-11-02)
+
+- Propósito: convertir la evidencia R1 ya recibida en criterios verificables de evaluación. Esta delta es documental; no modifica runtime, tests, workflows, configuración del dispositivo ni la instancia real de Continuity.
+- **E2 — control de escritores: PARTIAL / NOT CLOSED.** R1 define al propietario como único lanzador autorizado en una sesión Termux interactiva manual y prohíbe otros escritores autorizados durante la ventana. La evidencia puntual previa no demuestra por sí sola exclusividad sostenida.
+  - E2.1 Regla de autorización del escritor: R1 ACCEPTED BY OWNER.
+  - E2.2 Control de sesiones/procesos relevantes durante una ventana concreta: PARTIAL; las capturas de procesos son instantáneas y no prueban continuidad temporal.
+  - E2.3 Rutas heredadas/callers hacia el destino efectivo: PARTIAL; reutilizar la evidencia de desacoplamiento existente, sin repetir auditorías cerradas, y no equiparar separación de imports con prueba completa de exclusividad operacional.
+  - E2.4 Actores locales/servicios/automatizadores relevantes: PARTIAL; reutilizar el inventario puntual existente y resolver solo una contradicción o un actor con capacidad concreta de alcanzar el destino.
+  - E2.5 Límite de confianza R1: ACCEPTED BY OWNER; excluye OS comprometido/root y procesos maliciosos bajo el mismo UID/dominio Termux. No se exige demostrar un negativo universal fuera de ese límite.
+- **E3 — control de relanzadores: PARTIAL / NOT CLOSED.**
+  - E3.1 Boot/arranque local: snapshots previos no detectaron ~/.termux/boot; no prueban ausencia sostenida ante cambios posteriores.
+  - E3.2 Scheduler/jobs: termux-job-scheduler --pending informó No jobs found en la observación previa; es evidencia puntual, no garantía permanente.
+  - E3.3 Automatizadores/integraciones: no se detectaron las aplicaciones consultadas; la visibilidad del inventario fue limitada.
+  - E3.4 Servicios: ssh-agent/sshd tenían marcador down y no se observaron procesos en la captura; el estado efectivo del supervisor no quedó demostrado. No declarar esos servicios universalmente inactivos.
+  - E3.5 Disparadores indirectos: perfiles/rutas conocidas revisadas sin referencias Nexo; no inferir cobertura de todo mecanismo Android.
+  - E3.6 Workflow GitHub Actions: clasificado como remoto; no se observó puente/montaje al HOME privado Termux. No afirmar que el workflow remoto esté inactivo.
+- **Criterio de cierre E2:** identificar y clasificar los escritores legítimos relevantes con capacidad de alcanzar el destino efectivo; demostrar que durante la ventana R1 están bajo control del propietario o dentro de exclusiones expresas aceptadas. Actor relevante no clasificado/no controlado => UNKNOWN-STOP. No se exige prueba de inexistencia universal.
+- **Criterio de cierre E3:** clasificar los mecanismos relevantes capaces de relanzar un escritor local y disponer de evidencia suficiente de que están controlados o fuera del límite local durante la ventana. Un mecanismo local relevante no clasificado o cuyo estado/capacidad sea materialmente ambiguo => UNKNOWN-STOP.
+- **Protocolo para una ventana futura, no autorización de ejecución:** sesión interactiva manual única; preflight read-only; identificar destino/sesión/ventana; mantener control de actores conocidos; cualquier actor inesperado, cambio relevante, reinicio o pérdida de control => STOP; registrar cierre y evidencia. No iniciar otra ventana ni repetir bootstrap como parte de esta delta.
+- La publicación real ya completada y la verificación E4 no cierran E2/E3. No tocar, borrar, cambiar permisos ni reinicializar $HOME/.nexo-continuity.json.
+- Gates sin cambio: authorization: NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN; ROOT_READY no establecido; commissioning STOP; efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+- Continuación: resolver únicamente gaps concretos contra estos criterios; no repetir el inventario genérico ni reabrir auditorías cerradas.
+
+---
+
 ## DELTA VIGENTE — PRIMERA PUBLICACIÓN REAL Y VERIFICACIÓN POST-ESCRITURA (2026-11-02)
 
 - El propietario autorizó explícitamente una única inicialización restringida de Continuity M0 en el destino ratificado `$HOME/.nexo-continuity.json`; no se amplió la autorización a commissioning, autoridad constitucional ni efectos protegidos.
