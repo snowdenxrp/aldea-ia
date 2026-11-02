@@ -1,3 +1,15 @@
+## DELTA — PREFLIGHT NO PUBLICADOR DEL DESTINO RATIFICADO (2026-11-02)
+
+- El propietario ejecutó el launcher dedicado en Termux contra `$HOME/.nexo-continuity.json`; presentó raíz canónica `/data/data/com.termux/files/home`, destino efectivo `/data/data/com.termux/files/home/.nexo-continuity.json`, snapshot vacío y SHA-256 `b8a44d37b957d6e8b91c38df81dcf288dfaf839bbd582e735ff1110452f0d941`.
+- Ventana presentada: `2026-11-02T22:59:14.486Z`–`2026-11-02T23:04:14.494Z`.
+- El propietario introdujo `CANCELAR`; respuesta exacta: `NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED`, `writeAttempted:false`.
+- Clasificación RE-02 actualizada: **IMPLEMENTED / EXERCISED — REAL-DESTINATION PREFLIGHT; PUBLICATION NOT ATTEMPTED**. La ruta real fue resuelta y presentada; la cancelación bloqueó antes de intentar escritura. No hubo confirmación `PUBLICAR`, ni inicialización ni lectura independiente post-ejecución del archivo.
+- Esto no cierra E2/E3 ni E4: no demuestra control sostenido de actores ni admisibilidad operacional completa. `authorization: NOT_EVALUATED`; primera publicación, commissioning y efectos protegidos continúan STOP; NCS M0 INCOMPLETO.
+- Detalle y output: [NCS_NEXT_CHAT_2026-11-02_R1_INVENTORY_CLOSURE.md](HANDOFF/NCS_NEXT_CHAT_2026-11-02_R1_INVENTORY_CLOSURE.md), sección 7.
+- No se repitió launcher; solo actualización documental.
+
+---
+
 ## DELTA — CIERRE DEL INVENTARIO LOCAL Y PROCEDIMIENTO R1 (2026-11-02)
 
 - Inventario puntual de actores/mecanismos locales conocidos: **CLOSED (snapshot)**. Se recibió la lista completa de paquetes Android; `com.termux` permanece instalado y `com.termux.api` ya no aparece. No se detectaron Tasker, MacroDroid, Automate ni Shizuku. La captura `ps -A` mostró solo el propio comando y la shell Bash; `jobs -l` vacío; directorios Termux Boot/Tasker ausentes; `termux-job-scheduler --pending` informó `No jobs found`; `crond/crontab/at` no están disponibles. Las definiciones `ssh-agent`/`sshd` tienen marcador `down` y no se detectaron procesos, pero el estado efectivo del supervisor no se verificó.
