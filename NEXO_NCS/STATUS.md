@@ -1,3 +1,16 @@
+## DELTA — R1 RATIFICADO POR EL PROPIETARIO Y EVIDENCIA OPERACIONAL E2/E3 (2026-11-02)
+
+- R1 pasa de propuesta a **ACCEPTED BY OWNER**. Se acepta la garantía operacional delimitada: propietario como único lanzador manual en una sesión interactiva Termux; ningún otro escritor autorizado durante la ventana; detección de actor relevante no controlado => STOP; riesgos residuales UNKNOWN explícitos; no se exige exclusión universal ni inventario exhaustivo de Android.
+- El modelo excluye OS comprometido/root o privilegios equivalentes y procesos maliciosos con el mismo UID/dominio de confianza Termux. La ausencia de prueba universal negativa fuera del ámbito observable no bloquea por sí sola; detectar un actor relevante no controlado sí.
+- Nueva evidencia Termux recibida el 2026-11-02: HOME/PREFIX privados con modo 0700 y rutas canónicas sin cambio; captura de procesos solo muestra shell Bash y no observa Node/Nexo; `jobs -l` vacío; perfiles inspeccionados sin referencias; `~/.termux/boot` ausente; Job Scheduler disponible pero `--pending` devuelve `No jobs found`; `termux-wake-lock` disponible; `sv`/servicios no disponibles en PATH; definiciones `ssh-agent`/ `sshd` presentes con marcador `down`, sin estado efectivo verificable; consulta de paquetes sin coincidencias, con visibilidad limitada.
+- Evaluación: **E2 PARTIAL / NOT CLOSED; E3 PARTIAL / NOT CLOSED**. La evidencia es puntual y limitada; no acredita exclusión sostenida ni entorno admisible. No repetir el inventario genérico salvo cambio/contradicción.
+- E4 NOT READY; RE-01/RE-02 UNKNOWN (launcher M0 dedicado y raíz/destino efectivo no definidos); P01-G PENDING/UNKNOWN; raíz legítima PENDING/UNKNOWN.
+- Sin bootstrap, Continuity real, commissioning ni efectos protegidos. `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; M0 INCOMPLETO.
+- Expediente completo: [NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md](BUILD/NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md).
+- Solo documentación; no runtime, tests, workflows, CI ni cambios del dispositivo.
+
+---
+
 ## DELTA — GUARDAS DE PATH Y ARTEFACTOS TEMPORALES EN BOOTSTRAP (2026-11-01)
 
 - Cambio de runtime y pruebas añadidas en `a19da46`, `834f77d` y `773d6fd`: el bootstrap rechaza symlink en la raíz explícita y en componentes de directorio relativos; canonicaliza la raíz efectiva; los nombres reservados `.tmp` / `.tmp-*` se tratan como ambiguos sin importar si son archivo, directorio o symlink.
