@@ -232,3 +232,14 @@ Conservar U como clasificación actual hasta que el propietario confirme el alca
 - **Gates conservados:** alcance U; P01-A OPEN / UNKNOWN; P01-B C — NO SELECCIONAR TODAVÍA; P-05 NO RATIFICADA; D0/D1/D2/D3 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; raíz PENDING / UNKNOWN; authorization: NOT_EVALUATED; primera creación y efectos protegidos STOP; M0 INCOMPLETO.
 - **Pendiente verificable:** especificar y demostrar el entorno restringido, los escritores cubiertos/excluidos, las precondiciones observables de exclusión y su enlace al objeto/ruta efectivos y al SHA evaluado.
 - **Ejecución:** registro documental solamente. Sin cambios en runtime/tests/workflows/configuración ejecutable; pruebas, CI y Actions no ejecutados para esta decisión.
+
+
+### 10.8 Reconciliación expresa del propietario — P01-A = L (2026-11-01)
+
+- El propietario aprobó P01-A = **L** con la definición: “Continuity M0 es persistencia operacional local, con influencia acotada sobre el flujo de Nexo, que no establece identidad, Constitución ni autoridad constitucional, y que no concede por sí misma permiso para efectos protegidos”.
+- Esta decisión **reemplaza** la clasificación provisional U de 2026-10-27 para P01-A. Las entradas anteriores que registran U quedan como historia de la decisión y no describen el estado vigente.
+- L no declara el store inerte ni autoriza la primera creación. P01-G permanece PENDING/UNKNOWN; la regla provisional 10.7 conserva sus condiciones; R1 y el criterio operacional E2/E3 aprobados el 2026-11-02 delimitan el entorno, pero la evidencia E2/E3 sigue PARTIAL / NOT CLOSED.
+- No se crea `BootstrapAuthority` ni una raíz paralela. La fuente normativa aplicable a la primera creación local sigue siendo la única decisión pendiente de propietario; la evidencia técnica de invocación/destino permanece RE-01/RE-02 UNKNOWN.
+- Estado: P01-A L DECIDED; P01-G PENDING/UNKNOWN; primera creación STOP; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; M0 INCOMPLETO.
+- Referencias: [decisión P01-A=L y reconciliación Qwen](NCS_M0_P01_OWNER_DECISION_L_AND_QWEN_RECONCILIATION_2026-11-01.md) y [brecha finita P01-G](NCS_M0_P01_G_FINITE_REMAINING_RULE_AND_OWNER_DECISION_2026-11-02.md).
+- Solo reconciliación documental; no autoriza implementación, tests, CI, bootstrap ni efectos protegidos.
