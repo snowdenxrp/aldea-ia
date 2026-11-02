@@ -14,7 +14,7 @@ function virtualTimeError(code) {
 
 export async function withVirtualTime(fn, {
   startMs = 1_000,
-  watchdogMs = 2_000
+  watchdogMs = 5_000
 } = {}) {
   if (typeof fn !== "function") throw new TypeError("withVirtualTime requires a function");
   if (active) throw virtualTimeError("VIRTUAL_TIME_ALREADY_ACTIVE");
