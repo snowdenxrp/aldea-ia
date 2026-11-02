@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { pathToFileURL } from "node:url";
 import { createInterface } from "node:readline/promises";
 import { bootstrapNexoContinuityStore, preflightNexoContinuityBootstrap } from "./nexo-continuity.mjs";
+import { NEXO_CONTINUITY_SCHEMA, NEXO_CONTINUITY_SCHEMA_VERSION } from "../src/nexo/core/continuity-snapshot.mjs";
 
 export function parseNexoContinuityBootstrapArguments(argv) {
   if (!Array.isArray(argv) || argv.some(value => typeof value !== "string")) return { status: "blocked", code: "NEXO_CONTINUITY_BOOTSTRAP_ARGUMENTS_INVALID" };
@@ -30,7 +31,7 @@ function operationDigest(destination) {
     root: destination.root,
     relativePath: destination.relativePath,
     destination: destination.filePath,
-    snapshot: { schema: "NEXO_CONTINUITY", schemaVersion: 1, missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: [] },
+    snapshot: { schema: NEXO_CONTINUITY_SCHEMA, schemaVersion: NEXO_CONTINUITY_SCHEMA_VERSION, missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: [] },
     window: "single-foreground-invocation"
   };
   return createHash("sha256").update(JSON.stringify(operation), "utf8").digest("hex");
