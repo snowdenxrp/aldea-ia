@@ -1,3 +1,27 @@
+## Delta — evidencia de separación operacional de bootstrap (2026-11-01)
+
+Esta actualización reconcilia la matriz P01-A…P01-H con el código y las pruebas presentes en el SHA `7a7f3ffa56af116a4f7222d22ff7638c9b470f92`. No reabre el inventario de callers.
+
+### Propiedad demostrada a nivel de API y prueba
+
+- `bootstrapNexoContinuityStore()` existe en `src/nexo/core/continuity-service.mjs`. Acepta únicamente `root`, `relativePath` y opciones de lock; rechaza opciones extra como `legacyMemory`; deriva e informa el `filePath` efectivo; usa inicialización exclusiva; devuelve el resultado y el destino, pero no carga legacy ni construye/devuelve un owner operacional.
+- `tests/nexo/continuity-contract.test.mjs` prueba raíz explícita y destino efectivo, snapshot inicial acotado, ausencia de owner en el resultado, conflicto sin sobrescritura, preservación de temporal ambiguo, rechazo de ruta relativa de escape y rechazo de `legacyMemory`.
+- `runNexoChronicleAppend()` rechaza `initializeContinuity: true` con `NEXO_M0_CONTINUITY_BOOTSTRAP_OPERATION_SEPARATION_REQUIRED` antes de abrir/inicializar stores, admitir misión o ejecutar pasos.
+- `tests/nexo/chronicle-runtime.test.mjs` prueba que la combinación se bloquea sin crear Continuity ni Chronicle y sin dispatch. `tests/nexo/entrypoint.test.mjs` prueba tanto la frontera CLI como la llamada directa a la API de aplicación.
+- El handoff `NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md` registra los cinco workflows CI SUCCESS ligados al mismo SHA `7a7f3ffa56af116a4f7222d22ff7638c9b470f92`, además de `npm test` local PASS.
+
+### Clasificación correcta y límites
+
+- **P01-B como propiedad de separación operacional de la matriz:** IMPLEMENTADA Y CI-VERIFICADA en la frontera probada: la ruta Chronicle no puede combinar inicialización de Continuity con admisión/ejecución, y la función dedicada no devuelve owner ni continúa a Chronicle. La evidencia es de tests con fixtures temporales y SHA indicado; no es ejecución de bootstrap en el POCO ni publicación real.
+- **P01-B/B2 como decisión del propietario en el Registro D0–D3 §10.6:** permanece **C — NO SELECCIONAR TODAVÍA**. Esta decisión trata de la alternativa de aislamiento; no se modifica ni se sustituye por la evidencia de código anterior.
+- No se ha establecido un CLI/launcher M0 de bootstrap en el POCO ni se ha ejecutado una invocación operacional concreta. RE-01/RE-02 y la admisibilidad ambiental siguen pendientes.
+- Esta evidencia no resuelve P01-A/P01-G (objeto y regla legítima), P01-C/P01-D (quiescencia/exclusión), P01-E/P01-F (estado previo/UNKNOWN y reconciliación), ni P01-H global (trazabilidad operacional al destino/ventana).
+- No se debe interpretar la existencia de la función dedicada ni el resultado `committed` de un fixture como autorización para crear el store real.
+
+### Estado
+
+P-01 permanece OPEN/UNKNOWN y primera creación STOP. M0 INCOMPLETO; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; efectos protegidos STOP. La autorización técnica del propietario para terminar M0 permite seguir desarrollando y verificando el código dentro de alcance, pero no cambia estos gates operacionales.
+
 ## Delta documental — contrato verificable del entorno restringido de primera publicación (2026-10-29)
 
 **Base normativa:** decisión del propietario [NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md](NCS_M0_OWNER_DECISION_RESTRICTED_BOOTSTRAP_ENVIRONMENT_2026-10-27.md). Esta delta operacionaliza los cinco requisitos ya establecidos en esa decisión; no elige mecanismo, no ratifica D1/D2/D3 y no autoriza ejecución.
