@@ -148,3 +148,22 @@ La decisión del propietario del 2026-10-27 permite formular la garantía para u
 El propietario debe aceptar o rechazar explícitamente que la garantía M0 excluya root/OS comprometido y procesos maliciosos con el mismo UID/espacio de confianza de Termux, mientras exige excluir de la ventana todos los demás writers/launchers conocidos y bloquear ante cualquier actor desconocido. Esta aceptación no autoriza bootstrap ni publicación real.
 
 Estado: R1 PROPOSED; environment NOT SELECTED/NOT PROVEN; RE-01/RE-02 UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; P01-G PENDING/UNKNOWN; STOP; M0 INCOMPLETO.
+ 
+---
+
+## DELTA VIGENTE — PERFIL TERMUX Y DESTINO REAL (2026-11-02)
+
+Esta delta supersede los estados históricos inferiores que dicen que Termux no está instalado, que R1 no fue aceptado, que el launcher no existe o que el destino no está seleccionado.
+
+- R1: ACCEPTED BY OWNER. El alcance excluye OS comprometido/root o privilegios equivalentes y procesos maliciosos dentro del mismo UID/dominio de confianza Termux. Los actores legítimos conocidos deben controlarse durante una ventana definida; actor relevante no controlado detectado => STOP. No se exige un negativo universal fuera del ámbito observable.
+- Entorno: POCO X7 Pro / Android 16; Termux + Node.js instalados y usados. HOME privado observado como `/data/data/com.termux/files/home`, permisos de directorio `0700`; UID Termux `10378`.
+- Destino ratificado: `$HOME/.nexo-continuity.json`, fuera del repo y almacenamiento compartido.
+- RE-01: IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX.
+- RE-02: IMPLEMENTED / CI-VERIFIED / REAL-DESTINATION PREFLIGHT EXERCISED. En la ejecución del 2026-11-02 el launcher presentó raíz canónica, destino efectivo, snapshot vacío, ventana y SHA `b8a44d37b957d6e8b91c38df81dcf288dfaf839bbd582e735ff1110452f0d941`. La entrada `CANCELAR` produjo `NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED`, `writeAttempted:false`.
+- E2: PARTIAL / NOT CLOSED. La evidencia de procesos y actores es puntual; no prueba control sostenido de escritores durante una ventana de publicación.
+- E3: PARTIAL / NOT CLOSED. Entry point manual y TTY ejercitados; el control de relanzamiento durante una ventana concreta aún no está demostrado.
+- E4: PARTIAL / NOT CLOSED — REAL-DESTINATION PREFLIGHT. La ruta fue resuelta y presentada bajo HOME privado; no hubo creación ni lectura post-publicación.
+- No repetir el inventario de procesos, paquetes, perfiles, jobs o callers ya realizado. No repetir el launcher. No desinstalar apps sin evidencia de interferencia.
+- La ejecución se canceló antes de intentar escribir. No hay autorización de instancia, `authorization: NOT_EVALUATED`; primera publicación, commissioning y efectos protegidos permanecen STOP; M0 INCOMPLETO.
+
+La aceptación R1 y el preflight del destino no son autorización de publicación ni evidencia de ROOT_READY.
