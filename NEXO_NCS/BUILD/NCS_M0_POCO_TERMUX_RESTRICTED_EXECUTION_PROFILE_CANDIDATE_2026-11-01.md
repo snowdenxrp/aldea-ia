@@ -80,3 +80,40 @@ Antes de implementar/exponer un launcher que pueda crear el archivo, deben queda
 - Raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación y efectos protegidos STOP; M0 INCOMPLETO.
 
 No se ejecutó bootstrap ni se creó Continuity real.
+
+---
+
+## DELTA — PROPUESTA DE LÍMITE DE AMENAZA R1 PARA TERMUX (2026-11-02)
+
+**Estado: RECOMENDACIÓN TÉCNICA; NO RATIFICADA POR EL PROPIETARIO; NO EVIDENCIADA END-TO-END.**
+
+La decisión del propietario del 2026-10-27 permite formular la garantía para un entorno restringido, sin prometer exclusión universal frente a cualquier proceso local no cooperativo. No define todavía qué actores se excluyen. Se propone someter a decisión el siguiente límite:
+
+### R1 — frontera propuesta
+
+- **Base confiable:** Android 16/HyperOS no rooteado, bootloader bloqueado y Verified Boot green (evidencia de dispositivo ya registrada); aislamiento de aplicaciones Android y almacenamiento privado de Termux.
+- **Destino:** exclusivamente bajo el HOME privado de Termux; no almacenamiento compartido, URI compartido ni ruta accesible desde Nexo M1. La ruta concreta aún no está elegida ni verificada.
+- **Proceso incluido:** una única invocación manual del futuro launcher M0 en primer plano, dentro de una única sesión Termux.
+- **Procesos que deben quedar excluidos y ser comprobablemente ausentes/detenidos:** otras sesiones/procesos Termux, procesos Termux:API con acceso relevante, Termux:Boot, servicios/daemons, jobs/scheduler, cron, automatizadores y cualquier launcher conocido capaz de iniciar un writer durante la ventana.
+- **Actores fuera del modelo de garantía:** sistema operativo comprometido, root/privilegios equivalentes y proceso malicioso que comparta el UID/espacio de confianza de Termux. Cualquier proceso adicional conocido con acceso al destino, o cuyo estado no pueda determinarse, mantiene STOP.
+- **Procedimiento candidato:** detener mediante Android Settings > Apps > Force stop los paquetes Termux y los add-ons pertinentes antes de iniciar la ventana; verificar jobs/servicios/launchers; abrir Termux manualmente; ejecutar solo la invocación M0 dedicada cuando exista; no abrir otra sesión ni lanzar otros procesos hasta terminar. La vigencia de la condición debe cubrir toda la ventana, no solo una captura inicial.
+
+### Fundamento externo y cautelas
+
+- Android documenta el Application Sandbox basado en UID único por aplicación y aislamiento de datos; esto respalda limitar acceso entre apps, no excluir procesos que comparten UID ni privilegios root: https://source.android.com/docs/security/app-sandbox
+- Android 15 mantiene un paquete en estado stopped hasta acción directa/indirecta del usuario y cancela pending intents al forzar detención; el primer lanzamiento posterior puede volver a registrar callbacks: https://developer.android.com/about/versions/15/behavior-changes-all
+- El botón Stop del Task Manager para apps con foreground service mata procesos, pero los jobs y alarms programados siguen ejecutándose; no usarlo como sustituto de Force stop: https://developer.android.com/develop/background-work/services/fgs/handle-user-stopping
+- Termux:Boot requiere instalar/iniciar el add-on y scripts en `~/.termux/boot/`; la ausencia observada del directorio no demuestra por sí sola ausencia de todo launcher: https://github.com/termux/termux-boot
+- Android permite UID compartido bajo condiciones de firma/configuración; no asumir que cada add-on tiene UID independiente sin comprobarlo.
+
+### Evidencia actual frente a R1
+
+- A favor, parcial: Termux instalado/usado; Node 26.4.0; `~/.termux/boot` no observado; `termux-job-scheduler --pending` informó que no había jobs; `sv/runsv/runsvdir` no instalados; perfiles de shell revisados sin referencias relevantes; captura puntual `ps -A`; Verified Boot green/bootloader bloqueado según registro.
+- No satisfecho/UNKNOWN: inventario completo de paquetes/add-ons y UID compartidos; estado efectivo de `ssh-agent`/`sshd` (directorios existen, supervisor no instalado); exclusión de todas las sesiones/procesos con acceso; control de relanzamiento sostenido durante la ventana; ruta privada exacta del destino; launcher M0 inexistente.
+- No usar una captura puntual de procesos como prueba suficiente. Si la cobertura del inventario o la capacidad de mantener la ventana es parcial, R1 no pasa.
+
+### Decisión pendiente
+
+El propietario debe aceptar o rechazar explícitamente que la garantía M0 excluya root/OS comprometido y procesos maliciosos con el mismo UID/espacio de confianza de Termux, mientras exige excluir de la ventana todos los demás writers/launchers conocidos y bloquear ante cualquier actor desconocido. Esta aceptación no autoriza bootstrap ni publicación real.
+
+Estado: R1 PROPOSED; environment NOT SELECTED/NOT PROVEN; RE-01/RE-02 UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; P01-G PENDING/UNKNOWN; STOP; M0 INCOMPLETO.
