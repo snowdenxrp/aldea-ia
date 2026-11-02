@@ -1,3 +1,15 @@
+## DELTA — EVIDENCIA TERMUX EVALUADA CONTRA RE-01…RE-09 (2026-11-01)
+
+- Nueva evidencia consolidada en [NCS_M0_TERMUX_E2_E3_OBSERVATION_DELTA_2026-11-01.md](BUILD/NCS_M0_TERMUX_E2_E3_OBSERVATION_DELTA_2026-11-01.md), commit `7af20f45fe6156784293485146d341295728a50a`.
+- El checkout local quedó en `7dda703a`, limpio. `ps -A` mostró solo la shell y `ps` en esa captura; el formato previo `-o USER,...` no es compatible con el `ps` disponible.
+- `$PREFIX/var/service` contiene definiciones `ssh-agent` y `sshd`; `sv/runsv/runsvdir` no están instalados, por lo que su estado efectivo no se pudo consultar. No se infiere que estén activos.
+- `~/.termux/boot` no existe; `termux-job-scheduler --pending` informó `No jobs found`, aunque el scheduler está disponible; tres perfiles de shell revisados no contienen referencias relevantes. Todo ello es evidencia puntual/parcial, no prevención sostenida de nuevos lanzamientos.
+- Evaluación exacta RE-01…RE-09 incorporada al delta. RE-03/RE-05/RE-07/RE-08/RE-09 tienen evidencia parcial; RE-01/RE-02/RE-04/RE-06 no están satisfechos o siguen UNKNOWN para una operación concreta. No declarar el entorno admisible.
+- E2/E3 permanecen UNKNOWN; E4 NOT READY. P01-C/P01-D OPEN/UNKNOWN; P01-B no tiene PASS end-to-end; P01-A/P01-G PENDING/UNKNOWN; P01-E/P01-F/P01-H conservan estados previos.
+- No repetir el inventario local de Termux ni el censo de callers. Siguiente trabajo: P01-A/G y P01-B sobre contratos existentes, sin bootstrap real ni creación de Continuity.
+
+---
+
 ## DELTA — EVIDENCIA TERMUX Y LÍMITE ACTUAL DE WRITER/PATH (2026-11-01)
 
 - Termux ya está **instalado y usado para pruebas locales** en el POCO; se corrige la nota previa que decía no presumir su instalación. El expediente actualizado es `BUILD/NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md`.
