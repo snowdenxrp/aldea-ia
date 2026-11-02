@@ -1,3 +1,15 @@
+## DELTA — P01-A=L CONSOLIDADO; P01-G REDUCIDO A UNA DECISIÓN NORMATIVA (2026-11-02)
+
+- **P01-A = L** fue aprobado por el propietario el 2026-11-01: Continuity M0 es persistencia operacional local, con influencia acotada sobre el flujo de Nexo, sin establecer identidad/Constitución/autoridad constitucional ni conceder por sí misma permiso para efectos protegidos. Reemplaza el U histórico; no volver a preguntar ni reabrir la clasificación.
+- La regla provisional de primera creación aprobada el 2026-10-28 sigue vigente: ausencia/código/éxito técnico no son permiso; propósito/clasificación, regla legítima y precondiciones verificables deben definirse; bootstrap separado; falta/ambigüedad => STOP/UNKNOWN.
+- R1 y el criterio operacional delimitado E2/E3 fueron aceptados el 2026-11-02. La evidencia E2/E3 del POCO/Termux sigue PARTIAL / NOT CLOSED; no hay invocación M0 ni destino efectivo identificados.
+- **P01-G sigue PENDING/UNKNOWN**, pero la brecha ya está acotada: decidir si la decisión expresa del propietario puede ser la fuente normativa para una inicialización local no autoritativa (sin autoridad constitucional) y cómo la frontera reconoce esa autorización sin caller self-assertion ni autoridad paralela. El Constitution Authority Context no debe ampliarse por analogía.
+- RE-01/RE-02 UNKNOWN: falta launcher M0 dedicado y vínculo entre raíz explícita y destino efectivo. P01-B/B2 sigue C — NO SELECCIONAR TODAVÍA; P01-C/D OPEN/UNKNOWN; E4 NOT READY; raíz legítima PENDING/UNKNOWN.
+- Expediente de brecha finita: [NCS_M0_P01_G_FINITE_REMAINING_RULE_AND_OWNER_DECISION_2026-11-02.md](BUILD/NCS_M0_P01_G_FINITE_REMAINING_RULE_AND_OWNER_DECISION_2026-11-02.md).
+- Sin bootstrap, publicación real, commissioning ni efectos protegidos. `authorization: NOT_EVALUATED`; M0 INCOMPLETO. Solo documentación; no runtime/tests/CI ni cambios de dispositivo.
+
+---
+
 ## DELTA — R1 RATIFICADO POR EL PROPIETARIO Y EVIDENCIA OPERACIONAL E2/E3 (2026-11-02)
 
 - R1 pasa de propuesta a **ACCEPTED BY OWNER**. Se acepta la garantía operacional delimitada: propietario como único lanzador manual en una sesión interactiva Termux; ningún otro escritor autorizado durante la ventana; detección de actor relevante no controlado => STOP; riesgos residuales UNKNOWN explícitos; no se exige exclusión universal ni inventario exhaustivo de Android.
