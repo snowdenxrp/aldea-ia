@@ -1,3 +1,45 @@
+## DELTA — PUBLICACIÓN RESTRINGIDA REAL Y VERIFICACIÓN POST-ESCRITURA (2026-11-02)
+
+Este delta actualiza el estado de E4 con evidencia del destino real. No eleva E2/E3 ni altera los gates de autoridad.
+
+### Autorización y operación
+- El propietario autorizó una única inicialización vacía en `$HOME/.nexo-continuity.json`; la autorización no incluye commissioning, ROOT_READY, autoridad constitucional ni efectos protegidos.
+- Sesión Termux reabierta manualmente; checkout local en rama `ncs-lumina-decoupling-2026-10-29`, HEAD observado `d6b657c81fae518fef214c727b9130ca0a40cac8`, árbol limpio antes de ejecutar.
+- Launcher ejecutado con raíz explícita `$HOME` y ruta relativa `.nexo-continuity.json`.
+- Presentó raíz canónica `/data/data/com.termux/files/home`, destino efectivo `/data/data/com.termux/files/home/.nexo-continuity.json`, snapshot vacío, ventana `2026-11-02T23:25:28.960Z`–`2026-11-02T23:30:28.968Z`, SHA-256 de operación `2a9114a056eaa483d72dc08243c29f7e7d85b8b8fe194a60c77fda8e81a6d7e9`.
+- Confirmación exacta del propietario: `PUBLICAR 2a9114a056eaa483d72dc08243c29f7e7d85b8b8fe194a60c77fda8e81a6d7e9`.
+- Resultado exacto resumido: `status=committed`, `storeRevision=0`, destino correcto, snapshot operacional v1 vacío, `authorization=NOT_EVALUATED`, `continuation=STOPPED`.
+
+### Verificación independiente post-escritura
+- En un proceso Node separado y después de terminar el launcher, `lstat`, `realpath` y `readFile` confirmaron:
+  - Ruta y ruta real: `/data/data/com.termux/files/home/.nexo-continuity.json`.
+  - Archivo regular: true; symlink: false.
+  - UID propietario coincide con UID del proceso Termux.
+  - Permisos: `0600`.
+  - Tamaño: 283 bytes.
+  - SHA-256 del archivo: `3a1d5f25f00c7ba0e030fe8b99dda074b48f9b7950bd80d8a86f46de36236a81`.
+- JSON completo observado:
+  - Envelope raíz: `schema=NEXO_CONTINUITY_STORE`, `schemaVersion=1`, `storeRevision=0`.
+  - `snapshot.schema=NEXO_OPERATIONAL_CONTINUITY`, `snapshot.schemaVersion=1`.
+  - `snapshot.missions`, `attempts`, `doNotRepeat`, `executions`, `effectJournal`: todos arrays vacíos.
+- La primera comprobación de claves/arrays fue mal aplicada porque esperaba el snapshot en la raíz. La estructura real está anidada bajo `snapshot`; el JSON completo confirma el envelope esperado y reconcilia la salida de commit. No se modificó el archivo durante la inspección.
+
+### Evaluación
+| Área | Estado | Alcance |
+|---|---|---|
+| RE-01 | IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX | Launcher dedicado ejecutado en sesión interactiva foreground |
+| RE-02 | IMPLEMENTED / CI-VERIFIED / REAL DESTINATION USED | Raíz canónica y destino efectivo presentados y luego utilizados |
+| Primera publicación restringida | COMPLETED | Solo inicialización vacía de una instancia local |
+| E4 | REAL-DESTINATION POST-WRITE OBJECT CHECK VERIFIED | Ruta, tipo, UID, modo, tamaño, hash y estructura del objeto real verificados |
+| E2 | PARTIAL / NOT CLOSED | No se demuestra exclusión sostenida de escritores fuera de la ventana observada |
+| E3 | PARTIAL / NOT CLOSED | No se demuestra prevención universal/sostenida de relanzamiento; se conserva el límite R1 aceptado |
+
+Límites: la lectura posterior demuestra que el objeto puede leerse desde un proceso independiente después del commit. No demuestra durabilidad frente a pérdida abrupta de energía, atomicidad frente a lectores no cooperativos, exclusión de escritores no cooperativos ni seguridad frente a procesos maliciosos con el mismo UID.
+
+Gates: `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; `ROOT_READY` no establecido; commissioning STOP; efectos protegidos STOP; continuidad runtime STOPPED. NCS M0 INCOMPLETO. No repetir bootstrap ni inventario genérico sin cambio o contradicción concreta.
+
+---
+
 ## DELTA — RE-01/RE-02 Y EJERCICIO DEL LAUNCHER EN TERMUX (2026-11-02)
 
 Este delta actualiza la evaluación de la sección 3 y la continuación de la sección 5. La evidencia R1/E2/E3 anterior se conserva; no se reinterpreta como cierre operacional.
