@@ -1,3 +1,20 @@
+## DELTA — R1 RATIFICADO POR EL PROPIETARIO; CANDIDATURA DEL ENTORNO SIGUE SIN ADMISIÓN (2026-11-02)
+
+**R1: ACCEPTED BY OWNER.** El propietario acepta la frontera de amenaza y la garantía operacional delimitada registradas en [NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md](NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md).
+
+Esta aceptación reemplaza las frases históricas de este documento que indican que R1 está pendiente de ratificación. No equivale a seleccionar/admitir Termux como entorno para la primera publicación ni a cerrar E2/E3:
+- E2 — control operacional de escritura: PARTIAL / NOT CLOSED.
+- E3 — control operacional de lanzamiento: PARTIAL / NOT CLOSED.
+- E4: NOT READY.
+- RE-01/RE-02: UNKNOWN; no existe launcher M0 dedicado ni raíz/destino efectivo ligado a una invocación.
+- La evidencia del dispositivo recibida el 2026-11-02 está consolidada en el delta enlazado arriba. No repetir el inventario genérico ya realizado sin cambio o contradicción concreta.
+
+La garantía R1 excluye OS comprometido/root o privilegios equivalentes y procesos maliciosos con el mismo UID/dominio de confianza Termux; exige control de actores legítimos conocidos durante la ventana, STOP ante actor relevante no controlado detectado y declaración de UNKNOWN residuales. No exige demostrar un negativo universal ni inventariar exhaustivamente Android.
+
+No autoriza bootstrap, primera publicación, commissioning ni efectos protegidos. `authorization: NOT_EVALUATED`; raíz PENDING/UNKNOWN; P01-G PENDING/UNKNOWN; M0 INCOMPLETO.
+
+---
+
 ## DELTA DE EVIDENCIA OBSERVADA — TERMUX DISPONIBLE (2026-11-01)
 
 Estado actualizado: Termux está instalado y fue usado para ejecutar las pruebas locales de Nexo desde `~/ncs-m0`. Esto corrige la nota previa que lo trataba como no confirmado. No ratifica el entorno ni autoriza bootstrap.
