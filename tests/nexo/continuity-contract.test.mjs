@@ -1501,3 +1501,99 @@ for (const [method, fields] of accessorCallCases) {
     await fs.rm(bootstrapRoot, { recursive: true, force: true });
   }
 }
+
+
+// M0 bootstrap rejects a symlink used as the explicit root itself.
+{
+  const symlinkCaseRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-m0-bootstrap-root-symlink-"));
+  const actualRoot = path.join(symlinkCaseRoot, "actual");
+  const linkedRoot = path.join(symlinkCaseRoot, "linked");
+  try {
+    await fs.mkdir(actualRoot);
+    await fs.symlink(actualRoot, linkedRoot);
+    await assert.rejects(
+      bootstrapNexoContinuityStore({ root: linkedRoot, relativePath: "continuity.json" }),
+      error => error?.code === "NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK",
+      "bootstrap must reject a symlink used as the explicit root"
+    );
+    await assert.rejects(
+      () => fs.access(path.join(actualRoot, "continuity.json")),
+      error => error?.code === "ENOENT"
+    );
+  } finally {
+    await fs.rm(symlinkCaseRoot, { recursive: true, force: true });
+  }
+}
+
+// M0 bootstrap rejects symlinks in relative destination directory components.
+{
+  const symlinkCaseRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-m0-bootstrap-parent-symlink-"));
+  const actualParent = path.join(symlinkCaseRoot, "actual-parent");
+  const linkedParent = path.join(symlinkCaseRoot, "linked-parent");
+  try {
+    await fs.mkdir(actualParent);
+    await fs.symlink(actualParent, linkedParent);
+    await assert.rejects(
+      bootstrapNexoContinuityStore({ root: symlinkCaseRoot, relativePath: "linked-parent/continuity.json" }),
+      error => error?.code === "NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK",
+      "bootstrap must reject a symlink in the relative destination directory chain"
+    );
+    await assert.rejects(
+      () => fs.access(path.join(actualParent, "continuity.json")),
+      error => error?.code === "ENOENT"
+    );
+  } finally {
+    await fs.rm(symlinkCaseRoot, { recursive: true, force: true });
+  }
+}
+
+// Any reserved temporary name is ambiguous, including directories and symlinks.
+for (const artifactKind of ["directory", "symlink"]) {
+  const ambiguousRoot = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-m0-bootstrap-temp-kind-"));
+  const destination = path.join(ambiguousRoot, "continuity.json");
+  const artifact = `${destination}.tmp`;
+  const target = path.join(ambiguousRoot, "target");
+  try {
+    if (artifactKind === "directory") await fs.mkdir(artifact);
+    else {
+      await fs.writeFile(target, "symlink target", "utf8");
+      await fs.symlink(target, artifact);
+    }
+    await assert.rejects(
+      bootstrapNexoContinuityStore({ root: ambiguousRoot, relativePath: "continuity.json" }),
+      error => error?.code === "NEXO_CONTINUITY_BOOTSTRAP_TEMPORARY_STATE_UNKNOWN",
+      `bootstrap must reject a reserved temporary ${artifactKind}`
+    );
+    await assert.rejects(
+      () => fs.access(destination),
+      error => error?.code === "ENOENT"
+    );
+  } finally {
+    await fs.rm(ambiguousRoot, { recursive: true, force: true });
+  }
+}
+
+// The store-level lock-protected recheck also rejects non-file reserved artifacts.
+for (const artifactKind of ["directory", "symlink"]) {
+  const ambiguousDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "nexo-exclusive-init-temp-kind-"));
+  const destination = path.join(ambiguousDirectory, "continuity.json");
+  const artifact = `${destination}.tmp`;
+  const target = path.join(ambiguousDirectory, "target");
+  try {
+    if (artifactKind === "directory") await fs.mkdir(artifact);
+    else {
+      await fs.writeFile(target, "symlink target", "utf8");
+      await fs.symlink(target, artifact);
+    }
+    const store = createNexoContinuityStore({ filePath: destination });
+    const result = await store.initializeExclusive(emptySnapshot);
+    assert.equal(result.status, "failed");
+    assert.equal(result.code, "NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN");
+    await assert.rejects(
+      () => fs.access(destination),
+      error => error?.code === "ENOENT"
+    );
+  } finally {
+    await fs.rm(ambiguousDirectory, { recursive: true, force: true });
+  }
+}
