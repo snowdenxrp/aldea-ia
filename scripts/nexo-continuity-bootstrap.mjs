@@ -78,7 +78,7 @@ export async function runNexoContinuityBootstrapCli(argv, io = process) {
       io.stdout.write(JSON.stringify({ status: "blocked", code: "NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED", writeAttempted: false }) + "\n");
       return 1;
     }
-    const result = await bootstrapNexoContinuityStore({ root: parsed.root, relativePath: parsed.relativePath });
+    const result = await bootstrapNexoContinuityStore({ root: parsed.root, relativePath: parsed.relativePath, expectedDestination: destination.filePath });
     io.stdout.write(JSON.stringify({ ...result, authorization: "NOT_EVALUATED", continuation: "STOPPED" }) + "\n");
     return result.status === "committed" ? 0 : 1;
   } catch (error) {
