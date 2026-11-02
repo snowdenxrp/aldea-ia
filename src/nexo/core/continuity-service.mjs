@@ -131,7 +131,41 @@ export async function bootstrapNexoContinuityStore(options = {}) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_RELATIVE_PATH_INVALID");
   }
 
-  const resolvedRoot = path.resolve(root);
+  const lexicalRoot = path.resolve(root);
+  let rootStat;
+  try { rootStat = await fs.lstat(lexicalRoot); }
+  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
+  if (rootStat.isSymbolicLink()) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK");
+  }
+  if (!rootStat.isDirectory()) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
+  }
+
+  // Canonicalize the explicit anchor so platform aliases in its ancestors do
+  // not change the effective destination after validation. The anchor itself
+  // and every relative parent component must be real directories, not symlinks.
+  let resolvedRoot;
+  try { resolvedRoot = await fs.realpath(lexicalRoot); }
+  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
+
+  const relativeDirectory = path.dirname(relativePath);
+  let parentDirectory = resolvedRoot;
+  if (relativeDirectory !== ".") {
+    for (const segment of relativeDirectory.split(path.sep)) {
+      parentDirectory = path.join(parentDirectory, segment);
+      let parentStat;
+      try { parentStat = await fs.lstat(parentDirectory); }
+      catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN"); }
+      if (parentStat.isSymbolicLink()) {
+        throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PATH_SYMLINK");
+      }
+      if (!parentStat.isDirectory()) {
+        throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN");
+      }
+    }
+  }
+
   const filePath = path.resolve(resolvedRoot, relativePath);
   const relativeDestination = path.relative(resolvedRoot, filePath);
   if (!relativeDestination || relativeDestination === ".." ||
@@ -140,16 +174,8 @@ export async function bootstrapNexoContinuityStore(options = {}) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_DESTINATION_OUTSIDE_ROOT");
   }
 
-  let rootStat;
-  try { rootStat = await fs.stat(resolvedRoot); }
-  catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_UNAVAILABLE"); }
-  if (!rootStat.isDirectory()) {
-    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_ROOT_INVALID");
-  }
-
-  // For M0 first publication, pre-existing temp artifacts are UNKNOWN state.
-  // The exclusive store path never cleans or reuses them; stop before calling it.
-  const parentDirectory = path.dirname(filePath);
+  // For M0 first publication, every pre-existing reserved temp name is
+  // ambiguous, regardless of whether it names a file, directory, or symlink.
   const baseName = path.basename(filePath);
   let parentEntries;
   try {
@@ -157,8 +183,8 @@ export async function bootstrapNexoContinuityStore(options = {}) {
   } catch {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_PARENT_STATE_UNKNOWN");
   }
-  if (parentEntries.some(entry => entry.isFile() &&
-      (entry.name === `${baseName}.tmp` || entry.name.startsWith(`${baseName}.tmp-`)))) {
+  if (parentEntries.some(entry =>
+      entry.name === `${baseName}.tmp` || entry.name.startsWith(`${baseName}.tmp-`))) {
     throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_TEMPORARY_STATE_UNKNOWN");
   }
 
