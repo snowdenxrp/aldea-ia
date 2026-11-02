@@ -149,3 +149,17 @@ The full `npm test` chain includes `tests/nexo/continuity-contract.test.mjs`; th
 - M0 remains INCOMPLETO; P01-A = L DECIDED BY OWNER; P01-G PENDING/UNKNOWN; P01-C/D OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; first publication and protected effects STOP; PR #110 OPEN / DRAFT / NOT MERGED.
 
 Continue from the newest STATUS delta. Do not repeat the full suite or the new negative tests absent a code change or concrete contradiction. Continue P01-G and bounded environmental writer/launcher exclusion using existing artifacts; do not execute bootstrap or first publication.
+
+---
+
+## Addendum — missing dedicated M0 bootstrap launcher (2026-11-02)
+
+Static inspection at code SHA `5988d9b4c6caa22ec093986a25db80ca842902cc` confirms:
+- `bootstrapNexoContinuityStore(options)` exists as a tested service API.
+- `scripts/nexo-continuity.mjs` is only a re-export.
+- `scripts/nexo.mjs` has no bootstrap subcommand.
+- `package.json` has no M0 bootstrap script.
+
+Thus API/fixture PASS is not an operational invocation. RE-01 (identified invocation) and RE-02 (effective root/destination tied to that invocation) remain UNKNOWN. Termux + Node, one manual foreground session and a private Termux HOME destination remain a technical recommendation only, not a ratified environment or launch path. Do not improvise a script or run bootstrap before P01-G and the first-publication contract are resolved.
+
+No runtime/test/workflow change, no real bootstrap, no Continuity creation, no commissioning and no protected effects.
