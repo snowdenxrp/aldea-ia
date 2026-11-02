@@ -1,3 +1,15 @@
+## DELTA — P01-G RATIFICADO POR EL PROPIETARIO; AUTORIZACIÓN NORMATIVA ACOTADA (2026-11-02)
+
+- El propietario ratificó la regla P01-G: la primera creación de Continuity M0, clasificada L y no autoritativa, puede fundamentarse en autorización operacional humana explícita, única y acotada, separada de la autoridad constitucional.
+- Alcance: una instancia, destino efectivo, SHA, snapshot y ventana concretos; invocación manual foreground/terminal; mostrar el destino efectivo antes de escribir; verificar precondiciones; terminar tras inicialización sin owner operacional ni continuación a Chronicle/admisión/dispatch.
+- La autorización no se almacena dentro del objeto creado, no se deriva de su ausencia y no se convierte en credential/raíz. No establece ROOT_READY, autoridad constitucional, commissioning ni permiso para efectos protegidos.
+- Condición de validez: Core debe admitir decisión humana externa como base normativa suficiente para persistencia local no autoritativa, y la frontera debe reconocerla sin caller self-assertion ni autoridad paralela. Si no puede demostrarse, STOP/UNKNOWN.
+- **P01-G = RULE RATIFIED BY OWNER**. Esto no cierra RE-01/RE-02, E2/E3 ni E4; no autoriza implementación, tests/CI, bootstrap, publicación real ni cambios del dispositivo.
+- Estado global sin cambio: `authorization: NOT_EVALUATED`; raíz legítima PENDING/UNKNOWN; E2/E3 PARTIAL / NOT CLOSED; E4 NOT READY; primera creación/commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+- Siguiente trabajo documental finito: contrastar la regla ratificada con el contrato canónico de Core y congelar los requisitos RE-01/RE-02 (launcher identificable + raíz/destino efectivos). No inventar un flag ni una autoridad paralela.
+
+---
+
 ## DELTA — P01-A=L CONSOLIDADO; P01-G REDUCIDO A UNA DECISIÓN NORMATIVA (2026-11-02)
 
 - **P01-A = L** fue aprobado por el propietario el 2026-11-01: Continuity M0 es persistencia operacional local, con influencia acotada sobre el flujo de Nexo, sin establecer identidad/Constitución/autoridad constitucional ni conceder por sí misma permiso para efectos protegidos. Reemplaza el U histórico; no volver a preguntar ni reabrir la clasificación.
