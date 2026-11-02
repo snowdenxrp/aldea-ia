@@ -3260,3 +3260,14 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - La recomendación no selecciona entorno, ruta ni launcher. Primero deben quedar resueltos P01-G y el contrato de primera creación; la autorización técnica de M0 no autoriza primera publicación.
 - E2/E3 UNKNOWN; E4 NOT READY; P01-A = L DECIDED BY OWNER; P01-G PENDING/UNKNOWN; P01-C/D OPEN/UNKNOWN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; STOP; M0 INCOMPLETO.
 - Solo documentación; sin cambios runtime/tests/workflows, sin bootstrap ni Continuity real.
+
+---
+
+## DELTA — PROPUESTA DE LÍMITE DE AMENAZA R1 PARA ENTORNO TERMUX (2026-11-02)
+
+- Se registró en [NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md](BUILD/NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md), commit `f2abfe2b3318285ce06a824f21ec4dc4d9d21eaf`, una propuesta R1 para delimitar el entorno restringido ya permitido por el propietario: Android sandbox + HOME privado Termux, invocación manual foreground única, exclusión verificable de otros launchers/writers y exclusión explícita de root/OS comprometido y procesos maliciosos con el mismo UID/espacio de confianza.
+- R1 es RECOMMENDATION / NOT RATIFIED. La decisión previa permite garantía restringida pero no fija estas clases concretas. Se requiere aceptación/rechazo del propietario antes de congelar el modelo de amenaza.
+- Investigación documental primaria: AOSP Application Sandbox; Android 15 package stopped state; distinción entre Force stop y Task Manager Stop; Termux:Boot. Las fuentes y límites están enlazados en el perfil. No se infiere que el POCO cumpla el procedimiento.
+- Evidencia Termux existente sigue parcial: no hay inventario completo de paquetes/UID add-ons; servicios `ssh-agent`/`sshd` no tienen estado efectivo demostrado; captura de procesos puntual; ruta destino y launcher M0 no definidos.
+- No se seleccionó entorno ni ruta, no se implementó launcher, no se ejecutó bootstrap ni se creó Continuity.
+- E2/E3 UNKNOWN; E4 NOT READY; P01-G PENDING/UNKNOWN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; STOP; M0 INCOMPLETO.
