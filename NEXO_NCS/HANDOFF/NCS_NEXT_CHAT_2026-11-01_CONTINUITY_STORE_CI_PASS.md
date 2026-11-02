@@ -1,0 +1,107 @@
+# NCS handoff — Continuity Store lock-aware publication, local suite and CI PASS
+
+Date: 2026-11-01
+Repository: `snowdenxrp/aldea-ia`
+Branch: `ncs-lumina-decoupling-2026-10-29`
+PR: #110 — OPEN / DRAFT / NOT MERGED
+Code SHA validated: `7a7f3ffa56af116a4f7222d22ff7638c9b470f92`
+Documentation commit updating STATUS: `caa0653a649eac676b34f81733e499147e2bfd7a`
+
+## 1. Exact state reached
+
+The owner fast-forward merged `FETCH_HEAD` from `38990a7a` to `7a7f3ffa` in `~/ncs-m0`. Verified:
+- HEAD = `7a7f3ffa56af116a4f7222d22ff7638c9b470f92`
+- FETCH_HEAD = same SHA
+- `git status --short` empty
+- Focused command `node tests/nexo/continuity-store.test.mjs` PASS twice.
+- Full `npm test` PASS; terminal returned to `~/ncs-m0 $` with all final test output, including:
+  - continuity service options input guard
+  - Open Loops bounded read-only projection, journal separation, privacy and UNKNOWN linkage.
+
+Do not rerun these tests absent a code change or concrete contradiction.
+
+## 2. Implementation and failure resolved
+
+### Root cause
+In Termux/Android, the original exclusive initialization attempted `fs.link(tempPath, filePath)`; it failed with `EACCES: permission denied, link`. Both concurrent initialization attempts failed. This was reproduced in an isolated temp directory; no real Continuity/bootstrap was executed.
+
+Filesystem probes in Termux:
+- symlink creation + no-overwrite: PASS
+- `copyFile(..., COPYFILE_EXCL)`: PASS
+- `open(..., 'wx')`: PASS
+- hardlink: EACCES (not usable in this environment).
+
+Do not switch to symlink: it creates path-resolution/escape questions and D3 remains unresolved. `COPYFILE_EXCL` and `open('wx')` are no-overwrite but not atomic-visibility publication mechanisms for uncooperative readers.
+
+### Commits
+- `38990a7a`: `src/nexo/core/continuity-store.mjs` changed exclusive initial publication from hardlink to `copyFile(..., COPYFILE_EXCL)`; `loadCurrent()` now acquires the per-store lock so cooperating readers do not observe the file while the copy publication is in progress. Associated contract tests cover a non-cooperating destination race and a reader waiting for publication.
+- `7a7f3ffa`: test-only correction to `tests/nexo/continuity-store.test.mjs`. Tests now expect lock-aware reads to fail/timeout under stale/live locks and inspect raw fixture bytes in scenarios where `loadCurrent()` is intentionally blocked by a lock. No production code changed in this commit.
+
+### Explicit technical limits
+- `COPYFILE_EXCL` prevents replacement of an existing destination, but is not atomic visibility to direct external readers.
+- The reader coordination applies to callers using the cooperating store API/lock. It does not prove exclusion of arbitrary writers/readers.
+- No claim of fsync, power-loss durability, global writer exclusion, no TOCTOU, or safe symlink publication.
+- Preserve UNKNOWN-STOP for uncooperative writers and environmental exclusion.
+
+## 3. CI evidence on exact code SHA
+
+All five runs are completed SUCCESS and report exact `head_sha=7a7f3ffa56af116a4f7222d22ff7638c9b470f92`:
+1. [Nexo — bounded mission admission and restart continuity](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046792) — SUCCESS.
+2. [Nexo M0 — integrated acceptance regression](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046788) — SUCCESS.
+3. [NCS Lúmina Decoupling Validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046842) — SUCCESS.
+4. [Nexo — STEP 4 semantic validation](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046791) — SUCCESS.
+5. [Nexo — STEP 5 outcome classification](https://github.com/snowdenxrp/aldea-ia/actions/runs/41362046808) — SUCCESS.
+
+Local evidence and CI evidence are now both PASS on the same code SHA. The earlier CI failures on `38990a7a` are superseded by the corrected tests and five successful runs on `7a7f3ffa`.
+
+## 4. User/device evidence
+
+- Device target remains POCO X7 Pro / Android.
+- Termux is installed and usable; Node.js tests were executed from `~/ncs-m0` in Termux.
+- The environment has demonstrated a hardlink restriction and successful `COPYFILE_EXCL` probe.
+- This does NOT prove the actual bootstrap launch path, all writer/launcher absence, ability to stop/prevent relaunch, or exclusive ownership of the future Continuity destination.
+- E2/E3 remain UNKNOWN; E4 NOT READY. Update the older STATUS statement that Termux is not installed by recording this new evidence; do not reinterpret it as full environmental clearance.
+
+## 5. Canonical M0 gates — unchanged
+
+- NCS M0: INCOMPLETO.
+- D0/D1/D2/D3 remain open according to their canonical records.
+- Root legitimacy: PENDING/UNKNOWN.
+- `authorization: NOT_EVALUATED`; `ROOT_READY` not enabled.
+- First Continuity creation/publication and protected effects: STOP.
+- PR #110 remains OPEN / DRAFT / NOT MERGED.
+- Technical authorization (“todo lo necesario para terminar M0”) covers code/contracts/tests/CI/docs but does not authorize root legitimacy, operational admission, bootstrap execution, first publication, or protected effects.
+- Do not delete or alter legacy migration behavior.
+- No merge of PR #110.
+
+## 6. Immediate next-chat route
+
+Start with:
+1. `NEXO_NCS/STATUS.md` (read the newest delta at the very top).
+2. This handoff.
+3. `MASTER/CORE` and the current BUILD evidence only where directly relevant.
+
+The STATUS delta for this validation was committed as `caa0653a649eac676b34f81733e499147e2bfd7a`. The local Termux clone has not yet fetched this documentation-only commit. Next local action, if needed, is a normal fetch and fast-forward of the branch; do not rerun tests just for documentation.
+
+Then continue the actual remaining M0 gates, not the already-validated test repair:
+- reconcile the POCO/Termux restricted execution candidate with the new observed Termux/Node evidence;
+- keep E2/E3 UNKNOWN until writers, launchers, supervisors, stop controls and non-relaunch conditions are evidenced;
+- resolve remaining Continuity writer-scope / non-cooperative writer / TOCTOU requirements without claiming the cooperative lock solves them;
+- continue the existing FB/P-01/P-05/D0-D3 closure matrix; do not invent new gates or repeat completed audits;
+- determine whether a concrete bounded M0 solution exists for each remaining criterion; if not, document the precise unresolved criterion and evidence needed.
+- Update STATUS and handoff with exact SHA and evidence after each verified unit.
+
+## 7. Prohibited actions / no-repeat list
+
+- Do not run actual bootstrap, first Continuity creation/publication, or protected effects.
+- Do not create a real Continuity store for validation.
+- Do not use symlink as a substitute for hardlink without a separately resolved D3/path-security decision.
+- Do not claim `COPYFILE_EXCL` is atomic visibility or solves non-cooperative readers/writers.
+- Do not repeat `continuity-store.test.mjs` or full `npm test` unless code changes or a concrete contradiction appears.
+- Do not re-run old import graph/Lúmina separation audits absent changed code or new evidence.
+- Do not merge PR #110.
+- Do not touch the separate `~/aldea-ia` checkout or its uncommitted changes; work only in `~/ncs-m0`.
+
+## 8. Suggested continuation instruction
+
+“NCS — continúa desde STATUS.md y este handoff. El SHA 7a7f3ffa ya tiene prueba enfocada, npm test completo y los cinco workflows CI PASS; no repitas esas validaciones. Actualiza el delta ambiental de Termux con la evidencia real, pero conserva E2/E3 UNKNOWN. Continúa cerrando los gates M0 pendientes de escritores no cooperativos/TOCTOU, raíz y P-01/D0-D3. No ejecutes bootstrap, primera publicación ni efectos protegidos; no fusiones PR #110.”
