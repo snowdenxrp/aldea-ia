@@ -234,7 +234,7 @@ async function assertNoTemporaryArtifacts(fsModule, filePath) {
       if (entryCount > NEXO_RESOURCE_LIMITS.temporaryDirectoryEntries) {
         throw storeError("NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN");
       }
-      if (entry.isFile() && (entry.name === stableTempName || entry.name.startsWith(legacyPrefix))) {
+      if (entry.name === stableTempName || entry.name.startsWith(legacyPrefix)) {
         throw storeError("NEXO_CONTINUITY_STORE_TEMPORARY_STATE_UNKNOWN");
       }
     }
