@@ -1,3 +1,13 @@
+## DELTA — EVIDENCIA TERMUX Y LÍMITE ACTUAL DE WRITER/PATH (2026-11-01)
+
+- Termux ya está **instalado y usado para pruebas locales** en el POCO; se corrige la nota previa que decía no presumir su instalación. El expediente actualizado es `BUILD/NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md`.
+- La inspección de código actual quedó registrada en `BUILD/NCS_M0_CONTINUITY_STORE_WRITER_AND_PATH_BOUNDARY_DELTA_2026-11-01.md`. El store concentra las escrituras Nexo examinadas y coordina participantes cooperativos; no excluye procesos que ignoren el lock ni resuelve symlink/path TOCTOU.
+- La presencia de Termux, Node y tests PASS no acredita prevención de relanzamiento, inventario exhaustivo de writers ni control sostenido de la ventana. E2/E3 siguen UNKNOWN; E4 NOT READY.
+- No repetir el inventario de callers ya registrado en P01/E3. No crear store real, no ejecutar bootstrap, no publicar Continuity ni efectos protegidos.
+- P01-C/P01-D OPEN/UNKNOWN; P01-A/P01-G PENDING/UNKNOWN; D0/D1/D2/D3 OPEN; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; M0 INCOMPLETO.
+
+---
+
 ## DELTA — HANDOFF DE CONTINUIDAD PUBLICADO (2026-11-01)
 
 - Handoff operativo creado: [NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md](HANDOFF/NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md), commit `f0b090ac360ebdbd7e4e4b362c075b13b5691059`.
