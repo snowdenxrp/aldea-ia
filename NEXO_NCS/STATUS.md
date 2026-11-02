@@ -1,3 +1,13 @@
+## DELTA — GUARDAS DE PATH Y ARTEFACTOS TEMPORALES EN BOOTSTRAP (2026-11-01)
+
+- Cambio de runtime y pruebas añadidas en `a19da46`, `834f77d` y `773d6fd`: el bootstrap rechaza symlink en la raíz explícita y en componentes de directorio relativos; canonicaliza la raíz efectiva; los nombres reservados `.tmp` / `.tmp-*` se tratan como ambiguos sin importar si son archivo, directorio o symlink.
+- Pruebas negativas añadidas a `tests/nexo/continuity-contract.test.mjs`; **NOT YET EXECUTED** en estos commits. No declarar PASS ni proyectar el CI histórico de SHA `7a7f3ffa...`.
+- Límite: las comprobaciones no eliminan TOCTOU ni excluyen writers no cooperativos. E2/E3 siguen UNKNOWN; E4 NOT READY; P01-G PENDING/UNKNOWN.
+- Sin bootstrap real, sin creación de Continuity real, sin commissioning y sin efectos protegidos. `authorization: NOT_EVALUATED`; STOP; M0 INCOMPLETO.
+- Detalle: [NCS_M0_BOOTSTRAP_PATH_AND_TEMP_ARTIFACT_GUARD_DELTA_2026-11-01.md](BUILD/NCS_M0_BOOTSTRAP_PATH_AND_TEMP_ARTIFACT_GUARD_DELTA_2026-11-01.md).
+
+---
+
 ## DELTA — DECISIÓN DEL PROPIETARIO P01-A = L Y RECONCILIACIÓN ADVERSARIAL (2026-11-01)
 
 - El propietario aprobó P01-A = **L**: Continuity M0 es persistencia operacional local con influencia acotada sobre el flujo de Nexo, sin establecer identidad, Constitución ni autoridad constitucional, y sin conceder por sí misma permiso para efectos protegidos.
@@ -11,7 +21,9 @@
 
 ---
 
-## DELTA — P01-A/P01-G: SEMÁNTICA OPERACIONAL DEL OBJETO CONTINUITY (2026-11-01)
+## ANTECEDENTE SUPERADO — P01-A/P01-G: SEMÁNTICA OPERACIONAL DEL OBJETO CONTINUITY (2026-11-01)
+
+> Esta nota conserva el análisis previo a la decisión del propietario P01-A = L. Su propuesta U y sus estados anteriores son históricos; prevalece el delta superior que registra L como DECIDED BY OWNER.
 
 - Análisis incorporado en [NCS_M0_P01_CONTINUITY_OBJECT_AUTHORITY_SEMANTICS_DELTA_2026-11-01.md](BUILD/NCS_M0_P01_CONTINUITY_OBJECT_AUTHORITY_SEMANTICS_DELTA_2026-11-01.md), commit `dcaede387097e44d7304f5d149bbba2870a0141b`.
 - Evidencia estática: Continuity contiene misiones, intentos, `doNotRepeat`, linaje de ejecuciones y `effectJournal`; afecta admisión, planificación, PREPARED y recuperación. No es dato inerte.
