@@ -105,3 +105,51 @@ No se selecciona en este documento una ruta real del POCO ni se afirma que exist
 ## 8. Siguiente acción finita
 
 Preparar un diff de diseño para RE-01/RE-02 contra la API y entrypoints actuales, limitado al launcher terminal y a un único cálculo compartido del destino efectivo. Antes de implementar, presentar la propuesta exacta para autorización técnica separada. No ejecutar tests/CI, bootstrap ni acciones en el dispositivo sin autorización independiente.
+
+
+## 9. Inspección estática de la implementación existente — RE-01/RE-02
+
+Archivos inspeccionados en la rama del PR:
+- `src/nexo/core/continuity-service.mjs`
+- `src/nexo/core/continuity-store.mjs`
+- `scripts/nexo-continuity.mjs`
+- `scripts/nexo.mjs`
+
+Hallazgos:
+
+1. `bootstrapNexoContinuityStore(options)` ya valida una raíz absoluta explícita y una ruta relativa normalizada; canonicaliza la raíz con `realpath`, rechaza symlinks en raíz/componentes padre, verifica contención, examina nombres temporales reservados y llama a `initializeExclusive(emptySnapshot())`.
+2. La API ya limita las opciones a `root`, `relativePath`, `lockDeadline` y `lockWaitMs`; no acepta `legacyMemory`, no devuelve owner operacional y termina tras la inicialización.
+3. La API devuelve `destination` junto al resultado **después** de ejecutar `initializeExclusive`. Por ello, hoy no puede usarse directamente para presentar el destino efectivo y obtener confirmación humana antes de escribir.
+4. `scripts/nexo-continuity.mjs` es solo un re-export. `scripts/nexo.mjs` no tiene comando bootstrap y su router actual expone Chronicle/status/mission previews; no debe ampliarse con una ruta que despache Chronicle.
+5. `createNexoContinuityStore.initializeExclusive()` vuelve a comprobar el destino y publica con `COPYFILE_EXCL`, bajo lock cooperativo. La comprobación previa de existencia y la publicación siguen sin constituir exclusión global ni eliminar TOCTOU.
+6. La resolución actual vive dentro de `bootstrapNexoContinuityStore`; si un launcher calcula por separado un destino para mostrarlo, existirían dos cálculos susceptibles de divergencia.
+
+### Implicación técnica concreta
+
+Para satisfacer RE-01/RE-02 sin duplicar resolución, el candidato mínimo a evaluar es extraer la resolución/validación actual a una función pura o de preflight compartida, por ejemplo una función interna reutilizada por:
+- una operación de inspección que devuelve únicamente la raíz canónica, ruta relativa y destino efectivo, sin escribir; y
+- `bootstrapNexoContinuityStore`, que vuelve a resolver/revalidar en el momento de la escritura y usa el mismo contrato de resolución.
+
+El nombre/API anteriores son ilustrativos, no decisión de diseño ni autorización. La previsualización no debe reservar ni crear archivos, locks o directorios; tampoco debe afirmar que el destino permanecerá libre. Después de la confirmación, el bootstrap debe volver a validar estado y destino. Cualquier cambio o ambigüedad produce STOP.
+
+El launcher no debe usar `scripts/nexo.mjs` si ello implica mezclar bootstrap con el router de operación normal. Candidato más acotado: un entrypoint M0 dedicado que importe solo la API bootstrap y el resolver compartido, lea confirmación interactiva, invoque una vez y termine. El nombre y forma exactos quedan pendientes del diff técnico.
+
+### Casos que el diseño debe preservar
+
+- La confirmación es para la tupla mostrada (raíz canónica, ruta relativa, destino, SHA, snapshot inicial y ventana), no para un flag suministrado al proceso.
+- El bootstrap debe recalcular y comparar la tupla antes de escribir; una diferencia invalida la confirmación.
+- Un destino existente, corrupto, symlink, temporal reservado, lock ambiguo, padre inaccesible o cualquier error de lectura/resolución no se interpreta como ausencia.
+- No retry automático ni recuperación automática de un resultado UNKNOWN.
+- La previsualización nunca llama a `initializeExclusive`, `openNexoContinuityOwner`, Chronicle, admisión, PREPARED, dispatch ni reconciliación.
+- La API de bootstrap conserva su resultado explícito y no transforma un error de cleanup/lock en éxito.
+
+## 10. Siguiente propuesta técnica a preparar
+
+Un diff de diseño, aún no aplicado, con alcance máximo:
+1. extraer el cálculo canónico del destino a una función compartida sin cambiar la semántica de validación existente;
+2. exponer un preflight estrictamente read-only para mostrar la tupla antes de escritura;
+3. crear un launcher aislado, manual/foreground, con confirmación interactiva exacta y una única llamada final a bootstrap;
+4. repetir resolución y precondiciones dentro de la operación de escritura para evitar confiar en el preflight como reserva;
+5. pruebas de contrato que demuestren separación preflight/bootstrap, no owner, no dispatch, no overwrite y STOP ante cualquier diferencia.
+
+Este documento no autoriza ese diff, cambios runtime, pruebas, CI ni ejecución en POCO. Se requiere autorización técnica separada.
