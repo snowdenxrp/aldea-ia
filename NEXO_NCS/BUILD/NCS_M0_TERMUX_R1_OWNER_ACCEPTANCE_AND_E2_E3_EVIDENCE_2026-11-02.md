@@ -108,3 +108,39 @@ La aprobación normativa no transforma evidencia parcial en PASS. No declarar E2
 3. Continuar con P01-G y RE-01/RE-02 sobre contratos y artefactos existentes: definir qué invocación dedicada M0 podría identificarse y cómo se vincularía a raíz/destino efectivo. No improvisar ni ejecutar un launcher.
 4. Mantener E4 NOT READY y todos los gates de autoridad/publicación/efectos en STOP mientras sus precondiciones sigan pendientes.
 5. Cualquier cambio del entorno, reinicio o actualización invalida esta evidencia operacional y requiere reevaluación focalizada.
+ 
+---
+
+## DELTA — DESTINO RATIFICADO Y PREFLIGHT REAL CANCELADO (2026-11-02)
+
+Esta delta supersede las filas históricas que indicaban destino productivo no seleccionado, RE-01/RE-02 UNKNOWN o ausencia de ejercicio del launcher. No convierte la sesión cancelada en ventana de publicación.
+
+### Evidencia nueva vinculada a la instancia
+- Destino ratificado por el propietario: `$HOME/.nexo-continuity.json`.
+- El propietario ejecutó el launcher dedicado en Termux con raíz explícita `$HOME` y ruta relativa `.nexo-continuity.json`.
+- El launcher presentó raíz canónica `/data/data/com.termux/files/home` y destino efectivo `/data/data/com.termux/files/home/.nexo-continuity.json`.
+- Snapshot presentado: NEXO_CONTINUITY v1 vacío.
+- Ventana presentada: `2026-11-02T22:59:14.486Z`–`2026-11-02T23:04:14.494Z`.
+- SHA-256 de operación: `b8a44d37b957d6e8b91c38df81dcf288dfaf839bbd582e735ff1110452f0d941`.
+- Entrada del propietario: `CANCELAR`.
+- Respuesta: `{"status":"blocked","code":"NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED","writeAttempted":false}`.
+
+### Evaluación reconciliada
+| Área | Estado vigente | Alcance |
+|---|---|---|
+| R1 | ACCEPTED BY OWNER | Límite de amenaza y criterio normativo aceptados; no equivale a evidencia de ventana |
+| RE-01 | IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX | Launcher dedicado ejecutado manualmente en foreground/TTY y cancelado |
+| RE-02 | IMPLEMENTED / CI-VERIFIED / REAL-DESTINATION PREFLIGHT EXERCISED | Raíz y destino efectivos del candidato productivo presentados; no se intentó escribir |
+| E2 | PARTIAL / NOT CLOSED | La captura puntual y la cancelación no prueban control de escritores durante una ventana de publicación |
+| E3 | PARTIAL / NOT CLOSED | Entry point manual ejercitado; inventario y control de relanzamiento solo acreditados en snapshots delimitados |
+| E4 | PARTIAL / NOT CLOSED — DESTINATION PREFLIGHT | HOME privado y destino canónico observados; faltan propiedades post-inicialización y verificación independiente del objeto persistido |
+
+### Límites probatorios
+- La respuesta `writeAttempted:false` confirma que esta ejecución fue bloqueada antes de intentar escribir.
+- No hubo publicación, no se creó ni se leyó el archivo productivo y no se obtuvo evidencia de estado post-publicación.
+- La ejecución cancelada no inicia una ventana R1 de publicación ni demuestra que actores conocidos permanecerían controlados durante ella.
+- E2/E3 no se pueden elevar a PASS a partir de una fotografía de procesos o de la mera disponibilidad del launcher.
+- E4 queda como preflight del destino real, no como validación de durabilidad, permisos del archivo creado ni recuperación.
+- No repetir el inventario genérico ni el launcher. Cualquier nueva evidencia debe responder a un gap concreto o formar parte de una futura operación autorizada.
+
+Gates: `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; primera publicación, commissioning y efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
