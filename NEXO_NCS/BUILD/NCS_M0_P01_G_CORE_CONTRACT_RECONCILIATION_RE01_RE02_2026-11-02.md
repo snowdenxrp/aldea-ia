@@ -153,3 +153,62 @@ Un diff de diseño, aún no aplicado, con alcance máximo:
 5. pruebas de contrato que demuestren separación preflight/bootstrap, no owner, no dispatch, no overwrite y STOP ante cualquier diferencia.
 
 Este documento no autoriza ese diff, cambios runtime, pruebas, CI ni ejecución en POCO. Se requiere autorización técnica separada.
+
+
+---
+
+## 11. Implementación RE-01/RE-02 — revisión técnica autorizada (2026-11-02)
+
+Autorización del propietario: implementación técnica RE-01/RE-02 con el alcance y límites descritos en esta reconciliación.
+
+### RE-01 — invocación M0 identificable
+
+**IMPLEMENTED** en scripts/nexo-continuity-bootstrap.mjs:
+- Entry point dedicado; no se añadió un comando al router scripts/nexo.mjs.
+- CLI manual que exige stdin y stdout TTY. Pipe/no-TTY → NEXO_CONTINUITY_BOOTSTRAP_INTERACTIVE_TERMINAL_REQUIRED, sin invocar escritura.
+- Solo acepta --root y --relative-path; rechaza opciones duplicadas, ausentes o desconocidas.
+- Ejecuta preflight read-only, presenta raíz canónica, ruta relativa, destino efectivo, snapshot inicial, ventana y SHA-256 de la operación.
+- Requiere escribir exactamente PUBLICAR <SHA-256>. La ventana de aprobación es una sola invocación foreground, con expiración de cinco minutos.
+- Tras la llamada de bootstrap, el proceso termina. No importa Chronicle, admisión, PREPARED, dispatch, reconciliación ni runtime de Lúmina.
+- package.json registra nexo:continuity:bootstrap; el lanzador queda clasificado como raíz Nexo en m0-import-graph-guard.test.mjs.
+
+### RE-02 — raíz explícita y destino efectivo
+
+**IMPLEMENTED** en src/nexo/core/continuity-service.mjs:
+- Se extrajo resolveBootstrapInputs() como resolución compartida por preflight y bootstrap.
+- preflightNexoContinuityBootstrap() es read-only: no crea archivos, directorios, locks ni reservas.
+- Conserva las guardas existentes de raíz absoluta explícita, realpath, symlink de raíz/componentes padre, contención, path relativo normalizado y artefactos temporales reservados.
+- El preflight bloquea destino existente y lock existente/ambiguo.
+- Después de la confirmación, bootstrapNexoContinuityStore() vuelve a resolver y validar; exige que expectedDestination coincida exactamente con el destino canónico presentado. Discrepancia → NEXO_CONTINUITY_BOOTSTRAP_DESTINATION_CHANGED, antes de inicializar.
+- La operación sigue usando initializeExclusive(emptySnapshot()); no acepta legacyMemory, no crea ni devuelve owner operacional y conserva el resultado explícito del store.
+- El hash de aprobación usa el schema/version canónicos de Continuity y liga root, relativePath, destination, snapshot vacío y ventana temporal.
+
+### Correcciones encontradas durante CI
+
+- Primer CI: el nuevo entrypoint no estaba clasificado en el inventario explícito de scripts Nexo. Se añadió a productRoots del guard de import graph.
+- Segundo CI: el test asignaba al parser de argumentos una validación de traversal que corresponde al preflight. Se movió la expectativa a preflightNexoContinuityBootstrap().
+- El handler de errores inesperados del launcher no afirma writeAttempted: false; informa writeAttempted: UNKNOWN para no ocultar un posible estado posterior al inicio de escritura.
+
+### Evidencia de validación
+
+- Rama: ncs-lumina-decoupling-2026-10-29.
+- SHA validado: a8de84deeeb4e28cf22a5b40c182143d49754293.
+- GitHub Actions: NCS Lúmina Decoupling Validation, run 41520427582 — **SUCCESS**.
+- El workflow ejecutó regresión focalizada y npm test completo con Node.js 22.
+- Evidencia en logs: “NCS M0: all Nexo scripts are classified...” y “Nexo M0 bootstrap preflight and launcher contract tests passed.”; el job terminó success.
+- Pruebas incluyen preflight sin escrituras, destino existente, lock existente, traversal rechazado, pipe/no-TTY bloqueado, mismatch de destino fail-closed y una inicialización en directorio temporal de fixture.
+- Esta evidencia es CI de software. No es validación del POCO/Termux ni de la ventana operacional real.
+
+### Límites y gates conservados
+
+- La re-resolución y comparación de path no elimina TOCTOU ni protege frente a escritores no cooperativos; no se afirma que el lock sea global.
+- El TTY y el launcher no son una frontera criptográfica contra procesos maliciosos con el mismo UID; esa clase continúa excluida por R1. Si R1 deja de cumplirse, STOP.
+- No se ha probado el launcher en Termux ni se ha fijado un destino real del POCO.
+- El fixture de CI creó un archivo temporal aislado únicamente como prueba contractual. **No** se ejecutó bootstrap real ni se creó/publicó Continuity productiva.
+- P01-G sigue siendo regla ratificada, no aprobación de una instancia concreta.
+- E2/E3 PARTIAL / NOT CLOSED; E4 NOT READY.
+- authorization: NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN.
+- Primera creación/publicación real, commissioning y efectos protegidos: STOP.
+- NCS M0: INCOMPLETO; PR #110 continúa OPEN / DRAFT / NOT MERGED.
+
+La propuesta de las secciones anteriores queda superada en cuanto a implementación RE-01/RE-02. Sus límites y requisitos normativos no quedan anulados.
