@@ -1,3 +1,14 @@
+## DELTA — BRECHA DE PREFLIGHT PREVIO A CONFIRMACIÓN Y CANDIDATO TÉCNICO RE-01/RE-02 (2026-11-02)
+
+- Inspección estática de `continuity-service.mjs`, `continuity-store.mjs` y entrypoints: la API bootstrap existente valida raíz/ruta, canonicaliza raíz, rechaza symlinks en componentes padre, preserva no-overwrite y no devuelve owner.
+- Brecha concreta: `bootstrapNexoContinuityStore()` devuelve el destino efectivo **después** de inicializar; no permite mostrar el destino y recibir aprobación humana antes de escribir. Un launcher que calcule el path por separado duplicaría la resolución y podría aprobar un destino distinto.
+- Candidato documental: extraer un resolver compartido, preflight read-only para presentar la tupla y launcher M0 aislado/terminal; después de la confirmación, bootstrap vuelve a resolver y validar antes de escribir. No se debe usar el router normal `scripts/nexo.mjs` para mezclar bootstrap y operación.
+- El preflight no reserva el destino ni demuestra que permanezca libre; lock cooperativo y `COPYFILE_EXCL` no eliminan TOCTOU ni exclusión de writers no cooperativos. Cualquier diferencia/UNKNOWN => STOP.
+- Detalle actualizado en [NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md](BUILD/NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md), commit `06d60ec36991209aab7ec40b93f5fe6ae35767cf`.
+- Sin implementación ni pruebas: requiere autorización técnica separada. RE-01/RE-02 siguen UNKNOWN / NOT CLOSED; E2/E3 PARTIAL; E4 NOT READY; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; bootstrap/publicación STOP; NCS M0 INCOMPLETO.
+
+---
+
 ## DELTA — RECONCILIACIÓN P01-G CON CORE Y REQUISITOS RE-01/RE-02 (2026-11-02)
 
 - Contraste documental completado contra Constitution Authority Context, Genesis Trust Foundation, Bootstrap Composition y MASTER.
