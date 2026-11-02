@@ -134,3 +134,13 @@ El propietario ejecutó el launcher dedicado desde Termux contra el destino real
 
 La evidencia fue recibida directamente del output de Termux compartido por el propietario. No se repitió el launcher y no se hizo lectura posterior del destino.
 
+## 8. Precedencia documental — evitar reabrir estados históricos
+
+Los documentos de BUILD fechados 2026-11-01/02 que describen Termux como candidato no seleccionado, launcher inexistente, RE-01/RE-02 UNKNOWN o P01-G pendiente conservan su valor como registro histórico de la evidencia disponible entonces; sus estados no son el estado vigente.
+
+Para el estado posterior a la implementación y ejercicio real, usar en este orden:
+1. `NEXO_NCS/STATUS.md` — resumen vigente y gates globales.
+2. `NEXO_NCS/BUILD/NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md`, secciones 11–12 — implementación RE-01/RE-02, CI y evidencia de Termux contra destino real cancelado; compatibilidad de P01-G con contratos Core.
+3. Este handoff, secciones 1–7 — inventario R1, procedimiento y evidencia operacional recibida.
+
+No reabrir la propuesta antigua de launcher: RE-01/RE-02 ya están implementados y ejercitados. No reinterpretar P01-G como autoridad constitucional ni como autorización de instancia. Las notas históricas no se reescriben; cualquier cambio posterior se añade como delta con SHA/evidencia.
