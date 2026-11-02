@@ -1,3 +1,18 @@
+## DELTA — CIERRE DEL INVENTARIO LOCAL Y PROCEDIMIENTO R1 (2026-11-02)
+
+- Inventario puntual de actores/mecanismos locales conocidos: **CLOSED (snapshot)**. Se recibió la lista completa de paquetes Android; `com.termux` permanece instalado y `com.termux.api` ya no aparece. No se detectaron Tasker, MacroDroid, Automate ni Shizuku. La captura `ps -A` mostró solo el propio comando y la shell Bash; `jobs -l` vacío; directorios Termux Boot/Tasker ausentes; `termux-job-scheduler --pending` informó `No jobs found`; `crond/crontab/at` no están disponibles. Las definiciones `ssh-agent`/`sshd` tienen marcador `down` y no se detectaron procesos, pero el estado efectivo del supervisor no se verificó.
+- La lista mostró apps IA con UIDs distintos del UID Termux y paquetes `org.nexo.m1.safetest15..18` con UIDs distintos. No hay evidencia de interferencia; no desinstalar ni actuar sobre ellos sin demostrar un puente/acceso concreto.
+- Workflow Lúmina clasificado como remoto en GitHub Actions; no se observó puente/montaje al HOME privado de Termux.
+- Este cierre solo cubre el inventario puntual visible en esta sesión; no prueba exclusividad global, ausencia sostenida ni prevención de relanzamiento. No repetir el inventario genérico salvo cambio/contradicción.
+- Procedimiento R1 documentado: sesión manual única foreground; preflight read-only; destino/SHA/snapshot/ventana coincidentes; control de actores conocidos; autorización específica posterior a la presentación; bootstrap aislado; verificación y cierre de ventana. Cambio/reinicio/UNKNOWN/actor relevante no controlado => STOP.
+- Destino candidato ratificado: `$HOME/.nexo-continuity.json`; no creado y sin autorización de publicación. P01-G = RULE RATIFIED BY OWNER, no aprobación de instancia concreta.
+- RE-01 IMPLEMENTED/EXERCISED; RE-02 IMPLEMENTED/EXERCISED IN TEMPORARY SCOPE; RE-03/RE-04 PARTIAL; RE-05 CLASSIFIED/PARTIAL; RE-06 PARTIAL/FAIL-CLOSED; RE-07 SOFTWARE CONTRACT IMPLEMENTED/CI-VERIFIED; RE-08 IMPLEMENTED/CI-VERIFIED; RE-09 PARTIAL/TRACEABLE.
+- E2/E3 PARTIAL / NOT CLOSED; E4 NOT READY; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; primera publicación, commissioning y efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+- Detalle y procedimiento: [NCS_NEXT_CHAT_2026-11-02_R1_INVENTORY_CLOSURE.md](HANDOFF/NCS_NEXT_CHAT_2026-11-02_R1_INVENTORY_CLOSURE.md).
+- Solo documentación; sin cambios de runtime/tests/workflows/POCO y sin bootstrap/publicación.
+
+---
+
 ## DELTA — BRECHA DE PREFLIGHT PREVIO A CONFIRMACIÓN Y CANDIDATO TÉCNICO RE-01/RE-02 (2026-11-02)
 
 - Inspección estática de `continuity-service.mjs`, `continuity-store.mjs` y entrypoints: la API bootstrap existente valida raíz/ruta, canonicaliza raíz, rechaza symlinks en componentes padre, preserva no-overwrite y no devuelve owner.
