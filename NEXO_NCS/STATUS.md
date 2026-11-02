@@ -1,3 +1,12 @@
+## DELTA — HANDOFF DE CONTINUIDAD PUBLICADO (2026-11-01)
+
+- Handoff operativo creado: [NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md](HANDOFF/NCS_NEXT_CHAT_2026-11-01_CONTINUITY_STORE_CI_PASS.md), commit `f0b090ac360ebdbd7e4e4b362c075b13b5691059`.
+- Registra el cierre de la discrepancia de pruebas lock-aware con evidencia local y los cinco workflows CI PASS sobre SHA `7a7f3ffa56af116a4f7222d22ff7638c9b470f92`, además de los límites que mantienen M0 INCOMPLETO.
+- La delta de validación técnica precedente se registró en el commit STATUS `caa0653a649eac676b34f81733e499147e2bfd7a`.
+- Este commit es documental; no altera runtime, tests ni workflows. PR #110 sigue OPEN / DRAFT / NOT MERGED.
+
+---
+
 ## DELTA — CONTINUITY STORE: LOCK-AWARE READS, TERMUX COPYFILE_EXCL Y CI PASS (2026-11-01)
 
 ### SHA y cambios
