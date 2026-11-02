@@ -1,3 +1,15 @@
+## DELTA — P01-B: SEPARACIÓN OPERACIONAL IMPLEMENTADA Y CI-VERIFICADA (2026-11-01)
+
+- Reconciliación incorporada a [NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md](BUILD/NCS_M0_P01_BOOTSTRAP_DECISION_MATRIX_2026-10-27.md), commit `09c87f02edb3cf41baf8006476e26701ba26549c`.
+- `bootstrapNexoContinuityStore()` acepta raíz/ruta relativa explícitas, no acepta `legacyMemory`, deriva el destino efectivo y devuelve resultado sin owner operacional. `continuity-contract.test.mjs` cubre esos límites y no-overwrite/preservación de estado ambiguo.
+- `runNexoChronicleAppend()` bloquea `initializeContinuity: true` antes de abrir stores/admitir/ejecutar; `chronicle-runtime.test.mjs` y `entrypoint.test.mjs` verifican que no se creen stores ni se despache por la ruta combinada.
+- Los cinco workflows CI y la suite local están registrados como PASS en SHA exacto `7a7f3ffa56af116a4f7222d22ff7638c9b470f92` en el handoff del 2026-11-01.
+- **Límite:** esto demuestra la frontera de separación a nivel de API/fixtures y CI, no una invocación operacional de bootstrap en POCO ni la admisibilidad del entorno. RE-01/RE-02 siguen pendientes; P01-A/G, P01-C/D, P01-E/F y P01-H global siguen abiertos.
+- Desambiguación obligatoria: P01-B de la matriz (separación operacional) tiene evidencia implementada/CI-verificada; B2/P01-B del Registro §10.6 conserva la decisión del propietario `C — NO SELECCIONAR TODAVÍA` sobre alternativa de aislamiento. No confundir ni sobrescribir una con otra.
+- P-01 sigue OPEN/UNKNOWN; primera creación STOP; M0 INCOMPLETO; raíz PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; efectos protegidos STOP.
+
+---
+
 ## DELTA — EVIDENCIA TERMUX EVALUADA CONTRA RE-01…RE-09 (2026-11-01)
 
 - Nueva evidencia consolidada en [NCS_M0_TERMUX_E2_E3_OBSERVATION_DELTA_2026-11-01.md](BUILD/NCS_M0_TERMUX_E2_E3_OBSERVATION_DELTA_2026-11-01.md), commit `7af20f45fe6156784293485146d341295728a50a`.
