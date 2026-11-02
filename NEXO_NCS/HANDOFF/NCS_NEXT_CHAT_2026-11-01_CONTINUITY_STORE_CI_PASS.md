@@ -105,3 +105,47 @@ Then continue the actual remaining M0 gates, not the already-validated test repa
 ## 8. Suggested continuation instruction
 
 “NCS — continúa desde STATUS.md y este handoff. El SHA 7a7f3ffa ya tiene prueba enfocada, npm test completo y los cinco workflows CI PASS; no repitas esas validaciones. Actualiza el delta ambiental de Termux con la evidencia real, pero conserva E2/E3 UNKNOWN. Continúa cerrando los gates M0 pendientes de escritores no cooperativos/TOCTOU, raíz y P-01/D0-D3. No ejecutes bootstrap, primera publicación ni efectos protegidos; no fusiones PR #110.”
+
+---
+
+## Addendum — full local npm suite PASS and bootstrap path/temp guards exercised (2026-11-02)
+
+Validated code SHA: `5988d9b4c6caa22ec093986a25db80ca842902cc`.
+
+The owner ran:
+
+```sh
+cd "$HOME/ncs-m0" &&
+git status --short &&
+git rev-parse HEAD &&
+npm test
+```
+
+Observed:
+- `git status --short` emitted no entries.
+- HEAD was exactly `5988d9b4c6caa22ec093986a25db80ca842902cc`.
+- The full `npm test` chain completed and returned to `~/ncs-m0 $` without error.
+- Final reported test: `Nexo Open Loops: bounded read-only projection, journal separation, privacy and UNKNOWN linkage OK.`
+- Environment: Termux on POCO / Android, Node.js v26.4.0.
+
+**Classification: LOCAL FULL-SUITE TESTED — PASS on SHA 5988d9b4. Not CI-VERIFIED.**
+
+### Supersedes the earlier NOT YET EXECUTED note for path/temp guards
+
+The tested SHA contains, relative to base `534ddb856df93de3065d6db92089904fce1bf9d4`:
+- `a19da46da8942091bdfe0496b13f57414e63eaad`: explicit root symlink rejection, relative-parent symlink rejection, canonical effective root, and reserved temp-name rejection regardless of entry type.
+- `834f77d01dee9c99977d86015d7f6fdc9237ed2e`: store-level reserved temp artifact rejection regardless of entry type.
+- `773d6fd82661df53e235277c296991ab46f15b62`: negative tests for symlink roots/parents and reserved `.tmp` directories/symlinks in bootstrap/store initialization.
+
+The full `npm test` chain includes `tests/nexo/continuity-contract.test.mjs`; the new negative cases were therefore exercised in the full suite. The prior STATUS statement that these tests were NOT YET EXECUTED is superseded for this SHA.
+
+### Limits and unchanged gates
+
+- This local PASS does not establish CI for SHA `5988d9b4...`; available status/workflow queries returned no records for that SHA.
+- It does not eliminate TOCTOU in the separate `lstat → realpath → lstat → readdir → initializeExclusive` operations.
+- It does not exclude non-cooperative writers/readers or hostile processes with equivalent filesystem access.
+- It does not establish fsync or power-loss durability.
+- No real bootstrap, first Continuity creation/publication, commissioning or protected effects were executed.
+- M0 remains INCOMPLETO; P01-A = L DECIDED BY OWNER; P01-G PENDING/UNKNOWN; P01-C/D OPEN/UNKNOWN; E2/E3 UNKNOWN; E4 NOT READY; root PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; first publication and protected effects STOP; PR #110 OPEN / DRAFT / NOT MERGED.
+
+Continue from the newest STATUS delta. Do not repeat the full suite or the new negative tests absent a code change or concrete contradiction. Continue P01-G and bounded environmental writer/launcher exclusion using existing artifacts; do not execute bootstrap or first publication.
