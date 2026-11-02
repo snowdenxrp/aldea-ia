@@ -25,14 +25,14 @@ export function parseNexoContinuityBootstrapArguments(argv) {
   return { status: "ready", root, relativePath };
 }
 
-function operationDigest(destination) {
+function operationDigest(destination, windowStartedAt, expiresAt) {
   const operation = {
     operation: "NEXO_M0_CONTINUITY_FIRST_PUBLICATION",
     root: destination.root,
     relativePath: destination.relativePath,
     destination: destination.filePath,
     snapshot: { schema: NEXO_CONTINUITY_SCHEMA, schemaVersion: NEXO_CONTINUITY_SCHEMA_VERSION, missions: [], attempts: [], doNotRepeat: [], executions: [], effectJournal: [] },
-    window: "single-foreground-invocation"
+    window: { scope: "single-foreground-invocation", startedAt: windowStartedAt, expiresAt }
   };
   return createHash("sha256").update(JSON.stringify(operation), "utf8").digest("hex");
 }
@@ -50,7 +50,9 @@ export async function runNexoContinuityBootstrapCli(argv, io = process) {
   try {
     const preflight = await preflightNexoContinuityBootstrap({ root: parsed.root, relativePath: parsed.relativePath });
     const destination = preflight.destination;
-    const digest = operationDigest(destination);
+    const windowStartedAt = new Date().toISOString();
+    const expiresAt = Date.now() + 5 * 60 * 1000;
+    const digest = operationDigest(destination, windowStartedAt, new Date(expiresAt).toISOString());
     io.stdout.write([
       "NCS M0 — primera publicación restringida de Continuity",
       "No establece ROOT_READY, autoridad constitucional, commissioning ni efectos protegidos.",
@@ -60,7 +62,7 @@ export async function runNexoContinuityBootstrapCli(argv, io = process) {
       "Ruta relativa: " + destination.relativePath,
       "Destino efectivo: " + destination.filePath,
       "Snapshot: NEXO_CONTINUITY v1 vacío (todos los arrays vacíos)",
-      "Ventana: esta única invocación foreground; sin continuación automática.",
+      "Ventana foreground: " + windowStartedAt + " hasta " + new Date(expiresAt).toISOString() + " (máximo 5 minutos).",
       "SHA-256 de la operación exacta: " + digest,
       "",
       "Para confirmar esta única operación, escribe exactamente: PUBLICAR " + digest
@@ -68,6 +70,10 @@ export async function runNexoContinuityBootstrapCli(argv, io = process) {
     const prompt = createInterface({ input: io.stdin, output: io.stdout });
     let answer;
     try { answer = await prompt.question("> "); } finally { prompt.close(); }
+    if (Date.now() > expiresAt) {
+      io.stdout.write(JSON.stringify({ status: "blocked", code: "NEXO_CONTINUITY_BOOTSTRAP_APPROVAL_WINDOW_EXPIRED", writeAttempted: false }) + "\n");
+      return 1;
+    }
     if (answer !== "PUBLICAR " + digest) {
       io.stdout.write(JSON.stringify({ status: "blocked", code: "NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED", writeAttempted: false }) + "\n");
       return 1;
