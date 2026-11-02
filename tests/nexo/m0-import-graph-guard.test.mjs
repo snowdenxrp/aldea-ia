@@ -12,6 +12,7 @@ const productRoots = [
   { file: "scripts/nexo.mjs", domain: "nexo" },
   { file: "scripts/nexo-chronicle-session.mjs", domain: "nexo" },
   { file: "scripts/nexo-continuity.mjs", domain: "nexo" },
+  { file: "scripts/nexo-continuity-bootstrap.mjs", domain: "nexo" },
   { file: "scripts/nexo-runtime-session.mjs", domain: "nexo" },
   { file: "scripts/assistants.mjs", domain: "lumina" },
   { file: "scripts/simulate.mjs", domain: "lumina" }
