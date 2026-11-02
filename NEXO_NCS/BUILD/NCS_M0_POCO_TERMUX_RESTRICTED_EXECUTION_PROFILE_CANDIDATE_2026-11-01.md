@@ -1,3 +1,17 @@
+**R1: ACCEPTED BY OWNER.** El propietario acepta la frontera de amenaza y la garantía operacional delimitada registradas en [NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md](NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md).
+
+## DELTA VIGENTE — RE-01/RE-02 IMPLEMENTADOS Y EJERCIDOS EN TERMUX (2026-11-02)
+
+- RE-01: **IMPLEMENTED / EXERCISED**. El launcher M0 dedicado `scripts/nexo-continuity-bootstrap.mjs` se ejecutó manualmente en Termux, en foreground y con TTY.
+- RE-02: **IMPLEMENTED / EXERCISED IN TEMPORARY SCOPE**. Se usó una raíz temporal explícita; el preflight presentó la raíz canónica y el destino efectivo antes de la confirmación.
+- El propietario respondió `CANCELAR`; resultado `NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED`, `writeAttempted: false`; la comprobación confirmó que no se creó el archivo.
+- Suite focalizada y `npm test` completo ejecutados en HEAD `112c54e34bf7c0b15c3d8565f2bb628cf07498ec`, Node.js v26.4.0. La salida llegó al último test sin error; exit code no capturado independientemente.
+- **No equivale a selección/admisión del destino operativo ni a cierre E2/E3.** E2/E3 permanecen PARTIAL / NOT CLOSED; E4 NOT READY. No se ejecutó bootstrap real ni publicación productiva.
+
+Esta delta supersede las líneas históricas inferiores que aún describen RE-01/RE-02 como UNKNOWN por ausencia de launcher. Los límites de E2/E3, E4 y autoridad siguen vigentes.
+
+---
+
 ## DELTA — R1 RATIFICADO POR EL PROPIETARIO; CANDIDATURA DEL ENTORNO SIGUE SIN ADMISIÓN (2026-11-02)
 
 **R1: ACCEPTED BY OWNER.** El propietario acepta la frontera de amenaza y la garantía operacional delimitada registradas en [NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md](NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md).

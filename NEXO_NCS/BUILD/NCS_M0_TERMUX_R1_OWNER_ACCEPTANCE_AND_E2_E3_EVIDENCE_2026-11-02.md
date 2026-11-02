@@ -1,3 +1,26 @@
+## DELTA — RE-01/RE-02 Y EJERCICIO DEL LAUNCHER EN TERMUX (2026-11-02)
+
+Este delta actualiza la evaluación de la sección 3 y la continuación de la sección 5. La evidencia R1/E2/E3 anterior se conserva; no se reinterpreta como cierre operacional.
+
+- RE-01: **IMPLEMENTED / EXERCISED**. El launcher dedicado `scripts/nexo-continuity-bootstrap.mjs` se ejecutó manualmente desde Termux en una sesión interactiva foreground con TTY.
+- RE-02: **IMPLEMENTED / EXERCISED IN TEMPORARY SCOPE**. La ejecución recibió raíz temporal explícita, canonicalizó la raíz y presentó el destino efectivo derivado de `continuity.json` antes de solicitar confirmación.
+- El propietario respondió `CANCELAR`; el launcher devolvió `NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED`, `writeAttempted: false`; la comprobación posterior confirmó que el archivo no existía.
+- La suite focalizada pasó y `npm test` recorrió la cadena completa en HEAD `112c54e34bf7c0b15c3d8565f2bb628cf07498ec`, Termux / Node.js v26.4.0. La salida llegó al último test sin error; el exit code no se capturó independientemente.
+- Esta evidencia confirma la disponibilidad y el uso del entrypoint en Termux y la vinculación de una raíz temporal con su destino. No fija el destino productivo, no demuestra exclusión sostenida de actores ni cierra la ventana R1.
+
+| Área | Estado actualizado | Límite |
+|---|---|---|
+| R1 / criterio de aceptación E2-E3 | ACCEPTED BY OWNER | La aceptación normativa no prueba la operación concreta |
+| RE-01 | IMPLEMENTED / EXERCISED | Launcher manual/TTY probado con cancelación |
+| RE-02 | IMPLEMENTED / EXERCISED IN TEMPORARY SCOPE | Destino temporal presentado; destino productivo pendiente |
+| E2 | PARTIAL / NOT CLOSED | No hay evidencia de control sostenido de actores para la ventana/destino productivos |
+| E3 | PARTIAL / NOT CLOSED | Se probó el launcher; no se ha demostrado exclusión/control sostenido de otros disparadores relevantes |
+| E4 | NOT READY | Destino productivo no seleccionado/verificado |
+
+Gates sin cambio: raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; primera publicación real STOP; commissioning STOP; efectos protegidos STOP; NCS M0 INCOMPLETO. No repetir inventarios genéricos ni pruebas ya ejecutadas sin cambio o contradicción concreta.
+
+---
+
 # NCS M0 — ratificación R1 y evidencia operacional delimitada E2/E3
 
 Fecha: 2026-11-02

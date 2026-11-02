@@ -3352,3 +3352,47 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - Primera creación/publicación real: STOP. Commissioning: STOP. Efectos protegidos: STOP.
 - NCS M0: **INCOMPLETO**. PR #110: OPEN / DRAFT / NOT MERGED.
 - Expediente técnico: NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md, sección 11.
+
+
+## DELTA — VALIDACIÓN REAL DEL LAUNCHER TERMUX Y SUITE COMPLETA (2026-11-02)
+
+- Checkout local del propietario: rama `ncs-lumina-decoupling-2026-10-29`, HEAD exacto `112c54e34bf7c0b15c3d8565f2bb628cf07498ec`; `git status --short` vacío antes de las pruebas y nuevamente después de `npm test`.
+- Este HEAD es documentalmente descendiente del código RE-01/RE-02 validado por CI en SHA `a8de84deeeb4e28cf22a5b40c182143d49754293` (los commits posteriores `244ecc7` y `112c54e` actualizaron documentación).
+- Entorno: POCO X7 Pro / Termux, Node.js `v26.4.0`.
+
+### Pruebas focalizadas locales
+
+- `node --check scripts/nexo-continuity-bootstrap.mjs`: PASS.
+- `node tests/nexo/continuity-bootstrap-launcher.test.mjs`: PASS.
+- `node tests/nexo/continuity-contract.test.mjs`: PASS.
+- `node tests/nexo/continuity-store.test.mjs`: PASS.
+
+### Invocación interactiva no publicadora
+
+- Se lanzó manualmente `scripts/nexo-continuity-bootstrap.mjs` desde la sesión interactiva Termux con raíz temporal creada por `mktemp -d` y ruta relativa `continuity.json`.
+- El preflight mostró raíz canónica `/data/data/com.termux/files/usr/tmp/tmp.7FT8SPOse7`, ruta relativa y destino efectivo `/data/data/com.termux/files/usr/tmp/tmp.7FT8SPOse7/continuity.json` antes de solicitar confirmación.
+- El propietario introdujo `CANCELAR`. Resultado: `status=blocked`, `code=NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED`, `writeAttempted=false`.
+- Comprobación posterior: `PASS: no se publicó Continuity`; el archivo temporal no existía.
+- Esto demuestra invocación manual/TTY del launcher y correspondencia raíz temporal → destino efectivo en esa ejecución. No selecciona ni verifica el destino operativo futuro y no demuestra E2/E3 completos.
+
+### Suite completa
+
+- El propietario ejecutó `npm test` en el mismo HEAD `112c54e34bf7c0b15c3d8565f2bb628cf07498ec` y Node.js v26.4.0.
+- La salida compartida recorrió la cadena completa hasta el último test: `Nexo Open Loops: bounded read-only projection, journal separation, privacy and UNKNOWN linkage OK.` No apareció error de test ni error npm y Termux volvió al prompt.
+- El código de salida no se capturó por separado porque el comando posterior de consulta se escribió como `cho`; no se repitió la suite. Clasificación: **LOCAL FULL-SUITE PASS — salida completa observada; exit code no registrado independientemente**.
+
+### Interpretación y gates
+
+- RE-01: IMPLEMENTED; invocación manual/foreground/TTY efectivamente ejercida en Termux.
+- RE-02: IMPLEMENTED; raíz explícita y destino efectivo vinculados y presentados en una ejecución temporal no publicadora. El destino productivo aún no está seleccionado/verificado.
+- E2/E3: PARTIAL / NOT CLOSED. La cancelación no demuestra control sostenido de todos los actores legítimos relevantes durante una ventana de publicación concreta.
+- E4: NOT READY. No inferir propiedades del destino operativo futuro a partir del directorio temporal de prueba.
+- P01-G: RULE RATIFIED BY OWNER; no es aprobación de una instancia concreta.
+- `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN.
+- Primera creación/publicación real, commissioning y efectos protegidos: STOP.
+- NCS M0: INCOMPLETO. PR #110: OPEN / DRAFT / NOT MERGED.
+- No se ejecutó publicación real, no se creó Continuity productiva y no se activó ningún efecto protegido.
+- No repetir pruebas focalizadas ni `npm test` sin cambio de código o contradicción concreta. No repetir inventario genérico Termux ya documentado.
+
+---
+
