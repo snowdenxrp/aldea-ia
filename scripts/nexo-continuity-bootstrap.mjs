@@ -82,7 +82,7 @@ export async function runNexoContinuityBootstrapCli(argv, io = process) {
     io.stdout.write(JSON.stringify({ ...result, authorization: "NOT_EVALUATED", continuation: "STOPPED" }) + "\n");
     return result.status === "committed" ? 0 : 1;
   } catch (error) {
-    io.stdout.write(JSON.stringify({ status: "blocked", code: error && error.code ? error.code : "NEXO_CONTINUITY_BOOTSTRAP_FAILED", writeAttempted: false }) + "\n");
+    io.stdout.write(JSON.stringify({ status: "blocked", code: error && error.code ? error.code : "NEXO_CONTINUITY_BOOTSTRAP_FAILED", writeAttempted: "UNKNOWN" }) + "\n");
     return 1;
   }
 }
