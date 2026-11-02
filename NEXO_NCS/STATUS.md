@@ -1,3 +1,17 @@
+## DELTA — RECONCILIACIÓN P01-G CON CORE Y REQUISITOS RE-01/RE-02 (2026-11-02)
+
+- Contraste documental completado contra Constitution Authority Context, Genesis Trust Foundation, Bootstrap Composition y MASTER.
+- El Constitution Authority Context no es reutilizable como autorización para bootstrap L: su contrato lo reserva para reconocer el régimen constitucional desde una base de confianza ya reconocida; la auditoría cerrada no encontró una ruta Core implementada que lo establezca. No crear un contexto falso ni aceptar metadata del caller como autoridad.
+- P01-G ratificado es compatible solo como regla de autorización operacional humana para persistencia L no autoritativa. No establece Genesis Trust Foundation, ROOT_READY, autoridad constitucional ni efectos protegidos.
+- La ratificación es regla de clase, no aprobación de una instancia concreta. Para cualquier operación futura se requiere confirmación humana posterior a la presentación del objeto, raíz, ruta relativa, destino efectivo, SHA, snapshot y ventana exactos; sin flag/token/campo de autocertificación del caller. Esta ceremonia depende del modelo ambiental R1 y no es autenticación criptográfica.
+- RE-01 definido: launcher M0 único, identificable, manual/foreground, terminal, invoca solo la API dedicada, presenta la operación y termina sin owner ni flujo normal.
+- RE-02 definido: raíz explícita + ruta relativa permitida; destino derivado una sola vez mediante la misma resolución de escritura y presentado exactamente; discrepancia/ambigüedad/estado previo/error => STOP/UNKNOWN.
+- Evidencia y diseño registrados en [NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md](BUILD/NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md), commit `aa15256ddb65adc64f0b88619abdcc45c64751a6`.
+- **Estado no elevado:** RE-01/RE-02 UNKNOWN / NOT CLOSED; E2/E3 PARTIAL / NOT CLOSED; E4 NOT READY; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; bootstrap/publicación STOP; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+- Siguiente paso: preparar propuesta técnica concreta del launcher terminal y cálculo único de destino efectivo; presentar diff para autorización técnica separada. Sin runtime/tests/CI/dispositivo hasta autorización.
+
+---
+
 ## DELTA — P01-G RATIFICADO POR EL PROPIETARIO; AUTORIZACIÓN NORMATIVA ACOTADA (2026-11-02)
 
 - El propietario ratificó la regla P01-G: la primera creación de Continuity M0, clasificada L y no autoritativa, puede fundamentarse en autorización operacional humana explícita, única y acotada, separada de la autoridad constitucional.
