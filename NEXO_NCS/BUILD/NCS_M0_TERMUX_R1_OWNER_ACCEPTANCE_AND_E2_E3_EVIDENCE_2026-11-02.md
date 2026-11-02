@@ -1,3 +1,54 @@
+## DELTA — MATRIZ DE ACEPTACIÓN Y CIERRE DE GAPS E2/E3 (2026-11-02)
+
+Esta sección operacionaliza el criterio R1 ya aceptado por el propietario. No añade una autorización de ejecución, no modifica la instancia real y no convierte observaciones puntuales en evidencia sostenida.
+
+### E2 — control de escritores
+
+| ID | Condición de aceptación | Evidencia disponible | Estado |
+|---|---|---|---|
+| E2.1 | Roster de autorización: solo el propietario puede lanzar desde una sesión Termux interactiva manual; ningún otro escritor está autorizado durante la ventana | Declaración expresa R1 | ACCEPTED BY OWNER |
+| E2.2 | Sesiones/procesos relevantes permanecen bajo control durante una ventana R1 concreta | Capturas puntuales previas; no prueban continuidad temporal | PARTIAL |
+| E2.3 | Rutas de escritura heredadas hacia el destino efectivo están clasificadas; no basta una separación de imports aislada | Desacoplamiento Nexo/Lúmina y auditorías previas; falta vincular toda la evidencia al límite operacional del destino/ventana | PARTIAL |
+| E2.4 | Actores locales, servicios y automatizadores con capacidad relevante están clasificados según su acceso real al destino | Inventario puntual previo; algunas capacidades/estados no quedaron demostrados | PARTIAL |
+| E2.5 | Exclusiones y límites de amenaza R1 están expresos | Owner aceptó excluir OS comprometido/root y procesos maliciosos bajo el mismo UID/dominio Termux | ACCEPTED BY OWNER |
+
+**Cierre E2:** requiere evidencia suficiente para cada escritor legítimo relevante que pueda alcanzar el destino: control durante la ventana o exclusión expresa conforme a R1. La regla de autorización no prueba por sí sola que el entorno concreto cumpla. Una ruta o actor relevante no clasificado/no controlado produce UNKNOWN-STOP. No se exige demostrar inexistencia universal fuera del límite R1.
+
+### E3 — control de relanzadores
+
+| ID | Condición de aceptación | Evidencia disponible | Estado |
+|---|---|---|---|
+| E3.1 | Mecanismos locales de boot/arranque relevantes clasificados | ~/.termux/boot ausente en snapshot previo | PARTIAL |
+| E3.2 | Jobs/schedulers locales relevantes clasificados | termux-job-scheduler --pending devolvió No jobs found en snapshot previo | PARTIAL |
+| E3.3 | Automatizadores e integraciones locales relevantes clasificados | No se detectaron las apps consultadas; visibilidad limitada | PARTIAL |
+| E3.4 | Servicios persistentes clasificados sin inferir estado desde la mera presencia de directorios | ssh-agent/sshd tenían marcador down; no se verificó estado efectivo del supervisor | PARTIAL |
+| E3.5 | Disparadores indirectos conocidos (perfiles/scripts/comandos) clasificados | Perfiles revisados sin referencias Nexo; no equivale a cobertura universal Android | PARTIAL |
+| E3.6 | Automatización remota diferenciada de relanzamiento local | Workflow GitHub Actions clasificado como remoto; no se observó puente al HOME privado Termux | CLASIFICADO COMO REMOTO; NO ES PRUEBA DE INACTIVIDAD |
+
+**Cierre E3:** requiere clasificar los mecanismos relevantes capaces de iniciar o relanzar un escritor local y evidencia suficiente de control/exclusión dentro del límite R1. Un mecanismo relevante no clasificado o materialmente ambiguo produce UNKNOWN-STOP. No se exige inventario exhaustivo de Android ni prueba negativa universal.
+
+### Protocolo de evaluación para una ventana R1 futura
+
+1. El propietario inicia manualmente una única sesión interactiva Termux.
+2. Se realiza preflight de solo lectura y se identifica la sesión, el destino efectivo y la ventana.
+3. Se reutiliza el inventario previo; solo se examinan cambios o gaps concretos, no se repite el censo genérico.
+4. Durante la ventana, ningún otro escritor está autorizado. Actor relevante inesperado, relanzador no controlado, reinicio, actualización/cambio relevante o pérdida de control => STOP.
+5. Se registra el cierre de ventana y la evidencia observada. La verificación del archivo (E4) no sustituye E2/E3.
+
+Este protocolo es una definición de aceptación, no una orden para iniciar una ventana ni autorización para escribir. La única publicación real previamente autorizada permanece completada; no se debe repetir bootstrap, modificar, borrar o cambiar permisos de $HOME/.nexo-continuity.json.
+
+### Estado y gaps residuales
+
+- E2: **PARTIAL / NOT CLOSED**.
+- E3: **PARTIAL / NOT CLOSED**.
+- R1: **ACCEPTED BY OWNER** como límite normativo/operacional; no implica PASS del entorno.
+- E4: **REAL-DESTINATION POST-WRITE OBJECT CHECK VERIFIED** dentro del alcance ya documentado; no acredita exclusividad de escritores ni prevención de relanzamiento.
+- RE-01/RE-02 y primera publicación restringida conservan sus estados documentados; esta delta no los reabre.
+- authorization: NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN; ROOT_READY no establecido; commissioning STOP; efectos protegidos STOP; NCS M0 INCOMPLETO.
+- No hubo cambios de runtime, tests, workflows, CI, configuración del dispositivo ni de la instancia real. Solo documentación.
+
+---
+
 ## DELTA — PUBLICACIÓN RESTRINGIDA REAL Y VERIFICACIÓN POST-ESCRITURA (2026-11-02)
 
 Este delta actualiza el estado de E4 con evidencia del destino real. No eleva E2/E3 ni altera los gates de autoridad.
