@@ -3,7 +3,7 @@
 Fecha: 2026-11-02
 Rama: `ncs-lumina-decoupling-2026-10-29`
 Base local/remota sincronizada: `dd7be200737f21a729306494e9387abe6713119e`
-Tipo: reconciliación documental + recomendación no ratificada
+Tipo: reconciliación documental + regla normativa P01-G ratificada por el propietario
 Ejecución: solo lectura y documentación; no runtime, tests, CI, bootstrap ni cambios del dispositivo.
 
 ## 1. Decisiones del propietario ya resueltas — no volver a preguntar
@@ -38,24 +38,24 @@ P01-G no necesita reabrir la clasificación del objeto ni la discusión de exclu
 4. **Separación y estado previo:** conservar el bootstrap como operación terminal separada; ausencia real distinta de corrupción, error de lectura, temporal/lock ambiguo y conflicto; cualquier objeto existente se preserva; resultado incierto => UNKNOWN/STOP, sin retry.
 5. **Evidencia operacional:** vincular E2/E3 al destino e invocación concretos. La evidencia actual es parcial; no equivale a una ventana de publicación demostrada.
 
-## 5. Recomendación técnica para decisión del propietario — NO RATIFICADA
+## 5. Regla normativa ratificada por el propietario (2026-11-02)
 
-Recomiendo que M0 trate la primera creación como una **autorización operacional humana, explícita, única y acotada**, distinta de la autoridad constitucional:
+El propietario ratificó que M0 trate la primera creación como una **autorización operacional humana, explícita, única y acotada**, distinta de la autoridad constitucional:
 
-- La fuente normativa sería una decisión expresa del propietario para inicializar una instancia concreta de Continuity clasificada L.
-- La autorización no se almacenaría dentro del archivo que se está creando, no se derivaría de su ausencia ni se presentaría como credencial/raíz.
-- La invocación sería manual, foreground y terminal: valida las entradas explícitas, deriva y muestra el destino efectivo antes de cualquier escritura, verifica las precondiciones del contrato y termina tras la inicialización; no entrega owner ni continúa a admisión/Chronicle/dispatch.
-- La aprobación humana tendría alcance solo sobre objeto, destino, SHA, ventana y snapshot inicial definidos; cualquier diferencia o UNKNOWN => STOP.
+- La fuente normativa es la decisión expresa del propietario para inicializar una instancia concreta de Continuity clasificada L.
+- La autorización no se almacena dentro del archivo que se está creando, no se deriva de su ausencia ni se presenta como credencial/raíz.
+- La invocación deberá ser manual, foreground y terminal: valida las entradas explícitas, deriva y muestra el destino efectivo antes de cualquier escritura, verifica las precondiciones del contrato y termina tras la inicialización; no entrega owner ni continúa a admisión/Chronicle/dispatch.
+- La aprobación humana tiene alcance solo sobre objeto, destino, SHA, ventana y snapshot inicial definidos; cualquier diferencia o UNKNOWN => STOP.
 - Esta regla no establecería ROOT_READY, autoridad constitucional, commissioning ni permiso para efectos protegidos.
 
 **Condición crítica:** esta recomendación solo es viable si el owner canónico de Core permite que la decisión humana externa sea base normativa suficiente para una operación local no autoritativa y si la frontera operacional puede reconocer la invocación sin autoafirmación del caller. No se debe codificar un flag como sustituto de esa demostración. Si el contrato canónico no permite esa ruta, se mantiene STOP y no se crea una autoridad paralela.
 
-La recomendación no es una decisión del propietario, no ratifica el contrato candidato, no cierra P01-G y no autoriza implementación, pruebas, CI ni bootstrap.
+La regla normativa está ratificada por el propietario. La ratificación no cierra RE-01/RE-02, E2/E3 ni E4, y no autoriza implementación, pruebas, CI, bootstrap, publicación real ni cambios del dispositivo.
 
 ## 6. Estado
 
 - P01-A: L — ACCEPTED BY OWNER.
-- P01-G: PENDING / UNKNOWN.
+- P01-G: RULE RATIFIED BY OWNER; contrato de reconocimiento en Core y ejecución concreta aún pendientes.
 - R1: ACCEPTED BY OWNER.
 - Criterio operacional E2/E3: APPROVED; evidencia E2/E3: PARTIAL / NOT CLOSED.
 - RE-01/RE-02: UNKNOWN.
@@ -70,4 +70,4 @@ La recomendación no es una decisión del propietario, no ratifica el contrato c
 
 ## 7. Siguiente acción finita
 
-Obtener una decisión del propietario únicamente sobre la fuente normativa del permiso operacional de primera creación (punto 1 de §4). No volver a preguntar P01-A, R1, E1 ni la regla provisional. Después, si la decisión lo permite, congelar el contrato y trabajar RE-01/RE-02 con el launcher y destino concretos. No ejecutar bootstrap ni tests sin autorización separada.
+Contrastar la regla ratificada con el contrato canónico de Core para demostrar que la decisión humana externa es base normativa suficiente para persistencia local no autoritativa y que la frontera reconoce la invocación sin caller self-assertion ni autoridad paralela. Después, congelar requisitos RE-01/RE-02 (launcher identificable y raíz/destino efectivos). No implementar, ejecutar tests/CI ni hacer bootstrap sin autorización técnica separada.
