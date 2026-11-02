@@ -1,3 +1,22 @@
+## DELTA VIGENTE — RECONCILIACIÓN FINAL DE EVIDENCIA TERMUX (2026-11-02)
+
+- R1 ACCEPTED BY OWNER; destino candidato ratificado: `$HOME/.nexo-continuity.json`.
+- RE-01: IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX.
+- RE-02: IMPLEMENTED / CI-VERIFIED / REAL-DESTINATION PREFLIGHT EXERCISED. Launcher presentó raíz canónica `/data/data/com.termux/files/home`, destino `/data/data/com.termux/files/home/.nexo-continuity.json`, snapshot vacío, ventana `2026-11-02T22:59:14.486Z`–`2026-11-02T23:04:14.494Z`, SHA `b8a44d37b957d6e8b91c38df81dcf288dfaf839bbd582e735ff1110452f0d941`. `CANCELAR` produjo `NEXO_CONTINUITY_BOOTSTRAP_CONFIRMATION_NOT_MATCHED`, `writeAttempted:false`.
+- La ejecución no intentó escribir. No se creó ni leyó el archivo productivo. RE-02 no es publicación ni verificación post-publicación.
+- E2/E3: PARTIAL / NOT CLOSED. R1 está aceptado, pero la ejecución cancelada no demuestra control de actores durante una ventana de publicación.
+- E4: PARTIAL / NOT CLOSED — REAL-DESTINATION PREFLIGHT. Ruta resuelta bajo HOME privado; propiedades post-inicialización/durabilidad no verificadas.
+- No repetir inventarios genéricos ni launcher. Siguiente unidad: mantener una sola lista de precondiciones R1 para una futura operación concreta; no hay más trabajo técnico útil que pueda cerrar la ventana sin ejecutar la operación autorizada.
+- `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; primera publicación, commissioning y efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+
+Detalle actualizado:
+- `NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md`
+- `NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md`
+- `NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md`
+- `NCS_NEXT_CHAT_2026-11-02_R1_INVENTORY_CLOSURE.md`
+
+---
+
 ## DELTA — PREFLIGHT NO PUBLICADOR DEL DESTINO RATIFICADO (2026-11-02)
 
 - El propietario ejecutó el launcher dedicado en Termux contra `$HOME/.nexo-continuity.json`; presentó raíz canónica `/data/data/com.termux/files/home`, destino efectivo `/data/data/com.termux/files/home/.nexo-continuity.json`, snapshot vacío y SHA-256 `b8a44d37b957d6e8b91c38df81dcf288dfaf839bbd582e735ff1110452f0d941`.
