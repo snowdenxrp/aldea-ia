@@ -85,7 +85,7 @@ function readBootstrapOptions(options) {
   let prototype;
   try { prototype = Object.getPrototypeOf(options); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
   if (prototype !== Object.prototype && prototype !== null) throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID");
-  const allowed = new Set(["root", "relativePath", "lockDeadline", "lockWaitMs"]);
+  const allowed = new Set(["root", "relativePath", "expectedDestination", "lockDeadline", "lockWaitMs"]);
   const values = Object.create(null);
   let keys;
   try { keys = Reflect.ownKeys(options); } catch { throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_OPTIONS_INVALID"); }
@@ -169,6 +169,10 @@ export async function preflightNexoContinuityBootstrap(options = {}) {
 /** Restricted M0 first publication; never opens an owner or continues to Chronicle. */
 export async function bootstrapNexoContinuityStore(options = {}) {
   const { values, destination } = await resolveBootstrapInputs(options);
+  if (values.expectedDestination !== undefined &&
+      (typeof values.expectedDestination !== "string" || values.expectedDestination !== destination.filePath)) {
+    throw continuityServiceError("NEXO_CONTINUITY_BOOTSTRAP_DESTINATION_CHANGED");
+  }
   const store = createNexoContinuityStore({
     filePath: destination.filePath,
     ...(values.lockDeadline !== undefined ? { lockDeadline: values.lockDeadline } : {}),
