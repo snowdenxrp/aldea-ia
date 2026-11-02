@@ -163,3 +163,17 @@ Static inspection at code SHA `5988d9b4c6caa22ec093986a25db80ca842902cc` confirm
 Thus API/fixture PASS is not an operational invocation. RE-01 (identified invocation) and RE-02 (effective root/destination tied to that invocation) remain UNKNOWN. Termux + Node, one manual foreground session and a private Termux HOME destination remain a technical recommendation only, not a ratified environment or launch path. Do not improvise a script or run bootstrap before P01-G and the first-publication contract are resolved.
 
 No runtime/test/workflow change, no real bootstrap, no Continuity creation, no commissioning and no protected effects.
+
+---
+
+## Addendum — proposed Termux restricted-environment threat boundary R1 (2026-11-02)
+
+The owner previously permitted a restricted environment but did not specify which actors are excluded. A technical candidate R1 is recorded in `NCS_M0_POCO_TERMUX_RESTRICTED_EXECUTION_PROFILE_CANDIDATE_2026-11-01.md` (profile commit `f2abfe2b3318285ce06a824f21ec4dc4d9d21eaf`):
+- Android app sandbox + Termux private HOME as the storage boundary.
+- One manually launched foreground Termux session and one future dedicated M0 invocation.
+- Exclude all other Termux sessions/processes, relevant Termux:API/Boot add-ons, services, jobs, cron, automation and known launchers during the entire window.
+- Explicitly exclude root/compromised OS and malicious processes sharing Termux's UID/trust space from the guarantee; any other unknown writer/launcher blocks.
+
+This is a recommendation, not an owner decision. Android documentation distinguishes package Force stop from Task Manager Stop; Task Manager Stop does not prevent scheduled jobs/alarms from running. See the source links in the profile. No claim is made that the current POCO meets R1.
+
+The exact owner decision needed is whether to accept this limited threat boundary. Acceptance would not authorize bootstrap, first publication, commissioning or protected effects. RE-01/RE-02 remain UNKNOWN because no dedicated M0 launcher or effective destination is defined.
