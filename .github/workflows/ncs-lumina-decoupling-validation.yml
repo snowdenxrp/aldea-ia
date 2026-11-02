@@ -10,6 +10,11 @@ on:
     paths:
       - "scripts/assistants.mjs"
       - "scripts/simulate.mjs"
+      - "scripts/nexo-continuity.mjs"
+      - "scripts/nexo-continuity-bootstrap.mjs"
+      - "src/nexo/core/continuity-service.mjs"
+      - "tests/nexo/continuity-bootstrap-launcher.test.mjs"
+      - "tests/nexo/m0-import-graph-guard.test.mjs"
       - "src/assistants/memory.js"
       - "tests/assistant-squad-audit.test.mjs"
       - "tests/assistant-cli-decoupling.test.mjs"
