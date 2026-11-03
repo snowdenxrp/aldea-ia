@@ -3556,3 +3556,12 @@ Addendum D1/D2 §11 actualizado en commit `836cb97a302551dad81af7d06c6cd2193afd1
 - La capacidad JavaScript no sustituye exclusión cross-process; P05/D2 sigue abierto. Un símbolo/convención ESM no es frontera frente a código arbitrario con acceso al repo.
 - Inspección estática puntual, no inventario exhaustivo; imports dinámicos/consumidores externos aún no despejados. No hay enforcement probado.
 - P03/P04/P05 y D1/D2 OPEN; no runtime/tests/CI ni cambios al dispositivo.
+## DELTA CRÍTICO — LECTURAS PREVIAS A ADMISIÓN O-10 (2026-11-03)
+
+Hallazgo estático documentado en addendum D1/D2 §12 (SHA producto `99dabcb...`):
+- Chronicle append lee primero Chronicle y Continuity mediante `loadCurrent()` y solo después llama `openNexoContinuityOwner()`.
+- Las queries read-only llaman directamente a `loadCurrent()` sin admisión de instancia visible; read-only no está exento de O-10.
+- `openNexoContinuityOwner()` lee el store antes de devolver el owner.
+- Los locks per-store no sustituyen admisión de instancia. El orden inspeccionado es una violación estática de O-10 en esas rutas.
+- Corregir exige rediseño D1; no basta mover el lock dentro del servicio. Chronicle child conserva ownership independiente.
+- D1-IMPLEMENTATION NO AUTORIZADA. Sin cambios runtime/tests/CI. D1/D2/P05 OPEN; M0 INCOMPLETE.
