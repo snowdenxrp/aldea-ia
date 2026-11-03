@@ -237,3 +237,22 @@ Esta delta supersede las filas históricas que indicaban destino productivo no s
 - No repetir el inventario genérico ni el launcher. Cualquier nueva evidencia debe responder a un gap concreto o formar parte de una futura operación autorizada.
 
 Gates: `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; primera publicación, commissioning y efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+
+
+---
+
+## DELTA VIGENTE — DECISIÓN A Y PUBLICACIÓN REAL (2026-11-02)
+
+Consultar [reconciliación canónica M0](NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md).
+
+El propietario ratificó **opción A**: E2/E3 son criterios independientes de cierre M0, no precondiciones retroactivas de la primera publicación. La publicación real vacía se conserva COMPLETED y no se invalida ni se repite. E2/E3 permanecen PARTIAL y bloquean M0_BUILD_COMPLETE hasta que se resuelvan con evidencia o exclusión de riesgo explícita aceptada. R1 sigue siendo el criterio normativo de la ventana y no se confunde con evidencia ambiental E2/E3.
+
+La publicación efectivamente completada:
+- Destino efectivo: `/data/data/com.termux/files/home/.nexo-continuity.json`.
+- Operación: `2a9114a056eaa483d72dc08243c29f7e7d85b8b8fe194a60c77fda8e81a6d7e9`.
+- Resultado: `status=committed`, `storeRevision=0`, `authorization=NOT_EVALUATED`, `continuation=STOPPED`.
+- SHA-256 del archivo: `3a1d5f25f00c7ba0e030fe8b99dda074b48f9b7950bd80d8a86f46de36236a81`.
+
+La comprobación post-write del objeto real está verificada dentro del alcance observado. No demuestra durabilidad ante pérdida de energía, exclusión de escritores no cooperativos, seguridad frente a procesos maliciosos bajo el mismo UID, ni liberación/readmisión completa. No establece ROOT_READY ni autoriza efectos protegidos.
+
+Las secciones anteriores que describen solo el preflight cancelado o dicen que no hubo publicación conservan su valor histórico, pero quedan supersedidas para el estado actual. No repetir launcher/bootstrap ni tocar el archivo real para esta reconciliación.
