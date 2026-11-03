@@ -342,3 +342,33 @@ Inspección de blobs del SHA `99dabcb33be1efef5c4f5e368dc95140e45ff672`:
 **P08 = OPEN / LAYOUT UNSELECTED.** La brecha es concreta: contrato O-08 ratificado pero no implementado; CLI y APIs del SHA examinado siguen path-oriented; no existe mapping común demostrado. La publicación real de Continuity no cierra el layout. P08 bloquea el cierre D1 porque D1 no puede garantizar que todos los entrypoints admitan sobre los mismos destinos canónicos.
 
 Esta sección es análisis documental de código en SHA fijado y evidencia histórica ya registrada; no cambia decisiones del owner, no elige filenames, no autoriza migración, runtime, tests o CI.
+### 13.5 Recomendación técnica de layout para conservar la primera publicación
+
+Recomendación para cerrar la ambigüedad de diseño sin alterar el objeto real:
+
+| Elemento | Candidato recomendado | Estado |
+|---|---|---|
+| Root | El directorio existente indicado explícitamente por `--root`, canonicalizado una vez por operación. Para la instalación Termux actual, la root histórica observada fue `$HOME`. | Dirección O-08 aceptada; mapping por implementar. |
+| Continuity | `<root>/.nexo-continuity.json` | Candidato preferido: conserva exactamente el destino de la primera publicación real. |
+| Chronicle | `<root>/.nexo-chronicle.json` | Nombre candidato nuevo; no existe evidencia de archivo real ni de inicialización completada. |
+| Admisión | No se fija nombre ni primitiva en esta decisión. | P03/P04/P05 OPEN. |
+
+Justificación:
+1. Reutiliza el único objeto Continuity cuya publicación real y post-write check están acreditados; no crea una segunda Continuity ni exige mover bytes.
+2. Usa un nombre compañero específico de Nexo para Chronicle, evitando colisionar por defecto con `chronicle.json` genérico de otras herramientas.
+3. Mantiene los dos stores directamente bajo una root explícita y común, sin subdirectorio, manifiesto, instanceId ni marcador adicional.
+4. Mantiene el mapping determinista para todos los entrypoints: los callers dejan de enviar rutas separadas; el resolver interno deriva ambos nombres exclusivamente desde la root validada.
+5. No confunde el objeto ya publicado con un bootstrap de Chronicle. La operación normal requiere stores existentes; la ausencia de Chronicle debe fallar cerrado. Su primera creación, si se autoriza, será una operación explícita separada y no parte de append.
+
+Reglas que acompañan al candidato:
+- Root normal: debe existir y ser directorio; canonicalizar antes de derivar cualquier store path. No crear root desde status/query/preview/append.
+- Store paths: exactamente los dos nombres anteriores; rechazar `--continuity`, `--chronicle` y combinaciones root+legacy en la interfaz normal. No fallback ambiental.
+- Conflictos: antes de adoptar el layout en runtime, inventariar ambos destinos y temporales/locks actuales. Si el path existe como symlink, directorio, tipo inesperado, objeto corrupto o contenido incompatible, UNKNOWN/STOP; no sobrescribir, renombrar, borrar ni seleccionar fuente por heurística.
+- Chronicle: `append` no inicializa. La creación inicial exige flujo de bootstrap explícito y separado, con autorización propia; no hereda la autorización histórica de Continuity.
+- Child: recibe `--root` explícita como dato; vuelve a validar/canonicalizar; adquiere admisión propia antes de cualquier lectura.
+- Persistencia: conservar intactos formatos, revisions, locks per-store y semántica de commit/append. Este mapping no autoriza cambiar protocolos de stores.
+- Amenaza: configuración local cooperante dentro de R1; no promete protección contra procesos hostiles del mismo UID ni carreras filesystem adversariales.
+
+Comparación con la propuesta histórica `continuity.json` / `chronicle.json`: aquella pareja era ilustrativa y quedó expresamente OPEN en D0-07. Adoptarla ahora requeriría resolver cómo preservar/adoptar `.nexo-continuity.json` sin crear dos fuentes de verdad. La pareja propuesta aquí evita esa transición para Continuity; Chronicle sigue pendiente de inventario y bootstrap separado.
+
+**Dictamen:** candidato técnico recomendado, no decisión ratificada ni layout implementado. P08 permanece OPEN hasta que el inventario no mutante de colisiones en la root real y la revisión de compatibilidad del formato Chronicle sean completados. No se lee/escribe/modifica la instancia real y no se autoriza implementación, tests o CI.
