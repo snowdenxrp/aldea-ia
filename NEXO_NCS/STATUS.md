@@ -3594,3 +3594,12 @@ Inventario no mutante reportado por owner en root `/data/data/com.termux/files/h
 - Límite: no se leyó contenido ni se inspeccionaron subdirectorios/aliases; no prueba ausencia global ni futura.
 - El destino Continuity candidato preserva el objeto publicado. Chronicle v1 tiene inicialización vacía explícita; `runNexoChronicleAppend()` aún conserva `initializeChronicle`, que deberá separarse/rechazarse bajo D1.
 - P08 OPEN; Chronicle no existe/no inicializado; sin escritura, runtime/tests/CI.
+## DELTA D1/P08 — CHRONICLE INIT Y APPEND
+
+Brecha estática: `runNexoChronicleAppend()` aún acepta `initializeChronicle` y puede inicializar Chronicle dentro de append (blob `c1964467d68043d06e035ad59720f8cec2e52e52`).
+- Objetivo: append nunca inicializa; Chronicle ausente => BLOCKED/UNAVAILABLE antes de admission de misión/escritura.
+- Rechazar `--initialize-chronicle` en CLI append antes de I/O persistente; eliminar `initializeChronicle` del API normal.
+- Inicialización Chronicle separada, explícita, con admisión propia, root/mapping O-08/P08 y autorización humana independiente. No combinar con append. La autorización de Continuity no autoriza Chronicle.
+- Query/status/preview no crean stores. Formato Chronicle actual: `NEXO_CHRONICLE` v1, revision 0, entries vacías.
+- Contrato: D1 target contract §11; addendum §13.9. Solo propuesta/casos futuros, no implementación ni tests.
+- D1/P08 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; sin runtime/tests/CI/bootstrap.
