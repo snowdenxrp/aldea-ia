@@ -156,3 +156,39 @@ Reglas aclaradas:
 - Las condiciones D1 se separan entre cierre de diseño y verificación de implementación; no son PASS ni autorización de tests.
 
 Estado sin cambio: D1 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; root legítima PENDING/UNKNOWN; authorization NOT_EVALUATED; ROOT_READY NOT ESTABLISHED; M0_BUILD_COMPLETE NOT ACHIEVED; efectos protegidos STOP.
+
+## 11. DELTA — separación estricta entre Chronicle initialization y append (2026-11-03)
+
+### 11.1 Hallazgo estático ligado al SHA de referencia
+
+En `src/nexo/application/chronicle-append.mjs` blob `c1964467d68043d06e035ad59720f8cec2e52e52`, `runNexoChronicleAppend()` recibe `initializeChronicle` como booleano. Después de validar/preflight de los stores, si Chronicle está ausente y `initializeChronicle` es `true`, el propio flujo de append invoca `chronicleStore.initialize()` antes de continuar con la admisión/append. Por tanto, la API de append conserva una ruta que combina inicialización y operación ordinaria. Este es un hallazgo estático del blob indicado; no es una prueba de ejecución ni de carrera.
+
+### 11.2 Regla objetivo propuesta
+
+1. `runNexoChronicleAppend()` no inicializa Continuity ni Chronicle bajo ninguna combinación de argumentos.
+2. La opción `initializeChronicle` debe desaparecer del contrato público de append. Mientras exista por compatibilidad, cualquier presencia —`true` o `false`— debe rechazarse como argumento no admitido, o la capa CLI debe rechazar el flag antes de invocar el caso de uso. No debe tratarse `false` como una autorización futura ni ignorarse silenciosamente un flag desconocido.
+3. Si Chronicle está ausente, append devuelve BLOCKED/UNAVAILABLE antes de admisión de misión, efectos o escritura. No crea archivo, directorio, lock de inicialización ni envelope vacío como side effect.
+4. La inicialización Chronicle es una operación separada y explícita. Debe validar la misma root O-08 y mapping P08, adquirir su propia admisión de instancia antes de cualquier lectura persistente (O-10), y ejecutar la inicialización del store bajo el lock per-store correspondiente.
+5. La inicialización no puede compartir una invocación con append, mission admission, dispatch, step execution ni efectos. Tras inicializar, la operación termina; cualquier append posterior es una nueva operación con admisión independiente.
+6. La operación separada requiere autorización operacional humana explícita para crear Chronicle en el destino efectivo mostrado previamente. La autorización de la primera publicación de Continuity del 2026-11-02 no se extiende a Chronicle ni a otras inicializaciones.
+7. Una query/read-only con Chronicle ausente no lo crea; devuelve estado unavailable/blocked según el contrato de query. No se permite inicialización implícita por status, preview, query, append, reparación o fallback.
+8. El documento inicial debe conservar el schema/version del store soportado (`NEXO_CHRONICLE`, v1, revision 0, entries vacías) salvo una decisión de formato separada. No sobrescribir, migrar ni reemplazar objetos existentes o de tipo desconocido.
+
+### 11.3 Casos de aceptación futuros
+
+| Entrada/estado | Resultado requerido |
+|---|---|
+| Append sin Chronicle | BLOCKED/UNAVAILABLE; ninguna inicialización ni escritura |
+| Append con `initializeChronicle: true` | Rechazo antes de I/O persistente |
+| Append con `initializeChronicle: false` | Rechazo si la propiedad/flag aún forma parte de la entrada; retirar del contrato en versión limpia |
+| CLI append con `--initialize-chronicle` | Rechazo antes de abrir/leer stores |
+| Query con Chronicle ausente | Sin creación; resultado unavailable/blocked |
+| Inicialización Chronicle independiente sin autorización explícita | STOP antes de crear el objeto |
+| Inicialización independiente autorizada | Root/mapping validados, admisión propia antes de primera lectura, inicialización explícita y terminación sin append |
+| Inicialización + append en una invocación | Rechazo; nunca componer ambos efectos |
+
+Estos son criterios de diseño/pruebas futuras, no tests ejecutados. La inicialización separada aún depende de P03/P04/P05 y P08; no se elige aquí su CLI, API, nombre de archivo final ni primitiva de admisión.
+
+### 11.4 Estado
+
+Esta regla es una propuesta técnica para completar D1 y P08. D1-DESIGN no queda cerrado por documentarla; D1-IMPLEMENTATION sigue NO AUTORIZADA. P08 permanece OPEN hasta mapping ratificado; P03/P04/P05 siguen OPEN. No se modifica runtime, no se crea Chronicle y no se autoriza tests/CI, bootstrap ni efectos protegidos.
