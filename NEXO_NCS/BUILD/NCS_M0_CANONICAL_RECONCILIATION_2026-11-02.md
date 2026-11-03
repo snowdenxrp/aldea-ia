@@ -171,3 +171,13 @@ Estas aclaraciones son propuestas técnicas y no ratifican P03/P04/P05. P05, P06
 ## DELTA — ANÁLISIS P05 (2026-11-03)
 
 Se añadió [P05 recovery policy decision analysis](NCS_M0_D2_P05_RECOVERY_POLICY_DECISION_ANALYSIS_2026-11-03.md). Conclusión: no retry de negocio ni readmisión automática tras release incierto; la regla fail-closed local no basta por sí sola para garantizar bloqueo cross-process después de terminar el proceso. P05 sigue OPEN hasta demostrar quiescencia externa o un mecanismo de lock ligado a identidad del objeto. No se elige una primitiva ni se añade infraestructura persistente. No hay cambios de runtime/tests/CI.
+
+
+### DELTA P05 — FUENTE DE LOCKS FIJADA A SHA (2026-11-03)
+
+La revisión estática de las fuentes del SHA base de producto `99dabcb33be1efef5c4f5e368dc95140e45ff672` quedó incorporada en el análisis P05:
+- Continuity blob `c1eb81bf74d2df576079b3269ac4db22d87fe7b6`: retry de retirada por path y `lockReleaseFailures` local al proceso.
+- Chronicle blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`: token-check seguido de retirada por path, sin cuarentena cross-process; `loadCurrent()` no adquiere lock per-store.
+- Ninguna de esas fuentes demuestra identidad del objeto durante release/readmisión.
+
+P05 sigue OPEN. No se ejecutaron pruebas de carrera ni se seleccionó mecanismo de recuperación. El análisis no cambia autorización ni estado M0.
