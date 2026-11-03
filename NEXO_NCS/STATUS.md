@@ -3582,3 +3582,9 @@ Addendum D1/D2 §13.5 recomienda como candidato, aún NO RATIFICADO/NO IMPLEMENT
 - Chronicle filename es candidato; requiere inventario de colisión/compatibilidad y bootstrap explícito separado. Append no inicializa.
 - Los entrypoints no aceptan paths separados; derivan destinos desde la misma root validada. No se elige primitiva de admisión ni se alteran protocolos per-store.
 - P08 sigue OPEN hasta inventario no mutante en root real y compatibilidad Chronicle. No tocar instancia real ni runtime/tests/CI.
+## DELTA P08 — INVENTARIO DE SIDECARS (2026-11-03)
+
+Addendum D1/D2 §13.6: los stores derivan lock per-store como `<filePath>.lock`; Chronicle deriva temporales desde basename; bootstrap Continuity valida una ruta relativa pero no implementa mapping común de dos stores.
+- El inventario de colisiones debe incluir los dos archivos candidatos, sidecars `.lock`, temporales `.tmp`/`.tmp-*`, symlinks y directorios.
+- No borrar ni modificar objetos durante inventario. Existencia de sidecars en dispositivo: UNKNOWN.
+- P08 OPEN; no device inspection ni runtime/tests/CI.
