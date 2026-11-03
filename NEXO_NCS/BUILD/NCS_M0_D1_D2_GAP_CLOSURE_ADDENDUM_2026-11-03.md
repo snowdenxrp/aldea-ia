@@ -270,3 +270,36 @@ El owner no se obtiene hasta después de las dos lecturas persistentes de prefli
 ### 12.5 Estado y límites de evidencia
 
 Hallazgo = **STATIC ORDERING VIOLATION IDENTIFIED** contra O-10 en el SHA inspeccionado. No es prueba de carrera concurrente ni evidencia de ejecución actual en Termux. No generalizarlo a otros SHAs sin revalidar. D1 sigue OPEN; D1-IMPLEMENTATION NO AUTORIZADA; tests/CI no autorizados; D2/P05 siguen OPEN.
+### 12.6 Secuencia correctiva de referencia — propuesta, no ratificada
+
+Para hacer verificable O-10 sin imponer todavía una primitiva concreta, la secuencia objetivo por operación queda expresada así:
+
+**Query read-only Continuity**
+1. Parsear y validar argumentos sin abrir stores.
+2. Resolver/canonicalizar root según O-08 y el mapping que P08 aún debe cerrar.
+3. Adquirir admisión de instancia válida.
+4. Crear/obtener el store interno y hacer una única lectura persistente.
+5. Proyectar el resultado desde ese snapshot; helpers puros no reabren stores.
+6. Liberar admisión según protocolo D2/P05; release incierto => UNKNOWN/BLOCKED.
+
+**Chronicle append**
+1. Parsear/validar argumentos y contenido sin abrir stores.
+2. Resolver/canonicalizar root y mapping.
+3. Adquirir admisión propia del proceso Chronicle child antes de cualquier lectura persistente.
+4. Crear stores internos y leer Continuity/Chronicle bajo esa admisión.
+5. Evaluar precondiciones; inicializar Chronicle solo si la autorización específica de inicialización está presente y el estado lo permite.
+6. Construir el owner de continuidad a partir del snapshot ya cargado/admitido, sin una recarga pre-owner.
+7. Ejecutar el flujo de append manteniendo la misma admisión durante todo el intervalo de uso del snapshot.
+8. Resolver persistencia y release por separado; release incierto => UNKNOWN/BLOCKED, sin redispatch/readmisión.
+
+**Servicio/factory**
+- `openNexoContinuityOwner()` no debe ser una API pública que realice la primera lectura por sí sola sin recibir una admisión válida; alternativamente, debe convertirse en helper interno que solo opere con contexto ya admitido.
+- Las factories no deben ofrecer métodos de lectura ordinaria que puedan invocarse sin la capacidad/contexto del owner. La capacidad no es el lock cross-process: solo evita composición accidental dentro del grafo de módulos.
+- El bootstrap de primera creación permanece como flujo separado, de una sola operación y sin devolver owner ni continuar a Chronicle.
+
+**Delegación**
+- El padre que solo delega Chronicle no lee stores ni adquiere la admisión de la operación child.
+- El child valida root/args, adquiere admisión propia y realiza su primera lectura persistente.
+- Si el padre necesita datos persistidos, constituye otra operación admitida; no retiene lock mientras espera child ni transfiere un snapshot después de liberar.
+
+Esta secuencia es una referencia para cerrar el contrato D1, no una elección de API, lock, layout, token, contexto, addon o helper. El mapping root→stores depende de P08; la semántica de adquisición/release depende de P03/P04/P05. No autoriza implementación ni pruebas.
