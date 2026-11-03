@@ -1,7 +1,7 @@
 # NCS M0 — P07 V2.3: delta normativo sobre V2.2
 
 Fecha: 2026-11-03  
-Base exacta: rama `ncs-p07-v2-2-documentary-proposal-2026-11-03`, commit de base documental `d8b5ca8720908d926acc18130614cce132a43b5d`.  
+Base inmediata: punta de la rama `ncs-p07-v2-2-documentary-proposal-2026-11-03`, commit `ccba909cbcd398d30898e7db39b6a15e0f22f42a`. Antecedente común de la propuesta V2.2: `d8b5ca8720908d926acc18130614cce132a43b5d`.  
 Rama V2.3: `ncs-p07-v2-3-documentary-corrections-2026-11-03`.
 
 Documentos coordinados:
@@ -96,11 +96,11 @@ Una sola clase principal por subcaso:
 - `PASS_CARAC`: caracterización correcta de primitiva/semántica/límite.
 - `PASS_GATE`: requisito de gate demostrado con todos sus criterios.
 - `DETECTION_ONLY`: divergencia detectada y operación detenida; no prevención.
-- `SERIALIZATION`: participantes cubiertos ordenados por la frontera.
+- `SERIALIZATION`: participantes cubiertos ordenados por la frontera, cuando la serialización está demostrada pero aún no se ha satisfecho el gate completo.
 - `RETENTION_VERIFIED`: residuo retenido de forma comprobada.
 - `NONE`: no se alcanzó una clase positiva por FAIL/UNKNOWN/BLOCKED/INVALID/NOT_APPLICABLE.
 
-No registrar `PASS_GATE` junto con `DETECTION_ONLY` o `RETENTION_VERIFIED` como clase principal del mismo subcaso. Si hay varios resultados, dividir el subcaso.
+`SERIALIZATION` es un resultado intermedio y una posible base probatoria, no un sinónimo de `PASS_GATE`. Si la serialización es el mecanismo y además se satisfacen todos los criterios del gate, registrar `result_class=PASS_GATE` y un campo adicional obligatorio `gate_basis` con `SERIALIZATION` (o `PREVENTION_VERIFIED`, según corresponda), más las referencias de evidencia. Si el gate no está completo, registrar `result_class=SERIALIZATION`. La misma regla aplica a cualquier mecanismo que contribuya al gate. No duplicar dos clases principales en un mismo subcaso.
 
 ### 5.3 `product_state`
 `ESTABLISHED | DEGRADED | UNKNOWN | STOP`
@@ -113,8 +113,8 @@ Describe el estado de la garantía del producto, no el éxito del harness. Un ha
 |---|---|---|---|
 | Detección válida y STOP, sin prevención | PASS | DETECTION_ONLY | STOP |
 | Residuo retenido conforme a política | PASS | RETENTION_VERIFIED | STOP o UNKNOWN según gate |
-| Cooperadores serializados | PASS | SERIALIZATION | ESTABLISHED solo para ese alcance |
-| Prevención del efecto no atribuido demostrada y gate completo | PASS | PASS_GATE | ESTABLISHED para ese gate |
+| Cooperadores serializados, gate aún incompleto | PASS | SERIALIZATION | ESTABLISHED solo para ese alcance |
+| Serialización o prevención demostrada y gate completo | PASS | PASS_GATE; `gate_basis=SERIALIZATION` o `PREVENTION_VERIFIED` | ESTABLISHED para ese gate |
 | Escenario no ejercido / seam no observable | UNKNOWN | NONE | UNKNOWN |
 | Precondición externa ausente | BLOCKED | NONE | UNKNOWN |
 | Harness no demuestra la intercalación reclamada | INVALID | NONE | UNKNOWN |
