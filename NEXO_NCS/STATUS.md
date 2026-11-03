@@ -1,3 +1,15 @@
+## DELTA VIGENTE — RECONCILIACIÓN DOCUMENTAL D1/D2 (2026-11-03)
+
+- Reconciliación publicada: [NCS_M0_D1_D2_CURRENT_STATE_RECONCILIATION_2026-11-03.md](BUILD/NCS_M0_D1_D2_CURRENT_STATE_RECONCILIATION_2026-11-03.md), commit `602fd1867802af5429775a98fe6de469337e06d5`.
+- Fotografía de código reconciliada: rama `ncs-lumina-decoupling-2026-10-29`, HEAD local de referencia `99dabcb33be1efef5c4f5e368dc95140e45ff672`; los blobs exactos inspeccionados están enumerados en el documento.
+- D1: corte de imports Nexo/Lúmina implementado en el snapshot y cubierto por guardas; root/admission del CLI normal, Chronicle padre/hijo y queries/previews siguen OPEN. Los callers externos/dinámicos no se declaran cerrados.
+- D2: P-03/P-04/P-05 continúan OPEN; sus especificaciones son propuestas no ratificadas. No elegir mecanismo de lock/readmisión por inferencia ni unificar locks existentes.
+- Estados superiores sin cambio: E2/E3 PARTIAL / NOT CLOSED; E4 REAL-DESTINATION POST-WRITE OBJECT CHECK VERIFIED en alcance limitado; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; ROOT_READY no establecido; commissioning STOP; efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+- Esta delta y el documento son exclusivamente documentales. No se ejecutaron tests/CI ni comandos Termux; no se tocó la instancia real de Continuity. No repetir bootstrap ni inventarios genéricos.
+- Siguiente unidad: resolver P-03, P-04 y P-05 contra los gaps concretos del documento, antes de nuevos cambios de runtime.
+
+---
+
 ## DELTA VIGENTE — CRITERIOS DE ACEPTACIÓN E2/E3 Y GAPS RESIDUALES (2026-11-02)
 
 - Propósito: convertir la evidencia R1 ya recibida en criterios verificables de evaluación. Esta delta es documental; no modifica runtime, tests, workflows, configuración del dispositivo ni la instancia real de Continuity.
