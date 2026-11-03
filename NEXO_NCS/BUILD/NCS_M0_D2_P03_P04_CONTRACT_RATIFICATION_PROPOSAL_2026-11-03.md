@@ -2,7 +2,7 @@
 Fecha: 2026-11-03
 Rama: `ncs-lumina-decoupling-2026-10-29`
 Base documental/código: HEAD `a84ce145fd162861afd725ba2b5d70e9a3265a73`
-Estado: **PROPUESTA PARA DECISIÓN DEL PROPIETARIO — NO RATIFICADA — NO AUTORIZA IMPLEMENTACIÓN**
+Estado: **DIRECCIÓN CONTRACTUAL D1–D6 RATIFICADA POR EL PROPIETARIO — CIERRE TÉCNICO PENDIENTE — NO AUTORIZA IMPLEMENTACIÓN**
 
 ## 1. Propósito y límites
 
@@ -229,3 +229,49 @@ Estado conservado:
 - Se reclasificaron timeout/señal/cancelación como decisión pendiente del propietario cuando puedan producir release incierto conforme a O-11/P-05.
 - Se sustituyeron afirmaciones de alineación ratificada por “consistente con propuesta no ratificada”.
 - Estas correcciones son documentales. No cambian gates ni autorizan implementación.
+
+
+## 10. DELTA — RATIFICACIÓN DEL PROPIETARIO D1–D6 (2026-11-03)
+
+El propietario ratificó explícitamente el paquete consolidado D1–D6 presentado en la conversación del 2026-11-03. Esta sección prevalece sobre las recomendaciones/propuestas anteriores de este documento cuando exista diferencia.
+
+### 10.1 Decisiones ratificadas
+
+1. **D1 — Frontera y propietario:** una admisión por caso de uso público, adquirida en la API pública de aplicación antes de la primera lectura persistente y conservada hasta el último uso del snapshot y la última escritura/reconciliación. Chronicle pertenece a `runNexoChronicleAppend`, también en llamada directa. Queries/previews pertenecen a sus APIs públicas. Request→draft adquiere una sola vez en la API superior y usa helper interno no reentrante; draft directo mantiene su propia garantía. El padre `nexo.mjs` no adquiere la admisión del hijo.
+2. **D2 — Diagnóstico en UNKNOWN/BLOCKED:** se permite únicamente inspección forense limitada de evidencia externa y metadata del protocolo. No puede leer ni alterar Continuity/Chronicle ni readmitir la instancia. No es una excepción read-only a O-10 ni una query normal. Si una inspección no puede garantizar esos límites, queda prohibida.
+3. **D3 — Modo normal de lectura:** admisión exclusiva para las operaciones normales cubiertas por M0. La inspección forense limitada de D2 es un carril separado, no una admisión compartida ni una lectura de stores. No se adopta reader/writer compartido en M0.
+4. **D4 — Timeout, señal, cancelación y crash:** terminación, ausencia de resultado estructurado o release no demostrable se clasifican UNKNOWN/BLOCKED para los campos afectados. No hay retry automático de negocio ni readmisión hasta resolución demostrable conforme a O-11/P-05. Un timeout no equivale a release confirmado.
+5. **D5 — Inputs externos y metadata:** se ratifican las clasificaciones provisionales de P-03 §3.2: validar forma/límites superficiales antes de admisión sin abrir stores; stdin y archivos externos request/draft son entradas del operador, no stores ni autorización; su lectura no prueba admisión ni atomicidad con stores; metadata mínima para resolver/canonicalizar raíz es preparación de raíz, sujeta a P-07; metadata del protocolo pertenece a la primitiva de admisión y no autoriza acceso a stores de negocio.
+6. **D6 — Límite de cobertura:** se mantiene el límite de confianza R1 ya aceptado para la sesión manual interactiva Termux: no se afirma protección universal; no se extiende la garantía a root/OS comprometido ni a procesos maliciosos con el mismo UID fuera del límite aceptado. Los actores/callers que no se demuestren dentro de la cobertura permanecen UNKNOWN/BLOCKED; no se infiere cobertura de guards parciales.
+
+### 10.2 Resoluciones técnicas delegadas a ingeniería
+
+Sin nueva decisión de autoridad, ingeniería puede diseñar y justificar:
+- capacidad de admisión no falsificable y helpers internos no reentrantes;
+- orden de locks y prevención de deadlock;
+- presupuestos separados para espera de admisión, locks per-store y duración de operación;
+- estructura de resultados padre/hijo y propagación de UNKNOWN;
+- cobertura de APIs públicas, tests, guards y workflows.
+
+La implementación debe preservar D1–D6, O-08/O-10/O-11 y la separación entre admisión técnica y autoridad constitucional.
+
+### 10.3 Pendientes y límites
+
+- **P-05 permanece OPEN / NOT RATIFIED.** Debe definir evidencia segura de release, cuarentena y readmisión; D2 no lo resuelve ni crea una vía de recuperación.
+- P-07 conserva el tratamiento de filesystem, alias y TOCTOU.
+- P-08 conserva la gramática/compatibilidad CLI.
+- P-09 conserva la evidencia de callers dinámicos/externos y superficies de bypass.
+- No se ratifica ningún mecanismo concreto de filesystem, protocolo de recuperación ni valor numérico de timeout.
+- No se autoriza modificación de runtime, tests, workflows, configuración ni dispositivo por esta ratificación documental.
+- No se ejecutaron tests, CI ni Actions.
+
+### 10.4 Estado tras la ratificación
+
+- P-03/P-04: **DIRECCIÓN CONTRACTUAL D1–D6 RATIFICADA; CIERRE TÉCNICO Y EVIDENCIA DE COBERTURA PENDIENTES**.
+- P-05: **OPEN / NOT RATIFIED**.
+- M0: **INCOMPLETO**.
+- `authorization: NOT_EVALUATED`.
+- Raíz constitucional: **PENDING/UNKNOWN**.
+- Commissioning y efectos protegidos: **STOP**.
+- Primera publicación real: **STOP**.
+
