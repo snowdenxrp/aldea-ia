@@ -152,3 +152,17 @@ No convertir CI de otro SHA en CI del SHA evaluado. Los cambios documentales de 
 Esta rama contiene cambios documentales únicamente. No se modificaron runtime, tests, workflows, package scripts, configuración del dispositivo ni la instancia real de Continuity. No se ejecutaron pruebas ni CI. No se modificó PR #110 ni su rama original.
 
 La rama se crea desde el HEAD de referencia para mantener intacto PR #110. Esta reconciliación no declara M0 completo ni concede nuevas autorizaciones de ejecución.
+
+
+---
+
+## DELTA — ACLARACIONES CONTRACTUALES D1/D2 (2026-11-03)
+
+Se añadió [NCS M0 — addendum de cierre de brechas D1/D2](NCS_M0_D1_D2_GAP_CLOSURE_ADDENDUM_2026-11-03.md), que precisa:
+- delegación pura Chronicle: el padre no lee ni adquiere; el child es owner de la operación;
+- reentrada: rechazo/STOP antes de lecturas adicionales y helpers sin readquisición;
+- allowlist de metadatos de raíz y del I/O propio del protocolo de admisión antes de la primera lectura del snapshot;
+- criterios binarios separados para cierre de diseño y verificación de implementación;
+- consecuencia de mantener UNKNOWN el ownership de estado legacy.
+
+Estas aclaraciones son propuestas técnicas y no ratifican P03/P04/P05. P05, P06, P07, P08 y P09 permanecen OPEN. D1/D2/D3 siguen OPEN; D1/D2 implementation no autorizada; no se ejecutaron tests/CI ni se modificó runtime. Root legítima PENDING/UNKNOWN; authorization NOT_EVALUATED; ROOT_READY NOT ESTABLISHED; M0_BUILD_COMPLETE NOT ACHIEVED; efectos protegidos STOP.
