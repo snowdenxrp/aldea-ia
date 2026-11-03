@@ -6,6 +6,7 @@
 **Rama documental de reconciliación:** `ncs-m0-documentary-reconciliation-2026-11-02`  
 **Expediente canónico:** [NCS M0 — reconciliación documental canónica](BUILD/NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md)
 **Contrato de diseño D1 (propuesta, no ratificada/implementada):** [D1 target contract and entrypoint classification](BUILD/NCS_M0_D1_TARGET_CONTRACT_AND_ENTRYPOINT_CLASSIFICATION_2026-11-02.md)
+**Contrato de diseño D2 (propuesta, no ratificada/implementada):** [D2 admission and release target contract](BUILD/NCS_M0_D2_ADMISSION_RELEASE_TARGET_CONTRACT_2026-11-02.md)
 
 ## Vector vigente
 
