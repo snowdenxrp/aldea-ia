@@ -3526,3 +3526,17 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 
 ---
 
+
+## DELTA VIGENTE — P05/B1 Y COBERTURA D1 (2026-11-03)
+
+Último trabajo documental: commit `2e1e6cd04073cb3c1b0a59d4ba5b516ec728f6a8` en `ncs-m0-documentary-reconciliation-2026-11-02`.
+
+- Análisis P05: `BUILD/NCS_M0_D2_P05_RECOVERY_POLICY_DECISION_ANALYSIS_2026-11-03.md`, secciones 11.6–11.8.
+- Se contrastó B1/flock con el código del SHA de producto `99dabcb33be1efef5c4f5e368dc95140e45ff672`.
+- La API pública de aplicación reexporta queries y Chronicle append; las factories de Continuity/Chronicle son importables. Un wrapper CLI aislado no cubre esos callers.
+- Un wrapper sobre el CLI padre completo mantendría lock mientras espera a Chronicle child, incompatible con el ownership del child y potencialmente bloqueante.
+- Integración nativa en el owner Node o frontera de proceso/API obligatoria: no diseñada ni verificada. No seleccionar B1 todavía.
+- B1: CANDIDATO CON BRECHA D1 IDENTIFICADA — NO SELECCIONADO.
+- P05/D1/D2/D3: OPEN. D1/D2 implementation: NO AUTORIZADA. Tests/CI: no ejecutados.
+- `authorization: NOT_EVALUATED`; `ROOT_READY`: NOT ESTABLISHED; `M0_BUILD_COMPLETE`: NOT ACHIEVED; efectos protegidos: STOP.
+- Sin cambios de runtime, tests, workflows, PR #110, configuración Termux, ni instancia real de Continuity.
