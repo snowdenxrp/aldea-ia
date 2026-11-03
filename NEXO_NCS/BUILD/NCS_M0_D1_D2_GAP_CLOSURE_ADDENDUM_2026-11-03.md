@@ -433,3 +433,8 @@ Regla objetivo propuesta (desarrollada en §11 del contrato D1):
 Casos de aceptación futuros: append con Chronicle ausente no crea; flag explícito `--initialize-chronicle` rechaza antes de store I/O; inicialización separada sin autorización STOP; inicialización autorizada adquiere admisión propia y termina sin append. Son criterios propuestos, no pruebas ejecutadas.
 
 Esta separación no cierra D1/P08 ni selecciona CLI/API/mecanismo de admisión. D1-IMPLEMENTATION sigue NO AUTORIZADA; P03/P04/P05/P08 OPEN; no runtime, tests, CI, bootstrap Chronicle ni efectos protegidos.
+### 13.10 Confirmación de la ruta CLI del flag de inicialización
+
+En `scripts/nexo-chronicle-session.mjs` blob `30a53de2f108aa255a1dfd61ce78c19788de160b`, `--initialize-chronicle` está incluido en el conjunto de flags aceptados y se transforma en `initializeChronicle: true` al llamar `runNexoChronicleAppend()`. La brecha queda localizada en dos fronteras del SHA examinado: parser CLI (acepta y transmite el flag) y caso de uso (puede inicializar el store dentro de append).
+
+Corrección objetivo: retirar `--initialize-chronicle` del parser normal; si se recibe, rechazarlo explícitamente antes de abrir/leer stores. El contrato normal de append no debe exponer `initializeChronicle`. Cambiar solo el default a `false` no corrige el camino explícito.
