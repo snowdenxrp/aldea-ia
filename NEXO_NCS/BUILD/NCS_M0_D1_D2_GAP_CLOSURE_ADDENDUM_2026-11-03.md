@@ -372,3 +372,20 @@ Reglas que acompañan al candidato:
 Comparación con la propuesta histórica `continuity.json` / `chronicle.json`: aquella pareja era ilustrativa y quedó expresamente OPEN en D0-07. Adoptarla ahora requeriría resolver cómo preservar/adoptar `.nexo-continuity.json` sin crear dos fuentes de verdad. La pareja propuesta aquí evita esa transición para Continuity; Chronicle sigue pendiente de inventario y bootstrap separado.
 
 **Dictamen:** candidato técnico recomendado, no decisión ratificada ni layout implementado. P08 permanece OPEN hasta que el inventario no mutante de colisiones en la root real y la revisión de compatibilidad del formato Chronicle sean completados. No se lee/escribe/modifica la instancia real y no se autoriza implementación, tests o CI.
+### 13.6 Consecuencia de basename y sidecars de los stores
+
+Inspección de `chronicle-store.mjs` (blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`), `continuity-store.mjs` (blob `c1eb81bf74d2df576079b3269ac4db22d87fe7b6`) y `continuity-service.mjs` (blob `53fd7043266635b30a1e01b69bb00d28feda300c`) confirma:
+- Ambos stores derivan lock per-store como `${filePath}.lock`.
+- Chronicle deriva temporales usando el basename del archivo (`<basename>.tmp` y `<basename>.tmp-*`).
+- El bootstrap Continuity recibe `root` + `relativePath`, canonicaliza root, valida destino bajo root y rechaza determinados conflictos de destino/sidecar.
+- Las factories normales siguen recibiendo `filePath`; la validación de bootstrap no convierte las factories normales en root-aware.
+
+Con el layout candidato, los nombres derivados previsibles serían:
+- Continuity: `.nexo-continuity.json`, sidecar `.nexo-continuity.json.lock` y temporales con prefijo `.nexo-continuity.json.tmp`.
+- Chronicle: `.nexo-chronicle.json`, sidecar `.nexo-chronicle.json.lock` y temporales con prefijo `.nexo-chronicle.json.tmp`.
+
+Esto vuelve parte del inventario de colisiones obligatorio: revisar no solo los dos documentos sino también sus sidecars, temporales estables/únicos, directorios/symlinks con esos nombres y cualquier lock residual. No se deben borrar locks ni temporales durante el inventario. Los nombres anteriores son derivados del código inspeccionado, no afirmación de que existan en el dispositivo.
+
+El contrato de bootstrap actual solo valida una ruta relativa por invocación y está orientado a Continuity; no es un resolver conjunto de dos stores. No debe reutilizarse como si ya resolviera ambos destinos. La implementación futura necesitará un único resolver de root/layout que entregue ambos paths validados antes de la admisión, sin leer stores antes de O-10.
+
+Esta observación no cierra P08 ni P03/P04/P05; no ejecuta inspección del filesystem del dispositivo y no modifica ningún objeto real.
