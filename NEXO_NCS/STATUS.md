@@ -3603,3 +3603,6 @@ Brecha estática: `runNexoChronicleAppend()` aún acepta `initializeChronicle` y
 - Query/status/preview no crean stores. Formato Chronicle actual: `NEXO_CHRONICLE` v1, revision 0, entries vacías.
 - Contrato: D1 target contract §11; addendum §13.9. Solo propuesta/casos futuros, no implementación ni tests.
 - D1/P08 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; sin runtime/tests/CI/bootstrap.
+### DELTA — FLAG CLI `--initialize-chronicle` LOCALIZADO
+
+`scripts/nexo-chronicle-session.mjs` (blob `30a53de2f108aa255a1dfd61ce78c19788de160b`) acepta el flag y lo pasa como `initializeChronicle: true`; `runNexoChronicleAppend()` (blob `c1964467d68043d06e035ad59720f8cec2e52e52`) puede inicializar Chronicle dentro de append. Requisito: retirar flag y rechazarlo antes de store I/O; cambiar default no basta. Hallazgo estático.
