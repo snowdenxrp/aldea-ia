@@ -3565,3 +3565,6 @@ Hallazgo estático documentado en addendum D1/D2 §12 (SHA producto `99dabcb...`
 - Los locks per-store no sustituyen admisión de instancia. El orden inspeccionado es una violación estática de O-10 en esas rutas.
 - Corregir exige rediseño D1; no basta mover el lock dentro del servicio. Chronicle child conserva ownership independiente.
 - D1-IMPLEMENTATION NO AUTORIZADA. Sin cambios runtime/tests/CI. D1/D2/P05 OPEN; M0 INCOMPLETE.
+## DELTA — SECUENCIA CORRECTIVA DE O-10 (2026-11-03)
+
+Addendum D1/D2 §12.6 documenta una secuencia de referencia, aún no ratificada: validar sin I/O de stores → resolver root → adquirir admisión → primera lectura → usar snapshot → release D2/P05. Queries read-only también requieren admisión. Chronicle child adquiere la suya; `openNexoContinuityOwner()` no puede leer antes de ella; bootstrap continúa separado. No se eligió API, primitiva, token, contexto ni layout. Dependencias abiertas: P03/P04/P05/P08. Sin implementación/tests/CI.
