@@ -15,7 +15,7 @@ Todo escenario con B debe declarar `actor_B_class` antes de ejecutar: `COVERED`,
 
 Campos obligatorios por subcaso:
 - `harness_verdict`;
-- `result_class` (una sola clase; `NONE` si no es positivo);
+- `result_class` (una sola clase; `NONE` si no es positivo); y `gate_basis` cuando `result_class=PASS_GATE`;
 - `product_state`;
 - `actor_B_class`;
 - `root_claim` si afecta raíz (`R-OBJ`, `R-NAME`, `BOTH`, `NOT_APPLICABLE`);
@@ -30,7 +30,7 @@ Campos obligatorios por subcaso:
 | P07-02 | COVERED y RAW en subcasos separados si B sustituye | PASS_CARAC; PASS_GATE solo para requisito de resolución dentro del modelo | Cero interleavings = UNKNOWN. No fusionar resultado covered/raw. |
 | P07-03 | NOT_PRESENT salvo fixture externo | PASS_CARAC | El tipo permitido se evalúa por rol. FAIL-CLOSED no implica cleanup. |
 | P07-04 | COVERED/RAW según quién altera FS-OWNER o APP-OWNER | PASS_CARAC; PASS_GATE solo si atribución/contrato completos | Separar FS-OWNER de APP-OWNER; fixtures ausente/parcial/ilegible/corrupto/ajeno por capa. |
-| P07-05 | COVERED y RAW separados | SERIALIZATION para COVERED; PASS_GATE solo si gate completo; RAW = PASS_CARAC | Seam interno entre última verificación y syscall destructiva. RAW no prueba enforcement. |
+| P07-05 | COVERED y RAW separados | SERIALIZATION para COVERED si el gate está incompleto; PASS_GATE con `gate_basis=SERIALIZATION` solo si gate completo; RAW = PASS_CARAC | Seam interno entre última verificación y syscall destructiva. RAW no prueba enforcement. |
 | P07-06 | COVERED y RAW separados para sustitución | SERIALIZATION o RETENTION_VERIFIED; PASS_GATE solo con atribución y contrato completos | Matriz cutpoint × handler fd/no-fd/foreign-fd × actor class. |
 | P07-07 | COVERED/RAW según procedencia del objeto | RETENTION_VERIFIED o PASS_CARAC | Token/nombre/PID/hash no atribuyen por sí solos. Huérfano UNKNOWN se retiene. |
 | P07-08 | RAW para writer directo; COVERED para control cooperativo | PASS_CARAC | Resultados en subcasos separados; no PASS_GATE contra RAW. |
@@ -41,13 +41,13 @@ Campos obligatorios por subcaso:
 | P07-13 | COVERED para cooperadores; RAW no requerido salvo control explícito | PASS_CARAC | Tabla por flock/F_SETLK/OFD y lifecycle; no generalizar. |
 | P07-14 | COVERED para proceso B que confirma contención | PASS_CARAC | SIGSTOP no es exit; confirmar estado T. |
 | P07-15 | COVERED y RAW separados si B sustituye | PASS_CARAC | fstat(fd) y stat(path) describen referentes distintos. |
-| P07-16 | COVERED y RAW separados cuando B modifica namespace | DETECTION_ONLY / SERIALIZATION / PASS_GATE según evidencia | Registrar R-OBJ/R-NAME por separado. Detección+STOP o no afectar RT-B no es PASS_GATE. |
+| P07-16 | COVERED y RAW separados cuando B modifica namespace | DETECTION_ONLY; SERIALIZATION si gate incompleto; PASS_GATE con `gate_basis` si gate completo | Registrar R-OBJ/R-NAME por separado. Detección+STOP o no afectar RT-B no es PASS_GATE. |
 | P07-17 | COVERED para locks; RAW solo control de límite | PASS_CARAC | F_SETLK, flock y OFD independientes. |
 | P07-18a | COVERED/RAW según quien compite por lectura/rename | PASS_CARAC | Mismo filesystem para claim de rename atómico usual; tipos compatibles; lector solapado. |
 | P07-18b | COVERED y RAW separados para sustitución destino | DETECTION_ONLY / SERIALIZATION / PASS_GATE según evidencia | Centinela de destino. Rename normal puede desplazarlo; no aprobar P07-C por atomicidad de visibilidad. |
 | P07-19 | COVERED/RAW para sustitución entre fallo y cleanup | DETECTION_ONLY / RETENTION_VERIFIED / PASS_GATE según evidencia | Separar A-temp, Library-temp, B-sentinel y cleanup owner; seam exacto o UNKNOWN. |
 | P07-20 | NOT_PRESENT salvo proceso de control | PASS_CARAC | Distinguir API spy de syscall trace; file fsync y dir fsync separados. |
-| P07-21 | COVERED y RAW separados en Caso B | SERIALIZATION / RETENTION_VERIFIED / PASS_GATE según evidencia | Oráculo separado n1/n2/fd/nlink; decremento de nlink no debe ocultarse si afecta nombre ajeno. |
+| P07-21 | COVERED y RAW separados en Caso B | SERIALIZATION si gate incompleto; RETENTION_VERIFIED; PASS_GATE con `gate_basis` si gate completo | Oráculo separado n1/n2/fd/nlink; decremento de nlink no debe ocultarse si afecta nombre ajeno. |
 | P07-22 | RAW para actor crudo y COVERED para control cooperativo | PASS_CARAC | UIDs y permisos solo si verificados; R1 no ratificado = no enforcement claim. |
 
 La tabla especifica el mínimo por escenario; si B no interviene realmente, `NOT_PRESENT` es correcto. Si la clasificación no puede justificarse antes de ejecutar, `UNCLASSIFIABLE` y UNKNOWN-STOP.
@@ -68,8 +68,8 @@ Combinaciones:
 1. RT-A sigue abierta, path original resuelve RT-B: R-OBJ puede mantenerse; R-NAME falla.
 2. RT-A sigue abierta, path original ausente: R-OBJ puede mantenerse; R-NAME falla.
 3. Producto detecta el cambio y se detiene sin tocar RT-B: `PASS/DETECTION_ONLY/STOP`; no P07-C PASS_GATE.
-4. B cubierto queda serializado antes de poder cambiar namespace: `PASS/SERIALIZATION`; contribuye al gate solo si cobertura P09 y modelo ratificado lo permiten.
-5. Prevención del cambio/efecto no atribuido demostrada en el seam relevante y para el alcance completo: candidato a `PASS_GATE`, sujeto a dependencias.
+4. B cubierto queda serializado antes de poder cambiar namespace: `PASS/SERIALIZATION` si el gate sigue incompleto; si además se satisfacen cobertura P09, modelo ratificado y todos los criterios del gate, registrar `PASS/PASS_GATE` con `gate_basis=SERIALIZATION`.
+5. Prevención del cambio/efecto no atribuido demostrada en el seam relevante y para el alcance completo: candidato a `PASS_GATE` con `gate_basis=PREVENTION_VERIFIED`, sujeto a dependencias.
 
 No declarar R-NAME satisfecho solo por conservar dirfd.
 
@@ -136,7 +136,7 @@ Ningún escenario puede declarar PASS_GATE solo por:
 - ejecutar solo actores cubiertos cuando el claim pretende incluir actores crudos;
 - obtener resultado favorable sin clase de actor fijada previamente.
 
-El escenario no ejecutado nunca es PASS. La falta de seam no se compensa con sleeps, reintentos o intercalaciones externas.
+El escenario no ejecutado nunca es PASS. Todo `PASS_GATE` debe incluir `gate_basis` y referencias de evidencia. La falta de seam no se compensa con sleeps, reintentos o intercalaciones externas.
 
 ## 8. Estado
 
