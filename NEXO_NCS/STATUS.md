@@ -3540,3 +3540,11 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - P05/D1/D2/D3: OPEN. D1/D2 implementation: NO AUTORIZADA. Tests/CI: no ejecutados.
 - `authorization: NOT_EVALUATED`; `ROOT_READY`: NOT ESTABLISHED; `M0_BUILD_COMPLETE`: NOT ACHIEVED; efectos protegidos: STOP.
 - Sin cambios de runtime, tests, workflows, PR #110, configuración Termux, ni instancia real de Continuity.
+## DELTA — EVALUACIÓN DE LOCK DENTRO DE NODE (2026-11-03)
+
+Análisis añadido en P05, secciones 11.9–11.11, commit `c84ee7c6f29ae92eba28ea2d9696c9d309883836`.
+- No existe en el package.json del SHA producto examinado una dependencia/addon nativo declarado ni una integración flock existente.
+- Un mutex JavaScript no ofrece exclusión cross-process. `flock(1)` como wrapper no cubre APIs importables y no debe envolver al padre mientras delega Chronicle.
+- La alternativa de lock dentro del owner Node requiere integración nativa no presente/validada y una frontera que impida uso ordinario de factories de stores sin contexto admitido.
+- No seleccionar addon/helper/broker ni implementar refactor sin ratificación P03/P04/P05 y evidencia Termux.
+- P05/D1/D2/D3 permanecen OPEN; no hay cambios runtime/tests/CI ni ejecución en el dispositivo.
