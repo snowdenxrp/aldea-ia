@@ -220,3 +220,10 @@ El addendum D1/D2 §13 contrasta O-08 con el SHA de producto `99dabcb...`: `scri
 - Dictamen: P08 OPEN / LAYOUT UNSELECTED; bloquea D1 hasta mapping común inequívoco.
 - Pendiente: destino Continuity (adoptar o no el objeto publicado), destino Chronicle, reglas de root existente/flags legacy, canonicalización/aliases, propagación al child y tratamiento de datos existentes.
 - No se seleccionan filenames ni migración; sin runtime/tests/CI.
+### DELTA P08 — CANDIDATO DE LAYOUT QUE CONSERVA CONTINUITY (2026-11-03)
+
+El addendum §13.5 propone, sin ratificar ni implementar: `<root>/.nexo-continuity.json` + `<root>/.nexo-chronicle.json`, ambos derivados de una única `--root` explícita/canonicalizada.
+- Continuity conserva el destino exacto de la primera publicación real, evitando segunda fuente o migración de ese objeto.
+- Chronicle es nombre candidato nuevo; no se presume que exista ni se inicializa en append. Requiere inventario de colisiones y bootstrap separado.
+- No se decide nombre/primativa de admisión; P03/P04/P05 siguen abiertos. No se alteran formatos ni locks per-store.
+- P08 permanece OPEN hasta inventario no mutante en root real y compatibilidad Chronicle; no se toca instancia real ni se autoriza implementación/tests/CI.
