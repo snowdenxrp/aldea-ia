@@ -245,3 +245,40 @@ No está demostrado en el POCO, no se ha confirmado el binario instalado, no se 
 - D1/D2 = **OPEN**.
 - No se modifica runtime, tests, workflows, configuración ni dispositivo.
 - No se ejecutan tests, CI, comandos Termux ni pruebas de filesystem.
+
+### 11.6 Compatibilidad de B1 con la frontera D1 — brecha concreta
+
+Se contrastó B1 con los módulos reales del SHA de producto 99dabcb33be1efef5c4f5e368dc95140e45ff672. Esta comparación es estática y no implica ejecución:
+
+| Superficie | Fuente/blob | Observación relevante para B1 |
+|---|---|---|
+| API pública src/nexo/application/index.mjs | fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3 | Reexporta directamente runNexoChronicleAppend, queries de Continuity, Open Loops y previews. Un consumidor puede importar esas operaciones sin pasar por scripts/nexo.mjs. |
+| Queries | e1915e94e53e71d37a37952fead37ba62bdae79a | Funciones exportadas crean stores y ejecutan loadCurrent() dentro de la propia API. |
+| Chronicle append | c1964467d68043d06e035ad59720f8cec2e52e52 | runNexoChronicleAppend() es exportada; crea stores y lee ambos snapshots directamente. |
+| Continuity store | c1eb81bf74d2df576079b3269ac4db22d87fe7b6 | createNexoContinuityStore() es exportada y devuelve loadCurrent, initialize y commit. |
+| Chronicle store | 59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a | createNexoChronicleStore() es exportada y devuelve loadCurrent, initialize y append. |
+| CLI padre | e471eb478a09aa8a9a8323795583e198cdf0a127 | Importa las queries y usa spawnSync para delegar Chronicle. |
+| CLI child | 30a53de2f108aa255a1dfd61ce78c19788de160b | Importa y exporta runNexoChronicleAppend; también puede ejecutarse directamente. |
+
+**Conclusión D1:** envolver únicamente node scripts/nexo.mjs con flock(1) no cubre la API pública ni las factories exportadas. El caller que importe directamente la API puede saltarse el wrapper y efectuar la primera lectura persistente sin el lock de instancia. Por O-10, eso mantiene D1 OPEN.
+
+**Conflicto padre/child:** envolver el CLI padre completo con flock --no-fork tampoco satisface el ownership Chronicle de D1. El padre conservaría la admisión mientras espera en spawnSync; el child que intentara adquirir el mismo lock quedaría bloqueado. Si se heredara el descriptor para evitar la contención, se convertiría en una admisión heredada, expresamente prohibida por el contrato. El wrapper debe situarse en el límite de la operación real: para Chronicle, en el child que ejecuta la operación, no alrededor del padre que delega.
+
+### 11.7 Formas de integración que todavía requieren decisión de diseño
+
+B1 solo puede continuar si se define cómo todas las operaciones cubiertas adquieren el mismo lock sin bypass:
+
+1. **Adquisición nativa dentro del proceso Node:** binding/addon N-API o helper nativo que entregue un descriptor bloqueado y mantenga su ciclo de vida durante toda la operación. Debe demostrar disponibilidad/compilación en Termux, cierre correcto, no herencia accidental y cobertura de APIs importables. No hay binding seleccionado.
+2. **Frontera de proceso/launcher obligatoria:** hacer que los launchers de operación sean los únicos owners y retirar las rutas de lectura directa de la superficie pública; las APIs internas reciben un contexto/snapshot de la operación admitida. Requiere demostrar que todos los callers productivos pasan por esa frontera y que el child Chronicle adquiere por sí mismo. El mero hecho de mover exports o documentarlos como internos no demuestra por sí solo la ausencia de bypass.
+3. **Broker de stores/admisión:** un único proceso propietario del lock y de las lecturas/escrituras, al que los callers envían solicitudes. Es una alternativa arquitectónica de mayor alcance; no se recomienda introducirla en M0 sin demostrar que las opciones anteriores no bastan.
+
+No se selecciona ninguna. La opción 1 podría conservar el API de operación y cubrir importaciones directas si el lock se adquiere dentro de cada owner admitido; la opción 2 podría reducir la superficie si D1 prueba el grafo completo; la opción 3 cambia el modelo de ejecución y puede exceder el alcance mínimo.
+
+### 11.8 Resultado actualizado de B1
+
+- Propiedad kernel de flock(2): candidata técnicamente pertinente para coordinación entre procesos cooperativos sobre un archivo estable.
+- Wrapper flock(1) alrededor del CLI padre: **NO COMPATIBLE** con el ownership Chronicle padre/child si mantiene el lock durante spawnSync.
+- Wrapper CLI como única protección: **INSUFICIENTE** frente a las APIs/factories importables identificadas.
+- Integración nativa en el owner Node o frontera obligatoria: **NO DISEÑADA / NO VERIFICADA**.
+- B1 global: **CANDIDATO CON BRECHA D1 IDENTIFICADA — NO SELECCIONADO**.
+- P05 y D1/D2 permanecen OPEN. No se modifican runtime/tests/CI ni se autoriza una implementación.
