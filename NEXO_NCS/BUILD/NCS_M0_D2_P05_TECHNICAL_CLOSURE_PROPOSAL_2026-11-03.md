@@ -176,3 +176,35 @@ Se propone ratificar, si el propietario lo decide, los siguientes invariantes si
 - Efectos protegidos: **STOP**.
 
 Este documento completa la evaluación técnica disponible, pero no ratifica P-05, no elige por el propietario la política A/B/C y no autoriza cambios de runtime/tests/workflows ni commissioning.
+
+
+---
+
+## DELTA — RECONCILIACIÓN DE DEPENDENCIA P-03/P-04 TRAS RATIFICACIÓN (2026-11-03)
+
+La afirmación de §7 y §10 de que P-03/P-04 permanecían como propuesta no ratificada queda superada por la decisión explícita del propietario del 2026-11-03.
+
+- D1–D6 de P-03/P-04 están **RATIFICADAS POR EL PROPIETARIO**.
+- Registro: `NCS_M0_D2_P03_P04_CONTRACT_RATIFICATION_PROPOSAL_2026-11-03.md`, sección 10; commit `d0c45a1d7c5d6791b4f8c3d9c2919ad19360abbb`.
+- Diseño técnico: `NCS_M0_D2_P03_P04_TECHNICAL_CLOSURE_DESIGN_2026-11-03.md`; commit `038afa393a2e21e74d3384d8a05cc71d07147615`.
+
+### Efecto preciso sobre P-05
+
+1. P-05 ya dispone de límites contractuales ratificados para dueño de admisión, intervalo protegido, admisión exclusiva normal, diagnóstico forense limitado, terminación incierta, inputs externos y alcance R1.
+2. La dependencia normativa P-03/P-04 queda resuelta **a nivel de decisión del propietario**.
+3. La implementación y evidencia de enforcement de admisión siguen pendientes; no se afirma que los callers estén cubiertos ni que la primitiva exista.
+4. P-05 sigue necesitando una política explícita de release/readmisión y evidencia de seguridad. D2 no permite inspeccionar stores canónicos ni sustituye P-05.
+5. La elección entre A/B/C de §8–§9 continúa **RESERVADA AL PROPIETARIO**. Este delta no elige una política ni autoriza implementación.
+6. Los hallazgos E1–E9 y las limitaciones estáticas de Continuity/Chronicle no cambian por la ratificación de P-03/P-04.
+
+### Estado reconciliado
+
+- P-03/P-04: D1–D6 RATIFICADAS; enforcement/evidencia pendientes.
+- P-05: OPEN / NOT RATIFIED; política A/B/C pendiente.
+- E1–E9: conservan los estados de la matriz §5; no se convierten en PASS.
+- M0: INCOMPLETO.
+- `authorization: NOT_EVALUATED`.
+- Raíz constitucional: PENDING/UNKNOWN.
+- Primera publicación, commissioning y efectos protegidos: STOP.
+- Solo delta documental; sin runtime/tests/workflows/configuración/dispositivo.
+- No se ejecutaron tests/CI/Actions.
