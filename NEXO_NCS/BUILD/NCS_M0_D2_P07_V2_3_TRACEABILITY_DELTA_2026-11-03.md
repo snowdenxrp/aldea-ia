@@ -19,7 +19,7 @@ Se recuperaron desde GitHub en la rama V2.2 y se verificaron los blob SHA devuel
 | `NCS_M0_D2_P07_V2_2_SCENARIO_MATRIX_AND_TEST_ORACLES_2026-11-03.md` | `26404e70d39b3fd29ecfe56e0965917d973bac68` |
 | `NCS_M0_D2_P07_V2_2_TRACEABILITY_PLATFORM_AND_EVIDENCE_PROTOCOL_2026-11-03.md` | `22e8d63f725f3e304bc4ff392f6459afa941f695` |
 
-Esta verificación acredita qué contenido se inspeccionó en esta revisión documental. No acredita ejecución, validez de los mecanismos, ni ratificación del contrato.
+Esta verificación acredita qué contenido se inspeccionó en esta revisión documental. La punta de la rama V2.2 usada como base inmediata de V2.3 es `ccba909cbcd398d30898e7db39b6a15e0f22f42a`; su antecedente común de propuesta fue `d8b5ca8720908d926acc18130614cce132a43b5d`. No acredita ejecución, validez de los mecanismos, ni ratificación del contrato.
 
 ### 1.2 Revisión independiente
 
@@ -71,7 +71,7 @@ V2.2 contenía un resumen numérico de hallazgos Claude (“4 H1–H14 confirmad
 Además de V2.2, exigir:
 - `actor_B_class` antes de iniciar el subcaso;
 - `root_claim` para escenarios de raíz;
-- `result_class` única y `NONE` para no positivos;
+- `result_class` única y `NONE` para no positivos; `gate_basis` obligatorio para `PASS_GATE`;
 - `product_state` separado del harness;
 - source/destination filesystem y tipo para rename;
 - FS-OWNER y APP-OWNER como capas independientes;
@@ -94,7 +94,7 @@ No confundir:
 - fingerprint con ausencia de writers;
 - process crash con power-loss durability.
 
-La evidencia de `PASS_GATE` requiere todas las capas aplicables; una sola clase de evidencia no sustituye dependencias.
+La evidencia de `PASS_GATE` requiere todas las capas aplicables; una sola clase de evidencia no sustituye dependencias. Cuando el gate se apoya en serialización o prevención, registrar `result_class=PASS_GATE` y el campo separado `gate_basis=SERIALIZATION` o `PREVENTION_VERIFIED`. Si el gate sigue incompleto, `SERIALIZATION` permanece como resultado intermedio y no se eleva a `PASS_GATE`.
 
 ## 5. Gates y dependencias
 
