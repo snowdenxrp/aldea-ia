@@ -236,3 +236,30 @@ El propietario introdujo `CANCELAR`. Respuesta literal: `{"status":"blocked","co
 P01-G continúa RULE RATIFIED BY OWNER; no existe aprobación de esta instancia para publicar. `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; primera publicación, commissioning y efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
 
 No se repitió launcher. No se creó ni leyó el archivo productivo. Sin cambios de runtime, tests, CI, workflows ni configuración del POCO.
+
+
+---
+
+## DELTA — RECONCILIACIÓN POSTERIOR A LA PRIMERA PUBLICACIÓN RESTRINGIDA (2026-11-02)
+
+Esta delta es posterior a la sección 12. Conserva el registro histórico de la ejecución cancelada, pero actualiza el estado vigente tras una operación posterior autorizada y completada.
+
+### Evidencia posterior que supersede el estado operativo de la sección 12
+
+- El propietario autorizó una única inicialización vacía de Continuity M0 en el destino ratificado `$HOME/.nexo-continuity.json`. La autorización fue específica para esa instancia; no incluyó ROOT_READY, autoridad constitucional, commissioning, migración, admisión, PREPARED, dispatch, reconciliación ni efectos protegidos.
+- El launcher dedicado se ejecutó desde una sesión Termux interactiva manual. Presentó raíz canónica `/data/data/com.termux/files/home`, ruta relativa `.nexo-continuity.json`, destino efectivo `/data/data/com.termux/files/home/.nexo-continuity.json`, snapshot vacío, ventana `2026-11-02T23:25:28.960Z`–`2026-11-02T23:30:28.968Z` y SHA de operación `2a9114a056eaa483d72dc08243c29f7e7d85b8b8fe194a60c77fda8e81a6d7e9`.
+- El propietario introdujo la confirmación exacta `PUBLICAR 2a9114a056eaa483d72dc08243c29f7e7d85b8b8fe194a60c77fda8e81a6d7e9`. Resultado: `status=committed`, `storeRevision=0`, `authorization=NOT_EVALUATED`, `continuation=STOPPED`.
+- Verificación independiente posterior, desde un proceso Node separado: ruta canónica exacta; archivo regular y no symlink; UID coincidente con Termux; modo `0600`; tamaño 283 bytes; SHA-256 del archivo `3a1d5f25f00c7ba0e030fe8b99dda074b48f9b7950bd80d8a86f46de36236a81`. El envelope `NEXO_CONTINUITY_STORE` v1 contiene `snapshot` `NEXO_OPERATIONAL_CONTINUITY` v1 con los cinco arrays vacíos.
+- La delta vigente y evidencia detallada están registradas en `NEXO_NCS/STATUS.md` y `NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md`.
+
+### Reconciliación de estados
+
+- La sección 12 sigue siendo válida como registro histórico de la ejecución anterior que terminó en `CANCELAR`; no debe borrarse ni reinterpretarse como si describiera la operación posterior.
+- Quedan supersedidas como afirmaciones del estado actual las frases de la sección 12 que indican que no existe aprobación de instancia, que no hubo publicación real o que E4 sigue NOT READY.
+- RE-01 y RE-02: IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX; RE-02 fue usado con el destino real.
+- Primera publicación restringida: COMPLETED, una sola vez. No repetir bootstrap, no reinicializar, no modificar, no borrar ni cambiar permisos del archivo real.
+- E4: REAL-DESTINATION POST-WRITE OBJECT CHECK VERIFIED dentro del alcance observado. No se afirma fsync/durabilidad ante pérdida de energía, exclusión de escritores no cooperativos ni protección frente a procesos hostiles del mismo UID.
+- E2 y E3: PARTIAL / NOT CLOSED. La publicación completada no demuestra retrospectivamente exclusividad sostenida de escritores ni prevención de relanzamiento durante toda la ventana. No elevar a PASS por inferencia.
+- `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; `ROOT_READY` no establecido; commissioning STOP; efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+
+Esta actualización es documental. No modifica runtime, tests, workflows, configuración del POCO ni la instancia real de Continuity. No inicia una nueva ventana R1 ni autoriza operación posterior.
