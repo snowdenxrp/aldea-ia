@@ -50,7 +50,7 @@ La presencia de `--root` en el entrypoint de bootstrap no demuestra una gramáti
 - `src/nexo/core/chronicle-store.mjs` implementa `loadCurrent()` como lectura directa, sin adquirir el lock per-store usado por las rutas de mutación.
 - El runtime owner-backed continúa usando/reconciliando estado de Continuity después de PREPARED; el owner semántico no mantiene una admisión de instancia a través de toda la operación.
 
-**Conclusión:** el propietario contractual adecuado es la ejecución de aplicación dentro del hijo/entrypoint Chronicle, no el proceso padre. La admisión debe comenzar antes de la primera lectura persistente del caso de uso y mantenerse hasta completar la última escritura/reconciliación y formar el resultado de operación, antes del release. El padre espera y propaga el resultado; no retiene la admisión del hijo.
+**Recomendación contractual (no ratificada):** la adquisición debe pertenecer a la frontera pública de aplicación `runNexoChronicleAppend`, no al `main` del script. Esa frontera debe adquirir antes de la primera lectura persistente (actualmente `chronicle-append.mjs:319`) y mantener la admisión hasta completar la última escritura/reconciliación y formar el resultado, antes del release. El entrypoint hijo invoca esa API; el padre espera y propaga el resultado, pero no adquiere ni retiene la admisión. La API exportada debe ser segura cuando se llama directamente; no puede depender de que el CLI la haya admitido previamente.
 
 ### 3.3 Consultas y previews
 
@@ -61,7 +61,7 @@ La presencia de `--root` en el entrypoint de bootstrap no demuestra una gramáti
 - `previewNexoMissionRequest` delega en `previewNexoMissionDraft`; el contexto de admisión debe fluir por la cadena sin una segunda adquisición.
 - El CLI enruta a las funciones de aplicación; no debe ser un segundo dueño de la misma admisión.
 
-**Conclusión:** el propietario debe ser la función/caso de uso público de aplicación. La admisión comienza antes de la primera lectura de store y se conserva hasta terminar la construcción del retorno. En request→draft debe existir un solo dueño y una sola admisión.
+**Recomendación contractual (no ratificada):** cada API pública de consulta/preview es una frontera segura por sí misma. Para `previewNexoMissionRequest` → `previewNexoMissionDraft`, la función superior adquiere una sola vez y llama a una implementación interna no pública de draft; la API pública `previewNexoMissionDraft`, cuando se invoca directamente, adquiere por sí misma y llama a esa misma implementación interna. No debe resolverse con un objeto plano falsificable ni con una bandera `alreadyAdmitted` aceptada desde callers arbitrarios. La capacidad debe ser no falsificable fuera del módulo (por ejemplo, marca privada/WeakSet o closure privada) y no reentrante. La admisión empieza antes de la primera lectura persistente y termina tras construir el retorno.
 
 ### 3.4 Doble adquisición y límites de la evidencia
 
@@ -73,18 +73,19 @@ La presencia de `--root` en el entrypoint de bootstrap no demuestra una gramáti
 
 ## 4. Contrato mínimo recomendado para ratificación
 
-### 4.1 Unidad y propietario
+### 4.1 Unidad, frontera pública y propietario
 
-Una admisión corresponde a **un caso de uso público**, no a cada helper ni a cada store.
+Una admisión corresponde a **un caso de uso público**, no a cada helper ni a cada store. La adquisición debe estar en la API pública de aplicación que garantiza cobertura para todos sus callers, no únicamente en el CLI.
 
-| Flujo | Propietario único recomendado | No adquieren |
-|---|---|---|
-| Chronicle directo | Caso de uso de aplicación ejecutado por `nexo-chronicle-session.mjs` | CLI padre inexistente en esta invocación; helpers/store |
-| Chronicle delegado desde `nexo.mjs` | El hijo `nexo-chronicle-session.mjs`, igual que en invocación directa | Proceso padre; helpers/store |
-| Query/status/mission/plan/Open Loops | Función pública de aplicación correspondiente | CLI, store y helpers internos |
-| Preview request→draft | La función pública superior que inicia la cadena request→draft | La función delegada draft, CLI, store y helpers internos |
+| Flujo | Frontera pública que adquiere | Implementación interna | No adquieren |
+|---|---|---|---|
+| Chronicle directo | `runNexoChronicleAppend` | Cuerpo interno del append después de adquirir | Script, stores y helpers |
+| Chronicle delegado desde `nexo.mjs` | `runNexoChronicleAppend`, invocado por el hijo | Igual que la invocación directa | Padre `nexo.mjs`, hijo como wrapper adicional, stores y helpers |
+| Query/status/mission/plan/Open Loops | Cada API pública de query correspondiente | Proyección sobre snapshot/contexto admitido | CLI, stores y helpers |
+| Preview request→draft | API pública superior `previewNexoMissionRequest` | Helper interno de draft que no adquiere | API pública draft delegada en ese camino, CLI, stores y helpers |
+| Preview draft directo | API pública `previewNexoMissionDraft` | El mismo helper interno de draft | CLI, stores y helpers |
 
-Los helpers reciben un contexto de admisión ya establecido. No adquieren ni reentran. Si una API pública se llama directamente, debe establecer su propio contexto en su frontera pública; no puede asumir que un CLI la admitió previamente.
+El contexto/capacidad admitido no puede ser un objeto plano o una bandera booleana aceptada de callers arbitrarios. Debe ser no falsificable fuera del módulo que lo crea (por ejemplo, marca privada/WeakSet o closure privada), y las funciones internas que lo reciben no deben reentrar. La API pública draft conserva su propia garantía cuando se invoca directamente; la API request usa una ruta interna para evitar una segunda adquisición. La API pública Chronicle también debe adquirir aunque sea llamada sin CLI.
 
 ### 4.2 Intervalo protegido
 
@@ -102,32 +103,30 @@ Se libera al final del caso de uso, separando el resultado de negocio/persistenc
 
 La admisión no se extiende a entrada interactiva ni a trabajo externo no relacionado, salvo necesidad contractual demostrada. La lectura de archivos externos `--draft`/`--request` y stdin se rige por las clasificaciones de P-03 §3.2; no constituye por sí misma lectura de un store canónico ni autorización.
 
-### 4.3 Modo de lectura: recomendación exclusiva para M0
+### 4.3 Modo de admisión de lecturas y diagnóstico — decisión abierta crítica
 
-**Recomendación técnica:** usar admisión exclusiva para todos los casos de uso M0 incluidos, también consultas y previews.
+O-10 exige admisión para queries/previews; no determina por sí solo si esa admisión debe ser exclusiva o compartida. **No se recomienda ratificar todavía exclusividad para todas las lecturas.** La propuesta anterior sobrestimó la actualidad que aportaría: una admisión exclusiva solo coordina callers que realmente la respetan; no cubre bootstrap, callers directos/dinámicos ni escritores fuera del protocolo. Tampoco elimina por sí sola el riesgo de release incierto.
 
-Razones:
-- O-10 incluye expresamente las operaciones read-only.
-- El snapshot clonado protege la memoria local frente a mutación del objeto persistido, pero no garantiza actualidad respecto de escritores concurrentes.
-- La admisión compartida exigiría demostrar una primitiva reader/writer correcta, compatibilidad con todos los escritores y una política de release/readmisión bajo P-05.
-- Serializar las operaciones M0 ofrece un contrato más pequeño y conservador, sin añadir modos ni reglas de promoción/downgrade.
+Hay dos alternativas que requieren decisión explícita del propietario:
 
-Esto no afirma que una primitiva exclusiva ya exista. No se propone implementar lectores compartidos en M0. La posibilidad de concurrencia compartida puede revisarse fuera del cierre mínimo, con evidencia y decisión separadas.
+- **R1 — Exclusiva para todo:** todas las queries/previews compiten por la misma admisión exclusiva. Contrato simple, pero tras `UNKNOWN/BLOCKED` puede impedir incluso inspeccionar el estado que permitiría diagnosticar la incertidumbre. No existe excepción implícita para `status`/`open-loops`; cualquier vía de diagnóstico tendría que definirse y autorizarse expresamente.
+- **R2 — Lectura compartida / escritura exclusiva:** queries y previews pueden adquirir admisión compartida; Chronicle/mutaciones adquieren exclusiva. Requiere una primitiva reader/writer demostrablemente correcta, orden justo o política anti-starvation, tratamiento de upgrade/downgrade y compatibilidad con P-05. No resuelve por sí sola el diagnóstico después de release incierto: O-11 sigue bloqueando readmisión mientras el estado esté incierto, salvo política de inspección expresamente ratificada.
 
-**Decisión reservada al propietario:** ratificar exclusividad para todas las operaciones cubiertas o rechazarla explícitamente. La inclinación de Claude por admisión compartida para consultas se registra como alternativa no seleccionada, no como requisito.
+Una tercera posibilidad —operación de inspección diagnóstica limitada bajo `UNKNOWN/BLOCKED`— también requiere contrato del propietario: qué datos puede leer, si puede observar un lock incierto sin alterarlo y cómo garantiza que no se convierte en readmisión encubierta.
 
-### 4.4 Presupuesto de espera
+**Recomendación:** dejar el modo de lectura OPEN. No afirmar que exclusiva sea intrínsecamente más segura ni que compartida sea necesaria. Resolver primero el requisito de diagnóstico bajo O-11/P-05 y seleccionar el modo junto con esa política. La admisión sigue siendo obligatoria para toda lectura cubierta, sin excepción read-only.
 
-Se recomienda un único presupuesto monotónico por intento de adquisición de admisión:
-- comienza inmediatamente antes del primer intento de adquirir la admisión de instancia;
-- incluye todos los reintentos y esperas internas de esa adquisición;
-- termina al adquirirla o al devolver un resultado de espera agotada/bloqueada;
-- no se reinicia en helpers ni en stores;
-- no se consume como TTL de la operación una vez adquirida la admisión.
+### 4.4 Presupuestos: adquisición de admisión, locks per-store y ejecución
 
-**No caduca automáticamente una admisión ya adquirida.** Una vez admitido el caso de uso, la admisión permanece bajo su propietario hasta el límite terminal definido en §4.2. Un timeout de ejecución, señal, crash o imposibilidad de release no autoriza liberar a ciegas ni readmitir: se clasifica conforme a P-05 como resultado conocido o UNKNOWN y release confirmado o incierto.
+**Recomendación (no ratificada):** distinguir tres relojes, no reutilizar un único deadline opaco:
 
-El valor numérico del presupuesto es una decisión de implementación/configuración pendiente; no se ratifica aquí el valor actual de 2 segundos observado en otra capa.
+1. **Espera de admisión:** deadline monotónico por intento de adquisición de instancia. Empieza antes del primer intento e incluye reintentos/esperas de esa adquisición. Si vence antes de adquirir, no hay store I/O ni dispatch.
+2. **Espera de lock per-store:** cada adquisición de lock de store recibe un presupuesto/deadline explícito propio, o un presupuesto de operación con semántica igualmente explícita. No se debe decir simultáneamente que el deadline único no se reinicia en stores y que los locks per-store conservan su contrato actual sin definir cuál de esas reglas prevalece. Recomendación provisional: presupuesto acotado por intento de lock per-store, sin compartir silenciosamente el deadline de admisión. Si se prefiere un presupuesto total de operación, debe especificarse cómo se reparte entre múltiples ciclos y stores.
+3. **Duración de operación ya admitida:** no usar el deadline de adquisición como TTL ni caducidad automática de una admisión activa. Una admisión no se libera por el mero vencimiento de un reloj.
+
+El vencimiento de un lock per-store debe clasificarse según el punto de ejecución: antes de cualquier escritura/dispatch demostrable puede ser fallo bloqueado; después de dispatch o de una escritura posible, el resultado puede ser `UNKNOWN` y requiere reconciliación conforme al contrato aplicable. No se reintenta automáticamente la operación de negocio para compensar un timeout.
+
+Timeout, señal, crash o cancelación del proceso pueden dejar al actor sin capacidad de ejecutar el release. No son meros detalles de configuración: su resultado, la evidencia de release y cualquier readmisión están sujetos a O-11/P-05 y requieren política del propietario. El valor numérico de cada presupuesto es posterior al cierre semántico.
 
 ### 4.5 Composición con locks per-store
 
@@ -137,16 +136,16 @@ La admisión de instancia y los locks per-store tienen propósitos y ciclos de v
 
 No se deben unificar ni retirar locks per-store por analogía. Antes de implementación se debe fijar orden de adquisición y release para evitar inversión de locks, deadlock y reentrada. Las lecturas Chronicle sin lock per-store deben quedar cubiertas por la admisión de instancia o recibir un contrato específico; esta propuesta no decide por sí sola modificar `chronicle-store.loadCurrent()`.
 
-## 5. Contrato padre/hijo
+## 5. Contrato padre/hijo y timeout/señal
 
 1. El padre valida argumentos superficiales y transmite la raíz/opciones permitidas.
 2. El hijo valida independientemente la raíz, flags contradictorios y la prohibición de bootstrap implícito antes de abrir stores.
-3. El hijo adquiere la admisión para la operación que ejecuta, tanto si fue lanzado por el padre como si se invocó directamente.
-4. El padre no adquiere ni retiene la misma admisión mientras espera mediante `spawnSync`.
-5. Los helpers del hijo reciben el contexto y no reentran.
-6. El padre propaga un resultado estructurado solo cuando el hijo lo produjo; un hijo terminado por señal, sin resultado o con estado de salida ambiguo debe permanecer UNKNOWN para los campos no demostrables.
+3. La API pública `runNexoChronicleAppend` adquiere la admisión en su propia frontera, antes de `chronicle-append.mjs:319`; no se limita a confiar en que el script hijo ya la adquirió.
+4. El padre no adquiere ni retiene la admisión mientras espera mediante `spawnSync`.
+5. Los helpers reciben capacidad no falsificable y no reentran.
+6. El padre propaga un resultado estructurado solo cuando el hijo lo produjo; terminación por señal, ausencia de resultado o estado ambiguo deja UNKNOWN los campos no demostrables.
 
-La falta actual de timeout/señal explícita en `spawnSync` es una brecha de manejo del resultado del proceso, no una razón para que el padre adquiera la admisión del hijo. La política exacta de timeout, señal y serialización de resultados pertenece a la implementación/contrato de entrypoint y debe mantenerse compatible con O-11.
+**Decisión del propietario pendiente:** política de timeout, señal, cancelación y terminación del hijo. Matar un hijo que puede tener una admisión o una operación en vuelo puede convertir el release en incierto y activar O-11/P-05. No se puede clasificar como mero detalle de implementación ni añadir un timeout sin definir las consecuencias y la evidencia de recuperación. La ausencia actual de timeout en `spawnSync` (`scripts/nexo.mjs:189`) es una brecha observada; esta propuesta no la resuelve.
 
 ## 6. Dependencias y límites
 
@@ -163,13 +162,16 @@ La falta actual de timeout/señal explícita en `spawnSync` es una brecha de man
 | Dueño Chronicle | Hijo/caso de uso de aplicación | PROPUESTO |
 | Dueño queries/previews | Función pública de aplicación | PROPUESTO |
 | Request→draft | Un solo dueño en la función superior | PROPUESTO |
-| Padre con `spawnSync` | No adquiere; delega al hijo | PROPUESTO, alineado con P-04 §4.1 |
-| Intervalo | Antes de primera lectura persistente hasta último uso/escritura y límite terminal | PROPUESTO, alineado con P-03 §3.1 |
-| Lecturas | Exclusiva también para queries/previews en M0 | RECOMENDACIÓN; REQUIERE RATIFICACIÓN |
-| Presupuesto | Un deadline monotónico de adquisición; no TTL tras adquirir | RECOMENDACIÓN; REQUIERE RATIFICACIÓN |
-| Lock per-store | Mantener semántica separada; no unificar sin pruebas | PROPUESTO |
-| Timeout/señal hijo | Resultado indeterminado se clasifica UNKNOWN; política concreta pendiente | GAP |
-| Callers dinámicos/externos | UNKNOWN hasta cobertura específica | OPEN |
+| Padre con `spawnSync` | No adquiere; delega al caso de uso público del hijo | PROPUESTO; consistente con propuesta no ratificada P-04 §4.1 |
+| Intervalo | Antes de primera lectura persistente hasta último uso/escritura y límite terminal | PROPUESTO; consistente con propuesta no ratificada P-03 §3.1 |
+| Lecturas | Resolver exclusividad, compartida o inspección diagnóstica limitada | DECISIÓN DEL PROPIETARIO PENDIENTE |
+| Capacidad interna | No falsificable; APIs públicas seguras para callers directos; helpers internos no reentran | RECOMENDACIÓN; REQUIERE DISEÑO |
+| Presupuesto de admisión | Deadline monotónico de espera; no TTL tras adquirir | RECOMENDACIÓN; REQUIERE RATIFICACIÓN |
+| Locks per-store | Definir presupuesto por adquisición o total de operación; no mezclar con admisión | GAP CONTRACTUAL |
+| Timeout/señal/cancelación | Consecuencias sobre release y resultado bajo O-11/P-05 | DECISIÓN DEL PROPIETARIO PENDIENTE |
+| Inputs externos/metadata | Clasificación P-03 §3.2 provisional; requiere ratificación | OPEN |
+| Callers directos/dinámicos/externos | Cobertura no demostrada; P-09 | UNKNOWN / OPEN |
+| Bypass bootstrap/direct-store | Exclusión de cobertura debe probarse o permanecer UNKNOWN | OPEN |
 
 ## 8. Criterios mínimos de aceptación futuros
 
@@ -191,14 +193,21 @@ Estos criterios no han sido implementados ni ejecutados.
 
 ## 9. Estado y siguiente paso
 
-**Resultado del cruce:** el informe Claude es concordante con la lectura estática independiente y con la intención normativa de P-03/P-04 §§3.1, 4 y 4.1. La propuesta concreta la elección de dueño que la especificación original dejó abierta y recomienda exclusividad M0 para evitar introducir concurrencia compartida sin evidencia.
+**Resultado del cruce:** el informe Claude confirma que la dirección general es compatible con la intención de O-08/O-10/O-11 y con las propuestas P-03/P-04 §§3.1, 4 y 4.1. No se encontró contradicción normativa directa; sí se encontraron sobreafirmaciones y decisiones abiertas que la versión anterior presentó incorrectamente como si fueran las únicas pendientes.
 
-**No es cierre ni ratificación.** Para cerrar el diseño faltan únicamente las decisiones explícitas del propietario sobre:
-1. dueño por flujo y no reentrada, según §4.1 y §5;
-2. admisión exclusiva para consultas/previews, según §4.3;
-3. semántica del presupuesto de adquisición, según §4.4.
+**No es cierre ni ratificación.** La lista completa de cuestiones abiertas incluye:
+1. propietario y frontera pública de adquisición por flujo, incluida cobertura de llamadas directas a APIs exportadas;
+2. capacidad no falsificable y patrón interno/no reentrante para request→draft;
+3. modo de lectura y diagnóstico bajo `UNKNOWN/BLOCKED` (exclusiva, compartida o inspección limitada);
+4. presupuesto de espera de admisión;
+5. presupuesto y semántica de locks per-store a lo largo de una operación con múltiples ciclos;
+6. política del propietario para timeout, señal, cancelación y crash del hijo, por su relación con release incierto/O-11/P-05;
+7. ratificación de las clasificaciones provisionales de stdin, archivos externos y metadata de raíz en P-03 §3.2;
+8. cobertura de callers directos, dinámicos, externos y bypasses (P-09);
+9. orden de adquisición/release entre admisión y locks per-store y sus garantías frente a deadlock;
+10. tratamiento de inspección/diagnóstico sin convertirla en readmisión encubierta.
 
-El valor numérico del presupuesto y el manejo detallado de timeout/señal pueden concretarse en la especificación de implementación sin convertirlos en decisiones de autoridad.
+Los valores numéricos de espera solo pueden fijarse después de resolver su semántica. No se afirma que timeout/señal sean detalles no sujetos a autoridad: cuando puedan dejar un actor en vuelo o release incierto, deben respetar la política ratificada por el propietario bajo O-11/P-05.
 
 Estado conservado:
 - P-03/P-04: OPEN / propuesta de ratificación pendiente.
@@ -209,3 +218,14 @@ Estado conservado:
 - Commissioning y efectos protegidos: STOP.
 - Sin cambios de runtime, tests, workflows, configuración o dispositivo.
 - No se ejecutaron tests, CI ni Actions.
+
+### Correcciones incorporadas tras revisión adversarial Claude (2026-11-03)
+
+- Se retiró la afirmación de que solo faltaban tres decisiones; §9 ahora enumera también inputs externos/metadata, cobertura de callers, timeout/señal/cancelación, presupuestos per-store, capacidad interna y diagnóstico.
+- Se retiró la recomendación de exclusividad general como si fuera una opción ya preferida. El modo de lectura queda OPEN porque debe resolverse junto con la inspección diagnóstica bajo UNKNOWN/BLOCKED.
+- Se precisó que la adquisición Chronicle debe pertenecer a la API pública `runNexoChronicleAppend`, no solo al script hijo, para cubrir callers directos.
+- Se especificó el patrón request→draft de wrapper público + helper interno no reentrante con capacidad no falsificable; es propuesta de diseño, no implementación.
+- Se separaron los presupuestos de adquisición de admisión, adquisición de locks per-store y duración de la operación; no se fija valor numérico.
+- Se reclasificaron timeout/señal/cancelación como decisión pendiente del propietario cuando puedan producir release incierto conforme a O-11/P-05.
+- Se sustituyeron afirmaciones de alineación ratificada por “consistente con propuesta no ratificada”.
+- Estas correcciones son documentales. No cambian gates ni autorizan implementación.
