@@ -202,3 +202,39 @@ No se adopta por defecto lock hermano, marcador persistente, cola, ID, retry, tr
 - Este addendum no ratifica P03/P04/P05, no cierra D1/D2 y no constituye autorización de implementación.
 
 **Siguiente paso:** integrar estas aclaraciones como referencia normativa de lectura en D1/D2 y preparar una única propuesta de ratificación P03/P04; mantener P05 separado hasta que su evidencia y trade-offs estén definidos.
+
+## 11. Evaluación puntual de la frontera de factories y stores (2026-11-03)
+
+### 11.1 Evidencia estática inspeccionada
+
+Sobre el SHA de producto `99dabcb33be1efef5c4f5e368dc95140e45ff672`, se inspeccionaron el árbol `src/nexo/**` y `scripts/**` y los siguientes puntos concretos:
+- `src/nexo/application/index.mjs` reexporta queries y Chronicle append.
+- `src/nexo/application/continuity-queries.mjs` crea Continuity stores y llama `loadCurrent()` en las queries de estado/plan/preview/open loops.
+- `src/nexo/application/chronicle-append.mjs` crea Continuity y Chronicle stores y ejecuta lecturas dentro del append.
+- `src/nexo/core/continuity-service.mjs` crea Continuity store y ejecuta `loadCurrent()` al abrir el owner.
+- `src/nexo/core/continuity-store.mjs` exporta `createNexoContinuityStore()`; el objeto expone operaciones de lectura/escritura.
+- `src/nexo/core/chronicle-store.mjs` exporta `createNexoChronicleStore()`; el objeto expone `loadCurrent`, `initialize` y `append`.
+- `scripts/nexo-repair-mission-verification.mjs` y `scripts/nexo-repair-settlement.mjs` contienen lecturas directas de store; `scripts/nexo-repair-protocol.mjs` usa `owner.loadCurrent()`.
+- `scripts/nexo.mjs` llama las queries de aplicación y delega Chronicle mediante `spawnSync`; `scripts/nexo-chronicle-session.mjs` ejecuta el append en el child.
+
+Esta inspección es estática y puntual; no constituye manifest exhaustivo de todos los callers, imports dinámicos, consumers externos o caminos alcanzables. Las rutas de repair permanecen sujetas a las exclusiones M0 ya registradas; su existencia no acredita que sean inaccesibles.
+
+### 11.2 Conclusión de frontera
+
+Proteger únicamente `src/nexo/application/index.mjs` o los comandos CLI no es suficiente: las factories de store están exportadas desde módulos internos y los callers de aplicación/servicio/repair alcanzan `loadCurrent()` por caminos distintos.
+
+El candidato estructural mínimo, todavía no seleccionado, es:
+1. Definir una única frontera de adquisición de admisión por operación, compatible con owners múltiples y Chronicle child independiente.
+2. Hacer que cada store opere bajo una capacidad/contexto de operación admitida; los métodos `loadCurrent` y cualquier método que vuelva a leer el snapshot no deben quedar disponibles por una ruta ordinaria sin owner.
+3. El owner carga el snapshot una vez y pasa datos/contexto a helpers; los helpers no crean factories, no reabren stores y no recargan snapshots.
+4. El manifest de imports/callers y un guard estático de arquitectura deben limitar quién puede importar la implementación interna de factories/admission. Un nombre privado, símbolo o convención ESM no es por sí mismo una frontera contra código arbitrario con acceso al filesystem del repo.
+5. La capacidad JavaScript solo propaga ownership dentro del proceso. La exclusión entre procesos y el release continúan dependiendo del mecanismo D2/P05, aún OPEN.
+6. Chronicle child recibe argumentos/root validados como datos, no una capacidad heredada ni snapshot prestado; valida y adquiere su propia admisión antes de su primera lectura.
+
+### 11.3 Límites y decisión pendiente
+
+- No se recomienda todavía unificar las dos factories ni cambiar sus semánticas de persistencia.
+- No se recomienda introducir un broker, addon nativo o helper hasta resolver P03/P04/P05 y demostrar que una frontera de owner + stores no puede satisfacer el contrato dentro del alcance R1.
+- Las rutas repair con lecturas directas no se declaran PASS ni automáticamente dentro del camino M0; requieren clasificación explícita y consecuencia de exclusión.
+- La inspección no acredita ausencia de imports dinámicos/consumidores externos ni enforcement de la frontera.
+- Esta propuesta no ratifica P03/P04, no cierra D1/D2 y no autoriza implementación, tests o CI.
