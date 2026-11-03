@@ -190,3 +190,10 @@ Se amplió el análisis P05 con una comparación estática de B1/flock frente a 
 - B1 requiere todavía adquisición nativa dentro del owner Node o una frontera obligatoria de procesos/APIs con todos los callers clasificados. Ninguna está diseñada ni verificada.
 - B1 = CANDIDATO CON BRECHA D1 IDENTIFICADA — NO SELECCIONADO. P05, D1 y D2 permanecen OPEN.
 - Solo documentación; sin runtime/tests/CI, sin comandos Termux, sin cambios al dispositivo ni a la instancia real de Continuity.
+### DELTA P05 — VIABILIDAD DE LOCK DENTRO DE NODE (2026-11-03)
+
+El análisis P05 se amplió con secciones 11.9–11.11 sobre la integración de `flock(2)` dentro del owner Node y la frontera de las factories:
+- El `package.json` del SHA producto examinado no declara dependencias ni addons nativos; el runtime usa `node:fs`/`node:fs/promises` y no se identificó una integración flock existente.
+- Un mutex JavaScript no coordina procesos. `flock(1)` externo no cubre APIs importables y un wrapper del padre entra en conflicto con Chronicle child.
+- Un addon/helper nativo sería candidato no presente ni validado en Termux. Además, las factories exportadas de stores tendrían que exigir contexto de operación admitida para evitar bypasses internos.
+- No se selecciona ni autoriza addon, helper, broker o refactor. P05/D1/D2 siguen OPEN.
