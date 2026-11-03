@@ -205,3 +205,9 @@ El addendum D1/D2, §11, registra una inspección estática puntual de factories
 - La capacidad JavaScript no reemplaza el lock cross-process de D2/P05. ESM privado/símbolo/convención no constituye frontera contra código arbitrario con acceso al repo.
 - La inspección no es manifest exhaustivo y no acredita ausencia de imports dinámicos/consumidores externos ni enforcement. Repair callers siguen clasificados según exclusiones M0, no como PASS.
 - No se unifican factories ni se selecciona broker/addon/helper. P03/P04/P05 y D1/D2 siguen OPEN; implementación/tests/CI no autorizados.
+### DELTA D1 — VIOLACIÓN ESTÁTICA O-10 EN SHA PRODUCTO (2026-11-03)
+
+El addendum D1/D2 §12 registra un hallazgo concreto en SHA `99dabcb33be1efef5c4f5e368dc95140e45ff672`: `runNexoChronicleAppend()` hace `loadCurrent()` de Chronicle y Continuity antes de llamar `openNexoContinuityOwner()`; las queries read-only llaman `loadCurrent()` directamente sin admisión de instancia visible; `openNexoContinuityOwner()` hace su primera lectura antes de devolver el owner. Los locks per-store no equivalen a admisión de instancia O-10.
+- Clasificación: STATIC ORDERING VIOLATION IDENTIFIED en las rutas inspeccionadas; no es prueba de carrera ni de ejecución en Termux.
+- Corrección requiere rediseño D1-IMPLEMENTATION: admitir antes de preflight, dar admisión propia a queries read-only y mantener Chronicle child como owner independiente. No basta mover el lock dentro de `openNexoContinuityOwner()`.
+- D1-IMPLEMENTATION NO AUTORIZADA; no se modificó código ni se ejecutaron tests/CI. D1/D2/P05 OPEN.
