@@ -389,3 +389,33 @@ Esto vuelve parte del inventario de colisiones obligatorio: revisar no solo los 
 El contrato de bootstrap actual solo valida una ruta relativa por invocación y está orientado a Continuity; no es un resolver conjunto de dos stores. No debe reutilizarse como si ya resolviera ambos destinos. La implementación futura necesitará un único resolver de root/layout que entregue ambos paths validados antes de la admisión, sin leer stores antes de O-10.
 
 Esta observación no cierra P08 ni P03/P04/P05; no ejecuta inspección del filesystem del dispositivo y no modifica ningún objeto real.
+### 13.7 Inventario no mutante de la root Termux — evidencia observada por owner
+
+El owner ejecutó en Termux un `realpath "$HOME"` y un `find` de primer nivel limitado a los basenames candidatos y sidecars enumerados. Salida recibida:
+
+```text
+/data/data/com.termux/files/home
+-rw-------. 1 u0_a378 u0_a378 283 Nov  2 17:26 /data/data/com.termux/files/home/.nexo-continuity.json
+```
+
+No hubo otras coincidencias en ese `find` para:
+- `.nexo-continuity.json.lock`, `.nexo-continuity.json.tmp`, `.nexo-continuity.json.tmp-*`
+- `.nexo-chronicle.json`, `.nexo-chronicle.json.lock`, `.nexo-chronicle.json.tmp`, `.nexo-chronicle.json.tmp-*`
+- `continuity.json`, `chronicle.json`
+
+Alcance exacto de la observación:
+- Root canonical reportada: `/data/data/com.termux/files/home`.
+- El objeto Continuity publicado está presente en primer nivel; la salida indica archivo regular, modo `0600`, UID/GID `u0_a378`, tamaño 283 bytes y mtime mostrado `Nov 2 17:26`.
+- No se observaron coincidencias de los sidecars/temporales candidatos ni de los nombres genéricos en el primer nivel al momento de la consulta.
+- No se inspeccionó contenido, no se abrió el archivo, no se recorrieron subdirectorios, no se verificó ausencia de aliases/mounts ni se hizo un segundo muestreo temporal. La salida no demuestra ausencia global de colisiones ni que ningún proceso pueda crear un sidecar después.
+- Esta evidencia no modifica ni vuelve a verificar el hash/contenido del objeto; el post-write check histórico sigue siendo la evidencia correspondiente.
+
+### 13.8 Compatibilidad del candidato Chronicle con el store actual
+
+En el blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`, `createNexoChronicleStore().initialize()` crea, bajo el lock per-store, un documento vacío con `schema: NEXO_CHRONICLE`, `schemaVersion: 1`, `storeRevision: 0` y `entries: []`. El código comenta que read/append no inicializan estado ausente silenciosamente. La API `initialize()` es una operación de inicialización explícita distinta del `loadCurrent()`/`append()`.
+
+El use case `runNexoChronicleAppend()` del blob `c1964467d68043d06e035ad59720f8cec2e52e52` todavía contiene una opción `initializeChronicle` y puede invocar `chronicleStore.initialize()` dentro del flujo de append cuando se activa. Eso contradice el objetivo de mantener inicialización separada y debe eliminarse/aislarse al implementar D1; el contrato futuro debe rechazar la bandera en append, no reinterpretarla como autorización implícita.
+
+El candidato `.nexo-chronicle.json` es compatible a nivel de basename/path con la factory, que acepta un `filePath` arbitrario, pero esto no equivale a validación del mapping, compatibilidad operacional integral ni existencia de un Chronicle real. La inicialización separada debe preservar el schema v1 existente, estar protegida por admisión D1 y tener autorización propia; no debe compartir la invocación con append.
+
+**Resultado P08 tras esta evidencia:** el candidato Continuity preserva el objeto real y el inventario superficial no detectó sidecars/collisions de primer nivel. Chronicle candidate es libre según ese mismo inventario, pero todavía no creado. P08 permanece OPEN hasta ampliar el inventario requerido por el alcance acordado y ratificar mapping/compatibilidad; no se autoriza implementación, inicialización Chronicle, tests ni CI.
