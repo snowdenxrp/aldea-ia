@@ -181,3 +181,12 @@ La revisión estática de las fuentes del SHA base de producto `99dabcb33be1efef
 - Ninguna de esas fuentes demuestra identidad del objeto durante release/readmisión.
 
 P05 sigue OPEN. No se ejecutaron pruebas de carrera ni se seleccionó mecanismo de recuperación. El análisis no cambia autorización ni estado M0.
+
+### DELTA P05 — B1 contrastado con D1 (2026-11-03)
+
+Se amplió el análisis P05 con una comparación estática de B1/flock frente a los entrypoints y APIs del SHA de producto `99dabcb33be1efef5c4f5e368dc95140e45ff672`.
+- La API pública `src/nexo/application/index.mjs` reexporta queries y Chronicle append; las factories de Continuity/Chronicle también están exportadas. Un wrapper `flock(1)` alrededor del CLI no cubre consumidores directos.
+- Envolver el CLI padre completo retendría admisión durante `spawnSync`; el child Chronicle no debe heredarla y debe adquirir la propia. Esto hace incompatible ese wrapper global con la composición D1.
+- B1 requiere todavía adquisición nativa dentro del owner Node o una frontera obligatoria de procesos/APIs con todos los callers clasificados. Ninguna está diseñada ni verificada.
+- B1 = CANDIDATO CON BRECHA D1 IDENTIFICADA — NO SELECCIONADO. P05, D1 y D2 permanecen OPEN.
+- Solo documentación; sin runtime/tests/CI, sin comandos Termux, sin cambios al dispositivo ni a la instancia real de Continuity.
