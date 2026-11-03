@@ -214,3 +214,9 @@ El addendum D1/D2 §12 registra un hallazgo concreto en SHA `99dabcb33be1efef5c4
 ### DELTA D1 — SECUENCIA CORRECTIVA O-10 (2026-11-03)
 
 El addendum §12.6 fija una secuencia de referencia no ratificada: queries read-only y Chronicle append validan/normalizan primero, resuelven root, adquieren admisión antes de crear/leer stores, usan un snapshot bajo la misma admisión y liberan según D2/P05; Chronicle child conserva owner independiente. `openNexoContinuityOwner()` no puede hacer primera lectura sin admisión; bootstrap sigue separado. No se selecciona API/lock/contexto/layout. Depende de P03/P04/P05 y mapping P08; no autoriza implementación/tests.
+### DELTA P08 — ROOT→STORE MAPPING NO RESUELTO (2026-11-03)
+
+El addendum D1/D2 §13 contrasta O-08 con el SHA de producto `99dabcb...`: `scripts/nexo.mjs` y el Chronicle child siguen aceptando paths `--continuity`/`--chronicle`; application APIs y factories reciben `filePath` caller-supplied; no hay resolver común `--root` que derive ambos destinos. Los nombres `continuity.json`/`chronicle.json` siguen siendo ilustrativos, no layout ratificado. La publicación real `$HOME/.nexo-continuity.json` no fija el destino Chronicle ni el layout normal.
+- Dictamen: P08 OPEN / LAYOUT UNSELECTED; bloquea D1 hasta mapping común inequívoco.
+- Pendiente: destino Continuity (adoptar o no el objeto publicado), destino Chronicle, reglas de root existente/flags legacy, canonicalización/aliases, propagación al child y tratamiento de datos existentes.
+- No se seleccionan filenames ni migración; sin runtime/tests/CI.
