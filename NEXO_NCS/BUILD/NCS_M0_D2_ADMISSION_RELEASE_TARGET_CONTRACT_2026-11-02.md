@@ -164,3 +164,20 @@ La implementación, pruebas y CI requieren autorizaciones separadas. Este docume
 ## 10. Estado de este artefacto
 
 Documento de propuesta técnica en rama documental independiente. No modifica runtime, tests, workflows, package scripts, configuración Android/Termux ni el archivo real de Continuity. No ejecuta pruebas/CI, no modifica PR #110 y no selecciona una política de recovery. Su propósito es convertir las restricciones D2 ya conocidas en condiciones verificables y evitar que se inventen mecanismos durante una futura implementación.
+
+
+---
+
+## DELTA DE ACLARACIÓN — OWNERSHIP, REENTRADA Y ROOT PRE-I/O (2026-11-03)
+
+La interpretación técnica propuesta de este contrato se complementa con [NCS M0 — addendum de cierre de brechas D1/D2](NCS_M0_D1_D2_GAP_CLOSURE_ADDENDUM_2026-11-03.md), especialmente §§3–9.
+
+Reglas aclaradas:
+- Delegación pura Chronicle: el padre no lee stores ni adquiere admisión; el child adquiere y posee la admisión de la operación completa, tanto directo como delegado.
+- Si el padre necesita un snapshot, debe ser owner de una operación admitida propia; no puede retener admisión durante espera del child ni pasarle un snapshot después de liberar.
+- Reentrada dentro de una operación: rechazo/STOP antes de lectura adicional; helpers no adquieren admisión ni hacen reload. No se prescribe todavía el mecanismo de implementación.
+- I/O previo: solo parseo/normalización léxica, metadatos necesarios de la propia raíz, y el I/O del objeto lock realizado exclusivamente por el protocolo de adquisición. Ningún metadata/content access a Continuity/Chronicle antes de admisión.
+- La lista binaria de criterios D1/D2 está en el addendum §7. Son requisitos futuros, no tests ejecutados.
+- P05 sigue OPEN. La recomendación de no automatizar recuperación/readmisión no está ratificada y no selecciona un mecanismo.
+
+Estado sin cambio: D2 OPEN; D2-IMPLEMENTATION NO AUTORIZADA; P03/P04/P05/P06/P07/P08/P09 OPEN según corresponda; authorization NOT_EVALUATED; ROOT_READY NOT ESTABLISHED; M0_BUILD_COMPLETE NOT ACHIEVED; efectos protegidos STOP.
