@@ -233,3 +233,10 @@ El addendum §13.6 confirma por inspección estática que ambos stores derivan `
 - Para el candidato `.nexo-continuity.json` / `.nexo-chronicle.json`, el inventario no mutante debe cubrir documentos, `.lock`, temporales estables/únicos, symlinks y directorios conflictivos.
 - No borrar locks/temporales durante inventario. No se afirma que esos sidecars existan en el dispositivo.
 - P08 sigue OPEN; sin inspección del filesystem del dispositivo ni cambios runtime/tests/CI.
+### DELTA P08 — INVENTARIO TERMUX Y LÍMITE DE INICIALIZACIÓN CHRONICLE
+
+El owner reportó inventario no mutante de primer nivel en root canónica `/data/data/com.termux/files/home`: solo apareció `.nexo-continuity.json`, archivo regular modo `0600`, UID/GID `u0_a378`, 283 bytes, mtime `Nov 2 17:26`. No aparecieron los sidecars/temporales candidatos, `.nexo-chronicle.json` ni los nombres genéricos consultados. No se inspeccionó contenido ni subdirectorios; no es ausencia global ni garantía futura.
+- El objeto Continuity existente puede conservarse sin moverlo según el inventario observado; su contenido/hash no se volvió a comprobar.
+- Chronicle store v1 inicializa vacío (`NEXO_CHRONICLE`, version 1, revision 0, entries vacías) solo mediante `initialize()` explícito. El use case append aún contiene `initializeChronicle`; D1 debe retirar/rechazar esa vía para separar bootstrap y append.
+- Candidato `.nexo-chronicle.json` no existe en el inventario; solo es basename compatible con la factory `filePath`, no mapping implementado.
+- P08 sigue OPEN hasta inventario ampliado/alcance acordado y mapping ratificado. No inicialización Chronicle ni runtime/tests/CI.
