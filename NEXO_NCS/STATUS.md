@@ -5,6 +5,7 @@
 **Base de producto examinada:** `99dabcb33be1efef5c4f5e368dc95140e45ff672`  
 **Rama documental de reconciliación:** `ncs-m0-documentary-reconciliation-2026-11-02`  
 **Expediente canónico:** [NCS M0 — reconciliación documental canónica](BUILD/NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md)
+**Contrato de diseño D1 (propuesta, no ratificada/implementada):** [D1 target contract and entrypoint classification](BUILD/NCS_M0_D1_TARGET_CONTRACT_AND_ENTRYPOINT_CLASSIFICATION_2026-11-02.md)
 
 ## Vector vigente
 
