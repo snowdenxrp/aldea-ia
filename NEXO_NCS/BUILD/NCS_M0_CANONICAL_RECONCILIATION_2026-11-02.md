@@ -197,3 +197,11 @@ El análisis P05 se amplió con secciones 11.9–11.11 sobre la integración de 
 - Un mutex JavaScript no coordina procesos. `flock(1)` externo no cubre APIs importables y un wrapper del padre entra en conflicto con Chronicle child.
 - Un addon/helper nativo sería candidato no presente ni validado en Termux. Además, las factories exportadas de stores tendrían que exigir contexto de operación admitida para evitar bypasses internos.
 - No se selecciona ni autoriza addon, helper, broker o refactor. P05/D1/D2 siguen OPEN.
+### DELTA D1 — FRONTERA DE FACTORIES Y STORES (2026-11-03)
+
+El addendum D1/D2, §11, registra una inspección estática puntual de factories/callers en SHA producto `99dabcb...`.
+- Proteger solo CLI o `application/index.mjs` es insuficiente: queries, Chronicle append, continuity-service y scripts de repair alcanzan `loadCurrent()` por rutas distintas; las factories de ambos stores siguen exportadas desde módulos internos.
+- Candidato mínimo no seleccionado: owner de admisión por operación; stores exigen capacidad/contexto admitido; helpers consumen snapshot/contexto y no reabren stores; manifest/import-graph guard limita imports internos; Chronicle child valida y adquiere su propia admisión.
+- La capacidad JavaScript no reemplaza el lock cross-process de D2/P05. ESM privado/símbolo/convención no constituye frontera contra código arbitrario con acceso al repo.
+- La inspección no es manifest exhaustivo y no acredita ausencia de imports dinámicos/consumidores externos ni enforcement. Repair callers siguen clasificados según exclusiones M0, no como PASS.
+- No se unifican factories ni se selecciona broker/addon/helper. P03/P04/P05 y D1/D2 siguen OPEN; implementación/tests/CI no autorizados.
