@@ -3575,3 +3575,10 @@ Addendum D1/D2 §13 registra que O-08 está ratificado como diseño pero no impl
 - La publicación real `$HOME/.nexo-continuity.json` no decide el layout normal ni el destino Chronicle.
 - P08 = OPEN / LAYOUT UNSELECTED; bloquea cierre D1. No seleccionar nombres ni migración por inferencia.
 - Sin cambios runtime/tests/CI ni dispositivo.
+## DELTA P08 — LAYOUT CANDIDATO SIN MIGRAR CONTINUITY (2026-11-03)
+
+Addendum D1/D2 §13.5 recomienda como candidato, aún NO RATIFICADO/NO IMPLEMENTADO: `--root` explícita → `<root>/.nexo-continuity.json` + `<root>/.nexo-chronicle.json`.
+- Conserva el archivo Continuity publicado, sin crear una segunda fuente ni mover bytes.
+- Chronicle filename es candidato; requiere inventario de colisión/compatibilidad y bootstrap explícito separado. Append no inicializa.
+- Los entrypoints no aceptan paths separados; derivan destinos desde la misma root validada. No se elige primitiva de admisión ni se alteran protocolos per-store.
+- P08 sigue OPEN hasta inventario no mutante en root real y compatibilidad Chronicle. No tocar instancia real ni runtime/tests/CI.
