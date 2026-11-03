@@ -1,3 +1,43 @@
+# ESTADO CANÓNICO VIGENTE — RECONCILIACIÓN 2026-11-02
+
+> Esta cabecera prevalece sobre deltas históricas incompatibles más abajo, solo para los hechos y decisiones expresamente reconciliados. No elimina el historial.
+
+**Base de producto examinada:** `99dabcb33be1efef5c4f5e368dc95140e45ff672`  
+**Rama documental de reconciliación:** `ncs-m0-documentary-reconciliation-2026-11-02`  
+**Expediente canónico:** [NCS M0 — reconciliación documental canónica](BUILD/NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md)
+
+## Vector vigente
+
+- Primera publicación real vacía: **COMPLETED**, una sola vez; no repetir.
+- RE-01/RE-02: **IMPLEMENTED / CI-VERIFIED / EXERCISED IN TERMUX**.
+- E4: comprobación post-write del objeto real verificada dentro del alcance observado.
+- R1: **ACCEPTED BY OWNER**; no demuestra por sí sola que el entorno haya pasado.
+- E2/E3: **PARTIAL / NOT CLOSED**.
+- D0: parcialmente ratificado; cierre integral pendiente.
+- D1/D2/D3: **OPEN**.
+- Root legítima: **PENDING / UNKNOWN**.
+- `authorization: NOT_EVALUATED`.
+- `ROOT_READY`: **NOT ESTABLISHED**.
+- `M0_BUILD_COMPLETE`: **NOT ACHIEVED**.
+- Efectos protegidos: **STOP**; `PROTECTED_EFFECTS_AUTHORIZED` no autorizado.
+
+## Decisión del propietario — E2/E3 y primera publicación (2026-11-02)
+
+**Opción A RATIFICADA:** E2/E3 son criterios independientes de cierre M0, no condiciones retroactivas de la primera publicación.
+
+La publicación se conserva COMPLETED y no se invalida ni se repite. E2/E3 permanecen PARTIAL y bloquean el cierre M0 hasta resolución con evidencia o exclusión de riesgo explícita aceptada por el propietario. R1 sigue siendo el criterio normativo de la ventana; no se confunde con evidencia ambiental E2/E3. Esta decisión no establece ROOT_READY ni autoriza efectos protegidos.
+
+## Correcciones canónicas
+
+- O-09 **sí está ratificada**: definir fronteras/estados/dependencias Nexo-Lúmina antes de elegir el refactor mínimo.
+- Mantener separados P01-B de la matriz de separación operacional y B2/P01-B §10.6 del decision register (opción C: no seleccionar todavía).
+- Los criterios 14–20 conservan sus definiciones literales en la finish line: 14 recursos; 15 rutas reservadas/filesystem; 16 regresiones/CI sobre SHA exacto; 17 brechas UNKNOWN/BLOCKED en caminos M0; 18 evidencia reproducible; 19 clasificación epistemológica; 20 revisión final/acta.
+- Handoffs anteriores a la publicación real son históricos; no usar sus estados STOP/NOT READY como estado vigente.
+
+**Orden de lectura:** este estado → [reconciliación canónica](BUILD/NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md) → MASTER/README.md → CORE/README.md → BUILD/HANDOFF pertinentes. No repetir auditorías cerradas.
+
+---
+
 ## DELTA VIGENTE — CRITERIOS DE ACEPTACIÓN E2/E3 Y GAPS RESIDUALES (2026-11-02)
 
 - Propósito: convertir la evidencia R1 ya recibida en criterios verificables de evaluación. Esta delta es documental; no modifica runtime, tests, workflows, configuración del dispositivo ni la instancia real de Continuity.
