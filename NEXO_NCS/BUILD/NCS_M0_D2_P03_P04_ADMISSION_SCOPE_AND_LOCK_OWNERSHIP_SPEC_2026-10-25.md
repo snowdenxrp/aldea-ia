@@ -147,3 +147,22 @@ Estos son requisitos de diseño para cuando la implementación sea autorizada; n
 - Efectos protegidos: `STOP`
 
 Sin cambios de runtime, tests, workflows o datos. No se ejecutaron tests/CI. Esta especificación es documental y no cierra M0.
+
+
+---
+
+## DELTA DE RECONCILIACIÓN — COMPOSICIÓN Y OWNERSHIP (2026-11-03)
+
+La lectura vigente de P03/P04 se complementa con [NCS M0 — addendum de cierre de brechas D1/D2](NCS_M0_D1_D2_GAP_CLOSURE_ADDENDUM_2026-11-03.md), §§3–5.
+
+Reglas propuestas precisadas:
+1. **Delegación Chronicle pura:** el padre valida argumentos superficiales y prepara la delegación, pero no adquiere admisión ni lee stores. El child valida su raíz/argumentos, adquiere su propia admisión y realiza la primera lectura persistente.
+2. **Padre que necesita snapshot:** esa lectura es una operación protegida propia y requiere admisión antes de leer. No puede retenerla mientras espera al child, transferirla ni pasar un snapshot cuya vigencia ya no está protegida. El flujo debe moverse al child o permanecer en un único proceso bajo una admisión.
+3. **Helpers:** reciben snapshot/contexto de la operación ya admitida; no adquieren admisión, no reabren stores ni hacen reload fuera del owner.
+4. **Reentrada:** una segunda adquisición dentro de la misma operación debe producir REJECTED/STOP antes de otra lectura persistente. La frontera de adquisición/composición es responsable de impedir que helpers se conviertan en owners alternos.
+5. **Pre-admission I/O:** el allowlist cerrado y las prohibiciones están en el addendum §5. Los metadatos de los stores no son metadatos de root y no quedan exentos de O-10.
+6. **Locks per-store:** conservan su semántica; la admisión de instancia se adquiere primero. No se deduce que un lock per-store sustituya la admisión.
+
+Estas precisiones resuelven la ambigüedad documental de composición señalada por DeepSeek; no prueban que el código actual implemente el contrato ni que todos los callers estén clasificados.
+
+P03/P04 permanecen OPEN hasta ratificación y evidencia de enforcement. No se elige token, closure, context object, API ni primitiva de lock. No se autoriza runtime, tests o CI.
