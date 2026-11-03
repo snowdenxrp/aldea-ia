@@ -140,3 +140,19 @@ D1-DESIGN solo podrá proponerse CLOSED cuando exista:
 ## 10. Estado de este artefacto
 
 Documento creado como propuesta técnica en rama documental independiente. No altera la rama de producto ni PR #110. No modifica runtime/tests/workflows/package scripts ni el archivo real de Continuity. No se ejecutaron tests o CI. No constituye cierre D1 ni nueva decisión del propietario.
+
+
+---
+
+## DELTA DE ACLARACIÓN — COMPOSICIÓN, REENTRADA Y PRE-I/O (2026-11-03)
+
+La interpretación técnica propuesta de este contrato se complementa con [NCS M0 — addendum de cierre de brechas D1/D2](NCS_M0_D1_D2_GAP_CLOSURE_ADDENDUM_2026-11-03.md), especialmente §§3–7.
+
+Reglas aclaradas:
+- En delegación pura Chronicle, el padre no adquiere admisión ni lee stores; el child es el único owner y adquiere su admisión propia. Si el padre necesita leer snapshot, esa lectura es una operación admitida propia y no puede mantener el lock mientras espera al child ni transferir un snapshot tras liberar como si siguiera vigente.
+- Los helpers no readquieren admisión ni reabren stores; reciben datos ya cargados dentro de la operación admitida.
+- La reentrada debe rechazarse/STOP antes de otra lectura persistente; la frontera de adquisición/composición impide que helpers actúen como owners alternos.
+- La lista permitida de I/O previo a admisión y las operaciones expresamente prohibidas se fijan en el addendum §5. No existe excepción general a O-10.
+- Las condiciones D1 se separan entre cierre de diseño y verificación de implementación; no son PASS ni autorización de tests.
+
+Estado sin cambio: D1 OPEN; D1-IMPLEMENTATION NO AUTORIZADA; root legítima PENDING/UNKNOWN; authorization NOT_EVALUATED; ROOT_READY NOT ESTABLISHED; M0_BUILD_COMPLETE NOT ACHIEVED; efectos protegidos STOP.
