@@ -3588,3 +3588,9 @@ Addendum D1/D2 §13.6: los stores derivan lock per-store como `<filePath>.lock`;
 - El inventario de colisiones debe incluir los dos archivos candidatos, sidecars `.lock`, temporales `.tmp`/`.tmp-*`, symlinks y directorios.
 - No borrar ni modificar objetos durante inventario. Existencia de sidecars en dispositivo: UNKNOWN.
 - P08 OPEN; no device inspection ni runtime/tests/CI.
+## DELTA P08 — INVENTARIO TERMUX OBSERVADO
+
+Inventario no mutante reportado por owner en root `/data/data/com.termux/files/home`: apareció únicamente `.nexo-continuity.json` (archivo regular, `0600`, UID/GID `u0_a378`, 283 bytes, mtime Nov 2 17:26). No coincidieron los sidecars/temporales candidatos, `.nexo-chronicle.json`, `continuity.json` ni `chronicle.json` en primer nivel.
+- Límite: no se leyó contenido ni se inspeccionaron subdirectorios/aliases; no prueba ausencia global ni futura.
+- El destino Continuity candidato preserva el objeto publicado. Chronicle v1 tiene inicialización vacía explícita; `runNexoChronicleAppend()` aún conserva `initializeChronicle`, que deberá separarse/rechazarse bajo D1.
+- P08 OPEN; Chronicle no existe/no inicializado; sin escritura, runtime/tests/CI.
