@@ -419,3 +419,17 @@ El use case `runNexoChronicleAppend()` del blob `c1964467d68043d06e035ad59720f8c
 El candidato `.nexo-chronicle.json` es compatible a nivel de basename/path con la factory, que acepta un `filePath` arbitrario, pero esto no equivale a validación del mapping, compatibilidad operacional integral ni existencia de un Chronicle real. La inicialización separada debe preservar el schema v1 existente, estar protegida por admisión D1 y tener autorización propia; no debe compartir la invocación con append.
 
 **Resultado P08 tras esta evidencia:** el candidato Continuity preserva el objeto real y el inventario superficial no detectó sidecars/collisions de primer nivel. Chronicle candidate es libre según ese mismo inventario, pero todavía no creado. P08 permanece OPEN hasta ampliar el inventario requerido por el alcance acordado y ratificar mapping/compatibilidad; no se autoriza implementación, inicialización Chronicle, tests ni CI.
+### 13.9 Separación obligatoria: Chronicle initialization ≠ append
+
+Hallazgo estático en `chronicle-append.mjs` blob `c1964467d68043d06e035ad59720f8cec2e52e52`: `runNexoChronicleAppend()` conserva `initializeChronicle`; cuando Chronicle falta y la bandera es verdadera, el flujo llama `chronicleStore.initialize()` dentro de la operación de append. Esto mezcla creación de store con append y contradice la separación de bootstrap/operación normal.
+
+Regla objetivo propuesta (desarrollada en §11 del contrato D1):
+- El caso de uso append no inicializa nunca ningún store. Chronicle ausente implica BLOCKED/UNAVAILABLE antes de admission de misión, dispatch, ejecución o escritura.
+- El flag `--initialize-chronicle` no pertenece al CLI normal de append y debe rechazarse antes de I/O persistente. La API normal de append no expone `initializeChronicle`; cualquier compatibilidad transitoria debe distinguir presencia explícita del flag antes de normalización y rechazarla, sin ignorarla silenciosamente.
+- La inicialización Chronicle es una operación independiente, con root/mapping O-08/P08, admisión propia antes de la primera lectura persistente O-10, lock per-store, autorización humana explícita para el destino efectivo y terminación sin append. La autorización de la publicación Continuity del 2026-11-02 no cubre Chronicle.
+- Query/status/preview tampoco inicializan. Si Chronicle no existe, informan unavailable/blocked sin crear archivo ni sidecars.
+- No se permite combinar inicialización y append en una invocación. La inicialización debe conservar el formato soportado `NEXO_CHRONICLE` v1, revision 0, entries vacías; objetos existentes o ambiguos no se reemplazan.
+
+Casos de aceptación futuros: append con Chronicle ausente no crea; flag explícito `--initialize-chronicle` rechaza antes de store I/O; inicialización separada sin autorización STOP; inicialización autorizada adquiere admisión propia y termina sin append. Son criterios propuestos, no pruebas ejecutadas.
+
+Esta separación no cierra D1/P08 ni selecciona CLI/API/mecanismo de admisión. D1-IMPLEMENTATION sigue NO AUTORIZADA; P03/P04/P05/P08 OPEN; no runtime, tests, CI, bootstrap Chronicle ni efectos protegidos.
