@@ -106,3 +106,41 @@ No implementar ni ejecutar pruebas sin autorización específica.
 - Primera publicación, commissioning y efectos protegidos: **STOP**.
 - Documento únicamente; sin runtime/tests/workflows/configuración/dispositivo.
 - No se ejecutaron tests/CI/Actions.
+
+
+---
+
+## DELTA — REVALIDACIÓN DE FUENTES EN HEAD DE RAMA (2026-11-03)
+
+Se revalidaron los dos stores contra el HEAD de rama inmediatamente anterior a este delta. Las identidades de blob coinciden con el snapshot estático ya usado por P-05:
+
+| Fuente | Blob actual |
+|---|---|
+| `src/nexo/core/continuity-store.mjs` | `c1eb81bf74d2df576079b3269ac4db22d87fe7b6` |
+| `src/nexo/core/chronicle-store.mjs` | `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a` |
+
+### Continuity — observaciones confirmadas
+
+- `readLockOwner()` captura cualquier error y devuelve `null` (líneas 30–38).
+- Durante release, `current?.token !== token` devuelve `not_owned` (68–69). Owner ilegible/no concluyente y token distinto no quedan diferenciados en esa salida.
+- Tras fallo del primer `rm`, repite `rm(lockPath)` sin nueva comprobación de identidad (74–90).
+- Si falla la escritura inicial de owner, limpia recursivamente el path y absorbe el error de limpieza (58–65).
+- `lockReleaseFailures` es estado local del proceso. Si detecta ENOENT, elimina la marca local y permite continuar con adquisición (41–51); ENOENT no prueba por sí solo que un actor previo terminó.
+
+### Chronicle — observaciones confirmadas
+
+- `readLockOwner()` también convierte cualquier error en `null` (48–56).
+- Durante release, `owner?.token !== token` devuelve `not_owned` (74–76); se conserva la misma ambigüedad owner ilegible/token distinto.
+- Si falla la escritura inicial de owner, limpia recursivamente el path y absorbe el error de limpieza (64–72).
+- Release intenta un único `rm`, sin segundo intento explícito (74–85), pero eso no resuelve la carrera entre validación por token y borrado por path.
+- La recuperación stale ya falla cerrada con `NEXO_CHRONICLE_LOCK_STALE_RECOVERY_REQUIRED` en vez de borrar el lock por path (126–132). Es una protección localizada de adquisición Chronicle, no evidencia de release seguro ni de readmisión P-05.
+
+### Consecuencia
+
+La recomendación C no se puede describir como ya implementada por el comportamiento actual:
+- Continuity aún contiene retry destructivo de cleanup y readmisión tras ENOENT de una marca local.
+- Ambos stores pueden confundir owner ilegible con token ajeno al reportar `not_owned`.
+- Ambos tienen cleanup recursivo por ruta tras fallo al escribir owner, sin prueba de que el objeto no haya sido sustituido.
+- Chronicle rechaza stale recovery, pero su release sigue sujeto a validación/borrado por path.
+
+Esto confirma la necesidad de resolver E3/E4/E5/E6 y demostrar enforcement E7. No se ejecutaron pruebas; los hallazgos son estáticos y están ligados a los blobs anteriores. No se modificó código ejecutable.
