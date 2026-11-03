@@ -192,3 +192,6 @@ Estos son criterios de diseño/pruebas futuras, no tests ejecutados. La iniciali
 ### 11.4 Estado
 
 Esta regla es una propuesta técnica para completar D1 y P08. D1-DESIGN no queda cerrado por documentarla; D1-IMPLEMENTATION sigue NO AUTORIZADA. P08 permanece OPEN hasta mapping ratificado; P03/P04/P05 siguen OPEN. No se modifica runtime, no se crea Chronicle y no se autoriza tests/CI, bootstrap ni efectos protegidos.
+### 11.5 Evidencia adicional de la frontera CLI
+
+En `scripts/nexo-chronicle-session.mjs` blob `30a53de2f108aa255a1dfd61ce78c19788de160b`, el parser incluye `--initialize-chronicle` en el conjunto de flags admitidos y convierte su presencia en `initializeChronicle: true` al construir los argumentos de `runNexoChronicleAppend()`. Por tanto, la ruta no es solo una opción interna: existe un flag CLI aceptado que alcanza el caso de uso. La corrección futura debe retirar el flag del parser normal y rechazar explícitamente su uso antes de cualquier apertura/lectura de stores; no basta con cambiar el valor por defecto.
