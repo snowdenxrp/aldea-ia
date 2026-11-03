@@ -238,3 +238,35 @@ El candidato estructural mínimo, todavía no seleccionado, es:
 - Las rutas repair con lecturas directas no se declaran PASS ni automáticamente dentro del camino M0; requieren clasificación explícita y consecuencia de exclusión.
 - La inspección no acredita ausencia de imports dinámicos/consumidores externos ni enforcement de la frontera.
 - Esta propuesta no ratifica P03/P04, no cierra D1/D2 y no autoriza implementación, tests o CI.
+## 12. Hallazgo D1 concreto: lecturas persistentes anteriores al owner (2026-11-03)
+
+### 12.1 Chronicle append — orden observado
+
+En SHA de producto `99dabcb33be1efef5c4f5e368dc95140e45ff672`, `src/nexo/application/chronicle-append.mjs`, función `runNexoChronicleAppend()`:
+1. Valida argumentos, contenido e IDs.
+2. Crea `chronicleStore` y `continuityStore`.
+3. Ejecuta `await chronicleStore.loadCurrent()`.
+4. Ejecuta `await continuityStore.loadCurrent()`.
+5. Solo después llama `openNexoContinuityOwner()`.
+
+El owner no se obtiene hasta después de las dos lecturas persistentes de preflight. Los locks per-store de esas lecturas no son la admisión de instancia requerida por O-10. Por tanto, el orden del código inspeccionado contradice el contrato D1 propuesto para Chronicle append: **preflight de ambos stores ocurre antes de la admisión del owner**.
+
+### 12.2 Queries read-only — orden observado
+
+`src/nexo/application/continuity-queries.mjs` crea una factory y llama `loadCurrent()` directamente en `loadNexoContinuityStatus`, `loadNexoMissionStatus`, `loadNexoMissionPlan`, `previewNexoMissionDraft` y `loadNexoOpenLoops`. En el código inspeccionado no aparece adquisición de admisión de instancia antes de esas lecturas. Su carácter read-only no las exime de O-10.
+
+### 12.3 Continuity service — orden observado
+
+`src/nexo/core/continuity-service.mjs`, `openNexoContinuityOwner()`, crea el store y llama `store.loadCurrent()` antes de devolver el owner. El servicio no muestra una adquisición de admisión de instancia anterior a esa lectura. En consecuencia, envolver únicamente al caller con una capacidad que se obtiene después de llamar este servicio no corregiría la primera lectura.
+
+### 12.4 Efecto sobre el diseño
+
+- Esto ya no es solo una preocupación hipotética de imports/callers: en el SHA examinado hay rutas de aplicación concretas cuya primera lectura persistente precede al owner/operación admitida.
+- El diseño no puede resolverlo moviendo el lock al interior de `openNexoContinuityOwner()` sin revisar Chronicle append: ese flujo ya leyó ambos stores antes de llamar al servicio.
+- Las queries deben adquirir admisión propia antes de crear/leer el store, incluso si son read-only.
+- Chronicle append debe establecer ownership/admisión antes de ambas lecturas de preflight; su delegación child debe seguir siendo owner independiente. El orden exacto de validación de stores e inicialización debe rediseñarse sin reintroducir bootstrap + operación en una misma invocación.
+- El cambio debe tratarse como corrección D1-IMPLEMENTATION, no como ajuste cosmético de factories. Requiere autorización específica; no se ha implementado.
+
+### 12.5 Estado y límites de evidencia
+
+Hallazgo = **STATIC ORDERING VIOLATION IDENTIFIED** contra O-10 en el SHA inspeccionado. No es prueba de carrera concurrente ni evidencia de ejecución actual en Termux. No generalizarlo a otros SHAs sin revalidar. D1 sigue OPEN; D1-IMPLEMENTATION NO AUTORIZADA; tests/CI no autorizados; D2/P05 siguen OPEN.
