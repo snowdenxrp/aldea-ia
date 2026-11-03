@@ -240,3 +240,12 @@ El owner reportó inventario no mutante de primer nivel en root canónica `/data
 - Chronicle store v1 inicializa vacío (`NEXO_CHRONICLE`, version 1, revision 0, entries vacías) solo mediante `initialize()` explícito. El use case append aún contiene `initializeChronicle`; D1 debe retirar/rechazar esa vía para separar bootstrap y append.
 - Candidato `.nexo-chronicle.json` no existe en el inventario; solo es basename compatible con la factory `filePath`, no mapping implementado.
 - P08 sigue OPEN hasta inventario ampliado/alcance acordado y mapping ratificado. No inicialización Chronicle ni runtime/tests/CI.
+### DELTA D1/P08 — CHRONICLE INITIALIZATION SEPARADA DE APPEND (2026-11-03)
+
+En el blob `c1964467d68043d06e035ad59720f8cec2e52e52`, `runNexoChronicleAppend()` aún acepta `initializeChronicle` y puede ejecutar `chronicleStore.initialize()` dentro del flujo append cuando Chronicle falta. Se registra como brecha estática, no como prueba de ejecución.
+- Regla técnica propuesta: append nunca inicializa. Chronicle ausente → BLOCKED/UNAVAILABLE antes de admission de misión o escritura.
+- `--initialize-chronicle` queda fuera del CLI normal y debe rechazarse antes de I/O persistente; la API normal append no expone `initializeChronicle`.
+- Inicialización Chronicle separada, explícita, con root/mapping P08, admisión propia antes de primera lectura, lock per-store, autorización humana propia y sin append en la misma invocación. La autorización de Continuity no se extiende a Chronicle.
+- Query/status/preview no crean Chronicle. Formato soportado actual: `NEXO_CHRONICLE` v1, revision 0, entries vacías; no sobrescribir objetos existentes/ambiguos.
+- Criterios futuros documentados en D1 target contract §11 y addendum D1/D2 §13.9. No son tests ejecutados.
+- D1/P08 siguen OPEN; D1-IMPLEMENTATION NO AUTORIZADA; sin runtime/tests/CI/bootstrap Chronicle.
