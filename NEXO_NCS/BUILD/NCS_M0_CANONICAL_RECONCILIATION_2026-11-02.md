@@ -249,3 +249,6 @@ En el blob `c1964467d68043d06e035ad59720f8cec2e52e52`, `runNexoChronicleAppend()
 - Query/status/preview no crean Chronicle. Formato soportado actual: `NEXO_CHRONICLE` v1, revision 0, entries vacías; no sobrescribir objetos existentes/ambiguos.
 - Criterios futuros documentados en D1 target contract §11 y addendum D1/D2 §13.9. No son tests ejecutados.
 - D1/P08 siguen OPEN; D1-IMPLEMENTATION NO AUTORIZADA; sin runtime/tests/CI/bootstrap Chronicle.
+### DELTA — LOCALIZACIÓN DEL FLAG CLI `--initialize-chronicle`
+
+El parser de `scripts/nexo-chronicle-session.mjs` (blob `30a53de2f108aa255a1dfd61ce78c19788de160b`) acepta `--initialize-chronicle` y lo transmite como `initializeChronicle: true`; el caso de uso `runNexoChronicleAppend()` (blob `c1964467d68043d06e035ad59720f8cec2e52e52`) puede inicializar Chronicle dentro de append. Corregir solo el default no basta: retirar el flag del parser normal y rechazarlo explícitamente antes de store I/O. Evidencia estática, no ejecución.
