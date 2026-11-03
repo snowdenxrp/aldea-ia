@@ -227,3 +227,9 @@ El addendum §13.5 propone, sin ratificar ni implementar: `<root>/.nexo-continui
 - Chronicle es nombre candidato nuevo; no se presume que exista ni se inicializa en append. Requiere inventario de colisiones y bootstrap separado.
 - No se decide nombre/primativa de admisión; P03/P04/P05 siguen abiertos. No se alteran formatos ni locks per-store.
 - P08 permanece OPEN hasta inventario no mutante en root real y compatibilidad Chronicle; no se toca instancia real ni se autoriza implementación/tests/CI.
+### DELTA P08 — SIDEcars Y COLISIONES DERIVADAS (2026-11-03)
+
+El addendum §13.6 confirma por inspección estática que ambos stores derivan `<filePath>.lock`; Chronicle deriva temporales por basename (`.tmp`, `.tmp-*`); bootstrap Continuity valida root+relativePath pero no resuelve ambos stores ni hace root-aware a las factories normales.
+- Para el candidato `.nexo-continuity.json` / `.nexo-chronicle.json`, el inventario no mutante debe cubrir documentos, `.lock`, temporales estables/únicos, symlinks y directorios conflictivos.
+- No borrar locks/temporales durante inventario. No se afirma que esos sidecars existan en el dispositivo.
+- P08 sigue OPEN; sin inspección del filesystem del dispositivo ni cambios runtime/tests/CI.
