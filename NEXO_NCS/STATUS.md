@@ -3568,3 +3568,10 @@ Hallazgo estático documentado en addendum D1/D2 §12 (SHA producto `99dabcb...`
 ## DELTA — SECUENCIA CORRECTIVA DE O-10 (2026-11-03)
 
 Addendum D1/D2 §12.6 documenta una secuencia de referencia, aún no ratificada: validar sin I/O de stores → resolver root → adquirir admisión → primera lectura → usar snapshot → release D2/P05. Queries read-only también requieren admisión. Chronicle child adquiere la suya; `openNexoContinuityOwner()` no puede leer antes de ella; bootstrap continúa separado. No se eligió API, primitiva, token, contexto ni layout. Dependencias abiertas: P03/P04/P05/P08. Sin implementación/tests/CI.
+## DELTA P08 — MAPPING ROOT→STORES (2026-11-03)
+
+Addendum D1/D2 §13 registra que O-08 está ratificado como diseño pero no implementado en SHA producto `99dabcb...`: CLI padre/child aceptan paths independientes `--continuity`/`--chronicle`; application APIs y factories reciben `filePath`; no hay derivación común desde `--root`.
+- Layout `continuity.json`/`chronicle.json` sigue ilustrativo, no ratificado.
+- La publicación real `$HOME/.nexo-continuity.json` no decide el layout normal ni el destino Chronicle.
+- P08 = OPEN / LAYOUT UNSELECTED; bloquea cierre D1. No seleccionar nombres ni migración por inferencia.
+- Sin cambios runtime/tests/CI ni dispositivo.
