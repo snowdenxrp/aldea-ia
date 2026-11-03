@@ -303,3 +303,42 @@ Para hacer verificable O-10 sin imponer todavía una primitiva concreta, la secu
 - Si el padre necesita datos persistidos, constituye otra operación admitida; no retiene lock mientras espera child ni transfiere un snapshot después de liberar.
 
 Esta secuencia es una referencia para cerrar el contrato D1, no una elección de API, lock, layout, token, contexto, addon o helper. El mapping root→stores depende de P08; la semántica de adquisición/release depende de P03/P04/P05. No autoriza implementación ni pruebas.
+## 13. P08 — contraste de root única con rutas reales (2026-11-03)
+
+### 13.1 Evidencia estática en SHA producto
+
+Inspección de blobs del SHA `99dabcb33be1efef5c4f5e368dc95140e45ff672`:
+
+| Superficie | Evidencia | Consecuencia |
+|---|---|---|
+| `scripts/nexo.mjs` (`e471eb4…`) | Parser de status/mission-status/mission-plan/draft-preview/request-preview acepta `--continuity`; no aparece `--root`. | El CLI padre no implementa O-08. |
+| `scripts/nexo-chronicle-session.mjs` (`30a53de…`) | Parser admite `--continuity`, `--chronicle`, `--initialize-continuity`, `--initialize-chronicle`. | El child puede recibir dos rutas independientes y flags de inicialización separados; no implementa root única. |
+| `src/nexo/application/chronicle-append.mjs` (`c196446…`) | Input exige `continuityPath` y `chroniclePath`; crea ambas factories con esos paths. | La operación de aplicación acepta dos destinos configurados por caller. |
+| `src/nexo/application/continuity-queries.mjs` (`e1915e9…`) | Queries reciben `continuityPath` y lo pasan a la factory. | Query path-oriented; no deriva destino desde root. |
+| `src/nexo/core/continuity-store.mjs` (`c1eb81b…`) | Factory exige `filePath`; comentario explícito indica trusted configuration, no sandbox boundary. | No impone root ni confinamiento. |
+| `src/nexo/core/chronicle-store.mjs` (`59d2fde…`) | Factory exige `filePath`; comentario equivalente de trusted configuration. `loadCurrent()` lee directamente el documento. | No impone root ni confinamiento; lectura Chronicle no adquiere su lock per-store. |
+| `src/nexo/core/continuity-service.mjs` (`53fd704…`) | API ordinaria recibe `filePath`; bootstrap usa `root` + `relativePath` y valida destino por separado. | El contrato de bootstrap no equivale a mapping común de operación normal Continuity+Chronicle. |
+
+### 13.2 Lo que sí y lo que no está determinado
+
+- O-08 ya ratificó una única raíz explícita `--root <directory>`, sin fallback ambiental/legacy; no se vuelve a someter a decisión.
+- El layout exacto de stores y la semántica de paths relativos siguen abiertos. Los nombres `continuity.json` y `chronicle.json` registrados en documentos anteriores son ilustrativos/candidatos, no decisión ratificada ni implementación existente.
+- La publicación real de Continuity del 2026-11-02 usó root canónica `$HOME` y destino `$HOME/.nexo-continuity.json`. Esa operación acredita el objeto publicado y su post-write check; no fija el layout futuro de instancia ni crea/valida un Chronicle canónico.
+- No existe evidencia en el SHA inspeccionado de un resolver común que reciba `--root`, canonicalice una vez y derive ambos destinos.
+- No se ha demostrado compatibilidad/migración de datos preexistentes a ningún layout canónico. Se mantienen prohibidos fallback, dual-write, merge y migración automática.
+
+### 13.3 Decisiones técnicas mínimas aún necesarias para P08
+
+1. Definir si el layout normal usa nombres fijos derivados de root o un subdirectorio fijo; no admitir rutas independientes caller-supplied en el API normal.
+2. Definir si el destino Continuity ya publicado (`.nexo-continuity.json`) se adopta como destino canónico o queda como objeto bootstrap legado/operacional fuera del nuevo mapping. No inferir ninguna de las dos opciones.
+3. Definir el destino Chronicle y cómo se trata su ausencia en operación normal; inicialización Chronicle no debe quedar implícita en append.
+4. Definir la gramática de `--root`, obligatoriedad de root existente en modo normal y rechazo de flags legacy/conflictivos antes de cualquier store I/O.
+5. Definir canonicalización/alias/symlink y colisiones de nombres reservados dentro del límite de amenaza R1, sin prometer resistencia TOCTOU hostil.
+6. Definir propagación de root al child como dato explícito; el child vuelve a validar/canonicalizar y adquiere su propia admisión antes de leer.
+7. Inventariar archivos/datos existentes antes de decidir adopción/migración; preservar fuente y bloquear si el mapping no es inequívoco.
+
+### 13.4 Dictamen P08
+
+**P08 = OPEN / LAYOUT UNSELECTED.** La brecha es concreta: contrato O-08 ratificado pero no implementado; CLI y APIs del SHA examinado siguen path-oriented; no existe mapping común demostrado. La publicación real de Continuity no cierra el layout. P08 bloquea el cierre D1 porque D1 no puede garantizar que todos los entrypoints admitan sobre los mismos destinos canónicos.
+
+Esta sección es análisis documental de código en SHA fijado y evidencia histórica ya registrada; no cambia decisiones del owner, no elige filenames, no autoriza migración, runtime, tests o CI.
