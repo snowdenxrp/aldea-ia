@@ -282,3 +282,36 @@ No se selecciona ninguna. La opción 1 podría conservar el API de operación y 
 - Integración nativa en el owner Node o frontera obligatoria: **NO DISEÑADA / NO VERIFICADA**.
 - B1 global: **CANDIDATO CON BRECHA D1 IDENTIFICADA — NO SELECCIONADO**.
 - P05 y D1/D2 permanecen OPEN. No se modifican runtime/tests/CI ni se autoriza una implementación.
+### 11.9 Viabilidad de adquisición dentro del owner Node
+
+Se inspeccionó `package.json` y el código de producto en SHA `99dabcb33be1efef5c4f5e368dc95140e45ff672`:
+- `package.json` contiene scripts, pero no declara `dependencies`, `devDependencies`, `optionalDependencies` ni addons nativos.
+- Las operaciones actuales usan `node:fs` / `node:fs/promises`; la API estándar de filesystem de Node documenta operaciones de archivo y descriptor, pero no expone una llamada `flock(2)` directa. Referencia: https://nodejs.org/api/fs.html
+- No se encontró una integración de locking nativo ya disponible en la superficie inspeccionada.
+
+Consecuencias:
+1. Un `Mutex`, `Promise` chain o `Set` de JavaScript solo coordina llamadas dentro de una instancia del proceso; no coordina otros procesos Node ni prueba release tras terminación del proceso.
+2. `flock(1)` como wrapper no resuelve por sí solo APIs importables ni el ownership parent/child descrito en 11.6.
+3. Para adquirir `flock(2)` dentro del owner Node sería necesaria una integración nativa (por ejemplo, addon N-API o módulo nativo equivalente) que reciba/conserve el descriptor bloqueado durante toda la operación. No hay tal dependencia en el package actual ni evidencia de compilación/compatibilidad Android/Termux.
+4. Un helper process que mantenga el descriptor y hable con Node sería otra arquitectura: debe definir canal de control, detección de caída, cierre de todos los descriptores, herencia a hijos y cómo se impide que Node continúe una operación después de perder la custodia. No se presume más simple ni más seguro que el addon.
+
+### 11.10 Frontera de API: condición estructural adicional
+
+La adquisición nativa dentro de `runNexoChronicleAppend()` y de cada query pública podría cubrir las operaciones de aplicación exportadas, pero no basta si los callers pueden importar directamente las factories de stores y ejecutar `loadCurrent()` fuera del owner.
+- `src/nexo/application/index.mjs` reexporta operaciones de aplicación.
+- `src/nexo/core/continuity-store.mjs` exporta `createNexoContinuityStore()` y su objeto expone `loadCurrent`, `initialize` y `commitIfCurrent`.
+- `src/nexo/core/chronicle-store.mjs` exporta `createNexoChronicleStore()` y su objeto expone `loadCurrent`, `initialize` y `append`.
+- Las queries de aplicación crean stores y llaman a `loadCurrent()` directamente.
+
+Un diseño interno mínimo tendría que hacer que los stores exijan un contexto/capacidad de operación admitida y que solo los owners de aplicación puedan obtenerlo; helpers consumirían snapshot/contexto y no reabrirían stores. La factory no debería permitir una ruta ordinaria sin ese contexto. La admisión real seguiría siendo kernel-backed y cross-process; la capacidad JavaScript solo propaga ownership dentro del proceso.
+
+El contexto/capacidad no es una frontera frente a código malicioso con acceso arbitrario al mismo árbol de módulos. La garantía depende del alcance R1, del grafo de imports/callers clasificado, de impedir rutas de producción alternativas y de tests de import-graph/contrato. No convertir un símbolo privado ni una convención de nombres en una afirmación de seguridad universal.
+
+### 11.11 Dictamen de viabilidad actualizado
+
+- Mutex JavaScript por proceso: **INSUFICIENTE** para P05 cross-process.
+- `flock(1)` externo: **INSUFICIENTE** como única barrera y **NO COMPATIBLE** alrededor del padre que espera a Chronicle child.
+- Addon/helper nativo para `flock(2)` dentro de la operación: **CANDIDATO TÉCNICO, NO PRESENTE NI VALIDADO EN TERMUX**.
+- Stores con contexto de operación admitida y sin acceso ordinario sin owner: **REFACCIÓN ESTRUCTURAL NECESARIA SI SE ELIGE ESTA VÍA; NO DISEÑADA NI AUTORIZADA**.
+- No se recomienda implementar un addon, helper, broker o refactor mientras P03/P04/P05 no estén ratificados y la compatibilidad Termux no tenga evidencia.
+- P05 = OPEN; D1/D2 = OPEN; B1 = CANDIDATO NO SELECCIONADO. Sin cambios runtime/tests/CI ni pruebas del dispositivo.
