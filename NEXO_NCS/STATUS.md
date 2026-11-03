@@ -8,6 +8,7 @@
 **Contrato de diseño D1 (propuesta, no ratificada/implementada):** [D1 target contract and entrypoint classification](BUILD/NCS_M0_D1_TARGET_CONTRACT_AND_ENTRYPOINT_CLASSIFICATION_2026-11-02.md)
 **Contrato de diseño D2 (propuesta, no ratificada/implementada):** [D2 admission and release target contract](BUILD/NCS_M0_D2_ADMISSION_RELEASE_TARGET_CONTRACT_2026-11-02.md)
 **Addendum de aclaración D1/D2 (propuesta, no ratificada/implementada):** [D1/D2 gap closure addendum](BUILD/NCS_M0_D1_D2_GAP_CLOSURE_ADDENDUM_2026-11-03.md)
+**Análisis P05 (no ratificado):** [P05 recovery policy decision analysis](BUILD/NCS_M0_D2_P05_RECOVERY_POLICY_DECISION_ANALYSIS_2026-11-03.md)
 
 ## Vector vigente
 
