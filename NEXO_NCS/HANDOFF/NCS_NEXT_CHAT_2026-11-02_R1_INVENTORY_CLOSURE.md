@@ -144,3 +144,17 @@ Para el estado posterior a la implementación y ejercicio real, usar en este ord
 3. Este handoff, secciones 1–7 — inventario R1, procedimiento y evidencia operacional recibida.
 
 No reabrir la propuesta antigua de launcher: RE-01/RE-02 ya están implementados y ejercitados. No reinterpretar P01-G como autoridad constitucional ni como autorización de instancia. Las notas históricas no se reescriben; cualquier cambio posterior se añade como delta con SHA/evidencia.
+
+
+---
+
+## AVISO DE SUPERSESIÓN — PUBLICACIÓN REAL POSTERIOR (2026-11-02)
+
+Este handoff conserva el inventario local, el procedimiento R1 y el preflight cancelado como evidencia histórica. Sus afirmaciones de que no hubo publicación, E4 NOT READY o que el destino productivo seguía sin utilizar corresponden al momento documentado y quedan supersedidas por la publicación real posterior.
+
+Estado vigente y precedencia:
+1. `NEXO_NCS/STATUS.md`;
+2. `NEXO_NCS/BUILD/NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md`;
+3. `NEXO_NCS/BUILD/NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md`, delta vigente final.
+
+La primera publicación real está COMPLETED y no debe repetirse. E4 acredita únicamente la comprobación post-write del objeto real dentro del alcance observado. E2/E3 permanecen PARTIAL por decisión A; no fueron condiciones retroactivas de publicación y sí son criterios independientes de cierre M0. D1/D2/D3 OPEN; M0 INCOMPLETE; efectos protegidos STOP.
