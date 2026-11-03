@@ -211,3 +211,6 @@ El addendum D1/D2 §12 registra un hallazgo concreto en SHA `99dabcb33be1efef5c4
 - Clasificación: STATIC ORDERING VIOLATION IDENTIFIED en las rutas inspeccionadas; no es prueba de carrera ni de ejecución en Termux.
 - Corrección requiere rediseño D1-IMPLEMENTATION: admitir antes de preflight, dar admisión propia a queries read-only y mantener Chronicle child como owner independiente. No basta mover el lock dentro de `openNexoContinuityOwner()`.
 - D1-IMPLEMENTATION NO AUTORIZADA; no se modificó código ni se ejecutaron tests/CI. D1/D2/P05 OPEN.
+### DELTA D1 — SECUENCIA CORRECTIVA O-10 (2026-11-03)
+
+El addendum §12.6 fija una secuencia de referencia no ratificada: queries read-only y Chronicle append validan/normalizan primero, resuelven root, adquieren admisión antes de crear/leer stores, usan un snapshot bajo la misma admisión y liberan según D2/P05; Chronicle child conserva owner independiente. `openNexoContinuityOwner()` no puede hacer primera lectura sin admisión; bootstrap sigue separado. No se selecciona API/lock/contexto/layout. Depende de P03/P04/P05 y mapping P08; no autoriza implementación/tests.
