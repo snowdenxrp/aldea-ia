@@ -243,3 +243,19 @@ Conservar U como clasificación actual hasta que el propietario confirme el alca
 - Estado: P01-A L DECIDED; P01-G PENDING/UNKNOWN; primera creación STOP; raíz legítima PENDING/UNKNOWN; `authorization: NOT_EVALUATED`; M0 INCOMPLETO.
 - Referencias: [decisión P01-A=L y reconciliación Qwen](NCS_M0_P01_OWNER_DECISION_L_AND_QWEN_RECONCILIATION_2026-11-01.md) y [brecha finita P01-G](NCS_M0_P01_G_FINITE_REMAINING_RULE_AND_OWNER_DECISION_2026-11-02.md).
 - Solo reconciliación documental; no autoriza implementación, tests, CI, bootstrap ni efectos protegidos.
+
+
+---
+
+## DELTA DE RECONCILIACIÓN — ESTADO POSTERIOR AL 2026-11-02
+
+Consultar [reconciliación canónica M0](NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md) y `NEXO_NCS/STATUS.md` para el vector vigente.
+
+- **O-09 sí está ratificada**: definir primero fronteras Nexo/Lúmina, estados y dependencias permitidas/prohibidas; seleccionar después el refactor mínimo que haga cumplir el contrato. No demuestra aislamiento técnico completo.
+- **P01-B** requiere desambiguación por contexto: P01-B de la matriz de separación operacional no es B2/P01-B §10.6. Esta última conserva la decisión del propietario C — no seleccionar todavía.
+- **Decisión del propietario 2026-11-02, opción A:** E2/E3 son criterios independientes de cierre M0, no condiciones retroactivas de la primera publicación. La publicación real se conserva COMPLETED y no se repite; E2/E3 siguen PARTIAL y bloquean M0_BUILD_COMPLETE hasta resolución con evidencia o exclusión de riesgo explícita aceptada.
+- RE-01/RE-02 y la publicación real posterior superseden las afirmaciones anteriores de P01-G/primera creación STOP o UNKNOWN, solo respecto de la implementación, ejercicio y publicación concretamente acreditados. No establecen autoridad constitucional, ROOT_READY ni autorización de efectos protegidos.
+- D1/D2/D3 permanecen OPEN; P03/P04/P05 no quedan ratificadas por esta delta.
+- `authorization: NOT_EVALUATED`; raíz legítima PENDING/UNKNOWN; efectos protegidos STOP; M0 INCOMPLETE.
+
+Esta delta es documental. No autoriza runtime, tests, CI, bootstrap adicional ni efectos protegidos.
