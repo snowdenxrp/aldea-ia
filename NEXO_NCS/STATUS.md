@@ -1,3 +1,17 @@
+## DELTA VIGENTE — CONSOLIDACIÓN DOCUMENTAL P07 V2.1 (2026-11-03)
+
+- Se consolidó la corrección normativa P07 V2.1 en [NCS_M0_D2_P07_V2_1_NORMATIVE_CORRECTION_2026-11-03.md](BUILD/NCS_M0_D2_P07_V2_1_NORMATIVE_CORRECTION_2026-11-03.md).
+- Matriz de escenarios/oráculos P07-01…22: [NCS_M0_D2_P07_V2_1_SCENARIO_MATRIX_AND_TEST_ORACLES_2026-11-03.md](BUILD/NCS_M0_D2_P07_V2_1_SCENARIO_MATRIX_AND_TEST_ORACLES_2026-11-03.md).
+- Trazabilidad, suficiencia de primitivas y protocolo de evidencia POCO/Termux: [NCS_M0_D2_P07_V2_1_TRACEABILITY_PLATFORM_AND_EVIDENCE_PROTOCOL_2026-11-03.md](BUILD/NCS_M0_D2_P07_V2_1_TRACEABILITY_PLATFORM_AND_EVIDENCE_PROTOCOL_2026-11-03.md).
+- Correcciones principales: `(st_dev, st_ino)` no es identidad eterna ni autoridad; aliases requieren política; `O_NOFOLLOW` solo protege el componente final; stat/fstat seguido de unlink no es compare-and-unlink; SIGKILL no garantiza release si sobreviven descriptores; SIGSTOP conserva referencias/locks; F_SETLK/flock/OFD no son equivalentes; fsync de archivo/directorio, crash de proceso y pérdida de energía se separan.
+- P07-C sigue **UNKNOWN / BLOQUEANTE** hasta demostrar operación/cleanup replacement-safe bajo el modelo R1 y la cobertura P09. Si no puede demostrarse, no ejecutar cleanup destructivo por nombre; preservar residuo y fallar cerrado.
+- P07-01…22 son escenarios diseñados, no ejecutados. Harness no implementado. Mecanismo seleccionado: NINGUNO. dirfd/openat2 + lock kernel por descriptor sigue siendo candidato de investigación, no decisión.
+- P07 V2.1 queda como propuesta documental pendiente de revisión/ratificación; no modifica decisiones de autoridad. P03/P04 D1–D6 permanecen ratificadas; P05 continúa OPEN/NOT RATIFIED (incluida opción C); P09 OPEN/UNKNOWN.
+- Trabajo limitado a documentación en esta rama. No runtime, tests, workflows, CI/Actions, comandos Termux, pruebas en POCO ni operaciones sobre `$HOME/.nexo-continuity.json`.
+- Gates sin cambio: `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; ROOT_READY no establecido; commissioning STOP; efectos protegidos STOP; NCS M0 INCOMPLETO; PR #110 OPEN / DRAFT / NOT MERGED.
+
+---
+
 ## DELTA VIGENTE — RECONCILIACIÓN DOCUMENTAL D1/D2 (2026-11-03)
 
 - Reconciliación publicada: [NCS_M0_D1_D2_CURRENT_STATE_RECONCILIATION_2026-11-03.md](BUILD/NCS_M0_D1_D2_CURRENT_STATE_RECONCILIATION_2026-11-03.md), commit `602fd1867802af5429775a98fe6de469337e06d5`.
