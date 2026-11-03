@@ -86,3 +86,17 @@ Continuar desde `NEXO_NCS/STATUS.md` y los expedientes actuales, no desde audito
 5. Después, reconciliar los gates P01-C/D/E/F y D0–D3 solo con los contratos existentes, priorizando discrepancias reales y sin reabrir trabajo cerrado.
 
 La validación de cancelación solo demuestra no-publicación en un directorio temporal. No es autorización ni evidencia de una publicación real.
+
+
+---
+
+## AVISO DE SUPERSESIÓN — ESTADO POSTERIOR (2026-11-02)
+
+Este handoff documenta una etapa anterior a la primera publicación real. Sus afirmaciones de que la publicación continúa STOP, que el destino productivo está pendiente o que E4 no está listo describen el estado de esa etapa y **no** el estado vigente posterior.
+
+Para continuidad, prevalecen:
+1. `NEXO_NCS/STATUS.md`;
+2. `NEXO_NCS/BUILD/NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md`;
+3. `NEXO_NCS/BUILD/NCS_M0_TERMUX_R1_OWNER_ACCEPTANCE_AND_E2_E3_EVIDENCE_2026-11-02.md`, delta vigente final.
+
+La primera publicación real se completó una sola vez. No repetir RE-01/RE-02, bootstrap ni publicación. E2/E3 siguen PARTIAL conforme a la decisión A. D1/D2/D3 siguen OPEN; M0 INCOMPLETE; efectos protegidos STOP.
