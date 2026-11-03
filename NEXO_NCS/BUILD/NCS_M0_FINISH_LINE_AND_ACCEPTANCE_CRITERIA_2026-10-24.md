@@ -151,3 +151,23 @@ El propietario aceptó expresamente esta línea de meta como base de trabajo, in
 - Mantener la migración/cutover legacy fuera del alcance operativo de M0 mientras no exista un entorno objetivo identificado y verificable. Esto es una exclusión de alcance de M0 por ahora, no una decisión de migración ni evidencia de quiescencia; D3 permanece abierto para una fase posterior.
 
 Esta aceptación **no** acepta automáticamente las recomendaciones individuales D0/D1/D2, no congela contratos técnicos que siguen pendientes y no autoriza modificar runtime, tests o workflows. La autorización separada para implementar sigue pendiente. El estado canónico de seguridad no cambia: M0 `INCOMPLETO`; D0/D1/D2/D3 `OPEN`; autorización `NOT_EVALUATED`; raíz legítima `PENDING/UNKNOWN`; efectos protegidos `STOP`.
+
+
+---
+
+## DELTA DE RECONCILIACIÓN — CRITERIOS Y DECISIÓN E2/E3 (2026-11-02)
+
+La decisión del propietario opción A y el vector vigente están registrados en [reconciliación canónica M0](NCS_M0_CANONICAL_RECONCILIATION_2026-11-02.md) y `NEXO_NCS/STATUS.md`.
+
+Esta delta **no cambia ni renumera** los veinte criterios aceptados. En particular, los criterios 14–20 conservan exactamente estas materias:
+- 14: límites de recursos y pruebas de borde.
+- 15: rutas reservadas y tipos de filesystem.
+- 16: regresiones y CI sobre el SHA exacto que contiene implementación y tests.
+- 17: ausencia de brechas UNKNOWN/BLOCKED en caminos declarados dentro del alcance M0, salvo exclusión explícita con capacidad y riesgo documentados y aceptados.
+- 18: evidencia concreta y reproducible.
+- 19: distinción entre implementado, test ejecutado, CI verificado, propuesta, decisión pendiente y comportamiento no probado.
+- 20: revisión final D0–D3 y acta breve de aceptación M0.
+
+**Decisión A:** E2/E3 son criterios independientes de cierre M0, no condiciones retroactivas de la primera publicación. La publicación se conserva COMPLETED y no se repite; E2/E3 siguen PARTIAL y bloquean M0_BUILD_COMPLETE hasta resolución suficiente o exclusión de riesgo explícitamente aceptada. Esta decisión no redefine los criterios 15 o 17 ni concede autorización para efectos protegidos.
+
+M0 continúa INCOMPLETE; D1/D2/D3 OPEN; `authorization: NOT_EVALUATED`; `ROOT_READY` no establecido; efectos protegidos STOP. Sin autorización de implementación, tests, CI o runtime.
