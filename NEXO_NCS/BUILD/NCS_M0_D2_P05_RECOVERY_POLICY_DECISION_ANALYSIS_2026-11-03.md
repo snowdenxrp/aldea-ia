@@ -160,3 +160,28 @@ Este documento:
 - no convierte E2/E3 PARTIAL en PASS.
 
 **Dictamen:** P05 continúa OPEN. La regla fail-closed es obligatoria, pero no basta por sí sola para readmisión cross-process. La vía de recuperación debe demostrarse antes de cerrar D2.
+
+
+## 10. Caracterización de fuente fijada al SHA base de producto
+
+Se inspeccionaron los stores en el SHA de producto `99dabcb33be1efef5c4f5e368dc95140e45ff672`. Esta inspección es estática; no se ejecutó código ni se probó una carrera.
+
+| Fuente | Blob SHA | Comportamiento relevante observado | Consecuencia P05 |
+|---|---|---|---|
+| `src/nexo/core/continuity-store.mjs` | `c1eb81bf74d2df576079b3269ac4db22d87fe7b6` | Usa `lockReleaseFailures`, un Set local al proceso. Tras fallar el primer `rm(lockPath)`, vuelve a ejecutar `rm(lockPath)` por el mismo nombre. Si falla el segundo intento, agrega la ruta al Set local. | El Set no coordina procesos. El segundo borrado por path puede alcanzar un objeto sustituto si el nombre fue reemplazado entre intentos. El código actual no demuestra identidad del objeto a través del release. |
+| `src/nexo/core/chronicle-store.mjs` | `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a` | Comprueba token con lectura de `owner.json` y después ejecuta un único `rm(lockPath)`; ante fallo devuelve `failed`. No tiene cuarentena cross-process ni retry equivalente al de Continuity. | Token-check seguido de retirada por nombre conserva una ventana check/use. Un fallo no deja una señal durable que por sí sola impida una nueva instancia. |
+| `src/nexo/core/chronicle-store.mjs` | mismo blob | `loadCurrent()` lee Chronicle directamente sin adquirir el lock per-store. | La admisión externa de instancia debe preceder a esa lectura; el lock per-store actual no la protege. Esto pertenece al cierre D1/D2, no resuelve P05. |
+
+### 10.1 Lo que esta evidencia permite afirmar
+
+- Continuity y Chronicle no tienen la misma semántica de release; no se deben unificar por suposición.
+- El control local `lockReleaseFailures` no es una cuarentena cross-process.
+- Ni el token de owner ni la ausencia posterior del path prueban que la operación de release ya no puede afectar una nueva instancia.
+- El runtime actual no demuestra la condición de identidad de objeto que P05 requiere para readmisión segura.
+- No se ha demostrado una intercalación real; la conclusión es que la fuente no cierra contractualmente esa posibilidad.
+
+### 10.2 Consecuencia
+
+La alternativa B no está implementada ni demostrada. La alternativa C, aplicada solo como Set/flag local, tampoco garantiza bloqueo después de terminar el proceso. La alternativa A requiere evidencia operacional que no está contenida en la caracterización de fuente ni en E2/E3 actuales.
+
+Por tanto, la conclusión de §1 permanece: P05 OPEN; no retry de negocio; no readmisión automática; no se afirma que exista recuperación segura disponible.
