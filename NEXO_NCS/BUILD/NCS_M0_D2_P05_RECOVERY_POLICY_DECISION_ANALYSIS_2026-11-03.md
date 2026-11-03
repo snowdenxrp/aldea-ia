@@ -185,3 +185,63 @@ Se inspeccionaron los stores en el SHA de producto `99dabcb33be1efef5c4f5e368dc9
 La alternativa B no está implementada ni demostrada. La alternativa C, aplicada solo como Set/flag local, tampoco garantiza bloqueo después de terminar el proceso. La alternativa A requiere evidencia operacional que no está contenida en la caracterización de fuente ni en E2/E3 actuales.
 
 Por tanto, la conclusión de §1 permanece: P05 OPEN; no retry de negocio; no readmisión automática; no se afirma que exista recuperación segura disponible.
+
+
+## 11. Candidato B1 para evaluación — lock advisory persistente con `flock(2)`
+
+Esta sección registra una alternativa concreta para investigación; **no la selecciona ni la ratifica**.
+
+### 11.1 Propiedad técnica relevante
+
+En Linux, `flock(2)` asocia el lock a una open file description. Los descriptores duplicados comparten el lock y este se libera al ejecutar `LOCK_UN` o cuando se cierran todos los descriptores que lo mantienen. El lock se conserva a través de `execve(2)`. La semántica es advisory: un proceso que no coopera puede ignorarla y acceder al archivo igualmente.
+
+Fuentes primarias:
+- Linux man-pages, `flock(2)`: https://man7.org/linux/man-pages/man2/flock.2.html
+- Linux man-pages, `flock(1)`: https://man7.org/linux/man-pages/man1/flock.1.html
+
+La utilidad `flock(1)` puede envolver la ejecución de un comando; su opción `--no-fork` reemplaza el proceso por el comando y mantiene el lock a través de `execve`. El proyecto Termux mantiene un paquete `util-linux`, declarado como dependencia de `termux-tools`; esto acredita que existe una ruta de empaquetado en Termux, **no** que el binario `flock` esté instalado o disponible en el POCO del propietario:
+- Receta Termux `util-linux`: https://github.com/termux/termux-packages/blob/master/packages/util-linux/build.sh
+- Dependencias de `termux-tools`: https://github.com/termux/termux-packages/blob/master/packages/termux-tools/build.sh
+
+### 11.2 Forma candidata
+
+- Usar un archivo de admisión persistente y estable por raíz.
+- Adquirir un lock exclusivo advisory sobre ese archivo antes de cualquier primera lectura persistente cubierta por O-10.
+- No borrar, renombrar ni sustituir nunca el archivo de lock durante el funcionamiento normal. Su existencia no representa un lock ocupado: la ocupación la determina el lock del kernel.
+- Mantener abierto el descriptor durante toda la operación protegida y hasta terminar el último uso del snapshot y las escrituras cubiertas.
+- Toda entrada directa y delegada debe adquirir el mismo lock de instancia; Chronicle child adquiere el suyo. La delegación pura del padre no conserva el lock mientras espera al child.
+- Mantener el orden D2: lock de instancia antes de cualquier lock per-store.
+- Un fallo de adquisición produce contención/STOP; no se interpreta mediante PID, edad, token o borrado de path.
+
+En esta forma, una terminación del proceso libera el lock cuando se cierran todos los descriptores que lo mantienen. Un proceso anterior que todavía conserve un descriptor no permite que un competidor cooperante adquiera el mismo lock. El archivo persistente no es un tombstone ni un marcador de cuarentena: es el objeto estable sobre el que el kernel coordina la exclusión.
+
+### 11.3 Condiciones y límites que impiden declararlo solución
+
+1. **Identidad estable:** si alguien elimina o reemplaza el archivo mientras un proceso conserva el lock, otro proceso puede abrir el nuevo objeto y obtener un lock independiente. Por eso la regla de no unlink/rename/replace es esencial; no basta con añadir `flock` al archivo temporal actual.
+2. **Cooperación universal dentro del alcance:** al ser advisory, cualquier entrypoint, API o proceso capaz de leer/escribir los stores y que no adquiera el mismo lock puede eludirlo. El mapa D1 y el límite R1 deben cubrir todos los actores relevantes.
+3. **Ciclo de vida de descriptores:** debe demostrarse que ningún hijo o proceso secundario puede continuar una escritura cubierta después de cerrar o perder el descriptor. La herencia accidental del descriptor tampoco debe prolongar la admisión más allá de la operación.
+4. **Integración Node/CLI:** la opción `flock(1)` podría envolver entrypoints CLI, pero no protege por sí sola consumidores que importen APIs directamente. La solución de integración y la visibilidad del lock para procesos hijos siguen abiertas.
+5. **Filesystem real:** las semánticas deben probarse en el filesystem privado Termux del dispositivo objetivo. La documentación Linux no acredita por sí sola el comportamiento del kernel, filesystem y montaje concretos del POCO.
+6. **Integridad de negocio:** el lock no convierte las escrituras de Continuity/Chronicle en transacciones ni demuestra recuperación de una escritura parcial después de crash. Persistencia, release y readmisión siguen siendo dimensiones separadas.
+7. **Modelo de amenaza:** no impide que un proceso no cooperativo o malicioso bajo el mismo UID ignore el lock o sustituya el archivo. No se debe presentar como frontera de seguridad frente a esos actores.
+
+### 11.4 Evidencia necesaria antes de considerar B1
+
+- Confirmar, sin instalar ni modificar nada por inferencia, si `flock(1)` está disponible en el Termux objetivo y qué implementación/versión es.
+- Identificar el filesystem y montaje efectivos del HOME privado Termux mediante evidencia del dispositivo, cuando exista autorización para esa inspección.
+- Demostrar contención entre dos procesos independientes sobre el mismo objeto y adquisición tras cierre de todos los descriptores.
+- Demostrar comportamiento con terminación abrupta del owner, descriptor duplicado/heredado, child Chronicle, y cierre prematuro del descriptor.
+- Demostrar que ninguna ruta normal elimina/reemplaza el archivo persistente y que todos los entrypoints/APIs dentro del alcance pasan por la misma admisión antes de leer stores.
+- Ejecutar los casos E1–E9 aplicables con procesos competidores y SHA exacto, solo después de autorización específica de tests.
+
+### 11.5 Dictamen de esta exploración
+
+`flock(2)` es el primer candidato B concreto que merece una evaluación de viabilidad en Termux: su asociación con un descriptor y la liberación al cerrar todos los descriptores podrían eliminar la necesidad de limpiar un lock temporal por nombre y reducir la ambigüedad de release entre procesos cooperantes.
+
+No está demostrado en el POCO, no se ha confirmado el binario instalado, no se ha integrado en Nexo y no se han probado sus condiciones de cooperación, identidad estable ni ciclo de vida de descriptores. Por tanto:
+
+- B1 = **CANDIDATO PARA EVALUACIÓN — NO SELECCIONADO**.
+- P05 = **OPEN**.
+- D1/D2 = **OPEN**.
+- No se modifica runtime, tests, workflows, configuración ni dispositivo.
+- No se ejecutan tests, CI, comandos Termux ni pruebas de filesystem.
