@@ -3548,3 +3548,11 @@ Análisis añadido en P05, secciones 11.9–11.11, commit `c84ee7c6f29ae92eba28e
 - La alternativa de lock dentro del owner Node requiere integración nativa no presente/validada y una frontera que impida uso ordinario de factories de stores sin contexto admitido.
 - No seleccionar addon/helper/broker ni implementar refactor sin ratificación P03/P04/P05 y evidencia Termux.
 - P05/D1/D2/D3 permanecen OPEN; no hay cambios runtime/tests/CI ni ejecución en el dispositivo.
+## DELTA — FRONTERA DE FACTORIES/STORES (2026-11-03)
+
+Addendum D1/D2 §11 actualizado en commit `836cb97a302551dad81af7d06c6cd2193afd185f`.
+- Proteger solo CLI o API de aplicación no basta: hay callers de store en queries, Chronicle append, continuity-service y rutas repair; factories permanecen exportadas desde módulos internos.
+- Candidato no seleccionado: owner de admisión por operación + contexto/capacidad requerida por stores + helpers sin reload + guard de import graph + Chronicle child owner independiente.
+- La capacidad JavaScript no sustituye exclusión cross-process; P05/D2 sigue abierto. Un símbolo/convención ESM no es frontera frente a código arbitrario con acceso al repo.
+- Inspección estática puntual, no inventario exhaustivo; imports dinámicos/consumidores externos aún no despejados. No hay enforcement probado.
+- P03/P04/P05 y D1/D2 OPEN; no runtime/tests/CI ni cambios al dispositivo.
