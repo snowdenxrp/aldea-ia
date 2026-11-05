@@ -1,3 +1,15 @@
+## DIRECTIVA ESTRATÉGICA PERMANENTE — VISIÓN INTEGRAL DE NEXO (2026-11-05)
+
+- Directiva del propietario preservada en [MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md](MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md) y enlazada desde [MASTER/README.md](MASTER/README.md).
+- Establece que Nexo debe comenzar pequeño y crecer progresivamente; no requiere un motor cognitivo independiente para existir ni para completar M0. Los modelos externos son opcionales e intercambiables, nunca identidad ni dependencia existencial.
+- Conserva como visión futura la autonomía intelectual y tecnológica, razonamiento local, memoria y aprendizaje, ingeniería de software, ciberseguridad autorizada, autodesarrollo controlado, resiliencia e independencia de proveedores/Internet.
+- **Nexo Labs es un pilar permanente**: investigación, experimentación, ingeniería y desarrollo en entornos aislados, con auditoría, permisos, pruebas reproducibles y reversión. Nexo Core queda protegido; Lúmina permanece separada.
+- La reconstrucción de infraestructura física es una aspiración condicionada por materiales, energía, herramientas y capacidades reales.
+- Antes del cierre de M0 solo se comprobarán incompatibilidades arquitectónicas demostrables con esta visión. No se implementan ahora Cognition, Labs ni capacidades futuras; no se amplía M0 ni se reabren auditorías sin evidencia nueva.
+- Esta directiva no altera los gates ni estados técnicos de M0/P07. Las capacidades futuras no se consideran implementadas ni PASS por estar documentadas.
+
+---
+
 ## DELTA VIGENTE — CONSOLIDACIÓN DOCUMENTAL P07 V2.1 (2026-11-03)
 
 - Se consolidó la corrección normativa P07 V2.1 en [NCS_M0_D2_P07_V2_1_NORMATIVE_CORRECTION_2026-11-03.md](BUILD/NCS_M0_D2_P07_V2_1_NORMATIVE_CORRECTION_2026-11-03.md).
