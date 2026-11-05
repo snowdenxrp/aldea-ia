@@ -1,3 +1,13 @@
+## Directiva estratégica permanente — autonomía y Nexo Labs
+
+La directiva estratégica del propietario sobre la visión integral, autonomía progresiva, independencia de motores, Nexo Cognition y Nexo Labs está preservada en:
+
+- [NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md](NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md)
+
+Esta directiva es una visión arquitectónica de largo plazo. No afirma capacidades implementadas ni amplía el alcance de NCS M0. La comprobación limitada previa al cierre de M0 se rige por el propio documento.
+
+---
+
 # NEXO MASTER
 
 This directory defines the product/architectural vision: what Nexo is.
