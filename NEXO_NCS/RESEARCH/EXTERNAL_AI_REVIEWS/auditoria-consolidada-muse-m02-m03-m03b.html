@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>EXPEDIENTE CONSOLIDADO — NEXO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#f6f3ec; --surface:#fffdf8; --surface2:#efe9dc; --ink:#1d1a15; --ink2:#4c463c; --ink3:#7a7263;
+    --line:#d8d0bf; --line2:#c4bba4;
+    --accent:#8c2f1b; --accent-soft:#f3e2da;
+    --ok:#1c6b3c; --ok-soft:#e0efe3;
+    --warn:#8a5a00; --warn-soft:#f6ecd2;
+    --unk:#5b5344; --unk-soft:#e9e4d6;
+    --chip:#26221b;
+    --shadow:0 1px 2px rgba(29,26,21,.06),0 8px 28px rgba(29,26,21,.07);
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#131110; --surface:#1c1916; --surface2:#26221d; --ink:#ece6d9; --ink2:#c9c1b0; --ink3:#9a917f;
+      --line:#3a352c; --line2:#4c463a;
+      --accent:#e08a6d; --accent-soft:#3a241c;
+      --ok:#7fc793; --ok-soft:#1e3325;
+      --warn:#e3b959; --warn-soft:#3a2f14;
+      --unk:#b8ae99; --unk-soft:#2c2820;
+      --chip:#ece6d9;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 28px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:"IBM Plex Serif",Georgia,serif;line-height:1.2;margin:0}
+  a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px;word-break:break-word}
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.86em}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- masthead ---------- */
+  .masthead{border-bottom:3px double var(--line2);padding:34px 0 26px}
+  .mission-line{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);display:flex;flex-wrap:wrap;gap:6px 18px}
+  .masthead h1{font-size:clamp(1.9rem,4.6vw,3rem);font-weight:700;margin:14px 0 6px;letter-spacing:-.01em}
+  .masthead .sub{font-size:clamp(1rem,2.2vw,1.2rem);color:var(--ink2);max-width:56ch}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px}
+  .meta-grid div{background:var(--surface);padding:12px 14px}
+  .meta-grid dt{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:0 0 3px}
+  .meta-grid dd{margin:0;font-weight:600;font-size:.95rem}
+  .verdict-banner{margin-top:22px;border:2px solid var(--accent);background:var(--accent-soft);padding:18px 20px;display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .stamp{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:1.05rem;letter-spacing:.06em;color:var(--accent);border:2px solid var(--accent);padding:8px 12px;transform:rotate(-1.2deg);white-space:nowrap;background:var(--surface)}
+  .verdict-banner p{margin:0;flex:1 1 320px;font-size:.98rem}
+  .verdict-banner strong{color:var(--accent)}
+
+  /* ---------- layout ---------- */
+  .layout{display:grid;grid-template-columns:248px minmax(0,1fr);gap:36px;padding:28px 0 60px;align-items:start}
+  nav.toc{position:sticky;top:16px;font-size:.9rem}
+  nav.toc .toc-title{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+  nav.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+  nav.toc li a{display:block;padding:5px 12px;color:var(--ink2);text-decoration:none;border-left:2px solid transparent;margin-left:-2px}
+  nav.toc li a:hover{color:var(--ink)}
+  nav.toc li a.active{color:var(--accent);border-left-color:var(--accent);font-weight:600}
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr}
+    nav.toc{position:static}
+    nav.toc ol{border-left:none;display:flex;flex-wrap:wrap;gap:6px}
+    nav.toc li a{border:1px solid var(--line);border-radius:999px;padding:4px 12px;background:var(--surface)}
+    nav.toc li a.active{border-color:var(--accent)}
+  }
+
+  section{margin-bottom:52px;scroll-margin-top:18px}
+  section>h2{font-size:1.55rem;font-weight:700;padding-bottom:8px;border-bottom:1px solid var(--line2);margin-bottom:6px}
+  section>h2 .n{font-family:"IBM Plex Mono",monospace;font-size:.95rem;color:var(--accent);margin-right:10px}
+  section h3{font-size:1.12rem;margin:26px 0 8px}
+  .lede{color:var(--ink2);max-width:72ch}
+  p{max-width:78ch}
+
+  /* ---------- counts ---------- */
+  .counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}
+  .count{background:var(--surface);border:1px solid var(--line);padding:14px;text-align:left}
+  .count b{display:block;font-family:"IBM Plex Serif",serif;font-size:1.7rem;line-height:1}
+  .count span{font-size:.8rem;color:var(--ink2)}
+
+  /* ---------- tables ---------- */
+  .table-wrap{border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);margin:14px 0;overflow:hidden}
+  table{border-collapse:collapse;width:100%;font-size:.92rem}
+  th{font-family:"IBM Plex Mono",monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;text-align:left;background:var(--surface2);color:var(--ink2);padding:10px 12px;border-bottom:1px solid var(--line2)}
+  td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.id,th.id{font-family:"IBM Plex Mono",monospace;font-weight:600;white-space:nowrap}
+  @media (max-width:700px){
+    table,thead,tbody,tr,td{display:block}
+    thead{display:none}
+    tr{border-bottom:1px solid var(--line2);padding:6px 0}
+    tr:last-child{border-bottom:none}
+    td{border-bottom:none;padding:4px 12px}
+    td::before{content:attr(data-label);display:block;font-family:"IBM Plex Mono",monospace;font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+    td.id::before{display:none}
+    td.id{font-size:1rem;padding-top:8px}
+  }
+
+  /* ---------- chips ---------- */
+  .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.68rem;font-weight:600;letter-spacing:.06em;padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+  .chip.ok{color:var(--ok);background:var(--ok-soft)}
+  .chip.warn{color:var(--warn);background:var(--warn-soft)}
+  .chip.unk{color:var(--unk);background:var(--unk-soft)}
+  .chip.acc{color:var(--accent);background:var(--accent-soft)}
+  .chip.plain{color:var(--ink2)}
+
+  /* ---------- correction cards ---------- */
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 6px}
+  .toolbar input[type=search]{flex:1 1 220px;padding:9px 12px;border:1px solid var(--line2);border-radius:6px;background:var(--surface);color:var(--ink);font:inherit;font-size:.92rem}
+  .fbtn{font:inherit;font-size:.82rem;font-weight:600;padding:7px 13px;border-radius:999px;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);cursor:pointer}
+  .fbtn[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .ccard{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);margin:14px 0;padding:0}
+  .ccard>header{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .ccard>header .cid{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:1.05rem;color:var(--accent)}
+  .ccard>header h3{font-size:1.05rem;margin:0;flex:1 1 260px;font-family:"IBM Plex Sans",sans-serif;font-weight:600}
+  .ccard .body{padding:6px 18px 16px}
+  .ccard dl{display:grid;grid-template-columns:150px 1fr;gap:4px 16px;margin:10px 0}
+  .ccard dt{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);padding-top:3px}
+  .ccard dd{margin:0;font-size:.94rem}
+  @media (max-width:640px){ .ccard dl{grid-template-columns:1fr} .ccard dd{margin-bottom:8px} }
+  .prevails{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 14px;margin:10px 0;font-size:.95rem}
+  .prevails .plabel{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+  .hidden-card{display:none}
+
+  .note{border:1px solid var(--line2);background:var(--surface);padding:14px 18px;margin:16px 0;font-size:.95rem}
+  .note .nlabel{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:4px}
+  .danger{border-color:var(--accent);background:var(--accent-soft)}
+  ul.tight,ol.tight{margin:8px 0;padding-left:22px}
+  ul.tight li,ol.tight li{margin:5px 0;max-width:76ch}
+  .hash{font-family:"IBM Plex Mono",monospace;font-size:.72rem;word-break:break-all;color:var(--ink2)}
+  .final-report{background:var(--surface);border:2px solid var(--ink);padding:20px 22px}
+  .final-report h3{margin-top:18px}
+  .final-report h3:first-child{margin-top:0}
+  footer{border-top:3px double var(--line2);padding:22px 0 40px;color:var(--ink2);font-size:.88rem}
+  .src-list{display:grid;gap:0;border:1px solid var(--line);background:var(--surface)}
+  .src{padding:12px 16px;border-bottom:1px solid var(--line)}
+  .src:last-child{border-bottom:none}
+  .src b{font-weight:600}
+  .src .smeta{font-size:.85rem;color:var(--ink2)}
+  .src .surl{font-size:.8rem}
+  @media print{ nav.toc,.toolbar{display:none} .layout{grid-template-columns:1fr} .ccard,.table-wrap{box-shadow:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="mission-line">
+      <span>Misión MUSE-AUTONOMY-001</span>
+      <span>Consolidación documental M02 → M03 → M03-B</span>
+      <span>Modalidad: ejecución autónoma · Exclusivamente documental</span>
+    </div>
+    <h1>Expediente consolidado — Nexo</h1>
+    <p class="sub">Versión consolidada de la auditoría documental de la arquitectura de Nexo: integra las siete partes recibidas — Misión 02, Misión 03, Misión 03-B y la hoja consolidada de erratas del propietario — en un solo registro coherente, verificable y listo para revisión del propietario.</p>
+    <dl class="meta-grid">
+      <div><dt>Fecha de consolidación</dt><dd>5 de noviembre de 2026</dd></div>
+      <div><dt>Estado del documento</dt><dd>Borrador consolidado para revisión del propietario</dd></div>
+      <div><dt>Veredicto de correcciones</dt><dd>15 CONFIRMADA · 1 PARCIALMENTE CONFIRMADA (C14) · 0 REFUTADA</dd></div>
+      <div><dt>Decisiones D-01 a D-12</dt><dd>Todas SIN DECIDIR</dd></div>
+    </dl>
+    <div class="verdict-banner">
+      <span class="stamp">APROBADO CONDICIONADO</span>
+      <p><strong>Como documentación de investigación y referencia — no como especificación técnica autorizada.</strong> No se aprueba ninguna tecnología ni se autoriza implementación. NCS M0 y P07 quedan fuera de modificación. D-01 a D-12 permanecen SIN DECIDIR y reservadas exclusivamente al propietario. NCS M0 debe terminar antes de cualquier implementación, como ya estaba establecido.</p>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="toc" id="indice" aria-label="Índice del expediente">
+      <div class="toc-title">Índice navegable</div>
+      <ol>
+        <li><a href="#partes">0 · Las siete partes</a></li>
+        <li><a href="#dictamen">1 · Dictamen consolidado</a></li>
+        <li><a href="#indice">2 · Índice navegable</a></li>
+        <li><a href="#correcciones">3 · Correcciones C01–C16</a></li>
+        <li><a href="#discrepancias">4 · Discrepancias D1–D15</a></li>
+        <li><a href="#supervivientes">5 · Materiales supervivientes</a></li>
+        <li><a href="#riesgos">6 · Riesgos R1–R7 · T1–T14</a></li>
+        <li><a href="#unknown">7 · UNKNOWN U1–U9</a></li>
+        <li><a href="#impactos">8 · Impactos D-01 a D-12</a></li>
+        <li><a href="#reglas">9 · Reglas de interpretación</a></li>
+        <li><a href="#cierre">10 · Criterio de cierre</a></li>
+        <li><a href="#autocontrol">11 · Informe de autocontrol</a></li>
+        <li><a href="#fuentes">12 · Fuentes primarias</a></li>
+        <li><a href="#anexo">Anexo A · Archivos y hashes</a></li>
+        <li><a href="#informe-final">Informe final de misión</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+    <!-- ============ 0. SIETE PARTES ============ -->
+    <section id="partes">
+      <h2><span class="n">§0</span>Las siete partes integradas</h2>
+      <p class="lede">Este expediente integra íntegramente las siete partes recibidas; ninguna se descarta y ninguna se reescribe por encima de su autor. Los originales se conservan sin modificar; el trabajo se realizó en un espacio documental aislado.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Parte</th><th>Origen</th><th>Contenido</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="#">P1</td><td data-label="Parte"><strong>Informe de investigación M02</strong></td><td data-label="Origen"><span class="mono">research_notes/nexo-mision-02-20261105-2109/report.md</span> + 5 notas</td><td data-label="Contenido">Arquitectura fundamental de Nexo como infraestructura propia e independiente (55.646 bytes, 310 líneas, 20 fuentes). 10 secciones, tabla de brechas, 7 contradicciones.</td></tr>
+          <tr><td class="id" data-label="#">P2</td><td data-label="Parte"><strong>Documento entregado M02</strong></td><td data-label="Origen"><span class="mono">ts-spaces/mision-02-nexo/index.html</span></td><td data-label="Contenido">Documento M02 publicado: 10 secciones, 2 diagramas, 7 tablas, 7 contradicciones, 20 referencias, D-01 a D-12 SIN DECIDIR.</td></tr>
+          <tr><td class="id" data-label="#">P3</td><td data-label="Parte"><strong>Informe de investigación M03</strong></td><td data-label="Origen"><span class="mono">research_notes/nexo-mision-03-20261105-2217/report.md</span> + 5 notas</td><td data-label="Contenido">Dictamen adversarial de M02 (45.283 bytes, 211 líneas). 5 correcciones materiales, 13 riesgos omitidos, 12 requisitos a preservar, matriz T1–T14, 9 UNKNOWN.</td></tr>
+          <tr><td class="id" data-label="#">P4</td><td data-label="Parte"><strong>Documento entregado M03</strong></td><td data-label="Origen"><span class="mono">ts-spaces/mision-03-nexo/index.html</span></td><td data-label="Contenido">Dictamen M03 publicado.</td></tr>
+          <tr><td class="id" data-label="#">P5</td><td data-label="Parte"><strong>Informe de investigación M03-B</strong></td><td data-label="Origen"><span class="mono">research_notes/nexo-mision-03b-20261105-1947/report.md</span> + 8 notas</td><td data-label="Contenido">Segunda revisión adversarial de las 16 correcciones C01–C16 de ChatGPT (58.209 bytes, 256 líneas). Matriz C01–C16, discrepancias D1–D15, 11 correcciones materiales, 9 UNKNOWN, 7 riesgos nuevos R1–R7.</td></tr>
+          <tr><td class="id" data-label="#">P6</td><td data-label="Parte"><strong>Documento entregado M03-B</strong></td><td data-label="Origen"><span class="mono">ts-spaces/mision-03-b-nexo/index.html</span></td><td data-label="Contenido">Revisión M03-B publicada.</td></tr>
+          <tr><td class="id" data-label="#">P7</td><td data-label="Parte"><strong>Hoja consolidada de erratas del propietario</strong></td><td data-label="Origen"><span class="mono">ts-spaces/hoja-consolidada-de-erratas-nexo/index.html</span> y PDF (4 páginas A4, verificado completo)</td><td data-label="Contenido">Borrador consolidado del propietario, 5 de noviembre de 2026: dictamen APROBADO CONDICIONADO, matriz C01–C16, 12 correcciones materiales supervivientes, riesgos R1–R7, registro UNKNOWN actualizado, D-01 a D-12 SIN DECIDIR, reglas de interpretación y criterio de cierre. <strong>Es la base de consolidación:</strong> sus estados de UNKNOWN y su lista de 12 materiales prevalecen donde difieren de M03-B (ver §11).</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note">
+        <span class="nlabel">Nota de método — etiquetas</span>
+        <strong>EVIDENCE</strong> = verificado en fuente primaria leída o corroborado por ≥2 resúmenes independientes que citan la sección primaria (se marca el nivel). <strong>PROPOSAL</strong> = diseño/recomendación sin norma que lo imponga. <strong>HYPOTHESIS</strong> = plausible sin prueba primaria localizada. <strong>UNKNOWN</strong> = no evaluable / no localizado; no se convierte en verdadero o falso por inferencia. <strong>PASS</strong> = evidencia verificable + criterio de aceptación satisfecho; no se concede por documentación. Las fuentes secundarias se citan como secundarias, nunca como lectura primaria.
+      </div>
+    </section>
+
+    <!-- ============ 1. DICTAMEN ============ -->
+    <section id="dictamen">
+      <h2><span class="n">§1</span>Dictamen consolidado</h2>
+      <p><strong>M02 queda corregida</strong> en los puntos identificados por M03 y M03-B. <strong>M03 queda auditada</strong> con las precisiones de la hoja del propietario y de M03-B. <strong>Las correcciones C01–C16 quedan evaluadas:</strong> 15 CONFIRMADA, 1 PARCIALMENTE CONFIRMADA (C14), 0 REFUTADA, 0 NO EVALUABLE.</p>
+      <p>La mayoría de las correcciones no corrige un error de M02: C01, C03, C08, C10 y C13 ya estaban dichas en M02; C02, C04, C15 y C16 repiten correcciones que M03 ya había hecho. Son confirmaciones, no descubrimientos. Las aportaciones genuinamente nuevas son cinco: C05, C06, C07, C09 y C12.</p>
+      <div class="note danger">
+        <span class="nlabel">Fallo estructural central — sin solución demostrada</span>
+        Heredado de M03 y no resuelto por M03-B: no existe estándar de versionado de una Constitución de agente, ni verificación de continuidad semántica/comportamental entre modelos, ni revocación o sucesión sin un tercero de confianza cuando la clave raíz se compromete o el propietario queda incapacitado. Este expediente no afirma lo contrario en ningún punto.
+      </div>
+      <h3>Conteo consolidado (verificado en todo el documento)</h3>
+      <div class="counts">
+        <div class="count"><b>16</b><span>correcciones C01–C16</span></div>
+        <div class="count"><b>15</b><span>discrepancias D1–D15</span></div>
+        <div class="count"><b>12</b><span>correcciones materiales supervivientes</span></div>
+        <div class="count"><b>7</b><span>riesgos nuevos R1–R7</span></div>
+        <div class="count"><b>9</b><span>UNKNOWN U1–U9</span></div>
+        <div class="count"><b>12</b><span>decisiones D-01 a D-12, todas SIN DECIDIR</span></div>
+        <div class="count"><b>5</b><span>correcciones materiales de M03</span></div>
+        <div class="count"><b>13</b><span>riesgos omitidos señalados por M03</span></div>
+        <div class="count"><b>12</b><span>requisitos a preservar de M03</span></div>
+        <div class="count"><b>14</b><span>amenazas en la matriz T1–T14</span></div>
+      </div>
+      <h3>Las 5 correcciones materiales de Misión 03</h3>
+      <ol class="tight">
+        <li><code>did:key</code> es un borrador v0.9 del grupo comunitario de W3C (CCG), no una Recomendación W3C.</li>
+        <li>AAL3 exige clave no exportable, no necesariamente hardware.</li>
+        <li>La deprecación post-cuántica final (NIST IR 8547) es más estricta que el borrador citado por M02.</li>
+        <li>3-2-1-1-0 es una regla de Veeam, no un estándar NIST/ISO.</li>
+        <li>Las cifras de divergencia HELM/lm-eval de 4–5 puntos y de más de 1.000 pasos EUV no se verificaron en fuente primaria.</li>
+      </ol>
+    </section>
+
+    <!-- ============ 3. CORRECCIONES ============ -->
+    <section id="correcciones">
+      <h2><span class="n">§3</span>Registro consolidado de correcciones C01–C16</h2>
+      <p class="lede">Veredicto global: <strong>15 CONFIRMADA, 1 PARCIALMENTE CONFIRMADA (C14), 0 REFUTADA, 0 NO EVALUABLE.</strong> Ninguna corrección de ChatGPT tuvo que refutarse, y ninguna afirmación de M02/M03 fue derribada por C01–C16 que M03 no hubiera derribado ya.</p>
+      <div class="toolbar" role="group" aria-label="Filtrar correcciones">
+        <input type="search" id="csearch" placeholder="Buscar en las correcciones…" aria-label="Buscar en las correcciones" />
+        <button class="fbtn" data-filter="all" aria-pressed="true">Todas (16)</button>
+        <button class="fbtn" data-filter="nueva" aria-pressed="false">Aportaciones nuevas (5)</button>
+        <button class="fbtn" data-filter="parcial" aria-pressed="false">Parcial (1)</button>
+      </div>
+      <p id="csearch-status" class="mono" style="font-size:.8rem;color:var(--ink3)" aria-live="polite"></p>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C01</span><h3>Separar identidad, autenticación, autorización y recuperación</h3><span class="chip ok">CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>DID Core v1.0, W3C Recommendation 19-07-2022 (<a href="https://www.w3.org/TR/did-core/">w3.org/TR/did-core</a>): el controlador prueba control de clave sin permiso de tercero; no prueba verdad, confianza ni autorización. VC 2.0 §1.1 (<a href="https://www.w3.org/TR/vc-data-model-2.0/">w3.org/TR/vc-data-model-2.0</a>): «verifiability does not imply the truth of claims». NIST SP 800-63B-4 (<a href="https://csrc.nist.gov/pubs/sp/800/63/b/4/final">csrc.nist.gov</a>, final, julio 2025): su objeto es autenticación; la autorización es política del sistema que consume el resultado. A2A §4.6: la autorización es «implementation-specific».</dd>
+            <dt>En M02</dt><dd>Nada sustantivo que corregir. M02 §1.5 ya decía: «confundir autenticación con autorización: probar quién firma no prueba qué puede hacer». M03 §B lo repitió y añadió que falta el mecanismo de capabilities con scope, expiración y revocación.</dd>
+            <dt>En M03</dt><dd>Resuelto en sustancia; queda la laguna estructural registrada: no existe mecanismo estándar demostrado de revocación/sucesión sin tercero de confianza.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>La identidad (DID) prueba control de clave. La autenticación (AAL) prueba que el reclamante es el suscriptor. La autorización (capabilities con scope, expiración y revocación) decide qué puede hacer, dónde y hasta cuándo. La recuperación (Shamir/SLIP-39, multifirma, sucesor) es un procedimiento humano/físico independiente. Ninguna de las cuatro se deduce de otra.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> Cuatro subsistemas separados con claves, registros y procedimientos distintos; un VC de «soy el operador» no autoriza borrar. <strong>Impacto: D-01, D-02, D-08</strong> (sin decidir).</dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C02</span><h3>AAL3 es un nivel de garantía de autenticación, no una arquitectura universal de identidad ni una solución completa de autoridad</h3><span class="chip ok">CONFIRMADA CON PRECISIÓN</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>SP 800-63B-4, final julio 2025 (landing CSRC verificada en vivo; §2.3.2/Ap. B corroborados por ≥2 resúmenes independientes que citan la primaria): AAL3 exige autenticador criptográfico con clave privada no exportable y resistencia a phishing; «syncable authenticators SHALL NOT be used at AAL3» (§2.3.2); Ap. E: el cambio Rev.3→Rev.4 es que AAL3 requiere «a non-exportable cryptographic authenticator rather than a hardware-based one». Alcance: autenticación de sujetos ante sistemas gubernamentales; «not intended to constrain the development or use of standards outside of this purpose». El texto verbatim §2.3.2/Ap. B y Ap. E no se leyó línea a línea — ver U1.</dd>
+            <dt>En M02</dt><dd>M02 §1.6 decía «AAL3 exige autenticador hardware con clave privada no exportable» — ya corregido por M03 (corrección 02). C02 añade el punto de alcance: AAL3 no es arquitectura de identidad ni de autoridad.</dd>
+            <dt>En M03</dt><dd>Resuelta la mitad «hardware»; la mitad «alcance» la resuelve C02.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece (hoja del propietario)</span>AAL3 exige autenticación resistente al phishing y autenticador criptográfico no exportable en entorno aislado protegido por hardware o procesador separado con interfaz controlada. No exige necesariamente una llave externa.</div>
+          <p style="font-size:.9rem;color:var(--ink2)"><strong>Precisión pendiente de decisión del propietario (§11 A2):</strong> la formulación del entorno protegido se apoya en resúmenes del §2 de SP 800-63B-4, no en una cita verbatim leída en vivo.</p>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> No diseñar la autoridad de Nexo como «AAL3 y listo»; AAL3 es un requisito de un componente (autenticación del operador), no de la arquitectura. <strong>Impacto: D-01, D-02, D-08.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C03</span><h3>Firmas Git: evidencia de integridad y autoría, no de autoridad para modificar la Constitución</h3><span class="chip ok">CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>GitHub Docs, «About commit signature verification» (<a href="https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification">docs.github.com</a>): con GPG/SSH/S/MIME se firman commits y tags; «Verified» significa que el commit está firmado y la firma se verificó con éxito. El registro de verificación persistente no establece que el cambio fuera revisado, esté libre de defectos o siga autorizado bajo la política de claves vigente; una firma verificada sigue verificada aunque la clave se revoque después. Git por defecto no verifica autoría: autor/committer son texto libre.</dd>
+            <dt>En M02</dt><dd>Nada que corregir. M02 §1.7 ya lo decía: «Git + firmas: historial append-only con hash encadenado… Eso versiona <em>texto</em>; no versiona <em>autoridad</em>».</dd>
+            <dt>En M03</dt><dd>No tratado como punto independiente; M03 §C estableció que la integridad textual es verificable (hash + firma) y que eso es todo lo que prueba.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>Una firma Git válida prueba que el titular de una clave firmó esos bytes y que no se alteraron después. No prueba que esa clave estuviera autorizada por la cláusula de enmienda vigente, ni que el cambio fuera revisado, ni que la clave siga autorizada hoy. La autoridad vive en la Constitución anterior; la firma solo la transporta.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> El verificador de enmiendas debe consultar la lista de claves autorizadas vigente en la versión anterior + estado de revocación en el momento de la decisión, no el badge «Verified». Riesgo nuevo R3. <strong>Impacto: D-03.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C04</span><h3>MCP 2026-07-28 es un cambio material, no una actualización menor</h3><span class="chip ok">CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>MCP, blog oficial 2026-07-28 (<a href="https://blog.modelcontextprotocol.io/posts/2026-07-28/">blog.modelcontextprotocol.io</a>), verificado en vivo: núcleo stateless; retirados <code>initialize</code>/<code>initialized</code> y <code>Mcp-Session-Id</code> (SEP-2575/2567); nuevo <code>server/discover</code>; MRTR sustituye sampling/elicitation/roots iniciados por servidor; Tasks pasa a extensión; Roots/Sampling/Logging deprecados (ventana mínima 12 meses); HTTP+SSE deprecado; endurecimiento de auth (RFC 9207 <code>iss</code>, CIMD sustituye DCR).</dd>
+            <dt>En M02</dt><dd>Nada que corregir. M02 §3.1 ya decía que la revisión 2026-07-28 «rompe compatibilidad con revisiones anteriores en puntos concretos (sesiones, handshake, códigos de error); fijar la revisión es obligatorio». M03 lo confirmó en sustancia.</dd>
+            <dt>En M03</dt><dd>Resuelto por completo.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>Toda integración debe fijar versión y compatibilidad. No debe tratarse MCP como una interfaz inmutable. Cambio material con ruptura de compatibilidad; fijar la revisión y soportar dual-era o aceptar la ruptura.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> El dialecto interno de Nexo no puede ser «MCP» sin versión; la revisión fijada es parte del contrato. <strong>Impacto: D-06.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="nueva">
+        <header><span class="cid">C05</span><h3>A2A es un proyecto/especificación abierta bajo Linux Foundation; no es por sí mismo un estándar de identidad ni de autorización</h3><span class="chip ok">CONFIRMADA</span><span class="chip acc">APORTACIÓN NUEVA 1/5</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>A2A Protocol Specification (<a href="https://a2a-protocol.org/pr-849/specification/">a2a-protocol.org</a>, versión <code>dev</code> en la página leída; v1.0.0 del 12-03-2026 y v1.0.1 de mayo de 2026 según fuentes secundarias), verificado en vivo 2026-11-05. §1: «an open standard designed to facilitate communication and interoperability between independent, potentially opaque AI agent systems». §3.3: «Identity information is not transmitted within A2A JSON-RPC payloads; it is handled at the HTTP transport layer». §4.3: la adquisición de credenciales es «out-of-band» y «outside the scope of the A2A protocol itself». §4.6: «the A2A Server is responsible for authorizing the request… Authorization logic is implementation-specific». §5.1: Agent Card = documento JSON con identidad, capacidades, skills, endpoint y requisitos de autenticación. La gobernanza «Linux Foundation» no aparece en el texto de la spec leído; se apoya en fuentes secundarias (donación en junio de 2025; nota de prensa de la Linux Foundation del 23-06-2025, verificada durante la construcción del documento M03-B) y en el alojamiento en la Agentic AI Foundation desde agosto de 2026 (secundario) — ver U4.</dd>
+            <dt>En M02</dt><dd>M02 §3.1 dejó A2A como <strong>UNKNOWN</strong> («no se verificó su estado normativo en esta investigación; no se afirma nada sobre él»). C05 cierra ese UNKNOWN con verificación. No refuta nada de M02.</dd>
+            <dt>En M03</dt><dd>No tratado. Corrección genuinamente nueva.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>A2A es un protocolo de comunicación entre agentes; no sustituye identidad ni autorización. Las credenciales se gestionan fuera del protocolo y la autorización depende de la implementación. Matiz: A2A no es vacío en identidad — estandariza <em>cómo se declaran</em> los esquemas (API key, OAuth 2.0, OIDC, mTLS, HTTP auth) y la firma opcional de tarjetas. Decir «no es un estándar de identidad» es correcto; decir «no tiene nada que ver con identidad» sería falso.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> Si Nexo adopta A2A, necesita una capa propia de identidad/autorización encima (DID/VC/capabilities) y una política de tarjetas firmadas; la tarjeta es entrada no confiable para el modelo (riesgo nuevo R1). <strong>Impacto: D-05, D-06.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="nueva">
+        <header><span class="cid">C06</span><h3>Safetensors: evitar pickle no demuestra que los pesos sean confiables, seguros o benignos</h3><span class="chip ok">CONFIRMADA</span><span class="chip acc">APORTACIÓN NUEVA 2/5</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>huggingface/safetensors, README (<a href="https://github.com/huggingface/safetensors">github.com/huggingface/safetensors</a>), verificado en vivo: Apache-2.0, creado 2022-09-22; «a new simple format for storing tensors safely (as opposed to pickle) and that is still fast (zero-copy)»; «The main rationale for this crate is to remove the need to use <code>pickle</code> on PyTorch»; cabecera JSON (8 bytes de longitud + JSON UTF-8 con dtype/shape/data_offsets) + buffer de bytes; «Tensor values are not checked against, in particular NaN and +/-Inf could be in the file»; el buffer debe estar totalmente indexado, sin huecos. La definición de «Safe» del propio README es exclusivamente no-ejecución de código arbitrario.</dd>
+            <dt>En M02</dt><dd>M02 §3.2 decía solo: «safetensors: formato de pesos seguro (sin ejecución de código al cargar, a diferencia de pickle). No se verificó en mayor profundidad en esta investigación». La frase era correcta pero incompleta: no decía qué <em>no</em> garantiza. C06 completa el alcance.</dd>
+            <dt>En M03</dt><dd>No tratado. Corrección genuinamente nueva.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>El formato evita la ejecución arbitraria de código propia de la carga mediante pickle; no garantiza que los pesos sean íntegros, benignos o correctos. No verifica los valores de los tensores (NaN/±Inf admitidos), no detecta pesos manipulados o con backdoor, y no cubre el código que acompaña al repositorio (p. ej., <code>trust_remote_code=True</code> ejecuta código del repositorio).</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> La cadena de confianza de pesos necesita, además del formato: hash/firma del artefacto, pinning a commit, verificación de procedencia y carga en sandbox (riesgo nuevo R2: convertir pickle→safetensors exige cargar el pickle una vez, el paso arriesgado). <strong>Impacto: D-09.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="nueva">
+        <header><span class="cid">C07</span><h3>JSONL y SQLite: no presentarlas como dos fuentes maestras independientes</h3><span class="chip ok">CONFIRMADA</span><span class="chip acc">APORTACIÓN NUEVA 3/5</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>SQLite como formato de fichero (<a href="https://www2.sqlite.org/draft/onefile.html">sqlite.org</a>, verificado en vivo): retrocompatibilidad de formato desde 3.0.0 (2004-06-18); compatibilidad del <em>formato</em>, no del esquema ni de la semántica. JSON: RFC 8259 §8.1 (dic 2017): intercambio JSON «MUST be encoded using UTF-8»; JSON Lines es una <em>convención</em> (un JSON por línea, UTF-8, <code>\n</code>), no RFC ni ISO. M03 §3: lo «canónico» exige además orden de claves, normalización Unicode, precisión numérica, timestamps RFC 3339 y canonicalización para hash (JCS RFC 8785). Dos «maestros» que pueden divergir sin un procedimiento de reconciliación son, por definición, dos fuentes de verdad en conflicto.</dd>
+            <dt>En M02</dt><dd>M02 §2.1, regla de diseño: «<em>dos capas</em>: archivo canónico en texto plano/JSONL + SQLite (legible en 2050 con herramientas comunes)». La formulación presenta dos capas y llama «canónico» al archivo de texto mientras SQLite es la base de trabajo, sin declarar cuál manda ante una divergencia ni cómo se regenera la otra. Es ambigüedad real, no un error de hecho. La hoja del propietario precisa: «M02 ya identificaba JSONL como canónico, pero no detallaba suficientemente la reconciliación con SQLite» — se adopta esa formulación.</dd>
+            <dt>En M03</dt><dd>No resuelto. M03 §3 corrigió el estatus de JSONL (convención, no estándar) y exigió canonicalización, pero no señaló la ambigüedad de doble maestro. C07 cierra una laguna de M03.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>Debe existir una sola fuente canónica. La otra representación será derivada y regenerable. Una sola fuente canónica: [SQLite | JSONL append-only — a decidir por el propietario, D-05]. La otra capa es una vista derivada, regenerable y nunca fuente de autoridad: si divergen, manda la canónica y la derivada se reconstruye, registrando la divergencia como evento. Ningún proceso escribe en la derivada esperando que la canónica lo adopte.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> La elección canónica condiciona backup, restauración, olvido y auditoría; sin ella, una vista corrupta puede convertirse en «memoria» (M03 §D). La elección de cuál es canónica es PROPOSAL, no evidencia. <strong>Impacto: D-05.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C08</span><h3>Merkle y cadenas hash: detectan alteraciones bajo ciertas condiciones; no demuestran verdad, ausencia ni legitimidad</h3><span class="chip ok">CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>RFC 9162, Certificate Transparency v2.0, dic 2021, Experimental (<a href="https://www.rfc-editor.org/rfc/rfc9162">rfc-editor.org/rfc/rfc9162</a>): log append-only de Merkle, pruebas de inclusión y de consistencia, Signed Tree Head. La detección funciona respecto a una raíz/checkpoint confiable e independiente; si el atacante reescribe log + checkpoints bajo el mismo control, no hay detección. No prueba completitud (evento omitido), veracidad del contenido, ni corrección del timestamp.</dd>
+            <dt>En M02</dt><dd>Dos puntos. (1) M02 §2.3: «un log no prueba que un evento <em>no ocurrió</em> (ausencia) salvo con diseños específicos; una hash chain sola no prueba ausencia, un Merkle con diseño adecuado sí». Esa última cláusula es demasiado generosa: un Merkle prueba inclusión/consistencia respecto a un STH, no la ausencia de eventos no registrados. M03 ya la corrigió; C08 se alinea con M03 contra M02 (ver D13). (2) M02 §2.3: «un atacante con acceso de escritura puede reescribir todo el log y recalcular la cadena si controla también la raíz anclada» — correcto y compatible con C08. <strong>Corrige M02.</strong></dd>
+            <dt>En M03</dt><dd>Resuelto por completo (M03 §3 y riesgo 5: «hash sin anclaje = auto-certificación; cola truncable»).</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>Permiten detectar alteraciones respecto de un anclaje o checkpoint confiable. No demuestran verdad, integridad completa ni ausencia de eventos nunca registrados. La legitimidad es una regla de autorización externa al log.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> El anclaje externo (STH publicado fuera del control del operador) es obligatorio, no opcional; la cola truncable exige STH con <code>tree_size</code> anclado. <strong>Impacto: D-04, D-05.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="nueva">
+        <header><span class="cid">C09</span><h3>Restauración: cuarentena y verificación antes de activar los datos restaurados</h3><span class="chip ok">CONFIRMADA</span><span class="chip acc">APORTACIÓN NUEVA 4/5</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>NIST SP 800-53 Rev. 5, controles CP-9 (System Backup) y CP-10 (System Recovery and Reconstitution — «recovering and reconstituting the system to a known state») y CP-10(4) («restore system components… from configuration-controlled and integrity-protected information representing a known, operational state») — existencia y texto corroborados por resúmenes independientes que citan la primaria (2026-11-05); CP-9(1) exige probar los backups en fiabilidad e integridad. Ningún control localizado usa la palabra «cuarentena» para la restauración: el término es <strong>PROPOSAL</strong>, no requisito NIST (ver U7).</dd>
+            <dt>En M02</dt><dd>M02 §2.4 ya definía restaurar en 4 pasos: (1) copiar desde fuente independiente, (2) verificar hash + Merkle + firmas, (3) comparar raíz con anclaje externo, (4) registrar la restauración como evento nuevo; «si algún paso falla, la restauración se declara <em>no verificada</em>». Lo que falta es la etapa de <em>contención</em>: M02 verifica antes de activar en los pasos (2)–(3), pero no nombra un estado de cuarentena ni distingue copiar/verificar/restaurar como fases con criterios de salida distintos. C09 añade esa etapa y esa distinción; no refuta el procedimiento de M02.</dd>
+            <dt>En M03</dt><dd>Parcialmente. M03 exigió cuarentena para la <em>memoria experimental</em> (etiqueta + TTL + cuarentena antes de promoción), pero no la aplicó a la <em>restauración</em> de datos. Laguna de M03 que C09 cierra.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>La restauración debe verificarse antes de activar el contenido. La cuarentena es una propuesta de diseño, no una etapa exigida literalmente por NIST. Restaurar = copiar a cuarentena → verificar (hash encadenado + Merkle + firmas + raíz contra anclaje externo + procedencia) → activar solo si todo verifica → registrar la restauración como evento nuevo. Mientras está en cuarentena, lo restaurado no es activable ni consultable como memoria canónica. Si algo falla, se declara «restauración no verificada» y no se activa ni se «arregla» silenciosamente.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> La restauración necesita un dominio de cuarentena separado de la canónica, con sus propias claves y sin escritura a canónica. <strong>Impacto: D-05, D-10.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C10</span><h3>Frontera del Core: concentra autoridad y política, no es ejecutor general</h3><span class="chip ok">CONFIRMADA CON PRECISIÓN</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>NIST SP 800-53 Rev. 5: SC-3 Security Function Isolation (solo baseline HIGH; heredado M03): aislar funciones de seguridad de funciones no de seguridad mediante frontera definida; AC-5 Separation of Duties; AC-6 Least Privilege. Son requisitos a implementar y evidenciar, no garantías por citarlos. La frontera concreta Core/ejecución en Nexo es PROPOSAL.</dd>
+            <dt>En M02</dt><dd>Nada sustantivo que corregir. M02 §5.1: «el núcleo debe ser mínimo y sin dependencia de modelo: identidad, Constitución versionada y firmada, registro append-only y memoria canónica. Todo lo demás —modelos, herramientas, transporte— vive detrás de adaptadores desechables». M02 §6.1/§6.3: núcleo en dominio aislado, Labs por un único canal estrecho. M02 nunca hizo del Core un ejecutor general; C10 es una explicitación preventiva de un principio ya presente.</dd>
+            <dt>En M03</dt><dd>Resuelto en sustancia: M03 §E/F y riesgo 10 — «un agente que es a la vez autor, ejecutor y auditor viola AC-5/AC-6 por diseño si no hay separación de funciones, personas y claves»; requisito 3: «el agente nunca auto-autoriza escritura/borrado/envío».</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece (hoja del propietario)</span>El Core debe conservar autoridad y política; la ejecución general debe quedar separada y limitada. NIST respalda separación de deberes y mínimo privilegio, pero no declara que todo bucle de ejecución dentro de un Core viole automáticamente sus controles.</div>
+          <p style="font-size:.9rem;color:var(--ink2)"><strong>Precisión pendiente de decisión del propietario (§11 A3):</strong> M03-B formuló la separación como violación de SC-3/AC-5/AC-6 «por diseño» para un bucle de ejecución dentro del Core; la hoja del propietario limita esa atribución a NIST. La divergencia se registra sin resolverla.</p>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> Cualquier diseño que ponga el bucle de ejecución dentro del Core debe justificarse contra SC-3/AC-5/AC-6 como principio arquitectónico de Nexo, no como prohibición literal de NIST. <strong>Impacto: D-08, D-09.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C11</span><h3>200–500 pruebas es una heurística, no una garantía estadística</h3><span class="chip ok">CONFIRMADA COMO METODOLOGÍA PROPUESTA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>(1) Ninguna norma localizada prescribe 200–500 casos para evaluar un agente (ver U2); M02 la presentó como «Regla operativa PROPUESTA», no como EVIDENCIA — C11 confirma la etiqueta de M02. (2) Aritmética binomial estándar (cálculo propio, verificable): con n=200 y p=0,70, el error estándar es √(0,70·0,30/200) ≈ 0,032 → IC 95% ≈ ±6,4 puntos; con n=500, ≈ ±4,0 puntos; en el peor caso p=0,50 y n=200, ≈ ±6,9 puntos. Una «mejora» de 3 puntos con n=200 está dentro del ruido. El ejemplo GPQA Diamond (198 preguntas, IC 95% ±6,4 al 70%) ya estaba en M02 §3.3. (3) HELM (Liang et al., arXiv:2211.09110, 2022): marco multi-escenario/multi-métrica con bootstrap para intervalos. Miller (2024), arXiv:2411.00640, «Adding Error Bars to Evals» — recomienda bootstrap, intervalos y pruebas pareadas; citado vía fuente secundaria, paper no leído en este run (ver U8).</dd>
+            <dt>En M02</dt><dd>Nada en el número. M02 §3.3 ya decía que la evaluación pública sirve para descartar, no para decidir, y que decidir exige evaluación propia con metadatos de validez. Lo que C11 añade es la maquinaria que M02 solo esbozó («margen mínimo que cuenta como mejora real frente a ruido estadístico», D-07): evaluación pareada, IC por diferencia, regresiones y bloqueo por fallos críticos (un fallo crítico veta el cambio aunque la media mejore).</dd>
+            <dt>En M03</dt><dd>Parcialmente: M03 degradó la cifra HELM/lm-eval «4–5 puntos» a HYPOTHESIS/UNKNOWN, pero no desarrolló la maquinaria estadística. C11 la aporta; la cifra 4–5 sigue sin verificarse (U5).</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>200–500 casos es una heurística, no un mínimo normativo. Comparaciones pareadas, mismas condiciones e intervalos de confianza mejoran la evaluación. Evaluación propia de 200–500 casos de la tarea real (heurística, no garantía): mismo harness, mismas plantillas, mismo snapshot; resultado informado como diferencia pareada con IC 95% (bootstrap); cambio bloqueado si la diferencia no supera el ruido, si hay regresión en casos de referencia, o si aparece un fallo crítico, aunque la media mejore.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> El umbral de cambio de modelo (D-07) debe definirse en términos de diferencia pareada e IC, no de puntos absolutos. <strong>Impacto: D-07.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="nueva">
+        <header><span class="cid">C12</span><h3>Colas de mensajes: una cola validada no basta por sí sola</h3><span class="chip ok">CONFIRMADA</span><span class="chip acc">APORTACIÓN NUEVA 5/5</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>NIST SP 800-53 Rev. 5 (existencia de los controles corroborada por resúmenes independientes que citan la primaria, 2026-11-05): AC-3 Access Enforcement, SC-8 Transmission Confidentiality and Integrity, SC-5 Denial of Service Protection, SC-23 Session Authenticity, SI-10 Information Input Validation. Ningún control ni estándar localizado prescribe exactamente la lista de cinco requisitos para la cola interna de un agente: la lista como conjunto es <strong>PROPOSAL</strong> de diseño, fundada en esos controles. La validación de esquema (JSON Schema) valida sintaxis, no intención ni autorización: un mensaje bien formado puede llevar contenido hostil (M03 §E: inyección indirecta vía herramienta, EVIDENCE de riesgo).</dd>
+            <dt>En M02</dt><dd>M02 §6.1 definió el canal Core–Labs como «una cola de mensajes con esquema validado, sin ejecución de código, con límites de tamaño y frecuencia». Eso cubre dos de los cinco elementos (validación de esquema ≈ SI-10 parcial; límites ≈ SC-5 parcial) y omite tres: autenticación del emisor, autorización por mensaje y protección contra replay; y el «contenido hostil» no se trataba en el canal. C12 es una corrección genuinamente nueva en tres de cinco puntos.</dd>
+            <dt>En M03</dt><dd>No resuelto; M03 no auditó la cola. Laguna de M03 que C12 cierra.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>La cola requiere validación de esquema, autenticación y autorización por mensaje, anti-replay, límites de recursos y tratamiento del contenido como dato no confiable. Canal Core–Labs: esquema validado + autenticación del emisor por mensaje (firma, clave por emisor) + autorización por mensaje (capability con scope y expiración) + anti-replay (nonce/timestamp + ventana) + límites de recursos (tamaño, frecuencia, profundidad) + contenido tratado como dato no confiable (sin ejecución, sin instrucciones). Un mensaje que falla en cualquiera de los seis controles se descarta y se registra, no se procesa.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> La cola es una frontera de confianza (SC-7) y un canal de inyección indirecta (riesgo nuevo R5); su endurecimiento es previo a cualquier uso de Labs con datos reales. <strong>Impacto: D-08, D-09.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C13</span><h3>GGUF: facilita distribución y ejecución local; no garantiza ejecución útil en el hardware disponible</h3><span class="chip ok">CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>GGUF spec, repo ggml <code>docs/gguf.md</code> (<a href="https://github.com/ggml-org/ggml/blob/master/docs/gguf.md">github.com/ggml-org/ggml</a>; heredado M02/M03): formato de un solo fichero para inferencia con GGML, v3, desde 21-08-2023; reemplaza GGML/GGMF/GGJT; sin organismo de estándares; gobernado por llama.cpp/ggml; de facto por adopción (llama.cpp, Ollama, LM Studio). M02 §3.2 ya listaba los límites: «atado a los tipos de ggml; la cuantización cambia el comportamiento; un fichero válido puede fallar si el runtime no tiene el kernel, cambia la precisión o el proveedor de ejecución hace fallback».</dd>
+            <dt>En M02</dt><dd>Nada que corregir. M02 nunca afirmó que GGUF garantizara ejecución útil en el hardware disponible; su §3.2 y su tabla de brechas decían lo contrario («inferencia sin hardware» como límite).</dd>
+            <dt>En M03</dt><dd>Resuelto en sustancia («GGUF es de facto local, no estándar formal»).</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>GGUF es un formato de facto para inferencia; no garantiza portabilidad de rendimiento ni equivalencia entre runtimes y hardware. Que un modelo exista en GGUF no implica que el hardware disponible lo ejecute con latencia, contexto o calidad útiles; la cuantización y el runtime deciden.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> La capacidad cognitiva local debe verificarse por ejecución medida en el hardware real (eval propia, C11), no por la existencia del fichero. <strong>Impacto: D-07.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="parcial">
+        <header><span class="cid">C14</span><h3>Criptografía poscuántica: la migración exige agilidad y planificación; no implica expiración automática y universal de Ed25519</h3><span class="chip warn">PARCIALMENTE CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>NIST FIPS 203 (ML-KEM), 204 (ML-DSA) y 205 (SLH-DSA), finales 13-08-2024 (heredado M03). NIST IR 8547, <em>Transition to Post-Quantum Cryptography Standards</em>, final 27-10-2026, DOI 10.6028/NIST.IR.8547 (corroborado por ≥3 resúmenes independientes del final, 2026-11-05; el PDF final no se leyó línea a línea): «NIST will deprecate all quantum-vulnerable digital signature algorithms after 2030 and disallow their use under NIST standards and guidelines after 2035» — a toda fuerza, incluidos EdDSA ≥128 bits (Ed25519), ECDSA P-256 y RSA-3072. El borrador (nov 2024) solo deprecaba 112-bit tras 2030. EO 14412 / OMB M-26-15 (jun 2026): PQC para establecimiento de claves en sistemas federales de alto valor/impacto antes del 31-12-2030 y para firmas antes del 31-12-2031. IR 8547 es guía de transición federal, no estatuto universal.</dd>
+            <dt>Lo correcto</dt><dd>(a) Las claves Ed25519 no «expiran automáticamente» en 2031 por un mecanismo criptográfico: seguirán verificándose matemáticamente; lo que cambia es su estatus normativo (deprecated → disallowed) bajo normas NIST. (b) La deprecación/desautorización es «bajo normas y directrices NIST», no una ley universal. (c) La migración exige agilidad criptográfica y planificación: M02 §5.2 ya lo proponía (múltiples métodos de verificación con fechas de vigencia; firma cruzada antigua→nueva).</dd>
+            <dt>Lo engañoso</dt><dd>Decir «no implica una expiración automática y universal» sin mencionar las fechas 2030/2035 invita a leer «Ed25519 no tiene fecha límite». Esa lectura <strong>contradice la corrección material 03 de Misión 03</strong> y repite, en dirección opuesta, el error de M02 (que citaba el borrador y dejaba Ed25519 fuera del paso de 2030). Bajo IR 8547 final, una identidad Ed25519 de larga vida nace con fecha de caducidad normativa: deprecated tras 2030, disallowed tras 2035 (bajo NIST); antes para sistemas federales de alto valor (firmas PQC antes del 31-12-2031).</dd>
+            <dt>En M02 / M03</dt><dd>M02 §5.2 citaba el borrador IR 8547 («propone deprecar RSA/ECC de 112 bits tras 2030 y no permitirlos tras 2035») — ya corregido por M03. C14 no debe usarse para revertir esa corrección. En M03: resuelto; la mitad de agilidad/planificación de C14 confirma M03; la mitad de «no expiración» debe leerse con las fechas encima. Es la única discrepancia material (ver D2).</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>Ed25519 no deja de funcionar matemáticamente por una fecha. NIST IR 8547 establece deprecación después de 2030 y desautorización bajo sus normas y directrices después de 2035 para algoritmos vulnerables. Los hitos federales de alto valor/impacto incluyen establecimiento de claves en 2030 y firmas en 2031. Planificar la migración a ML-DSA/SLH-DSA con firma cruzada y re-emisión antes de 2030; no tratar 2035 como fecha lejana sin hitos intermedios.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> Inventario de firmas RSA/ECC/Ed25519 con fecha de vigencia por clave; la identidad debe soportar varios algoritmos desde el día uno. <strong>Impacto: D-11</strong> (y D-01/D-02 por la firma cruzada en la rotación).</dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C15</span><h3>Regla 3-2-1-1-0: práctica operativa de respaldo; no es una certificación ni garantiza recuperación absoluta</h3><span class="chip ok">CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>Veeam (<a href="https://www.veeam.com/blog/data-backup-recovery.html">veeam.com/blog/data-backup-recovery</a>; heredado M03): 3 copias, 2 medios, 1 offsite, 1 inmutable/air-gapped, 0 errores verificados (SureBackup). Regla de vendedor, no NIST/ISO. La inmutabilidad dura una retención definida y depende del enforcement en la capa de almacenamiento + credenciales separadas; «0 errores» exige test de restauración real.</dd>
+            <dt>En M02</dt><dd>M02 §4.1 la presentaba como «EVIDENCIA como práctica, no norma» y §4.2 como disciplina de supervivencia, sin marcar explícitamente su origen de vendedor. M03 (corrección 04) ya corrigió el estatus. C15 confirma M03 y añade el segundo punto («no garantiza recuperación absoluta»), que M02 §4.2 ya decía en sustancia («un backup nunca probado es una esperanza»).</dd>
+            <dt>En M03</dt><dd>Resuelto por completo.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>Es una práctica operativa difundida por Veeam, no una certificación ni un estándar NIST/ISO. La recuperación debe probarse. No es un estándar, no es una certificación y no garantiza recuperación: la garantía es la restauración de prueba periódica, no la regla.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> Ninguna nueva; mantener el requisito de M03 de test de restauración con 0 errores. <strong>Impacto: D-05, D-10.</strong></dd></dl>
+        </div>
+      </article>
+
+      <article class="ccard" data-tags="">
+        <header><span class="cid">C16</span><h3>Límites físicos: expresarse como límites prácticos o materiales respaldados por evidencia, no como teoremas universales</h3><span class="chip ok">CONFIRMADA</span></header>
+        <div class="body">
+          <dl>
+            <dt>Evidencia</dt><dd>Lo verificado (heredado M03): ASML único proveedor EUV, &gt;100k componentes, 13,5 nm, 80+ pasos de litografía / 80–120 ciclos de patterning, cadena de ~30 años, capacidad de Zeiss como cuello de botella. Lo <strong>no</strong> verificado: «más de 1.000 pasos» totales ni «físicamente imposible» como proposición medida — ninguna fuente primaria localizada lo cuantifica así (HYPOTHESIS/UNKNOWN para la imposibilidad universal; ver U6).</dd>
+            <dt>En M02</dt><dd>M02 §4.4 presentaba como <strong>EVIDENCIA</strong>: «fabricar un chip avanzado exige &gt;1.000 pasos… La independencia <em>física</em> total es <strong>físicamente imposible sin recursos externos</strong>». M03 (corrección 05) ya degradó ambas afirmaciones a HYPOTHESIS/UNKNOWN y las reformuló como imposibilidad práctica/económica a escala individual. C16 confirma exactamente esa reformulación.</dd>
+            <dt>En M03</dt><dd>Resuelto por completo.</dd>
+          </dl>
+          <div class="prevails"><span class="plabel">Redacción que prevalece</span>La fabricación avanzada de semiconductores a escala individual no es una vía práctica de independencia tecnológica. No debe presentarse como imposibilidad física universal ni sostenerse con cifras no verificadas. Es un límite práctico/material con evidencia, no un teorema de imposibilidad física. Lo alcanzable es degradación elegante con hardware existente.</div>
+          <dl><dt>Consecuencia</dt><dd><span class="chip plain">PROPOSAL</span> Ninguna nueva; el diseño debe presupuestar degradación, no reconstrucción. <strong>Impacto: D-10, D-12.</strong></dd></dl>
+        </div>
+      </article>
+
+      <div class="note">
+        <span class="nlabel">Resumen de veredictos</span>
+        C01 CONFIRMADA · C02 CONFIRMADA · C03 CONFIRMADA · C04 CONFIRMADA · C05 CONFIRMADA · C06 CONFIRMADA · C07 CONFIRMADA · C08 CONFIRMADA · C09 CONFIRMADA · C10 CONFIRMADA · C11 CONFIRMADA · C12 CONFIRMADA · C13 CONFIRMADA · <strong>C14 PARCIALMENTE CONFIRMADA</strong> · C15 CONFIRMADA · C16 CONFIRMADA. Total: 15 + 1 = 16.
+      </div>
+    </section>
+
+    <!-- ============ 4. DISCREPANCIAS ============ -->
+    <section id="discrepancias">
+      <h2><span class="n">§4</span>Matriz de discrepancias y trazabilidad D1–D15</h2>
+      <p class="lede">Cada fila cita la sección exacta de M02 (§), de M03 (§/corrección) y la corrección C correspondiente de §3. Las únicas resoluciones con prevalencia explícita son <strong>D2</strong> (M03 sobre C14 sin matiz) y <strong>D13</strong> (M03/C08 sobre M02). Las lagunas de M03 cerradas por ChatGPT son D8, D9 y D10.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Punto</th><th>Misión 02</th><th>Misión 03</th><th>ChatGPT</th><th>Resolución consolidada</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="#">D1</td><td data-label="Punto">AAL3 «en hardware»</td><td data-label="Misión 02">«AAL3 exige autenticador hardware» (§1.6)</td><td data-label="Misión 03">Corregido: no exportable; hardware es vía, no definición (corr. 02)</td><td data-label="ChatGPT">C02: AAL3 es nivel de garantía, no arquitectura universal</td><td data-label="Resolución"><strong>Sin conflicto:</strong> C02 confirma M03 y añade el punto de alcance. Queda la precisión del propietario sobre el entorno protegido (§11 A2) y U1 (§7).</td></tr>
+          <tr><td class="id" data-label="#">D2</td><td data-label="Punto">Ed25519 y fechas PQC</td><td data-label="Misión 02">Borrador IR 8547: solo 112-bit deprecado tras 2030 (§5.2)</td><td data-label="Misión 03">Corregido: IR 8547 final depreca todo tras 2030, disallow tras 2035 (corr. 03)</td><td data-label="ChatGPT">C14: «no implica expiración automática y universal de Ed25519»</td><td data-label="Resolución"><strong>Conflicto real si C14 se lee sin matiz. Prevalece M03.</strong> No hay expiración criptográfica automática, pero sí fechas normativas 2030/2035 bajo NIST. C14 es PARCIALMENTE CONFIRMADA. No usar C14 para revertir la corrección 03 de M03.</td></tr>
+          <tr><td class="id" data-label="#">D3</td><td data-label="Punto">3-2-1-1-0</td><td data-label="Misión 02">«EVIDENCIA como práctica, no norma» (§4.1)</td><td data-label="Misión 03">Corregido: regla de vendedor Veeam, no estándar (corr. 04)</td><td data-label="ChatGPT">C15: práctica operativa, no certificación, no garantiza recuperación</td><td data-label="Resolución"><strong>Sin conflicto:</strong> C15 confirma M03.</td></tr>
+          <tr><td class="id" data-label="#">D4</td><td data-label="Punto">Límites físicos / EUV</td><td data-label="Misión 02">«&gt;1.000 pasos; físicamente imposible» como EVIDENCIA (§4.4)</td><td data-label="Misión 03">Degradado a HYPOTHESIS/UNKNOWN (corr. 05)</td><td data-label="ChatGPT">C16: límites prácticos/materiales con evidencia, no teoremas</td><td data-label="Resolución"><strong>Sin conflicto:</strong> C16 confirma M03.</td></tr>
+          <tr><td class="id" data-label="#">D5</td><td data-label="Punto">Divergencia HELM/lm-eval 4–5 pt</td><td data-label="Misión 02">EVIDENCIA (§3.3)</td><td data-label="Misión 03">No verificada: HYPOTHESIS/UNKNOWN (corr. 05)</td><td data-label="ChatGPT">C11 no repite la cifra; aporta maquinaria estadística</td><td data-label="Resolución"><strong>Sin conflicto; la cifra sigue sin verificarse (U5).</strong> C11 no la repara.</td></tr>
+          <tr><td class="id" data-label="#">D6</td><td data-label="Punto">A2A</td><td data-label="Misión 02">UNKNOWN, no verificado (§3.1)</td><td data-label="Misión 03">Silencio</td><td data-label="ChatGPT">C05: proyecto abierto bajo Linux Foundation; no es estándar de identidad/autorización</td><td data-label="Resolución"><strong>C05 cierra el UNKNOWN con verificación en vivo de la spec.</strong> Sin conflicto.</td></tr>
+          <tr><td class="id" data-label="#">D7</td><td data-label="Punto">Safetensors</td><td data-label="Misión 02">Una línea, «sin ejecución de código», sin mayor profundidad (§3.2)</td><td data-label="Misión 03">Silencio</td><td data-label="ChatGPT">C06: no demuestra pesos confiables/seguros/benignos</td><td data-label="Resolución"><strong>C06 completa el alcance; sin conflicto.</strong></td></tr>
+          <tr><td class="id" data-label="#">D8</td><td data-label="Punto">Doble maestro JSONL/SQLite</td><td data-label="Misión 02">«Dos capas: archivo canónico en texto plano/JSONL + SQLite» (§2.1)</td><td data-label="Misión 03">Corrigió estatus de JSONL (convención) y exigió canonicalización, pero no señaló el doble maestro</td><td data-label="ChatGPT">C07: definir una canónica y la otra como vista</td><td data-label="Resolución"><strong>Laguna de M03 cerrada por C07.</strong> Corrección material que sobrevive. Prevalece la formulación del propietario (ver C07).</td></tr>
+          <tr><td class="id" data-label="#">D9</td><td data-label="Punto">Cola Core–Labs</td><td data-label="Misión 02">Esquema validado + límites tamaño/frecuencia (§6.1)</td><td data-label="Misión 03">Silencio sobre la cola</td><td data-label="ChatGPT">C12: autenticación, autorización por mensaje, anti-replay, recursos, contenido hostil</td><td data-label="Resolución"><strong>Laguna de M03 cerrada por C12</strong> (3 de 5 requisitos nuevos).</td></tr>
+          <tr><td class="id" data-label="#">D10</td><td data-label="Punto">Restauración / cuarentena</td><td data-label="Misión 02">4 pasos con verificación, sin etapa de cuarentena nombrada (§2.4)</td><td data-label="Misión 03">Cuarentena exigida para memoria experimental, no para restauración</td><td data-label="ChatGPT">C09: cuarentena y verificación antes de activar; distinguir copiar/verificar/restaurar</td><td data-label="Resolución"><strong>Laguna de M03 cerrada por C09</strong> (etapa nombrada; la cuarentena es PROPOSAL, no requisito NIST — ver U7).</td></tr>
+          <tr><td class="id" data-label="#">D11</td><td data-label="Punto">Firmas Git</td><td data-label="Misión 02">«Versiona texto; no versiona autoridad» (§1.7)</td><td data-label="Misión 03">Integridad textual verificable; eso es todo lo que prueba (§C)</td><td data-label="ChatGPT">C03: evidencia de integridad/autoría, no de autoridad</td><td data-label="Resolución"><strong>Sin conflicto:</strong> C03 confirma M02. Redundante, no correctiva.</td></tr>
+          <tr><td class="id" data-label="#">D12</td><td data-label="Punto">Frontera del Core</td><td data-label="Misión 02">«Core mínimo; lo demás detrás de adaptadores» (§5.1)</td><td data-label="Misión 03">Autor+ejecutor+auditor viola AC-5/AC-6 (riesgo 10)</td><td data-label="ChatGPT">C10: Core concentra autoridad/política, no ejecuta</td><td data-label="Resolución"><strong>Sin conflicto en sustancia; precisión pendiente del propietario</strong> (§11 A3): la hoja del propietario limita la atribución a NIST.</td></tr>
+          <tr><td class="id" data-label="#">D13</td><td data-label="Punto">Merkle y ausencia de eventos</td><td data-label="Misión 02">«Un Merkle con diseño adecuado sí [prueba ausencia]» (§2.3)</td><td data-label="Misión 03">No prueba completitud ni evento omitido (§3)</td><td data-label="ChatGPT">C08: no demuestran ausencia de eventos</td><td data-label="Resolución"><strong>M02–M03 en desacuerdo; C08 se alinea con M03. Prevalece M03/C08. La cláusula de M02 debe retirarse.</strong></td></tr>
+          <tr><td class="id" data-label="#">D14</td><td data-label="Punto">200–500 casos</td><td data-label="Misión 02">«Regla operativa PROPUESTA» (§3.3)</td><td data-label="Misión 03">Degradó la cifra HELM asociada</td><td data-label="ChatGPT">C11: heurística, no garantía estadística</td><td data-label="Resolución"><strong>Sin conflicto:</strong> C11 confirma la etiqueta de M02 y añade maquinaria.</td></tr>
+          <tr><td class="id" data-label="#">D15</td><td data-label="Punto">GGUF</td><td data-label="Misión 02">Límites ya listados (§3.2)</td><td data-label="Misión 03">De facto, no estándar formal</td><td data-label="ChatGPT">C13: facilita ejecución local; no garantiza ejecución útil</td><td data-label="Resolución"><strong>Sin conflicto:</strong> C13 confirma M02.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ============ 5. SUPERVIVIENTES ============ -->
+    <section id="supervivientes">
+      <h2><span class="n">§5</span>Correcciones materiales supervivientes (12)</h2>
+      <p class="lede">Lista consolidada de la hoja del propietario. No sobrevive nada como refutación: ninguna corrección de ChatGPT fue refutada, y ninguna afirmación de M02/M03 fue derribada por C01–C16 que M03 no hubiera derribado ya.</p>
+
+      <h3>A. Genuinamente nuevas (5) — no estaban en M02 ni en M03</h3>
+      <ol class="tight">
+        <li><strong>C05 — A2A:</strong> fijar versión y mantener identidad/autorización fuera de la suposición de que el protocolo las resuelve.</li>
+        <li><strong>C06 — Safetensors:</strong> separar seguridad del formato, procedencia de pesos y seguridad del código de ejecución.</li>
+        <li><strong>C07 — Fuente canónica:</strong> impedir que JSONL y SQLite se conviertan en maestros divergentes.</li>
+        <li><strong>C09 — Restauración:</strong> verificar antes de activar; mantener la cuarentena como propuesta explícita.</li>
+        <li><strong>C12 — Cola Core–Labs:</strong> añadir autenticación, autorización, anti-replay y tratamiento de contenido hostil.</li>
+      </ol>
+
+      <h3>B. Confirmaciones de las correcciones materiales de M03 (4) — revalidadas contra una tercera fuente</h3>
+      <ol class="tight" start="6">
+        <li><strong>C02 — AAL3:</strong> precisar el entorno protegido y la no exportabilidad.</li>
+        <li><strong>C08 — Merkle:</strong> corregir cualquier afirmación de prueba absoluta de ausencia.</li>
+        <li><strong>C15 — Backups:</strong> mantener 3-2-1-1-0 como práctica y no como certificación.</li>
+        <li><strong>C16 — Fabricación:</strong> conservar la conclusión práctica y retirar afirmaciones absolutas no demostradas.</li>
+      </ol>
+
+      <h3>C. Precisiones reforzadas (2)</h3>
+      <ol class="tight" start="10">
+        <li><strong>C10 — Core:</strong> formular la separación como principio arquitectónico de Nexo, sin atribuir a NIST una prohibición que no expresa.</li>
+        <li><strong>C11 — Evaluación:</strong> mantener los tamaños de muestra como heurística y exigir metodología reproducible.</li>
+      </ol>
+
+      <h3>D. Corrección a la corrección (1)</h3>
+      <ol class="tight" start="12">
+        <li><strong>C14 — PQC:</strong> mantener explícitos los hitos 2030, 2031 y 2035. La mitad de agilidad/planificación es correcta; la mitad de «no expiración» debe completarse con IR 8547 final: Ed25519 deprecated tras 2030, disallowed tras 2035 bajo normas NIST (firmas PQC para sistemas federales de alto valor antes del 31-12-2031). No usar C14 para revertir la corrección 03 de M03.</li>
+      </ol>
+
+      <div class="note">
+        <span class="nlabel">Nota de conteo (ver §11 B1)</span>
+        M03-B listó 11 correcciones materiales (5 nuevas + C02, C15, C16, C04, C08 + C14). La hoja del propietario lista 12: añade C10 y C11 y no lista por separado C04 (que permanece CONFIRMADA en §3 y en la trazabilidad de §4, sin pérdida de sustancia). El conteo consolidado adoptado es <strong>12</strong>, el de la hoja del propietario, que es la base de consolidación.
+      </div>
+    </section>
+
+    <!-- ============ 6. RIESGOS ============ -->
+    <section id="riesgos">
+      <h2><span class="n">§6</span>Registro de riesgos</h2>
+
+      <h3>6.1 Riesgos nuevos R1–R7 (M03-B)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>ID</th><th>Riesgo</th><th>Tratamiento documental</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="ID">R1</td><td data-label="Riesgo"><strong>Suplantación o manipulación de Agent Cards A2A</strong></td><td data-label="Tratamiento">Tarjetas y descripciones se tratan como entrada no confiable; verificar firma y origen cuando corresponda. La firma JWS de la tarjeta es opcional (MAY) en la spec; una tarjeta sin firmar no prueba quién la publicó, y sus descripciones de skills son entrada no confiable para el modelo — la misma clase de envenenamiento que M03 T5 (tool poisoning) pero en el plano agente-a-agente. (EVIDENCE: spec §8.4 opcional, verificado vía análisis secundario de la spec; la obligatoriedad de verificación por el cliente es SHOULD, no MUST.)</td></tr>
+          <tr><td class="id" data-label="ID">R2</td><td data-label="Riesgo"><strong>Ejecución durante conversión de pickle y código remoto</strong></td><td data-label="Tratamiento">Separar carga de pesos, conversión, código externo y ejecución; exigir procedencia y aislamiento. Convertir un checkpoint pickle a safetensors exige cargar el pickle una vez — el paso arriesgado — y <code>trust_remote_code=True</code> ejecuta código del repositorio, anulando la protección del formato. (EVIDENCE: README safetensors, verificado en vivo; la práctica de conversión en sandbox es PROPOSAL.)</td></tr>
+          <tr><td class="id" data-label="ID">R3</td><td data-label="Riesgo"><strong>Confundir firma Git verificada con autoridad vigente</strong></td><td data-label="Tratamiento">Verificar la clave contra la lista de autoridades aplicable al momento de la decisión. GitHub conserva el registro de verificación aunque la clave se revoque, expire o el contribuidor abandone la organización; los commits antiguos siguen «Verified». (EVIDENCE: GitHub Docs, index.)</td></tr>
+          <tr><td class="id" data-label="ID">R4</td><td data-label="Riesgo"><strong>SSRF y abuso de webhooks/push notifications A2A</strong></td><td data-label="Tratamiento">Validar destinos, restringir conexiones y aplicar controles de red. La explotabilidad concreta depende de la implementación. La spec prevé autenticación secundaria en tarea (§4.5, verificado en vivo) y push notifications a webhooks del cliente; el análisis secundario de la spec advierte de abuso de push notifications (incluido SSRF) y de delegación demasiado amplia. No verificado en vivo en este run: se registra como <strong>HYPOTHESIS</strong>/riesgo a confirmar contra la spec antes de cualquier adopción.</td></tr>
+          <tr><td class="id" data-label="ID">R5</td><td data-label="Riesgo"><strong>Inyección indirecta mediante la cola Core–Labs</strong></td><td data-label="Tratamiento">Autenticar y autorizar mensajes; tratar contenido como datos, nunca como instrucciones privilegiadas. Un mensaje con esquema válido puede llevar contenido hostil generado por el modelo o por Labs; la validación de esquema no sanitiza semántica. C12 mitiga, pero el riesgo enlaza C12 con M03 T4 (inyección indirecta, probabilidad alta).</td></tr>
+          <tr><td class="id" data-label="ID">R6</td><td data-label="Riesgo"><strong>Interpretación errónea de C14 y retraso de migración PQC</strong></td><td data-label="Tratamiento">Mantener inventario de firmas y calendario de transición; revisar en D-11. Si C14 se lee como «Ed25519 no tiene fecha límite», Nexo puede llegar a 2030 sin plan de migración. Riesgo de calendario, no criptográfico.</td></tr>
+          <tr><td class="id" data-label="ID">R7</td><td data-label="Riesgo"><strong>Deriva de versión A2A</strong></td><td data-label="Tratamiento">Fijar versión, especificación normativa y nombres de recursos; no citar simplemente «A2A». La página de la spec leída en vivo es versión <code>dev</code> y en §5.3 aún indica el well-known <code>agent.json</code>, mientras que v1.0 usa <code>agent-card.json</code>. (EVIDENCE: página leída en vivo.)</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:.9rem;color:var(--ink2)">Las probabilidades y severidades no se consideran medidas mientras no exista análisis cuantitativo o evidencia de implementación.</p>
+
+      <h3>6.2 Riesgos arquitectónicos omitidos señalados por M03 (13)</h3>
+      <ol class="tight">
+        <li>Tercero de confianza oculto en cada «descentralización» (registro, testigo, quorum, proveedor).</li>
+        <li>Umbral = umbral de ataque (colusión/coerción de T).</li>
+        <li>Sucesión/incapacidad sin procedimiento legal/técnico.</li>
+        <li>VC sin status no revocable; status list reintroduce disponibilidad.</li>
+        <li>Hash sin anclaje = auto-certificación; cola truncable.</li>
+        <li>Consolidación/resumen como pérdida silenciosa; CRDT como «verdad».</li>
+        <li>Lúmina sin barrera de promoción = contaminación de canónica.</li>
+        <li>Alias de modelo = cambio silencioso; pinning con fecha de caducidad.</li>
+        <li>PQC: firmas RSA/ECC con caducidad normativa 2030/2035; re-firma no planificada.</li>
+        <li>Agente autor+ejecutor+auditor viola AC-5/AC-6.</li>
+        <li>Ejecución de código generado sin sandbox desechable.</li>
+        <li>Olvido vs inmutabilidad sin diseño (tombstone/crypto-shredding).</li>
+        <li>Dependencia de proveedor único (modelo, MCP server, EUV, ledger) sin plan de salida.</li>
+      </ol>
+
+      <h3>6.3 Matriz de amenazas y escenarios de fallo T1–T14 (M03)</h3>
+      <p style="font-size:.9rem;color:var(--ink2)">* Probabilidad cualitativa de juicio, no métrica medida — <strong>HYPOTHESIS</strong>, no EVIDENCE.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>#</th><th>Amenaza</th><th>Vector</th><th>Impacto</th><th>Prob.*</th><th>Detección</th><th>Mitigación exigible</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="#">T1</td><td data-label="Amenaza">Compromiso clave raíz did:key</td><td data-label="Vector">Robo/phishing/malware</td><td data-label="Impacto">Pérdida total identidad, sin revocación</td><td data-label="Prob.">Media</td><td data-label="Detección">Solo si se monitoriza uso</td><td data-label="Mitigación">Rotación con registro, VC con status, expiración corta, HSM/vault qube</td></tr>
+          <tr><td class="id" data-label="#">T2</td><td data-label="Amenaza">Recuperación fraudulenta (SLIP-39)</td><td data-label="Vector">Colusión/coerción T tenedores</td><td data-label="Impacto">Robo total, indistinguible de recuperación legítima</td><td data-label="Prob.">Media</td><td data-label="Detección">Ninguna sin registro</td><td data-label="Mitigación">Quorum + retardo + impugnación + registro inmutable + autenticación tenedores</td></tr>
+          <tr><td class="id" data-label="#">T3</td><td data-label="Amenaza">Propietario incapacitado/muerto</td><td data-label="Vector">Sin sucesor designado</td><td data-label="Impacto">Identidad/autoridad bloqueada o usurpada</td><td data-label="Prob.">Baja-Media</td><td data-label="Detección">—</td><td data-label="Mitigación">Sucesor + quorum + retardo + acreditación externa (legal)</td></tr>
+          <tr><td class="id" data-label="#">T4</td><td data-label="Amenaza">Inyección indirecta vía herramienta</td><td data-label="Vector">Issue/email/web malicioso</td><td data-label="Impacto">Exfiltración, borrado, envío no autorizado</td><td data-label="Prob.">Alta</td><td data-label="Detección">Baja (sin revisión)</td><td data-label="Mitigación">Least privilege, aprobación humana, validación resultados</td></tr>
+          <tr><td class="id" data-label="#">T5</td><td data-label="Amenaza">Tool poisoning / rug pull</td><td data-label="Vector">Descripción MCP cambiada</td><td data-label="Impacto">Escalada silenciosa, shadowing</td><td data-label="Prob.">Media-Alta</td><td data-label="Detección">Baja sin hash de descripciones</td><td data-label="Mitigación">Pin+hash descripciones, re-revisión, allowlist</td></tr>
+          <tr><td class="id" data-label="#">T6</td><td data-label="Amenaza">Cambio silencioso snapshot</td><td data-label="Vector">Alias flotante / serving-side</td><td data-label="Impacto">Drift, regresión, ruptura de tareas</td><td data-label="Prob.">Alta</td><td data-label="Detección">Solo con eval propia + fingerprint</td><td data-label="Mitigación">Pin snapshot fechado, eval propia, registro, fecha caducidad</td></tr>
+          <tr><td class="id" data-label="#">T7</td><td data-label="Amenaza">Falsa memoria / Lúmina contamina canónica</td><td data-label="Vector">Promoción automática</td><td data-label="Impacto">Hechos falsos con autoridad</td><td data-label="Prob.">Media</td><td data-label="Detección">Baja sin etiqueta</td><td data-label="Mitigación">Etiqueta experimental, TTL, cuarentena, promoción firmada por humano</td></tr>
+          <tr><td class="id" data-label="#">T8</td><td data-label="Amenaza">Sincronización propaga corrupción</td><td data-label="Vector">Ransomware / borrado / error</td><td data-label="Impacto">Pérdida en todas las réplicas</td><td data-label="Prob.">Media</td><td data-label="Detección">Solo con backup inmutable</td><td data-label="Mitigación">Backup ≠ sync, copia inmutable offline, test restauración</td></tr>
+          <tr><td class="id" data-label="#">T9</td><td data-label="Amenaza">Truncamiento / reescritura de log</td><td data-label="Vector">Atacante con control del log</td><td data-label="Impacto">Historia reescrita, detección nula sin anclaje</td><td data-label="Prob.">Media</td><td data-label="Detección">Solo con STH externo</td><td data-label="Mitigación">STH anclado externo, monitores independientes, <code>tree_size</code></td></tr>
+          <tr><td class="id" data-label="#">T10</td><td data-label="Amenaza">Escape contenedor / qube</td><td data-label="Vector">Bug kernel/Xen, mount, root</td><td data-label="Impacto">Escalada a host / dom0</td><td data-label="Prob.">Baja</td><td data-label="Detección">Monitorización</td><td data-label="Mitigación">VM &gt; contenedor para no confiable, rootless, sin mounts, IOMMU</td></tr>
+          <tr><td class="id" data-label="#">T11</td><td data-label="Amenaza">Proveedor retira modelo/servidor</td><td data-label="Vector">Deprecación, quiebra, sanción</td><td data-label="Impacto">Capacidad cognitiva perdida</td><td data-label="Prob.">Media</td><td data-label="Detección">Calendario proveedor</td><td data-label="Mitigación">Multi-proveedor, modelo local, plan de salida, re-cualificación</td></tr>
+          <tr><td class="id" data-label="#">T12</td><td data-label="Amenaza">Cripto cuántica / caducidad PQC</td><td data-label="Vector">Harvest-now-decrypt-later</td><td data-label="Impacto">Firmas/VC antiguas no confiables tras 2035</td><td data-label="Prob.">Baja hoy, crece</td><td data-label="Detección">—</td><td data-label="Mitigación">Migrar a ML-DSA/SLH-DSA, híbridos, re-firma planificada</td></tr>
+          <tr><td class="id" data-label="#">T13</td><td data-label="Amenaza">Conflicto memoria no resuelto</td><td data-label="Vector">Dos fuentes contradictorias</td><td data-label="Impacto">Decisión sobre hecho falso</td><td data-label="Prob.">Media</td><td data-label="Detección">Solo si se conserva conflicto</td><td data-label="Mitigación">Conservar ambas + procedencia, marcar conflicto, resolución humana</td></tr>
+          <tr><td class="id" data-label="#">T14</td><td data-label="Amenaza">Olvido imposible / retención ilegal</td><td data-label="Vector">Log inmutable + dato a borrar</td><td data-label="Impacto">Incumplimiento legal / dato erróneo perpetuo</td><td data-label="Prob.">Media</td><td data-label="Detección">—</td><td data-label="Mitigación">Tombstone / crypto-shredding diseñado, no improvisado</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>6.4 Requisitos a preservar de M03 (12 — mínimos, no negociables sin sustituto documentado)</h3>
+      <ol class="tight">
+        <li><strong>Identidad:</strong> método con rotación + revocación + status consultado por verificadores; did:key solo para efímero (días-semanas) o con HSM y aceptación explícita de no-revocación.</li>
+        <li><strong>Autenticación:</strong> AAL3 = no-exportable + phishing-resistant + 2 factores; sincronizables solo ≤AAL2; claves raíz en vault/HSM separado del agente.</li>
+        <li><strong>Autorización:</strong> capabilities con scope, expiración y revocación, separadas de identidad; agente nunca auto-autoriza escritura/borrado/envío.</li>
+        <li><strong>Custodia:</strong> canónica append-only + hash + STH anclado externo; esquema documentado; backup inmutable offline ≠ sync; test de restauración con 0 errores.</li>
+        <li><strong>Recuperación:</strong> SLIP-39 solo con T≥2, autenticación de tenedores, retardo + impugnación, registro; sucesor designado con procedimiento legal.</li>
+        <li><strong>Constitución:</strong> texto canónico UTF-8 + canonicalización + hash + firma + versionado SemVer-like; cada cambio de modelo/snapshot/prompt = re-cualificación con eval propia fijada.</li>
+        <li><strong>Memoria:</strong> procedencia en cada registro; experimental etiquetado + TTL + cuarentena; promoción solo firmada por promotor distinto; conflictos conservados, no sobrescritos.</li>
+        <li><strong>Aislamiento:</strong> Lúmina en VM/qube separado, sin claves canónicas, sin escritura a canónica, egress filtrado; código no confiable solo en desechable sin red/credenciales.</li>
+        <li><strong>Herramientas:</strong> allowlist, pin+hash de descripciones, re-revisión ante cambio, aprobación humana en acciones destructivas, tokens por servidor.</li>
+        <li><strong>Modelos:</strong> pin snapshot fechado, fingerprint, eval propia, fecha de caducidad y plan de sustitución; nunca alias flotante en producción.</li>
+        <li><strong>PQC:</strong> inventario de firmas RSA/ECC, plan de migración a ML-DSA/SLH-DSA antes de 2030, re-firma/re-emisión.</li>
+        <li><strong>Auditoría:</strong> registro inmutable de quién hizo qué, con qué clave, qué herramienta y qué modelo — separado de la función auditada (AC-5/SC-3).</li>
+      </ol>
+    </section>
+
+    <!-- ============ 7. UNKNOWN ============ -->
+    <section id="unknown">
+      <h2><span class="n">§7</span>Registro UNKNOWN U1–U9</h2>
+      <p class="lede">Estados fijados por el propietario en su hoja consolidada; no se cambian en este expediente. <strong>UNKNOWN no significa falso ni verdadero. No puede transformarse en PASS por repetición documental.</strong></p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>ID</th><th>Tema</th><th>Estado</th><th>Motivo (conservado de M03-B)</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="ID">U1</td><td data-label="Tema">Texto exacto de AAL3 en SP 800-63B-4</td><td data-label="Estado"><span class="chip ok">RESUELTO</span><br><span style="font-size:.82rem">en esta revisión documental</span></td><td data-label="Motivo">Heredado de M03 y no resuelto en M03-B: la landing CSRC se leyó en vivo, pero el PDF normativo completo no se leyó línea a línea. La corrección «no exportable, no hardware» descansa en ≥2 resúmenes independientes que citan el Ap. E; no se presenta como cita verbatim. <strong>Limitación registrada, sin resolver (§11 A1):</strong> la hoja del propietario marca U1 RESUELTO; M03-B lo dejó pendiente. Este expediente adopta el estado del propietario y registra la divergencia para su decisión; no declara verificada una lectura que no se hizo.</td></tr>
+          <tr><td class="id" data-label="ID">U2</td><td data-label="Tema">Norma que prescriba 200–500 casos</td><td data-label="Estado"><span class="chip unk">UNKNOWN</span></td><td data-label="Motivo">Ninguna norma localizada en M02, M03 ni M03-B prescribe 200–500 casos (o cualquier N) para evaluar un agente. El número sigue siendo heurística por construcción; no es un UNKNOWN por falta de búsqueda, sino por ausencia de norma localizada (la ausencia no se demuestra exhaustivamente).</td></tr>
+          <tr><td class="id" data-label="ID">U3</td><td data-label="Tema">Exhaustividad de estándares de identidad y delegación de agentes</td><td data-label="Estado"><span class="chip unk">UNKNOWN</span></td><td data-label="Motivo">UCAN (ucan-wg/spec v1.0, trabajo comunitario) y ZCAP-LD (borrador CCG v0.4.0) no se re-verificaron en M03-B; su estatus es heredado de M02. No se afirma que no exista nada: solo que nada localizado lo resuelve para Nexo.</td></tr>
+          <tr><td class="id" data-label="ID">U4</td><td data-label="Tema">Gobernanza y versiones A2A posteriores a las fuentes primarias disponibles</td><td data-label="Estado"><span class="chip warn">PARCIAL</span></td><td data-label="Motivo">La spec leída en vivo (versión <code>dev</code>) no menciona a la Linux Foundation en su texto; las fechas (donación junio 2025, AAIF agosto 2026, v1.0.0 12-03-2026, v1.0.1 mayo 2026) proceden de fuentes secundarias. La nota de prensa de la Linux Foundation del 23-06-2025 fue verificada durante la construcción del documento M03-B (donación), pero el alojamiento en la Agentic AI Foundation y la fecha de la v1.0.1 siguen apoyados en secundarias.</td></tr>
+          <tr><td class="id" data-label="ID">U5</td><td data-label="Tema">Diferencia de 4–5 puntos entre HELM y lm-eval</td><td data-label="Estado"><span class="chip unk">UNKNOWN</span></td><td data-label="Motivo">Heredado de M03; C11 no la repara ni la verifica. Motivo: ninguna comparación primaria localizada.</td></tr>
+          <tr><td class="id" data-label="ID">U6</td><td data-label="Tema">Afirmación de más de 1.000 pasos EUV e imposibilidad física</td><td data-label="Estado"><span class="chip unk">UNKNOWN</span></td><td data-label="Motivo">Heredado de M03; C16 reformula, no verifica. Motivo: ninguna fuente primaria localizada lo cuantifica así.</td></tr>
+          <tr><td class="id" data-label="ID">U7</td><td data-label="Tema">Exigencia normativa de una etapa denominada cuarentena</td><td data-label="Estado"><span class="chip unk">UNKNOWN</span></td><td data-label="Motivo">Ningún control localizado usa ese término para restaurar (CP-10/CP-10(4) exigen restaurar desde información controlada e íntegra que represente un estado conocido). La cuarentena con ese nombre es PROPOSAL.</td></tr>
+          <tr><td class="id" data-label="ID">U8</td><td data-label="Tema">Verificación directa del trabajo de Miller (2024)</td><td data-label="Estado"><span class="chip unk">UNKNOWN</span></td><td data-label="Motivo">Miller (2024), arXiv:2411.00640, citado vía fuente secundaria; el paper no se leyó en este run. La maquinaria estadística de C11 se apoya además en el cálculo binomial propio y en HELM, no solo en Miller.</td></tr>
+          <tr><td class="id" data-label="ID">U9</td><td data-label="Tema">Demostración de ausencia de eventos no registrados mediante Merkle</td><td data-label="Estado"><span class="chip unk">UNKNOWN</span></td><td data-label="Motivo">La frase de M02 §2.3 «un Merkle con diseño adecuado sí [prueba ausencia]» es ambigua (¿ausencia de qué, respecto a qué STH?); se resolvió a favor de la lectura M03/C08, pero no se localizó un diseño Merkle que pruebe la ausencia de eventos no registrados.</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note">
+        <span class="nlabel">Correspondencia con los UNKNOWN de M03</span>
+        Correcciones de ChatGPT (resuelto por M03-B, ya no UNKNOWN) · texto verbatim SP 800-63B-4 §2.3.2/Ap. B (→ U1) · fechas exactas DID 19-07-2022 / VC 15-05-2025 en extracto primario (corroboradas, no en líneas leídas; salvedad de método en §12, no UNKNOWN abierto) · cifra HELM/lm-eval 4–5 pt (→ U5) · «&gt;1.000 pasos» EUV e imposibilidad física (→ U6) · periodo de garantía de snapshots OpenAI (fuentes secundarias en conflicto: 3 vs 6 vs 12 meses según tipo; limitación en §11, no renumerado en U1–U9) · existencia/no-existencia exhaustiva de estándar de versionado de Constitución (→ U3 en sentido amplio; búsqueda sin resultado ≠ prueba de inexistencia) · equivalencia semántica entre modelos (sin métrica demostrada; fallo estructural central en §1) · sucesión legal aplicable (jurisdicción no especificada; limitación en §11).
+      </div>
+    </section>
+
+    <!-- ============ 8. IMPACTOS ============ -->
+    <section id="impactos">
+      <h2><span class="n">§8</span>Matriz de impactos D-01 a D-12</h2>
+      <p class="lede">Estos impactos identifican dónde una decisión futura podría necesitar la información. <strong>No resuelven ninguna decisión.</strong> Todas permanecen <strong>SIN DECIDIR</strong>, reservadas exclusivamente al propietario.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Decisión</th><th>Información relevante</th><th>Correcciones que la afectan</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="Decisión">D-01</td><td data-label="Información">Método de identidad raíz (DID)</td><td data-label="Correcciones">C01, C02, C14</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-02</td><td data-label="Información">Custodia y recuperación de la clave raíz (Shamir/SLIP-39)</td><td data-label="Correcciones">C01, C02</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-03</td><td data-label="Información">Cláusula de enmienda de la Constitución; autoridad de enmienda y claves autorizadas</td><td data-label="Correcciones">C03</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-04</td><td data-label="Información">Anclaje externo de la raíz del registro; verificación de registros</td><td data-label="Correcciones">C08</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-05</td><td data-label="Información">Esquema y ciclo de vida de memoria; separación operativa / Labs / Lúmina; fuente canónica, almacenamiento y restauración</td><td data-label="Correcciones">C05, C07, C08, C09, C15</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-06</td><td data-label="Información">Dialecto interno y revisiones fijadas (desde MCP 2026-07-28); protocolo e interoperabilidad</td><td data-label="Correcciones">C04, C05</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-07</td><td data-label="Información">Evaluación propia (200–500 casos de tarea real) y umbral de cambio de modelo; evaluación y sustitución de modelos</td><td data-label="Correcciones">C11, C13</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-08</td><td data-label="Información">Niveles de autonomía y acciones irreversibles; autorización y frontera Core–Labs</td><td data-label="Correcciones">C01, C02, C10, C12</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-09</td><td data-label="Información">Punto de aislamiento–utilidad de Labs y alcance del Cyber Lab (solo sistemas propios / labs / CTF / entornos autorizados); ejecución, herramientas y cadena de suministro</td><td data-label="Correcciones">C06, C10, C12</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-10</td><td data-label="Información">RTO/RPO y política de retención; recuperación y límites operativos</td><td data-label="Correcciones">C09, C14, C15, C16</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-11</td><td data-label="Información">Calendario de agilidad criptográfica post-cuántica (ML-DSA/SLH-DSA)</td><td data-label="Correcciones">C14</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+          <tr><td class="id" data-label="Decisión">D-12</td><td data-label="Información">Kit de arranque (bootstrap) y sus custodios; dependencias materiales y continuidad tecnológica</td><td data-label="Correcciones">C16</td><td data-label="Estado"><span class="chip unk">SIN DECIDIR</span></td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Cruces con Misión 01</strong> (heredados de M02, sin cambio): D-08 profundiza su decisión 5; D-09 la 6; D-05 recoge la 2, la 7 y la 8; D-04 es la pieza que la M01 dejó abierta en la 7; D-06/D-07 profundizan la 3. Nuevas en M02, sin equivalente en M01: D-01, D-02, D-03, D-10 y D-12. Orden sugerido (sugerencia, no decisión): D-01, D-02, D-03 primero, luego D-08 y D-09, luego D-05.</p>
+    </section>
+
+    <!-- ============ 9. REGLAS ============ -->
+    <section id="reglas">
+      <h2><span class="n">§9</span>Reglas de interpretación obligatorias</h2>
+      <ul class="tight">
+        <li><strong>«EVIDENCE»</strong> solo cuando exista fuente identificable y alcance verificable.</li>
+        <li><strong>«PROPOSAL»</strong> identifica una opción de diseño, no una decisión aprobada.</li>
+        <li><strong>«HYPOTHESIS»</strong> identifica una posibilidad aún no medida o demostrada.</li>
+        <li><strong>«UNKNOWN»</strong> identifica una cuestión no resuelta.</li>
+        <li><strong>«PASS»</strong> exige evidencia de implementación y pruebas aplicables; no se concede por documentación.</li>
+        <li>Las fuentes secundarias no deben presentarse como lectura directa de una fuente primaria.</li>
+        <li>Una norma o recomendación no debe ampliarse más allá de su ámbito de aplicación.</li>
+        <li>Las decisiones D-01 a D-12 pertenecen exclusivamente al propietario.</li>
+        <li>No se convierte una propuesta en requisito normativo. No se inventan referencias, pruebas, resultados ni verificaciones. No se convierte UNKNOWN en verdadero o falso mediante inferencias. Se distingue claramente entre hechos de las fuentes, correcciones documentales e interpretaciones.</li>
+      </ul>
+    </section>
+
+    <!-- ============ 10. CIERRE ============ -->
+    <section id="cierre">
+      <h2><span class="n">§10</span>Criterio de cierre documental</h2>
+      <p>La auditoría M02 → M03 → M03-B podrá cerrarse cuando:</p>
+      <ol class="tight">
+        <li>Se incorporen estas erratas a una versión consolidada.</li>
+        <li>Se corrijan los conteos y etiquetas de evidencia señalados.</li>
+        <li>Se conserven los UNKNOWN sin rellenarlos por inferencia.</li>
+        <li>Se mantengan D-01 a D-12 como «SIN DECIDIR».</li>
+        <li>Se declare expresamente que el documento no autoriza implementación.</li>
+      </ol>
+      <div class="note danger">
+        <span class="nlabel">Declaración expresa</span>
+        Este expediente <strong>no constituye especificación ejecutable, aprobación de arquitectura ni autorización para alterar NCS M0 o P07. No autoriza implementación.</strong> La investigación queda consolidada como referencia documental condicionada.
+      </div>
+    </section>
+
+    <!-- ============ 11. AUTOCONTROL ============ -->
+    <section id="autocontrol">
+      <h2><span class="n">§11</span>Informe de autocontrol</h2>
+
+      <h3>A. Divergencias pendientes de decisión del propietario (no resueltas en esta consolidación)</h3>
+      <p><strong>A1. U1 — RESUELTO (hoja del propietario) vs pendiente (M03-B).</strong> M03 y M03-B dejaron U1 pendiente porque el PDF normativo completo de SP 800-63B-4 no se leyó línea a línea; la corrección «no exportable, no hardware» descansa en ≥2 resúmenes independientes que citan el Ap. E. La hoja del propietario marca U1 RESUELTO «en esta revisión documental». Este expediente adopta el estado del propietario (U1 RESUELTO, §7) y registra la divergencia: <strong>no se declara verificada una lectura verbatim que no se hizo.</strong> Para cerrar U1 con evidencia primaria sería necesario leer el PDF de SP 800-63B-4 línea a línea (§2.3.2, Ap. B, Ap. E). Limitación restante.</p>
+      <p><strong>A2. C02 — entorno protegido por hardware.</strong> M03-B anotó como matiz que varios resúmenes del §2 de SP 800-63B-4 describen además un «hardware-protected, isolated environment» para la clave AAL3, y advirtió no presentar la formulación de M03 como cita verbatim del §2.3.2. La hoja del propietario fija como redacción prevalente: «autenticador criptográfico no exportable en entorno aislado protegido por hardware o procesador separado con interfaz controlada. No exige necesariamente una llave externa». La precisión es coherente con los resúmenes citados, pero <strong>no es una cita verbatim verificada en vivo</strong>; se adopta como redacción del propietario, no como cita primaria. Decisión del propietario.</p>
+      <p><strong>A3. C10 — lectura limitada de NIST sobre el Core.</strong> M03-B formuló que un bucle de ejecución dentro del Core viola SC-3/AC-5/AC-6 «por diseño». La hoja del propietario precisa: «NIST respalda separación de deberes y mínimo privilegio, pero no declara que todo bucle de ejecución dentro de un Core viole automáticamente sus controles». La precisión del propietario es correcta como lectura de alcance de la norma (los controles son requisitos a implementar y evidenciar, no una prohibición literal de una arquitectura concreta) y se adopta como redacción prevalente en §3 C10. La separación sigue siendo principio arquitectónico de Nexo (PROPOSAL), no prohibición literal de NIST. Decisión del propietario.</p>
+
+      <h3>B. Inconsistencias encontradas y cómo se resolvieron</h3>
+      <ul class="tight">
+        <li><strong>B1. Conteo de materiales supervivientes: 11 (M03-B) vs 12 (hoja del propietario).</strong> M03-B listó 11: 5 nuevas + C02, C15, C16, C04, C08 + C14. La hoja del propietario lista 12: 5 nuevas + C02, C08, C15, C16 + C10, C11 + C14; no lista por separado C04. <strong>Resolución:</strong> el conteo consolidado es <strong>12</strong> (hoja del propietario, base de consolidación). C04 permanece CONFIRMADA en §3 y trazada en §4; no hay pérdida de sustancia. C10 y C11 se incluyen como precisiones reforzadas (§5 C).</li>
+        <li><strong>B2. M02 §2.3, contradicción interna sobre Merkle y ausencia.</strong> M02 dice a la vez que «un log no prueba que un evento <em>no ocurrió</em> (ausencia) salvo con diseños específicos» y que «un Merkle con diseño adecuado sí [prueba ausencia]». <strong>Resolución:</strong> prevalece M03/C08 (D13); la cláusula de M02 se retira y la redacción prevalente es la de C08 (§3). U9 conserva la ambigüedad residual como UNKNOWN.</li>
+        <li><strong>B3. M02 §2.1, ambigüedad de doble maestro.</strong> M02 llama «canónico» al archivo JSONL y a la vez presenta SQLite como segunda capa de trabajo sin regla de precedencia. <strong>Resolución:</strong> C07 (D8); redacción prevalente del propietario adoptada en §3 C07. No es un error de hecho de M02, es ambigüedad; así se etiqueta.</li>
+        <li><strong>B4. M02 §1.6, AAL3 «en hardware».</strong> Error confirmado por M03 (corr. 02) y C02. <strong>Resolución:</strong> redacción prevalente de C02 (§3), con la precisión A2 pendiente de decisión del propietario.</li>
+        <li><strong>B5. M02 §5.2, PQC según borrador IR 8547.</strong> Error confirmado por M03 (corr. 03). <strong>Resolución:</strong> redacción prevalente de C14 con fechas (§3); C14 no revierte la corrección de M03 (D2).</li>
+        <li><strong>B6. M02 §4.1, 3-2-1-1-0 sin origen de vendedor.</strong> M02 la presentaba como «EVIDENCIA como práctica, no norma» sin nombrar a Veeam. <strong>Resolución:</strong> corrección 04 de M03 + C15; redacción prevalente en §3 C15.</li>
+        <li><strong>B7. M02 §3.3 y §4.4, cifras sin verificación primaria.</strong> HELM/lm-eval «4–5 puntos» (M02 citaba análisis secundario de Stanford CRFM 2024) y EUV «&gt;1.000 pasos / físicamente imposible» (M02 citaba fuentes secundarias 2026). <strong>Resolución:</strong> degradadas a HYPOTHESIS/UNKNOWN por M03 (corr. 05), confirmadas por C16 y no reparadas por C11; U5 y U6 conservan el estado UNKNOWN.</li>
+        <li><strong>B8. M02 §3.1, A2A UNKNOWN vs M03 silencio.</strong> M03 no trató A2A. <strong>Resolución:</strong> C05 cierra el UNKNOWN con verificación en vivo de la spec (D6); U4 conserva como PARCIAL lo relativo a gobernanza y versiones posteriores.</li>
+        <li><strong>B9. M03 §H, correcciones de ChatGPT UNKNOWN.</strong> M03 clasificó ese punto UNKNOWN por falta del texto fuente. <strong>Resolución:</strong> no es una contradicción; el texto se proporcionó después y M03-B lo evaluó (15 CONFIRMADA, 1 PARCIALMENTE). El UNKNOWN H de M03 queda cerrado por M03-B y no se arrastra a U1–U9.</li>
+        <li><strong>B10. Duplicaciones sin contradicción (confirmaciones, no errores).</strong> C01, C03, C08, C10 y C13 ya estaban dichas en M02; C02, C04, C15 y C16 repiten correcciones de M03. Se señalan como tales en §3 para no contarlas como descubrimientos nuevos. La matriz de trazabilidad (§4) las marca «sin conflicto».</li>
+        <li><strong>B11. Etiquetas de evidencia en M02, correcciones aplicadas.</strong> M02 etiquetó como EVIDENCIA: (a) HELM/lm-eval 4–5 pt (§3.3) — degradado a HYPOTHESIS/UNKNOWN; (b) EUV &gt;1.000 pasos e imposibilidad física (§4.4) — degradado a HYPOTHESIS/UNKNOWN; (c) AAL3 «en hardware» (§1.6) — corregido; (d) did:key implícitamente como estándar W3C (§1.2; M02 sí decía «W3C CCG, v0.9, no Recomendación», pero el estatus se presentaba de forma que invitaba a tratarlo como estándar) — corregido por M03 (corr. 01): es borrador CCG v0.9. Todas las etiquetas corregidas quedan registradas en §3 con su veredicto.</li>
+        <li><strong>B12. Referencias cruzadas verificadas.</strong> Se comprobó que cada C01–C16 cita la sección de M02 indicada en M03-B contra el informe M02 leído íntegro (§1.5/§1.6/§1.7, §2.1/§2.3/§2.4, §3.1/§3.2/§3.3, §4.1/§4.4, §5.1/§5.2, §6.1) y que cada D1–D15 tiene resolución en §4. Se comprobó que los documentos entregados (P2, P4, P6) contienen los mismos contenidos que sus informes (verificación por extracción de texto: P2 D-01 a D-12 SIN DECIDIR ×12; P4 matriz T1–T14; P6 matriz C01–C16; P7 verificada contra el PDF de 4 páginas A4). El artefacto P7 almacena su contenido en datos JS embebidos; se verificó por conteo en el código fuente (C01–C16 presentes) y por extracción del PDF.</li>
+        <li><strong>B13. Errores editoriales demostrables corregidos.</strong> (i) En M03-B, la fecha de VC 2.0 se cita como 15-05-2025 (corroborado) mientras M02 decía «mayo 2025» — unificado como 15-05-2025 corroborado, no en líneas leídas (salvedad de método, §12). (ii) En M02, la fuente #12 (SP 800-53 SC-3) se citaba vía resumen secundario de UpGuard; en §12 se marca como secundaria y se cita la primaria SP 800-53 Rev. 5. (iii) En M02, la fuente #14 (SLSA) se citaba vía glosario secundario de socket.dev y la #16 (GGUF) vía análisis secundario; en §12 se marcan como secundarias. (iv) En M02 §3.3, la cifra «Claude 2.1 perdió 5 puntos… GPT-4, 4 puntos» se presentaba como EVIDENCIA desde un análisis secundario; en §3 C11/U5 queda como no verificada. Ninguna corrección editorial alteró el significado ni la autoridad del propietario.</li>
+      </ul>
+
+      <h3>C. Limitaciones restantes</h3>
+      <ol class="tight">
+        <li><strong>U1 (ver A1):</strong> lectura verbatim del PDF de SP 800-63B-4 (§2.3.2, Ap. B, Ap. E) no realizada en ninguna de las tres misiones. El estado RESUELTO es decisión del propietario, no verificación primaria nueva.</li>
+        <li><strong>IR 8547 final (27-10-2026):</strong> corroborado por ≥3 resúmenes independientes del final; el PDF final no se leyó línea a línea en M03 ni en M03-B. La corrección PQC descansa en esa corroboración; no se presenta como cita verbatim primaria.</li>
+        <li><strong>Fechas DID 19-07-2022 y VC 15-05-2025:</strong> corroboradas por ≥3 secundarios; no quedaron en los extractos leídos en vivo. Salvedad de método conservada.</li>
+        <li><strong>A2A (U4):</strong> spec leída en vivo en versión <code>dev</code>; v1.0.0 (12-03-2026), v1.0.1 (mayo 2026), donación a Linux Foundation (junio 2025) y alojamiento en Agentic AI Foundation (agosto 2026) proceden de fuentes secundarias, salvo la nota de prensa de la Linux Foundation del 23-06-2025 verificada durante la construcción del documento M03-B.</li>
+        <li><strong>Miller (2024), arXiv:2411.00640 (U8):</strong> citado vía secundaria; paper no leído.</li>
+        <li><strong>Periodo de garantía de snapshots OpenAI:</strong> fuentes secundarias en conflicto (3 vs 6 vs 12 meses según tipo); no verificado en primaria.</li>
+        <li><strong>Sucesión legal aplicable:</strong> jurisdicción no especificada en la misión; sin procedimiento legal verificado.</li>
+        <li><strong>Equivalencia semántica entre modelos:</strong> sin métrica demostrada; fallo estructural central (§1) sin solución.</li>
+        <li><strong>NIST SP 800-53 (SC-3, AC-3/5/6, SC-5/8/23, SI-10, CP-9/10):</strong> existencia y texto corroborados por resúmenes independientes que citan la primaria; los controles se citan como requisitos a implementar y evidenciar, no como garantías por citarlos.</li>
+        <li><strong>Chen et al. arXiv:2307.09009 (drift) e Invariant Labs (tool poisoning, abr-may 2025):</strong> citados en secundarios; los textos originales no se leyeron en M03.</li>
+        <li><strong>LoC SQLite (2018-05-29):</strong> lista de entonces; no presentarla como lista exhaustiva actual.</li>
+        <li><strong>Verificación de los documentos entregados:</strong> la verificación de P2/P4/P6/P7 se hizo por extracción de texto y conteo de códigos; no se re-ejecutó una auditoría de renderizado completa de cada artefacto en esta consolidación.</li>
+      </ol>
+    </section>
+
+    <!-- ============ 12. FUENTES ============ -->
+    <section id="fuentes">
+      <h2><span class="n">§12</span>Fuentes primarias rastreables</h2>
+      <p class="lede">Nivel de verificación: <strong>verificado en vivo</strong> = leído directamente el 2026-11-05; <strong>index</strong> = obtenido vía índice de búsqueda el 2026-11-05, sin lectura completa de la primaria; <strong>corroborado</strong> = ≥2 resúmenes independientes que citan la sección primaria; <strong>heredado</strong> = verificación ya hecha en M02/M03, no repetida salvo discrepancia concreta. Donde una fuente se cita como «corroborada» y no «verificado en vivo», la afirmación descansa en resúmenes que citan la primaria; no se presenta como cita verbatim primaria. Los cálculos binomiales de C11 son aritmética propia verificable, no citas.</p>
+      <div class="src-list">
+        <div class="src"><b>DID Core v1.0</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://www.w3.org/TR/did-core/">https://www.w3.org/TR/did-core/</a></div><div class="smeta">W3C Recommendation, 19-07-2022 (corroborado) · Abstract, §Design Goals, §DID Syntax · Sintaxis/modelo DID, no métodos ni verdad.</div></div>
+        <div class="src"><b>VC Data Model v2.0</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://www.w3.org/TR/vc-data-model-2.0/">https://www.w3.org/TR/vc-data-model-2.0/</a></div><div class="smeta">W3C Recommendation, 15-05-2025 (corroborado) · §1.1 (verifiability ≠ truth), §4 Basic Concepts · Modelo de datos VC, no protocolo de emisión ni revocación por defecto.</div></div>
+        <div class="src"><b>did:key Method v0.9</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://w3c-ccg.github.io/did-key-spec/">https://w3c-ccg.github.io/did-key-spec/</a></div><div class="smeta">W3C CCG Draft v0.9 · Introduction, Operations, No Key Rotation, Deactivation Not Supported · Método generativo sin registro, no estándar W3C.</div></div>
+        <div class="src"><b>SLIP-0039</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://github.com/satoshilabs/slips/blob/master/slip-0039.md">https://github.com/satoshilabs/slips/blob/master/slip-0039.md</a></div><div class="smeta">Final, creado 2017-12-18 · Abstract, Two-level scheme, Format · Backup de wallets HD BIP-32, no autenticación/sucesión.</div></div>
+        <div class="src"><b>NIST SP 800-63B-4</b> <span class="chip ok">VERIFICADO EN VIVO (LANDING)</span><div class="surl"><a href="https://csrc.nist.gov/pubs/sp/800/63/b/4/final">https://csrc.nist.gov/pubs/sp/800/63/b/4/final</a></div><div class="smeta">Final, julio 2025 (31-07-2025) · §2.3.2/Ap. B/Ap. E corroborados, PDF no leído verbatim · Autenticación federal, AAL1-3.</div></div>
+        <div class="src"><b>NIST FIPS 203/204/205</b> <span class="chip plain">HEREDADO M03</span><div class="surl"><a href="https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization">https://csrc.nist.gov/projects/post-quantum-cryptography/post-quantum-cryptography-standardization</a></div><div class="smeta">Finales 13-08-2024 · ML-KEM / ML-DSA / SLH-DSA · KEM y firmas PQC.</div></div>
+        <div class="src"><b>NIST IR 8547</b> <span class="chip warn">CORROBORADO (≥3 RESÚMENES DEL FINAL)</span><div class="smeta">DOI 10.6028/NIST.IR.8547 · Final 27-10-2026 (borrador nov 2024) · Transition to PQC Standards · Guía de transición, no estatuto; depreca todo lo vulnerable tras 2030, disallow tras 2035.</div></div>
+        <div class="src"><b>RFC 9162</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://www.rfc-editor.org/rfc/rfc9162">https://www.rfc-editor.org/rfc/rfc9162</a></div><div class="smeta">Dic 2021, Experimental, DOI 10.17487/RFC9162 · §2.1 Merkle tree, §4.9/4.10 STH · Certificate Transparency v2.0, log como tercero de confianza.</div></div>
+        <div class="src"><b>RFC 8259</b> <span class="chip plain">HEREDADO M03</span><div class="smeta">Dic 2017, Standards Track · §8.1 UTF-8 MUST · JSON.</div></div>
+        <div class="src"><b>RFC 3629</b> <span class="chip plain">HEREDADO M03</span><div class="smeta">Nov 2003, STD 63 · Codificación UTF-8.</div></div>
+        <div class="src"><b>JCS RFC 8785</b> <span class="chip plain">CITADO EN M03 §3 (NO VERIFICADO EN VIVO EN M03)</span><div class="smeta">Canonicalización JSON para hash.</div></div>
+        <div class="src"><b>SQLite</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://www2.sqlite.org/draft/onefile.html">https://www2.sqlite.org/draft/onefile.html</a></div><div class="smeta">Formato retrocompatible desde 3.0.0 (2004-06-18) · §Single-file Cross-platform · Compatibilidad de formato, no de esquema.</div></div>
+        <div class="src"><b>Library of Congress RFS</b> <span class="chip plain">HEREDADO M03</span><div class="surl"><a href="https://loc.gov/preservation/resources/rfs/format-pref-summary.html">https://loc.gov/preservation/resources/rfs/format-pref-summary.html</a></div><div class="smeta">Página SQLite LoC 2018-05-29 · <code>.db/.db3/.sqlite/.sqlite3</code> preferidos, UTF-8 primero.</div></div>
+        <div class="src"><b>Syncthing FAQ</b> <span class="chip plain">HEREDADO M03</span><div class="surl"><a href="https://docs.syncthing.net/v1.18.2/users/faq.html">https://docs.syncthing.net/v1.18.2/users/faq.html</a></div><div class="smeta">v1.18.2 · «Is Syncthing my ideal backup application? No…» · Sync, no backup.</div></div>
+        <div class="src"><b>MCP 2026-07-28 (blog oficial)</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://blog.modelcontextprotocol.io/posts/2026-07-28/">https://blog.modelcontextprotocol.io/posts/2026-07-28/</a></div><div class="smeta">28-07-2026 · Stateless core, SEP-2567/2575, MRTR, deprecations · Spec abierta, no ISO/W3C.</div></div>
+        <div class="src"><b>MCP spec changelog</b> <span class="chip ok">VERIFICADO EN VIVO (M02)</span><div class="surl"><a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">https://modelcontextprotocol.io/specification/2026-07-28/changelog</a></div><div class="smeta">2026-07-28 · Key Changes.</div></div>
+        <div class="src"><b>A2A Protocol Specification</b> <span class="chip ok">VERIFICADO EN VIVO (SPEC DEV)</span><div class="surl"><a href="https://a2a-protocol.org/pr-849/specification/">https://a2a-protocol.org/pr-849/specification/</a></div><div class="smeta">Versión <code>dev</code> leída; v1.0.0 12-03-2026, v1.0.1 mayo 2026 (secundarias) · §1, §3.3, §4.3, §4.5, §4.6, §5.1, §5.3, §8.4 · Protocolo agente-a-agente; identidad en capa HTTP; autorización implementation-specific.</div></div>
+        <div class="src"><b>Linux Foundation, nota de prensa A2A</b> <span class="chip ok">VERIFICADO DURANTE LA CONSTRUCCIÓN DEL DOCUMENTO M03-B</span><div class="smeta">23-06-2025 · Donación de A2A a Linux Foundation · Gobernanza A2A.</div></div>
+        <div class="src"><b>safetensors</b> <span class="chip ok">VERIFICADO EN VIVO</span><div class="surl"><a href="https://github.com/huggingface/safetensors">https://github.com/huggingface/safetensors</a></div><div class="smeta">Apache-2.0, creado 2022-09-22 · README (formato; «Safe» = no ejecución de código; valores no verificados, NaN/±Inf admitidos) · Formato de tensores sin pickle.</div></div>
+        <div class="src"><b>GGUF spec</b> <span class="chip plain">HEREDADO M02/M03</span><div class="surl"><a href="https://github.com/ggml-org/ggml/blob/master/docs/gguf.md">https://github.com/ggml-org/ggml/blob/master/docs/gguf.md</a></div><div class="smeta">v3, desde 21-08-2023 · Formato llama.cpp/ggml · Formato de facto, no estándar formal.</div></div>
+        <div class="src"><b>GitHub Docs, commit signature verification</b> <span class="chip warn">INDEX 2026-11-05</span><div class="surl"><a href="https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification">https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification</a></div><div class="smeta">«Verified» = firma verificable criptográficamente; registro persistente aunque la clave se revoque.</div></div>
+        <div class="src"><b>NIST SP 800-53 Rev. 5</b> <span class="chip warn">CORROBORADO</span><div class="smeta">Sep 2020, Rel. 5.2.0 27-08-2025 · SC-3 (HIGH), AC-3, AC-5, AC-6, SC-5, SC-8, SC-23, SI-7, SI-10, CP-9, CP-10, CP-10(4) · Catálogo de controles federales; baselines en SP 800-53B.</div></div>
+        <div class="src"><b>NIST SP 800-34 Rev. 1</b> <span class="chip plain">HEREDADO M02/M03</span><div class="smeta">2010 · BIA, MTD/RTO/RPO, 7 pasos · Contingencia de sistemas federales.</div></div>
+        <div class="src"><b>ONNX</b> <span class="chip warn">INDEX (M02)</span><div class="surl"><a href="https://onnx.ai/onnx/_sources/repo-docs/IR.md.txt">https://onnx.ai/onnx/_sources/repo-docs/IR.md.txt</a> · <a href="https://onnx.ai/onnx/_sources/repo-docs/Versioning.md.txt">https://onnx.ai/onnx/_sources/repo-docs/Versioning.md.txt</a></div><div class="smeta">IR v13 (06-11-2025) · IR Specification, Versioning · Intercambio, no ejecución idéntica.</div></div>
+        <div class="src"><b>Qubes OS Architecture</b> <span class="chip plain">HEREDADO M03</span><div class="surl"><a href="https://doc.qubes-os.org/en/latest/developer/system/architecture.html">https://doc.qubes-os.org/en/latest/developer/system/architecture.html</a></div><div class="smeta">4.3.2 · Xen, qubes, dom0 sin red · OS escritorio monousuario; no aislamiento intra-dominio.</div></div>
+        <div class="src"><b>Veeam 3-2-1-1-0</b> <span class="chip plain">HEREDADO M03</span><div class="surl"><a href="https://www.veeam.com/blog/data-backup-recovery.html">https://www.veeam.com/blog/data-backup-recovery.html</a></div><div class="smeta">Regla 3-2-1-1-0 · Regla de vendedor, no estándar.</div></div>
+        <div class="src"><b>HELM</b> <span class="chip plain">CITADO EN M02/M03; PAPER NO RE-LEÍDO EN M03-B</span><div class="smeta">arXiv:2211.09110 (Liang et al., 2022), TMLR 2023 · Marco multi-escenario/multi-métrica con bootstrap · Evaluación con intervalos.</div></div>
+        <div class="src"><b>Miller (2024)</b> <span class="chip unk">CITADO VÍA SECUNDARIA; PAPER NO LEÍDO (U8)</span><div class="smeta">arXiv:2411.00640 · «Adding Error Bars to Evals» · Bootstrap, IC, pruebas pareadas.</div></div>
+        <div class="src"><b>OAIS / ISO 14721:2012</b> <span class="chip warn">INDEX (M02, SECUNDARIA)</span><div class="surl"><a href="https://technav.ieee.org/topic/digital-preservation/">https://technav.ieee.org/topic/digital-preservation/</a></div><div class="smeta">ISO 14721:2012 · Ingest, AIP/SIP/DIP · Marco conceptual de preservación, no implementación.</div></div>
+        <div class="src"><b>SLSA / in-toto</b> <span class="chip unk">SECUNDARIA (M02); SPEC PRIMARIA slsa.dev NO VERIFICADA DIRECTAMENTE</span><div class="surl"><a href="https://socket.dev/glossary/supply-chain-levels-for-software-artifacts">https://socket.dev/glossary/supply-chain-levels-for-software-artifacts</a></div><div class="smeta">SLSA v1.0 19-04-2023, v1.1 abr 2025, v1.2 24-11-2025 · Provenance · Procedencia de artefactos, no seguridad del código.</div></div>
+        <div class="src"><b>UCAN Working Group</b> <span class="chip warn">INDEX (M02, CITADA EN SECUNDARIA)</span><div class="surl"><a href="https://github.com/ucan-wg/spec">https://github.com/ucan-wg/spec</a></div><div class="smeta">Línea v1.0, trabajo comunitario · Capabilities, delegación atenuable · No IETF ni W3C.</div></div>
+        <div class="src"><b>Shamir / SLIP-39, colapso de umbral</b> <span class="chip warn">INDEX (M02, SECUNDARIA)</span><div class="surl"><a href="https://github.com/bitaps-com/pybtc/issues/59">https://github.com/bitaps-com/pybtc/issues/59</a></div><div class="smeta">Issue público 2025 · Implementación no estándar de Shamir-sobre-BIP39 · Teoría sólida, implementación frágil.</div></div>
+      </div>
+    </section>
+
+    <!-- ============ ANEXO A ============ -->
+    <section id="anexo">
+      <h2><span class="n">Anexo A</span>Archivos generados y hashes</h2>
+      <h3>Archivos generados por la consolidación (espacio aislado de investigación)</h3>
+      <ul class="tight">
+        <li><code>report.md</code> — expediente consolidado (87.158 bytes en su estado final).</li>
+        <li><code>notes/consolidation-method.md</code> — nota de método de consolidación.</li>
+        <li><code>hashes.md</code> — manifiesto SHA-256 de los archivos generados (calculado tras la última edición).</li>
+        <li>Este documento web — <code>expediente-consolidado-nexo/index.html</code> — presentación navegable del mismo expediente.</li>
+      </ul>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Archivo generado</th><th>SHA-256</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="Archivo"><span class="mono">report.md</span></td><td data-label="SHA-256"><span class="hash">4f72d63f634f8d1ba710c683104d4a0e9832957e1eff8bfebc0ccf40f9310617</span></td></tr>
+          <tr><td class="id" data-label="Archivo"><span class="mono">notes/consolidation-method.md</span></td><td data-label="SHA-256"><span class="hash">139bd7f9c794d55c9b49aa2ebd7ef4559e3e675e85e76ace32cf46aed7ec6055</span></td></tr>
+        </tbody>
+      </table></div>
+      <h3>SHA-256 de las siete partes fuente (originales conservados, sin modificar)</h3>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Parte</th><th>Archivo</th><th>SHA-256</th></tr></thead>
+        <tbody>
+          <tr><td class="id" data-label="Parte">P1</td><td data-label="Archivo"><span class="mono">research_notes/nexo-mision-02-20261105-2109/report.md</span></td><td data-label="SHA-256"><span class="hash">8f75a49d3b196d961599a35c8d3bc97aa8cf6d11d0c4dfe6de2abec634d1f30c</span></td></tr>
+          <tr><td class="id" data-label="Parte">P3</td><td data-label="Archivo"><span class="mono">research_notes/nexo-mision-03-20261105-2217/report.md</span></td><td data-label="SHA-256"><span class="hash">ccd68c91ba3dd2ae95e2af9e059456bcd9e2451cc102db1927becebf576af675</span></td></tr>
+          <tr><td class="id" data-label="Parte">P5</td><td data-label="Archivo"><span class="mono">research_notes/nexo-mision-03b-20261105-1947/report.md</span></td><td data-label="SHA-256"><span class="hash">ec063ee5c7100ac109e2c3326c0a91342a813b92bd9f0aa1099be98448c32355</span></td></tr>
+          <tr><td class="id" data-label="Parte">P2</td><td data-label="Archivo"><span class="mono">ts-spaces/mision-02-nexo/index.html</span></td><td data-label="SHA-256"><span class="hash">e80623e0119ca23688a6f6317beabee2489055b2af8164738b45194c6299150b</span></td></tr>
+          <tr><td class="id" data-label="Parte">P4</td><td data-label="Archivo"><span class="mono">ts-spaces/mision-03-nexo/index.html</span></td><td data-label="SHA-256"><span class="hash">11b001215bbc3e7b2dca0d62994c32fb063951910945556ffcdedb842da63057</span></td></tr>
+          <tr><td class="id" data-label="Parte">P6</td><td data-label="Archivo"><span class="mono">ts-spaces/mision-03-b-nexo/index.html</span></td><td data-label="SHA-256"><span class="hash">e594bc288dda4c8312ffa29c3323991b90a00559eec7f5a48d73d7dfb71b771a</span></td></tr>
+          <tr><td class="id" data-label="Parte">P7</td><td data-label="Archivo"><span class="mono">ts-spaces/hoja-consolidada-de-erratas-nexo/index.html</span></td><td data-label="SHA-256"><span class="hash">5a6506ef1e6efca9840222130dd619a3a46157740188a376ed954006beb0c40a</span></td></tr>
+          <tr><td class="id" data-label="Parte">P7</td><td data-label="Archivo"><span class="mono">your_files/hoja-consolidada-de-erratas-nexo/hoja-consolidada-de-erratas-nexo.pdf</span></td><td data-label="SHA-256"><span class="hash">2a89284926d639073cbc916a66c5cadad3843348f45c18002666b144bf775ca3</span></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- ============ INFORME FINAL ============ -->
+    <section id="informe-final">
+      <h2><span class="n">§8-misión</span>Informe final obligatorio — MISIÓN MUSE-AUTONOMY-001</h2>
+      <div class="final-report">
+        <h3>ESTADO: PARTIAL</h3>
+        <p>La consolidación documental está terminada e incorporada en este expediente: las siete partes están integradas, los conteos son coherentes, las etiquetas están aplicadas, las fuentes son rastreables, los UNKNOWN conservan sus estados y D-01 a D-12 siguen SIN DECIDIR, con la ausencia de autorización de implementación declarada expresamente. No se declara PASS porque subsisten criterios que dependen de evidencia no obtenida y de decisiones reservadas al propietario: U1 (RESUELTO por decisión del propietario sin lectura verbatim del PDF de SP 800-63B-4) y las divergencias A1–A3 de §11. PASS, por las reglas de este expediente, exige evidencia verificable y criterio de aceptación satisfecho; no se concede por documentación.</p>
+        <h3>PRODUCTO</h3>
+        <ul class="tight">
+          <li><code>expediente-consolidado-nexo/index.html</code> — este documento consolidado, en estado de borrador para revisión del propietario, navegable (el artefacto que estás leyendo).</li>
+          <li><code>report.md</code> — expediente consolidado en texto (87.158 bytes), con SHA-256 en el Anexo A.</li>
+          <li><code>notes/consolidation-method.md</code> — nota de método de consolidación.</li>
+          <li><code>hashes.md</code> — manifiesto SHA-256 de los archivos generados.</li>
+        </ul>
+        <p>Entregables cubiertos: documento consolidado definitivo · índice navegable · registro C01–C16 (§3) · matriz de discrepancias y trazabilidad (§4) · registro R1–R7 (§6.1) · registro UNKNOWN U1–U9 (§7) · matriz de impactos D-01 a D-12 (§8) · informe de autocontrol (§11) · relación exacta de archivos y hashes (Anexo A).</p>
+        <h3>EVIDENCIA (verificaciones efectuadas)</h3>
+        <ul class="tight">
+          <li>Lectura íntegra de los tres informes de investigación (M02, M03, M03-B) y extracción/conteo de los cuatro documentos entregados (M02, M03, M03-B, hoja de erratas) más el PDF de la hoja (4 páginas A4, verificado completo: C01–C16, R1–R7, U1–U9, D-01–D-12).</li>
+          <li>Conteos verificados en todo el expediente: 16 correcciones (15 CONFIRMADA + 1 PARCIALMENTE CONFIRMADA C14) · 15 discrepancias · 12 materiales supervivientes · 7 riesgos R1–R7 · 9 UNKNOWN · 12 decisiones SIN DECIDIR · 5 correcciones materiales de M03 · 13 riesgos omitidos de M03 · 12 requisitos a preservar · matriz T1–T14.</li>
+          <li>Referencias cruzadas C↔M02 verificadas sección a sección (§11 B12); cada D1–D15 tiene resolución en §4.</li>
+          <li>SHA-256 calculados de las siete partes fuente y de los archivos generados (Anexo A). Originales conservados sin modificar.</li>
+        </ul>
+        <h3>PENDIENTES (únicamente cuestiones realmente no resueltas)</h3>
+        <ul class="tight">
+          <li>Divergencias A1–A3 (§11): U1, redacción C02 del entorno protegido y lectura C10 de NIST — decisión exclusiva del propietario.</li>
+          <li>UNKNOWN U2, U3, U5, U6, U7, U8, U9 (UNKNOWN) y U4 (PARCIAL), con sus motivos en §7.</li>
+          <li>Fallo estructural central (§1): sin solución demostrada.</li>
+          <li>D-01 a D-12: SIN DECIDIR.</li>
+        </ul>
+        <h3>LIMITACIONES</h3>
+        <p>Las 12 limitaciones restantes están registradas en §11 C. Las principales: no se realizó investigación primaria nueva en esta consolidación (las verificaciones son las de M02/M03/M03-B, con su nivel conservado); el PDF de SP 800-63B-4 y el final de IR 8547 no se leyeron línea a línea; Miller (2024) no se leyó; la gobernanza A2A descansa en parte en fuentes secundarias; la verificación de los documentos entregados se hizo por extracción de texto y conteo, sin re-auditoría de renderizado completa.</p>
+        <h3>AUTONOMÍA</h3>
+        <p>Decisiones operativas tomadas sin intervención humana, dentro del alcance concedido: adoptar la hoja del propietario como base de consolidación y su conteo de 12 materiales (resolviendo B1 sin pérdida de sustancia); registrar las divergencias A1–A3 sin resolverlas, por pertenecer al propietario; aplicar la prevalencia documentada en D2 y D13; corregir los errores editoriales demostrables de §11 B13 sin alterar significado ni autoridad. Bloqueos encontrados: ninguno que impidiera terminar los entregables documentales; los únicos puntos no cerrados son los que exigen evidencia primaria no obtenida o decisión del propietario, y quedan registrados como tales. No se ejecutó código, pruebas, CI ni bootstrap; no se modificaron NCS M0 ni P07; no se aprobó ninguna tecnología; no se resolvió ninguna decisión D-01 a D-12; no se publicó ni modificó el repositorio principal.</p>
+      </div>
+    </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <div class="wrap" style="padding:0">
+      <p><strong>Expediente consolidado — Nexo.</strong> Misión MUSE-AUTONOMY-001 · Consolidación documental M02 → M03 → M03-B · 5 de noviembre de 2026. Documento de investigación y referencia: <strong>APROBADO CONDICIONADO</strong>. No es una especificación técnica autorizada, no aprueba ninguna tecnología y <strong>no autoriza implementación</strong>. D-01 a D-12 permanecen SIN DECIDIR, reservadas exclusivamente al propietario. NCS M0 y P07 quedan fuera de modificación.</p>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.ccard'));
+  var input = document.getElementById('csearch');
+  var status = document.getElementById('csearch-status');
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('.fbtn'));
+  var filter = 'all';
+  function apply(){
+    var q = (input.value || '').trim().toLowerCase();
+    var shown = 0;
+    cards.forEach(function(card){
+      var tags = card.getAttribute('data-tags') || '';
+      var okFilter = filter === 'all' || tags.indexOf(filter) !== -1;
+      var okQuery = !q || card.textContent.toLowerCase().indexOf(q) !== -1;
+      var vis = okFilter && okQuery;
+      card.classList.toggle('hidden-card', !vis);
+      if (vis) shown++;
+    });
+    status.textContent = shown + ' de 16 correcciones visibles';
+  }
+  buttons.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      buttons.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+      filter = btn.getAttribute('data-filter');
+      apply();
+    });
+  });
+  input.addEventListener('input', apply);
+  apply();
+
+  // TOC active state
+  var links = Array.prototype.slice.call(document.querySelectorAll('nav.toc a'));
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  if ('IntersectionObserver' in window){
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting){
+          links.forEach(function(a){ a.classList.remove('active'); });
+          var a = map[e.target.id];
+          if (a) a.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-10% 0px -70% 0px' });
+    document.querySelectorAll('main section').forEach(function(s){ obs.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>
