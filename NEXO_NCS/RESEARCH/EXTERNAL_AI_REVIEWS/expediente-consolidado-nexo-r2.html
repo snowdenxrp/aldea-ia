@@ -835,7 +835,7 @@ footer p{margin:.3em 0}
 <p>Motivos (M03-B, conservados; actualización de evidencia 2026-11-07):
 - <strong>U1:</strong> M03/M03-B no habían leído directamente el texto normativo completo. Esta revisión leyó el texto oficial NIST en HTML y contrastó §2.3.2, §3.2.13, Appendix B y Appendix E. Se confirma clave privada no exportable, resistencia al phishing, entorno aislado protegido por hardware y exclusión de autenticadores sincronizables en AAL3. §3.2.13 admite hardware separado o procesador/entorno de ejecución integrado protegido (secure element, TEE, TPM) separado del host. U1 permanece RESUELTO con evidencia primaria directa.
 - <strong>U2:</strong> revisión primaria adicional (2026-11-07): NIST AI 200-3, <em>ARIA Evaluation Planning Manual</em> (septiembre 2026), §§3–4 y Appendix C; NIST AI RMF 1.0, Measure 2.1–2.3; y Reglamento (UE) 2024/1689, art. 10. Ninguno de estos textos establece un umbral universal de 200–500 casos. NIST AI 200-3 pide determinar el tamaño de muestra según objetivos y análisis de potencia; sus ejemplos ilustrativos usan 20–40 red teamers, ~100 user testers por aplicación y 3–5 annotators para Healthcare-Privacy, y 30–50 red teamers, 60–100 user testers por aplicación y 3–5 annotators para Manufacturing-Safety. Son tamaños de grupos humanos en dos ejemplos contextuales, no un requisito general de número de prompts/casos. Miller (2024), §5, usa parámetros hipotéticos y calcula ≈969 preguntas independientes para detectar una diferencia absoluta de 3% con potencia 80% y α=0,05; sugiere alrededor de 1.000 preguntas para nuevos evals bajo ese escenario. El AI Act exige datos relevantes, suficientemente representativos y con propiedades estadísticas apropiadas (art. 10), sin fijar N en ese artículo. U2 permanece UNKNOWN: la búsqueda primaria es más sólida, pero no exhaustiva de todas las normas sectoriales aplicables.
-- <strong>U3:</strong> UCAN (ucan-wg/spec v1.0, trabajo comunitario) y ZCAP-LD (borrador CCG v0.4.0) no se re-verificaron en M03-B; su estatus es heredado de M02. No se afirma que no exista nada: solo que nada localizado lo resuelve para Nexo.
+- <strong>U3:</strong> revisión primaria adicional (2026-11-07): UCAN v1.0.0 se leyó directamente en <code>ucan-wg/spec</code>; se autodescribe como esquema de autorización distribuido, local-first y originado por el usuario, con principales identificados por DID, cadenas delegables, invocación y revocación. Advierte que las cadenas válidas criptográficamente pueden ser semánticamente inválidas, que UCAN no ofrece confinement y que las subdelegaciones pueden no ser visibles; revocación y promesa son RECOMMENDED, no REQUIRED. ZCAP, actualmente titulado <em>Authorization Capabilities</em>, se verificó en la publicación W3C CCG <code>v0.4.0-draft</code> y en el release GitHub <code>v0.4.0</code> (07-10-2026). Es un Draft Community Group Report, no una W3C Recommendation; la versión 0.4.0 declara que todos sus cambios son no normativos y mantiene el detalle de revocación en backlog. La página de versiones del grupo enumera <code>v0.4.0-draft</code> y <code>v0.3.0</code>, no una Recomendación final. Ambos son mecanismos de autorización/capability, no una solución integral de identidad, autoridad raíz, recuperación o continuidad de Nexo. U3 permanece UNKNOWN porque el inventario de estándares/protocolos de identidad y delegación no es exhaustivo y estas dos fuentes no cubren todo el alcance de Nexo.
 - <strong>U4:</strong> <strong>RESUELTO con fuentes primarias directas (2026-11-07).</strong> (1) La Linux Foundation anunció el 23-06-2025 que A2A, creado por Google, se incorporaba a la LF; (2) AAIF publicó el 17-08-2026 que A2A se incorporaba como hosted project, y el blog oficial A2A del 27-08-2026 lo describe como aceptado en Growth Stage; (3) AAIF se define como fundación neutral bajo la Linux Foundation y lista A2A entre sus proyectos; (4) el <code>GOVERNANCE.md</code> actual de A2A atribuye la supervisión técnica a un TSC de nueve asientos (Google, Microsoft, Cisco, AWS, Salesforce, ServiceNow, SAP, IBM y Bloomberg), mientras que AAIF mantiene su propio Governing Board y Technical Committee: son niveles de gobernanza distintos; (5) GitHub registra <code>v1.0.0</code> publicado el 12-03-2026 y <code>v1.0.1</code> publicado el 28-05-2026 (release notes fechadas 26-05-2026). <strong>Discrepancia documental conservada:</strong> la página oficial versionada <code>/v1.0.1/specification/</code> y el archivo de spec en el tag <code>v1.0.1</code> aún muestran en su frontmatter <code>Latest Released Version 1.0.0</code>; el release oficial de GitHub confirma que <code>v1.0.1</code> existe. La spec técnica <code>dev</code> no mencionar a la LF no contradice la gobernanza documentada en los archivos del proyecto y en los anuncios oficiales.
 - <strong>U5:</strong> heredado de M03; C11 no la repara ni la verifica. Motivo: ninguna comparación primaria localizada.
 - <strong>U6:</strong> heredado de M03; C16 reformula, no verifica. Motivo: ninguna fuente primaria localizada lo cuantifica así.
@@ -1317,12 +1317,20 @@ footer p{margin:.3em 0}
 <td>Secundaria (M02); spec primaria slsa.dev no verificada directamente</td>
 </tr>
 <tr>
-<td>UCAN Working Group</td>
+<td>UCAN Working Group — Specification v1.0.0</td>
 <td><a href="https://github.com/ucan-wg/spec" target="_blank" rel="noopener">https://github.com/ucan-wg/spec</a></td>
-<td>Línea v1.0, trabajo comunitario</td>
-<td>Capabilities, delegación atenuable</td>
-<td>No IETF ni W3C</td>
-<td>Index (M02, citada en secundaria)</td>
+<td>Versión 1.0.0; consultada 2026-11-07</td>
+<td>DID, capability delegation/invocation, atenuación, subdelegación, revocación y límites de confinement</td>
+<td>Esquema comunitario de autorización; no IETF ni W3C</td>
+<td>README/spec primaria leída directamente (2026-11-07)</td>
+</tr>
+<tr>
+<td>W3C CCG — Authorization Capabilities (ZCAP)</td>
+<td><a href="https://w3c-ccg.github.io/zcap-spec/v0.4.0-draft/" target="_blank" rel="noopener">Spec v0.4.0-draft</a>; <a href="https://github.com/w3c-ccg/zcap-spec/releases/tag/v0.4.0" target="_blank" rel="noopener">release v0.4.0</a></td>
+<td>Página publicada v0.4.0-draft; release GitHub v0.4.0, 07-10-2026</td>
+<td>Root/delegated capabilities, Data Integrity proofs, caveats, chains, invocation; revocation permanece en backlog</td>
+<td>Draft Community Group Report; no W3C Recommendation; cambios v0.4.0 declarados no normativos</td>
+<td>Spec primaria y release oficial leídos directamente (2026-11-07)</td>
 </tr>
 <tr>
 <td>Shamir / SLIP-39, colapso de umbral</td>
