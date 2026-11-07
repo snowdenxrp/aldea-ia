@@ -208,3 +208,48 @@ No se autoriza inferir recuperación por edad, PID aparentemente muerto, path au
 - PR #110: OPEN / DRAFT / NOT MERGED según STATUS vigente.
 
 No repetir bootstrap. No tocar, borrar, cambiar permisos ni reinicializar `$HOME/.nexo-continuity.json`. Esta reconciliación no autoriza operación posterior, commissioning, autoridad constitucional ni efectos protegidos.
+
+
+---
+
+## DELTA — RECONCILIACIÓN DE DECISIONES RATIFICADAS Y FUENTES DE CÓDIGO (2026-11-07)
+
+Esta delta actualiza el estado de decisión de la fotografía histórica §2–§8. No elimina sus observaciones históricas ni proyecta PASS a un SHA distinto.
+
+### Decisiones de autoridad vigentes
+
+- **D1–D6 P-03/P-04: RATIFICADAS POR EL PROPIETARIO (2026-11-03)**, según la sección 10 del registro [P-03/P-04 contract ratification](NCS_M0_D2_P03_P04_CONTRACT_RATIFICATION_PROPOSAL_2026-11-03.md). Las frases anteriores de este documento «propuesta no ratificada» describen el estado previo a esa ratificación.
+- **P-05-C: RATIFICADA POR EL PROPIETARIO (2026-11-07)**. Release/cleanup incierto conserva `UNKNOWN/BLOCKED`; sin retry automático de negocio ni readmisión normal; sin cleanup destructivo por path sin identidad demostrada; cualquier recuperación futura requiere decisión expresa posterior y procedimiento concreto demostrado.
+- La ratificación D1–D6 y P-05-C no es implementación, enforcement, PASS ni autorización de runtime/tests/CI.
+
+### Revalidación estática de las fronteras públicas
+
+Rama de código inspeccionada: `ncs-lumina-decoupling-2026-10-29`, HEAD `d8b5ca8720908d926acc18130614cce132a43b5d`. Los blobs de los módulos críticos coinciden con la fotografía previa:
+
+| Fuente | Blob SHA | Observación relevante |
+|---|---|---|
+| `src/nexo/application/chronicle-append.mjs` | `c1964467d68043d06e035ad59720f8cec2e52e52` | `runNexoChronicleAppend` lee Chronicle y Continuity en líneas 319 y 324 antes de llamar `openNexoContinuityOwner` en línea 335. |
+| `src/nexo/application/continuity-queries.mjs` | `e1915e94e53e71d37a37952fead37ba62bdae79a` | Las APIs status/mission status/plan/draft preview/Open Loops llaman directamente `loadCurrent()` en líneas 10, 43, 108, 215 y 272. |
+| `src/nexo/application/index.mjs` | `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3` | Reexporta las APIs públicas de Chronicle, queries y request preview. |
+| `src/nexo/application/mission-request-preview.mjs` | `4e317b646d0c7b7403acfb63732dec8c3fe7778b` | `previewNexoMissionRequest` delega en `previewNexoMissionDraft`; no establece admisión propia. |
+| `src/nexo/core/continuity-service.mjs` | `53fd7043266635b30a1e01b69bb00d28feda300c` | `openNexoContinuityOwner` ejecuta `store.loadCurrent()` durante la apertura del owner. |
+
+### Consecuencia para M0
+
+1. D1 exige admisión en la API pública antes de la primera lectura persistente y hasta el último uso del snapshot/escritura. En el snapshot de código citado, los callers indicados aún realizan lecturas directas antes de que exista esa frontera común. **P-03/P-04 están ratificadas como dirección, pero su enforcement no está implementado/demostrado en estas rutas.**
+2. El lock per-store no sustituye la admisión exclusiva de instancia ratificada. No se debe contar una lectura lock-aware como PASS de D1.
+3. P-09 sigue **OPEN / UNKNOWN**: esta fotografía no demuestra cobertura de callers externos, dinámicos, computados o escrituras directas fuera de las rutas inspeccionadas.
+4. La corrección debe partir de las decisiones D1–D6 ya ratificadas; no volver a pedir al propietario que decida esos puntos ni repetir el inventario histórico sin cambio de fuente.
+5. La secuencia ejecutable continúa bloqueada por P-07-C y P-05 enforcement. No seleccionar mecanismo por inferencia.
+
+### Estado
+
+- P-03/P-04: **D1–D6 RATIFICADAS; IMPLEMENTACIÓN/ENFORCEMENT/COVERAGE PENDIENTES**.
+- P-05: **C RATIFICADA; OPEN hasta mecanismo/enforcement/resolución/evidencia**.
+- P-07-C: **UNKNOWN / BLOQUEANTE**.
+- P-09: **OPEN / UNKNOWN**.
+- E2/E3: **PARTIAL / NOT CLOSED**.
+- NCS M0: **INCOMPLETO**.
+- `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP.
+- Esta reconciliación es documental y estática. No se ejecutaron tests/CI/Actions, ni comandos Termux/POCO, ni runtime, bootstrap o publicación.
+
