@@ -223,3 +223,20 @@ Las referencias del snapshot original a `P05-C OPEN / NOT RATIFIED` quedan super
 La reconciliación P-09 del 2026-11-07 concluye que existe cobertura estática parcial de raíces/imports literales, pero permanecen UNKNOWN loaders no literales, consumidores externos y cobertura universal del despliegue. La admisión pre-read tampoco está implementada en las rutas path-based observadas. Véase `NCS_M0_P09_CALLER_COVERAGE_RECONCILIATION_2026-11-07.md`.
 
 No cambia la normativa de escenarios: P07-C sigue UNKNOWN/BLOCKING; un harness PASS no se convierte en PASS_GATE sin cobertura P09, modelo ratificado, seam exacto y oráculos completos. M0 INCOMPLETO. No tests/CI ejecutados ni cambios ejecutables.
+
+
+---
+
+## DELTA — PRECEDENCIA DEL MODELO R1 ACEPTADO (2026-11-07)
+
+Las referencias históricas de este documento a «no ratifica R1» y cualquier dependencia que describa R1 como pendiente de aceptación quedan superadas por la decisión expresa del propietario del **2026-11-02**: R1 fue **ACEPTADO** como límite del modelo de confianza.
+
+Precedencia vigente:
+- R1: **ACEPTADO POR EL PROPIETARIO**; limita el claim a Android sandbox + HOME privado Termux y excluye root/OS comprometido y procesos maliciosos con el mismo UID, conforme al perfil R1 registrado.
+- P07-E no está cerrado: aceptación del límite de actores no demuestra permisos, ownership, control sostenido de launchers/writers ni enforcement.
+- E2/E3 permanecen PARTIAL / NOT CLOSED; P-09 OPEN/UNKNOWN para consumidores externos y loaders no literales.
+- La clase COVERED se refiere solo a participantes efectivamente sometidos a la admisión ratificada; RAW y PRIVILEGED conservan las distinciones V2.3. No ampliar COVERED por el mero hecho de estar bajo el mismo UID.
+- P07-C permanece UNKNOWN/BLOCKING; mecanismo seleccionado NINGUNO; no se concede PASS_GATE por esta corrección documental.
+- P-05-C ratificada como política; P-05 OPEN por falta de mecanismo/enforcement durable y resolución.
+
+Esta delta no ratifica V2.3, no selecciona mecanismo, no ejecuta pruebas ni autoriza implementación. NCS M0 INCOMPLETO.
