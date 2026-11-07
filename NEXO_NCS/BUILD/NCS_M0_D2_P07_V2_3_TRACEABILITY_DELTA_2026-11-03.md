@@ -143,3 +143,14 @@ La revisión siguiente debe recibir los tres documentos V2.2 y los tres deltas V
 6. que las dependencias P05/P09/P01/P02/R1 permanezcan abiertas donde corresponde.
 
 La revisión es documental y de solo lectura. No solicitar ejecución ni ratificación de autoridad.
+
+
+---
+
+## DELTA — RECONCILIACIÓN P-05-C/P-09 (2026-11-07)
+
+El estado histórico de P-05-C como no ratificada queda superado: el propietario ratificó C el 2026-11-07. C sigue siendo política, no mecanismo; P-05 permanece OPEN hasta enforcement durable/interproceso y evidencia de resolución/readmisión.
+
+P-09 permanece OPEN/UNKNOWN. La reconciliación actual encontró guardas parciales para raíces e imports literales, pero no cierre de imports computados, consumidores externos ni universo completo del despliegue. La brecha pre-read de P-03/P-04 sigue observable en blobs de aplicación. Estas limitaciones deben permanecer como dependencias explícitas en cualquier claim P07-C.
+
+P07-C sigue UNKNOWN/BLOCKING. No se ejecutaron escenarios ni tests/CI; no existe PASS nuevo ni PASS_GATE por esta actualización documental.
