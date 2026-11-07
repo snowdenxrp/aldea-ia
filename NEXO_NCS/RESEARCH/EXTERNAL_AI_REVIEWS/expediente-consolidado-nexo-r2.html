@@ -837,7 +837,7 @@ footer p{margin:.3em 0}
 - <strong>U2:</strong> revisión primaria adicional (2026-11-07): NIST AI 200-3, <em>ARIA Evaluation Planning Manual</em> (septiembre 2026), §§3–4 y Appendix C; NIST AI RMF 1.0, Measure 2.1–2.3; y Reglamento (UE) 2024/1689, art. 10. Ninguno de estos textos establece un umbral universal de 200–500 casos. NIST AI 200-3 pide determinar el tamaño de muestra según objetivos y análisis de potencia; sus ejemplos ilustrativos usan 20–40 red teamers, ~100 user testers por aplicación y 3–5 annotators para Healthcare-Privacy, y 30–50 red teamers, 60–100 user testers por aplicación y 3–5 annotators para Manufacturing-Safety. Son tamaños de grupos humanos en dos ejemplos contextuales, no un requisito general de número de prompts/casos. Miller (2024), §5, usa parámetros hipotéticos y calcula ≈969 preguntas independientes para detectar una diferencia absoluta de 3% con potencia 80% y α=0,05; sugiere alrededor de 1.000 preguntas para nuevos evals bajo ese escenario. El AI Act exige datos relevantes, suficientemente representativos y con propiedades estadísticas apropiadas (art. 10), sin fijar N en ese artículo. U2 permanece UNKNOWN: la búsqueda primaria es más sólida, pero no exhaustiva de todas las normas sectoriales aplicables.
 - <strong>U3:</strong> revisión primaria adicional (2026-11-07): UCAN v1.0.0 se leyó directamente en <code>ucan-wg/spec</code>; se autodescribe como esquema de autorización distribuido, local-first y originado por el usuario, con principales identificados por DID, cadenas delegables, invocación y revocación. Advierte que las cadenas válidas criptográficamente pueden ser semánticamente inválidas, que UCAN no ofrece confinement y que las subdelegaciones pueden no ser visibles; revocación y promesa son RECOMMENDED, no REQUIRED. ZCAP, actualmente titulado <em>Authorization Capabilities</em>, se verificó en la publicación W3C CCG <code>v0.4.0-draft</code> y en el release GitHub <code>v0.4.0</code> (07-10-2026). Es un Draft Community Group Report, no una W3C Recommendation; la versión 0.4.0 declara que todos sus cambios son no normativos y mantiene el detalle de revocación en backlog. La página de versiones del grupo enumera <code>v0.4.0-draft</code> y <code>v0.3.0</code>, no una Recomendación final. Ambos son mecanismos de autorización/capability, no una solución integral de identidad, autoridad raíz, recuperación o continuidad de Nexo. U3 permanece UNKNOWN porque el inventario de estándares/protocolos de identidad y delegación no es exhaustivo y estas dos fuentes no cubren todo el alcance de Nexo.
 - <strong>U4:</strong> <strong>RESUELTO con fuentes primarias directas (2026-11-07).</strong> (1) La Linux Foundation anunció el 23-06-2025 que A2A, creado por Google, se incorporaba a la LF; (2) AAIF publicó el 17-08-2026 que A2A se incorporaba como hosted project, y el blog oficial A2A del 27-08-2026 lo describe como aceptado en Growth Stage; (3) AAIF se define como fundación neutral bajo la Linux Foundation y lista A2A entre sus proyectos; (4) el <code>GOVERNANCE.md</code> actual de A2A atribuye la supervisión técnica a un TSC de nueve asientos (Google, Microsoft, Cisco, AWS, Salesforce, ServiceNow, SAP, IBM y Bloomberg), mientras que AAIF mantiene su propio Governing Board y Technical Committee: son niveles de gobernanza distintos; (5) GitHub registra <code>v1.0.0</code> publicado el 12-03-2026 y <code>v1.0.1</code> publicado el 28-05-2026 (release notes fechadas 26-05-2026). <strong>Discrepancia documental conservada:</strong> la página oficial versionada <code>/v1.0.1/specification/</code> y el archivo de spec en el tag <code>v1.0.1</code> aún muestran en su frontmatter <code>Latest Released Version 1.0.0</code>; el release oficial de GitHub confirma que <code>v1.0.1</code> existe. La spec técnica <code>dev</code> no mencionar a la LF no contradice la gobernanza documentada en los archivos del proyecto y en los anuncios oficiales.
-- <strong>U5:</strong> heredado de M03; C11 no la repara ni la verifica. Motivo: ninguna comparación primaria localizada.
+- <strong>U5:</strong> revisión primaria adicional (2026-11-07): el paper HELM (TMLR 2023) caracteriza HELM como framework holístico con escenarios y múltiples métricas, y documenta que los resultados pueden variar ampliamente por modelo, escenario, prompts y número/selección de ejemplos few-shot; incluso cita rangos de 30–80% para el mismo modelo/escenario bajo condiciones distintas. El repositorio HELM está en maintenance mode desde 01-06-2026. El repositorio actual de <code>lm-evaluation-harness</code> se describe como framework de evaluación few-shot, con más de 60 benchmarks y cientos de subtareas/variantes, y permite configurar prompts, few-shot, postprocesamiento, métricas y backends. No se localizó una comparación primaria pareada que sustente un diferencial general de 4–5 puntos. <strong>Inferencia metodológica:</strong> sin mismo checkpoint, benchmark/split, métrica/normalización, prompt, few-shot, parser, versión y semilla, la diferencia no es interpretable como efecto de HELM frente a lm-eval. U5 permanece UNKNOWN hasta disponer de la comparación concreta y reproducible.
 - <strong>U6:</strong> heredado de M03; C16 reformula, no verifica. Motivo: ninguna fuente primaria localizada lo cuantifica así.
 - <strong>U7:</strong> ningún control localizado usa ese término para restaurar (CP-10/CP-10(4) exigen restaurar desde información controlada e íntegra que represente un estado conocido). La cuarentena con ese nombre es PROPOSAL.
 - <strong>U8:</strong> RESUELTO. El PDF primario de Miller (2024), arXiv:2411.00640v1, se leyó directamente (14 páginas; 2026-11-07). Se verificaron las secciones 2–5 y los apéndices A–C. La maquinaria estadística de C11 se contrasta ahora con el texto original, no con una fuente secundaria.
@@ -1293,6 +1293,30 @@ footer p{margin:.3em 0}
 <td>Citado en M02/M03; paper no re-leído en M03-B</td>
 </tr>
 <tr>
+<tr>
+<td>HELM — paper original</td>
+<td><a href="https://arxiv.org/abs/2211.09110" target="_blank" rel="noopener">https://arxiv.org/abs/2211.09110</a></td>
+<td>TMLR 2023</td>
+<td>Taxonomía de escenarios/métricas, estandarización de prompts, análisis de sensibilidad y resultados</td>
+<td>Framework holístico multi-métrica; evidencia de sensibilidad a configuración</td>
+<td>PDF primario de 162 páginas leído directamente (2026-11-07)</td>
+</tr>
+<tr>
+<td>HELM — repositorio actual</td>
+<td><a href="https://github.com/stanford-crfm/helm" target="_blank" rel="noopener">https://github.com/stanford-crfm/helm</a></td>
+<td>Maintenance mode desde 01-06-2026</td>
+<td>Estado del framework y leaderboards actuales</td>
+<td>Estado de mantenimiento y capacidades del framework</td>
+<td>README oficial consultado directamente (2026-11-07)</td>
+</tr>
+<tr>
+<td>EleutherAI lm-evaluation-harness</td>
+<td><a href="https://github.com/EleutherAI/lm-evaluation-harness" target="_blank" rel="noopener">https://github.com/EleutherAI/lm-evaluation-harness</a></td>
+<td>README actual; novedades hasta 09-2026</td>
+<td>Benchmarks, tareas, prompts, few-shot, métricas, backends y postprocesamiento</td>
+<td>Framework configurable de evaluación few-shot</td>
+<td>README oficial consultado directamente (2026-11-07)</td>
+</tr>
 <td>Miller (2024)</td>
 <td>arXiv:2411.00640</td>
 <td>2024</td>
