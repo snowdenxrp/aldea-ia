@@ -39,7 +39,7 @@ No se modificaron código, pruebas, CI, workflows, NCS M0, P07 ni decisiones D-0
 
 - **Publicación e integridad documental R2:** PASS.
 - **Cierre sustantivo global de MUSE-AUTONOMY-002:** PARTIAL.
-- **UNKNOWN:** U2, U3, U5, U6, U7 y U9 permanecen abiertos (6); U1 está RESUELTO con lectura primaria directa de NIST SP 800-63B-4; U8 está RESUELTO con lectura primaria directa de Miller (2024); U4 permanece PARCIAL.
+- **UNKNOWN:** U2, U3, U5, U6, U7 y U9 permanecen abiertos (6); U1, U4 y U8 están RESUELTOS con lectura/verificación primaria directa; no quedan registros U1–U9 en estado PARCIAL.
 - **C14:** parcialmente confirmada.
 - **D-01 a D-12:** SIN DECIDIR.
 - **Independencia de revisiones:** las tres pasadas fueron subagentes con contexto compartido; no se presentan como revisores externos independientes.
@@ -77,7 +77,7 @@ Se leyó directamente el texto oficial NIST de SP 800-63B-4:
 
 Fuente primaria: https://pages.nist.gov/800-63-4/sp800-63b.html
 
-**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 6 UNKNOWN, 2 RESUELTOS (U1 y U8) y 1 PARCIAL (U4).
+**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 6 UNKNOWN y 3 RESUELTOS (U1, U4 y U8), sin registros parciales.
 
 
 ## Verificación primaria U8 / Miller (2024) (2026-11-07)
@@ -105,3 +105,18 @@ Se contrastaron fuentes primarias adicionales:
 - **Miller (2024), §5:** el cálculo ≈969 y la sugerencia ≈1.000 se basan en parámetros hipotéticos, no en una norma.
 
 **Resultado:** U2 permanece UNKNOWN. No se encontró un umbral universal obligatorio de 200–500 casos en estas fuentes primarias, pero la búsqueda no cubre exhaustivamente todas las normas sectoriales ni jurisdicciones. Se conserva la distinción entre número de prompts/casos, número de participantes humanos y número de anotadores.
+
+
+## Verificación primaria U4 — gobernanza y versiones A2A (2026-11-07)
+
+Fuentes primarias contrastadas:
+- Linux Foundation, 23-06-2025: anuncia que A2A, creado por Google, pasa a ser un proyecto de la Linux Foundation.
+- AAIF, 17-08-2026: anuncia A2A como hosted project.
+- A2A Protocol, 27-08-2026: anuncia su aceptación como Growth Stage project en AAIF.
+- AAIF About: se define como fundación neutral bajo la Linux Foundation y enumera A2A entre sus proyectos.
+- A2A `GOVERNANCE.md` actual: el proyecto tiene un Technical Steering Committee propio de nueve asientos y atribuye al TSC la supervisión técnica, dirección, releases, políticas y procesos del proyecto. AAIF tiene su propio Governing Board y Technical Committee; no deben confundirse con el TSC de A2A.
+- GitHub Releases: v1.0.0 publicado el 12-03-2026; v1.0.1 publicado el 28-05-2026, con notas fechadas 26-05-2026.
+
+Discrepancia documental: el archivo `docs/specification.md` en el tag `v1.0.1` y la página versionada `/v1.0.1/specification/` aún presentan en el frontmatter `Latest Released Version 1.0.0`, aunque el release oficial v1.0.1 existe. La discrepancia se conserva como deuda editorial de la documentación upstream; no invalida el tag ni el release.
+
+**Resultado:** U4 RESUELTO con evidencia primaria. La omisión de referencias a la Linux Foundation en el texto técnico de la especificación no contradice los registros de gobernanza y anuncios oficiales del proyecto.
