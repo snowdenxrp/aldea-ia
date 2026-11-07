@@ -154,3 +154,24 @@ El estado histórico de P-05-C como no ratificada queda superado: el propietario
 P-09 permanece OPEN/UNKNOWN. La reconciliación actual encontró guardas parciales para raíces e imports literales, pero no cierre de imports computados, consumidores externos ni universo completo del despliegue. La brecha pre-read de P-03/P-04 sigue observable en blobs de aplicación. Estas limitaciones deben permanecer como dependencias explícitas en cualquier claim P07-C.
 
 P07-C sigue UNKNOWN/BLOCKING. No se ejecutaron escenarios ni tests/CI; no existe PASS nuevo ni PASS_GATE por esta actualización documental.
+
+
+---
+
+## DELTA — PRECEDENCIA DE R1 ACEPTADO Y P-05-C RATIFICADA (2026-11-07)
+
+La matriz histórica §5 queda corregida por las decisiones posteriores del propietario:
+
+| Gate | Estado vigente |
+|---|---|
+| R1 | **ACEPTADO POR EL PROPIETARIO (2026-11-02)**; alcance limitado, no prueba de enforcement |
+| P07-E | OPEN; evidencia de permisos/ownership/actores y control sostenido pendiente |
+| P07-C | UNKNOWN / BLOCKING |
+| P-05-C | **RATIFICADA COMO POLÍTICA (2026-11-07)**; P-05 sigue OPEN |
+| P-09 | OPEN / UNKNOWN |
+| Mecanismo seleccionado | NINGUNO |
+| Harness / pruebas | NO IMPLEMENTADO / NO EJECUTADAS |
+
+Las dependencias D23-01…D23-09 siguen vigentes. Las referencias de la tabla histórica a R1 «no ratificado» y P-05-C «no ratificada» son fotografías previas y no deben reutilizarse como estado actual. La aceptación de R1 no permite clasificar automáticamente a todo proceso local como COVERED ni cierra E2/E3.
+
+V2.3 permanece como propuesta documental no ratificada. No se ejecutó nada ni se produjo PASS nuevo.
