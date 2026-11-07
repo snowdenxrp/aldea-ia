@@ -16,8 +16,8 @@ SHA-256 recalculado sobre el contenido UTF-8 recuperado de la rama, con tamaño 
 
 | Archivo | Bytes | SHA-256 | Resultado |
 |---|---:|---|---|
-| `report-r2.md` | 112.505 | `6d111749716c0145441af7321c3c61378a63adef974d291da662c82dd36bef6a` | PASS |
-| `expediente-consolidado-nexo-r2.html` | 152.279 | `d27ad56efcf308220d9e88c088bb920e9cfdf8a4d8697e9e1b96e80a958b6b98` | PASS |
+| `report-r2.md` | 113.706 | `e41c8f3ba4d86d1daec958ec80ed69ac405a36eeec83ee00a9d20f94915be80a` | PASS |
+| `expediente-consolidado-nexo-r2.html` | 153.699 | `af343327e190a37fbc317774e4b3da77b84724ee73bff50eb6053b835b728e7b` | PASS |
 | `hashes-r2.md` | 4.450 | `f09815f19fa7b97f688b7bf047040b571f6b0c9102e0bfb24c1d62514ffd62cb` | PASS externo |
 | `consolidation-method.md` | 9.720 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` | PASS |
 
