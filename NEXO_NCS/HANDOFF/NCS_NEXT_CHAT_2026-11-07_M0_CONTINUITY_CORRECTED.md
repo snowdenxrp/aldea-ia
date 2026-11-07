@@ -93,6 +93,12 @@ No convertir análisis documental, guard estático ni CI de software en PASS de 
 
 ## 6. Orden de trabajo sin duplicación
 
+### 6.1 Decisión del propietario ya resuelta — P07-C
+
+El propietario autorizó el 2026-11-07 el criterio conservador: cualquier desplazamiento temporal del nombre protegido o modificación de `nlink` cuenta como afectación, aunque el estado original se restaure después. No reabrir esta decisión sin una nueva instrucción explícita del propietario.
+
+Esto resuelve solo la interpretación reservada en P07 V2.2 §8. No ratifica V2.3, no selecciona mecanismo y no cambia P07-C UNKNOWN / BLOCKING, P05 OPEN, P09 UNKNOWN ni `authorization: NOT_EVALUATED`. Tampoco autoriza implementación, harness, tests, CI, POCO/Termux ni cleanup.
+
 1. **No repetir las bases ya cerradas documentalmente:** P09, P08, seams P03/P04 y lock/release del snapshot `d8b5ca8` ya tienen reconciliaciones. Reabrir solo UNKNOWN o evidencia nueva con SHA/ruta concreta.
 2. **P07-C — siguiente problema técnico:** evaluar una arquitectura candidata que satisfaga O4/O5 y los oráculos bloqueantes V2.2+V2.3 (P07-05/06/07/16/18b/19/21). Debe demostrar prevención o serialización dentro del modelo aprobado; DETECTION_ONLY y RETENTION_VERIFIED no cierran el gate. No seleccionar primitivas ni inventar marker, lock hermano, tombstone, epoch, daemon o journal.
 3. **P05 — cuarentena durable:** cualquier candidato debe responder O1–O9, preservando P05-C ratificada. Exclusión viva por lock efímero no equivale a BLOCKED durable tras crash. Si no existe mecanismo demostrado, conservar STOP; no improvisar readmisión.
