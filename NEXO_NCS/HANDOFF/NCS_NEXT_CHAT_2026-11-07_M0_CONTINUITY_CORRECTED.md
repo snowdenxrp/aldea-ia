@@ -97,6 +97,16 @@ No convertir análisis documental, guard estático ni CI de software en PASS de 
 
 El propietario autorizó el 2026-11-07 el criterio conservador: cualquier desplazamiento temporal del nombre protegido o modificación de `nlink` cuenta como afectación, aunque el estado original se restaure después. No reabrir esta decisión sin una nueva instrucción explícita del propietario.
 
+### 6.1.1 Decisión del propietario ratificada — política de cleanup atribuible (2026-11-07)
+
+El propietario ratificó:
+- Solo se permite cleanup de objetos cuya atribución a la operación esté demostrada y cuya identidad y nombre estén protegidos por el protocolo.
+- Ante cualquier incertidumbre, conservar el residuo y mantener `UNKNOWN/BLOCKED`.
+- Nombre, token, PID o antigüedad, por sí solos, no justifican cleanup.
+- Si no hay evidencia suficiente para atribuir el objeto, no se permite readmisión.
+
+Alcance: política normativa para P05/P07. No demuestra cumplimiento del mecanismo actual, no satisface O4/O5, no cierra P05 ni P07-C, no selecciona mecanismo y no autoriza implementación, harness, tests, CI, POCO/Termux, cleanup real, readmisión, commissioning ni efectos protegidos.
+
 Esto resuelve solo la interpretación reservada en P07 V2.2 §8. No ratifica V2.3, no selecciona mecanismo y no cambia P07-C UNKNOWN / BLOCKING, P05 OPEN, P09 UNKNOWN ni `authorization: NOT_EVALUATED`. Tampoco autoriza implementación, harness, tests, CI, POCO/Termux ni cleanup.
 
 1. **No repetir las bases ya cerradas documentalmente:** P09, P08, seams P03/P04 y lock/release del snapshot `d8b5ca8` ya tienen reconciliaciones. Reabrir solo UNKNOWN o evidencia nueva con SHA/ruta concreta.
