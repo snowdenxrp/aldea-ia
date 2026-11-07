@@ -3666,3 +3666,36 @@ Se formalizaron nueve obligaciones de aceptación O1–O9 para cualquier mecanis
 No se selecciona mecanismo ni se inventa marcador, lock hermano, tombstone, epoch, daemon o journal. Ninguna primitiva parcial se eleva a solución. Secuencia: P-07 identidad/target → P-07-C replacement-safe → P-05 durable → P-09 universo/callers → implementación P-03/P-04 autorizada → E2/E3 y aceptación ligada a SHA.
 
 Estado sin cambio: P-05-C RATIFICADA; P-05 OPEN; P-07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; E2/E3 PARTIAL/NOT CLOSED; NCS M0 INCOMPLETO; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP. Solo documentación; sin código, tests, CI, runtime, workflows, Termux/POCO, bootstrap o efectos protegidos.
+
+
+---
+
+## DELTA — CURRENT SOURCE LOCK/RELEASE RECONCILIATION (2026-11-07)
+
+Nuevo análisis estático ligado al snapshot de código de PR #110:
+[NCS_M0_D2_CURRENT_SOURCE_LOCK_RELEASE_AND_P05C_RECONCILIATION_2026-11-07.md](BUILD/NCS_M0_D2_CURRENT_SOURCE_LOCK_RELEASE_AND_P05C_RECONCILIATION_2026-11-07.md), commit documental `58f7a58bb322b56f041a3635c7525c9977b8a118`.
+
+Snapshot inspeccionado:
+- Rama `ncs-lumina-decoupling-2026-10-29`, HEAD `d8b5ca8720908d926acc18130614cce132a43b5d`.
+- `continuity-store.mjs` blob `c1eb81bf74d2df576079b3269ac4db22d87fe7b6`.
+- `continuity-service.mjs` blob `53fd7043266635b30a1e01b69bb00d28feda300c`.
+- `chronicle-store.mjs` blob `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a`.
+
+Hallazgo concreto adicional:
+- Continuity y Chronicle validan owner token y después ejecutan cleanup con `rm(lockPath, { recursive: true })` por nombre; el objeto validado no queda ligado atómicamente al objeto eliminado. P07-C replacement-safe no está satisfecho.
+- Continuity mantiene `lockReleaseFailures` en un `Set` process-local; no demuestra estado durable interproceso. Si el lock path devuelve ENOENT, la marca local se limpia y el flujo puede volver a adquirir.
+- Ambos stores rechazan lock stale por edad/PID con estado de recovery requerido; esa rama no hace reap automático. Este comportamiento fail-closed parcial no demuestra O1–O5 ni cuarentena durable ante pérdida/sustitución del path.
+- La publicación inicial Continuity usa temporal `wx` + `COPYFILE_EXCL` (no visibilidad atómica); los reemplazos usan temporal + rename. Los módulos declaran que no reclaman fsync/power-loss durability ni resistencia general a path attacks.
+- Separación negocio/release existe en rutas concretas, pero no cierra P-05/P-07.
+
+Clasificación:
+- P-05-C RATIFICADA como política; P-05 OPEN.
+- P07-C UNKNOWN/BLOCKING; O4 y O5 no satisfechas por los seams observados.
+- P07-D PARTIAL/OPEN.
+- P07-A/B/E siguen OPEN; el análisis de código no sustituye target fingerprint, decisión de aliases, permisos/ownership ni evidencia R1 del dispositivo.
+- P-09 OPEN/UNKNOWN; P-03/P-04 D1–D6 ratificadas, enforcement pre-read pendiente.
+- E2/E3 PARTIAL/NOT CLOSED; NCS M0 INCOMPLETO.
+
+La rama `ncs-m0-lock-acquisition-cleanup` fue contrastada y no es progreso posterior: su HEAD `20cdf0715523256256a789271e283a452bd69b78` revierte la propuesta de cleanup inseguro tras revisión TOCTOU. No reutilizar esa propuesta.
+
+Solo lectura estática y documentación. Sin cambios de código, tests, CI/Actions, syscalls, harness, POCO/Termux, bootstrap, publicación ni efectos protegidos.
