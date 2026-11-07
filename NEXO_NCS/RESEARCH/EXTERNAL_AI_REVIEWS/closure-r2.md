@@ -16,9 +16,9 @@ SHA-256 recalculado sobre el contenido UTF-8 recuperado de la rama, con tamaño 
 
 | Archivo | Bytes | SHA-256 | Resultado |
 |---|---:|---|---|
-| `report-r2.md` | 108.801 | `eb29be6c413655453c9d01f0956e2445efb48603f711b2a2658d1679e55ea726` | PASS |
-| `expediente-consolidado-nexo-r2.html` | 147.900 | `eb76716816a51c92fa1c21a5227510ce3f4aff36b244ba17e829cbc4bc9a8de9` | PASS |
-| `hashes-r2.md` | 4.450 | `c3a63284da9b7a089ae6005214bd53d98c02ef3ca4910ff7ce55d4410a5e5749` | PASS externo |
+| `report-r2.md` | 110.681 | `b01b17576468181a221b9b85dd9942d28d63afcff32d67a25e327d35a3032d45` | PASS |
+| `expediente-consolidado-nexo-r2.html` | 150.215 | `277c227ad4efb514beb22cf7b512b9025a940f3212e032262e5248f8c61c48bf` | PASS |
+| `hashes-r2.md` | 4.450 | `b219de778aabe1c6b617ed4da82ff77ffe4d19eb046807dd2761a85e4d0b97ee` | PASS externo |
 | `consolidation-method.md` | 9.720 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` | PASS |
 
 El hash del manifiesto se registra aquí, fuera del propio manifiesto, para evitar autorreferencia. Los hashes de los otros tres archivos coinciden con los valores del manifiesto R2.
@@ -59,9 +59,9 @@ Una lectura adversarial posterior detectó metadatos heredados del expediente ba
 - El manifiesto fue actualizado con los nuevos tamaños y SHA-256 de Markdown y HTML.
 
 Verificación final posterior a estas correcciones:
-- `report-r2.md`: 108.801 bytes; SHA-256 `eb29be6c413655453c9d01f0956e2445efb48603f711b2a2658d1679e55ea726`.
-- `expediente-consolidado-nexo-r2.html`: 147.900 bytes; SHA-256 `eb76716816a51c92fa1c21a5227510ce3f4aff36b244ba17e829cbc4bc9a8de9`.
-- `hashes-r2.md`: 4.450 bytes; SHA-256 externo `c3a63284da9b7a089ae6005214bd53d98c02ef3ca4910ff7ce55d4410a5e5749`.
+- `report-r2.md`: 110.681 bytes; SHA-256 `b01b17576468181a221b9b85dd9942d28d63afcff32d67a25e327d35a3032d45`.
+- `expediente-consolidado-nexo-r2.html`: 150.215 bytes; SHA-256 `277c227ad4efb514beb22cf7b512b9025a940f3212e032262e5248f8c61c48bf`.
+- `hashes-r2.md`: 4.450 bytes; SHA-256 externo `b219de778aabe1c6b617ed4da82ff77ffe4d19eb046807dd2761a85e4d0b97ee`.
 - `consolidation-method.md`: 9.720 bytes; SHA-256 `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285`.
 
 Los tres hashes de archivos distintos del manifiesto coinciden con el manifiesto final. El hash del manifiesto se conserva aquí como comprobación externa.
@@ -136,3 +136,10 @@ Discrepancia documental: el archivo `docs/specification.md` en el tag `v1.0.1` y
 Se leyó el paper original HELM (TMLR 2023) y los README oficiales actuales de HELM y EleutherAI lm-evaluation-harness. HELM documenta que resultados pueden variar ampliamente con prompts y ejemplos few-shot; el propio paper cita rangos de 30–80% para el mismo modelo/escenario bajo distintas condiciones y motiva estandarizar condiciones para comparaciones head-to-head. El repositorio HELM declara maintenance mode desde 01-06-2026. El harness de EleutherAI es un framework configurable, con más de 60 benchmarks y cientos de subtareas/variantes, prompts y few-shot configurables, postprocesamiento, métricas y backends.
 
 **Resultado:** no se encontró una comparación primaria pareada que sustente un diferencial general de 4–5 puntos. Para validar una cifra así se requiere el mismo checkpoint, tarea y split, métrica/normalización, prompt, número de ejemplos few-shot, parser, versiones y semilla. U5 permanece UNKNOWN hasta localizar la comparación concreta o reproducirla. La diferencia no se atribuye a una causa específica.
+
+
+## Revisión primaria U5 — HELM y lm-evaluation-harness (2026-11-07)
+
+Se leyó el paper HELM (TMLR 2023) y los README oficiales actuales de HELM y lm-evaluation-harness. HELM documenta que las condiciones de evaluación pueden variar sustancialmente por escenarios, métricas, prompts y ejemplos few-shot; su paper cita rangos de 30–80% para el mismo modelo/escenario bajo condiciones distintas y promueve estandarización para comparaciones directas. El repositorio HELM declara maintenance mode desde 01-06-2026. El harness actual declara más de 60 benchmarks y cientos de subtareas/variantes, con prompts, few-shot, postprocesamiento, métricas y backends configurables.
+
+**Resultado:** no se encontró una comparación primaria pareada que sustente un diferencial general de 4–5 puntos. Para validar esa cifra se requieren mismo checkpoint, tarea/split, métrica/normalización, prompt, número de ejemplos, parser, versiones y semilla. U5 permanece UNKNOWN; no se atribuye la diferencia a una causa específica.
