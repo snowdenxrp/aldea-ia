@@ -3633,3 +3633,20 @@ El documento [NCS_M0_D2_P07_ANDROID_TERMUX_FILESYSTEM_MECHANISM_COMPARISON_2026-
 - Mecanismo filesystem seleccionado: **NINGUNO**. dirfd/openat2 + lock kernel por descriptor continúa como candidato condicionado; cleanup replacement-safe sigue sin solución demostrada.
 - P07-C permanece UNKNOWN/BLOQUEANTE. No hay PASS nuevo ni pruebas ejecutadas.
 
+
+
+---
+
+## DELTA — R1 ACEPTADO: PRECEDENCIA DOCUMENTAL P-07 (2026-11-07)
+
+Corrección transversal para evitar que snapshots V2.3 antiguos sigan mostrando R1 como no ratificado:
+
+- R1 fue **ACEPTADO POR EL PROPIETARIO el 2026-11-02**. El límite es Android sandbox + HOME privado Termux, invocación manual foreground única; root/OS comprometido y procesos maliciosos con el mismo UID quedan fuera, según el perfil R1.
+- P07 V2.3 continúa como propuesta documental no ratificada. La aceptación de R1 no ratifica V2.3 ni elige un mecanismo filesystem.
+- P07-E sigue OPEN: permisos/ownership, target fingerprint y control de actores no están demostrados.
+- E2/E3 PARTIAL / NOT CLOSED; P-09 OPEN/UNKNOWN. No clasificar procesos como COVERED por UID o ubicación; COVERED requiere ruta sometida a admisión demostrada.
+- P-05-C RATIFICADA como política; P-05 OPEN por falta de enforcement durable/interproceso y procedimiento de resolución.
+- P07-C UNKNOWN/BLOCKING; mecanismo seleccionado NINGUNO; harness NO IMPLEMENTADO; pruebas NO EJECUTADAS.
+- NCS M0 INCOMPLETO; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP.
+
+Artefactos reconciliados: P07 V2.3 normativa (blob `7a6fcd2e3d1c93fc725b43dd903f1d117efb9ee3`), oráculos (blob `39c59981a6036bb4f902560ffc9d756499174abe`), trazabilidad (blob `36c947aace1b68b2159d857cde13491ca811d006`) y contrato de aceptación filesystem con delta R1.
