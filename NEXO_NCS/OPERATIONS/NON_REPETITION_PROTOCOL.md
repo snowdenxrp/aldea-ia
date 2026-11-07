@@ -74,6 +74,16 @@ Un hallazgo repetido no se convierte en hallazgo nuevo por cambiar de conversaci
 **Reapertura permitida:** solo si un fetch de la rama/ref que se esté usando demuestra un cambio real de estructura, un conflicto de rutas o un nuevo puntero incorrecto.  
 **Siguiente acción:** integrar/rechazar PR #111 mediante decisión explícita; mientras siga abierto, trabajar desde la rama/ref documentada sin fingir que la corrección ya está en la base.
 
+### 6.1 Desfase del handoff frente a STATUS — NCS-CONT-002
+
+**ID:** NCS-CONT-002  
+**Asunto:** handoff de continuidad que citaba P07 V2.1 como referencia vigente y omitía deltas posteriores ya registradas en STATUS.  
+**Estado:** corregido en el handoff existente del 2026-11-07; PR #111 sigue OPEN/DRAFT/NOT MERGED.  
+**Conclusión reutilizable:** STATUS es el índice temporal autoritativo. El handoff no puede congelar una versión técnica anterior cuando STATUS ya registra una precedencia posterior. Para P07, la propuesta V2.2 es la base y V2.3 es un delta que se aplica sobre ella; V2.1 queda histórica. P05-C está ratificada; P05 sigue OPEN. O1–O9 y la reconciliación de lock/release del snapshot d8b5ca8 ya están documentadas.  
+**No repetir:** no reiniciar P07 desde V2.1, no rediseñar los seams P03/P04 ya mapeados y no volver a inspeccionar los mismos blobs de lock/release.  
+**Reapertura permitida:** solo si STATUS apunta a un ref/blob posterior, o un cambio concreto de código/contrato contradice la evidencia citada.  
+**Siguiente acción:** continuar desde el gap P07-C/P05 todavía abierto, sin crear otro handoff para esta corrección.
+
 ## 7. Disciplina de cambios y evidencia
 
 - Actualizar el registro existente; no crear informes paralelos para la misma pregunta.
