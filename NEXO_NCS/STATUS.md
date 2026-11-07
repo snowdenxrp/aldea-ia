@@ -3576,3 +3576,29 @@ No se seleccionó mecanismo filesystem ni se ejecutaron tests/CI/Actions. No run
 - Siguiente unidad M0: cerrar el diseño de integración de admisión sobre las APIs públicas ratificadas, coordinado con P-07-C/P-05-C; no modificar runtime ni ejecutar tests hasta autorización específica.
 - Sin cambios de código ni ejecución. P-05-C RATIFICADA pero P-05 OPEN; P07-C UNKNOWN/BLOQUEANTE; P09 OPEN/UNKNOWN; E2/E3 PARTIAL; NCS M0 INCOMPLETO. `authorization: NOT_EVALUATED`; efectos protegidos STOP.
 
+
+
+---
+
+## DELTA — P-09 CALLER COVERAGE RECONCILIATION (2026-11-07)
+
+Nuevo análisis estático ligado al snapshot de código `d8b5ca8720908d926acc18130614cce132a43b5d`:
+[NCS_M0_P09_CALLER_COVERAGE_RECONCILIATION_2026-11-07.md](BUILD/NCS_M0_P09_CALLER_COVERAGE_RECONCILIATION_2026-11-07.md), commit documental `7716dbfe4f7a21cb6ae6b92d1d9db20d80203088`.
+
+Hallazgos que cambian la precisión del tablero:
+- `assistants.mjs` y `simulate.mjs` son raíces Lúmina en el snapshot actual; sus antiguos registros como callers Nexo describen snapshots anteriores y no deben repetirse como estado actual.
+- Existe guard estático de clasificación y separación Nexo/Lúmina; recorre imports/reexports literales, pero no cierra loaders computados, imports no literales, consumidores externos ni todas las órdenes de ejecución del despliegue.
+- El guard de import graph no exige admisión antes de leer stores. No es PASS de P-09 ni D1.
+- Las APIs path-based siguen importables: las cinco queries leen Continuity directamente; Chronicle hace `loadCurrent()` de stores antes de abrir el owner. Es una brecha concreta de enforcement P-03/P-04.
+- El wrapper de compatibilidad reexporta owner/bootstrap; no constituye una frontera de seguridad.
+- El hijo Chronicle sigue siendo entrypoint directo; bootstrap es una ruta separada; repair permanece gated en las rutas wrapper identificadas, sin inferir inalcanzabilidad universal.
+
+Estado:
+- P-09: **OPEN / UNKNOWN**; cobertura estática interna parcial, consumers externos/loaders no literales no cerrados.
+- P-03/P-04: D1–D6 RATIFICADAS; enforcement pre-read pendiente.
+- P-05-C ratificada; P-05 OPEN.
+- P-07-C UNKNOWN/BLOQUEANTE; E2/E3 PARTIAL/NOT CLOSED.
+- NCS M0 **INCOMPLETO**; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning/efectos protegidos STOP.
+
+No runtime, tests, workflows, CI/Actions, Termux/POCO, bootstrap ni publicación. No se ejecutaron pruebas.
+
