@@ -129,3 +129,10 @@ Discrepancia documental: el archivo `docs/specification.md` en el tag `v1.0.1` y
 **Authorization Capabilities (ZCAP)** fue contrastado en la página W3C CCG `v0.4.0-draft` y en el release GitHub `v0.4.0` (07-10-2026). Es un Draft Community Group Report, no una W3C Recommendation. El release indica que todos los cambios v0.4.0 son no normativos. La especificación cubre root/delegated capabilities, Data Integrity proofs, caveats y cadenas; el detalle normativo de revocación permanece en backlog. La página de versiones enumera `v0.4.0-draft` y `v0.3.0`.
 
 **Resultado:** U3 permanece UNKNOWN. UCAN y ZCAP son mecanismos de autorización basados en capabilities, no una solución integral de identidad, autoridad raíz, recuperación o continuidad de Nexo. El inventario de protocolos/estándares de identidad y delegación sigue sin ser exhaustivo.
+
+
+## Revisión primaria U5 — HELM frente a lm-evaluation-harness (2026-11-07)
+
+Se leyó el paper original HELM (TMLR 2023) y los README oficiales actuales de HELM y EleutherAI lm-evaluation-harness. HELM documenta que resultados pueden variar ampliamente con prompts y ejemplos few-shot; el propio paper cita rangos de 30–80% para el mismo modelo/escenario bajo distintas condiciones y motiva estandarizar condiciones para comparaciones head-to-head. El repositorio HELM declara maintenance mode desde 01-06-2026. El harness de EleutherAI es un framework configurable, con más de 60 benchmarks y cientos de subtareas/variantes, prompts y few-shot configurables, postprocesamiento, métricas y backends.
+
+**Resultado:** no se encontró una comparación primaria pareada que sustente un diferencial general de 4–5 puntos. Para validar una cifra así se requiere el mismo checkpoint, tarea y split, métrica/normalización, prompt, número de ejemplos few-shot, parser, versiones y semilla. U5 permanece UNKNOWN hasta localizar la comparación concreta o reproducirla. La diferencia no se atribuye a una causa específica.
