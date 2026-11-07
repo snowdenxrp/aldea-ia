@@ -1,3 +1,21 @@
+## DELTA PRIORITARIA — RUTAS Y HANDOFF CANÓNICO CORREGIDOS (2026-11-07)
+
+**Punto de entrada vigente:** [HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md](HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md).
+
+Correcciones de navegación verificadas en esta rama:
+- La ruta física de Core es `NEXO_NCS/CORE/README.md`; no `NEXO_NCS/CORE.md` ni `NEXO_NCS/MASTER/CORE.md`.
+- La ruta canónica de estado es `NEXO_NCS/STATUS.md`; no la abreviatura `NCS/STATUS`.
+- El handoff solicitado `NEXO_NCS/HANDOFF/NCS_NEXT_CHAT_2026-10-31_D1_CONTINUITY_OPEN_BOOTSTRAP.md` no fue recuperable en la rama estratégica consultada. El handoff del 07-11 lo sustituye como instrucción vigente, sin borrar historia.
+- La navegación obligatoria queda: `STATUS → MASTER/README + directiva → CORE/README → handoff vigente → BUILD/tarea`.
+
+No repetir las reconciliaciones P08/P09, D4/D5, el guard de separación Lúmina, el inventario estático previo ni el inventario local Termux. Consultar el handoff vigente para los UNKNOWN concretos y el orden de cierre.
+
+**Gates sin cambio:** D1–D6 ratificadas; P05-C ratificada/P05 OPEN; P07-C UNKNOWN/BLOCKING; P08 OPEN/LAYOUT UNSELECTED; P09 OPEN/UNKNOWN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning/efectos protegidos STOP; **NCS M0 INCOMPLETO**.
+
+Esta delta corrige navegación y continuidad documental únicamente. No cambia runtime, tests, CI, workflows, dispositivo, stores ni autorizaciones.
+
+---
+
 ## DIRECTIVA ESTRATÉGICA PERMANENTE — VISIÓN INTEGRAL DE NEXO (2026-11-05)
 
 - Directiva del propietario preservada en [MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md](MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md) y enlazada desde [MASTER/README.md](MASTER/README.md).
