@@ -3520,3 +3520,19 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 
 ---
 
+
+
+---
+
+## DELTA VIGENTE — RATIFICACIÓN DEL PROPIETARIO P-05-C (2026-11-07)
+
+- El propietario ratificó expresamente la política P-05-C: conservar `UNKNOWN/BLOCKED` sin recuperación automática. Registro completo: [NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md](BUILD/NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md), sección «DELTA — RATIFICACIÓN EXPRESA DEL PROPIETARIO DE POLÍTICA P-05-C».
+- Condiciones ratificadas: si no se demuestra enforcement durable/interproceso de BLOCKED, la instancia permanece STOP y M0 no se declara completo; toda recuperación/desbloqueo futuro exige decisión expresa posterior y procedimiento concreto demostrado; se prohíbe borrar/reemplazar manualmente el lock como recuperación predeterminada; la reclasificación requiere evidencia verificable sin convertir D2 en readmisión.
+- Resultado de negocio/persistencia y release permanecen separados. No retry automático de negocio, no readmisión normal ante UNKNOWN, no cleanup destructivo por path sin identidad demostrada.
+- La ratificación de C **no** selecciona una primitiva, no crea mecanismo de cuarentena, no demuestra persistencia del bloqueo tras crash y no convierte E1–E9 en PASS.
+- P-05: **OPEN — C RATIFICADA; MECANISMO/ENFORCEMENT/RESOLUCIÓN/EVIDENCIA PENDIENTES**.
+- P07-C: **UNKNOWN / BLOQUEANTE**; P09: **OPEN / UNKNOWN**; E2/E3: **PARTIAL / NOT CLOSED**.
+- P-03/P-04 D1–D6: **RATIFICADAS; IMPLEMENTACIÓN/ENFORCEMENT/COBERTURA PENDIENTES**.
+- NCS M0: **INCOMPLETO**. `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; ROOT_READY no establecido; commissioning y efectos protegidos STOP.
+- Alcance de esta actualización: documentación solamente. No runtime, tests, workflows, CI/Actions, Termux/POCO, bootstrap, publicación ni efectos protegidos.
+
