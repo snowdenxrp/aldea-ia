@@ -3562,3 +3562,17 @@ Las frases históricas «C no ratificada» en las versiones originales se conser
 
 No se seleccionó mecanismo filesystem ni se ejecutaron tests/CI/Actions. No runtime, workflows, Termux/POCO, bootstrap, publicación o efectos protegidos. `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP; **NCS M0 INCOMPLETO**.
 
+
+
+---
+
+## DELTA — P-03/P-04 ENFORCEMENT REVALIDADO CONTRA CÓDIGO (2026-11-07)
+
+- Reconciliación vigente: [NCS_M0_D1_D2_CURRENT_STATE_RECONCILIATION_2026-11-03.md](BUILD/NCS_M0_D1_D2_CURRENT_STATE_RECONCILIATION_2026-11-03.md), delta del 2026-11-07, blob `b5ada4f70206bce6803046c4134ac6be4685e901`.
+- Snapshot de código comprobado: rama `ncs-lumina-decoupling-2026-10-29`, HEAD `d8b5ca8720908d926acc18130614cce132a43b5d`; los blobs de Chronicle append, Continuity queries, application index, request preview y Continuity service coinciden con los identificados en la reconciliación.
+- Hallazgo concreto: Chronicle hace lecturas persistentes de ambos stores antes de abrir el owner; las cinco APIs públicas de query/preview consultan directamente Continuity sin una admisión de instancia común visible en esos módulos. Esto no satisface todavía la frontera D1 ratificada. Los locks per-store no sustituyen esa admisión.
+- P-03/P-04: D1–D6 RATIFICADAS; enforcement en las rutas citadas **NO DEMOSTRADO**.
+- P-09 permanece OPEN/UNKNOWN para callers externos/dinámicos y superficies de escritura no cubiertas. No se repite el inventario histórico; solo se reabre la brecha concreta de enforcement respaldada por blobs.
+- Siguiente unidad M0: cerrar el diseño de integración de admisión sobre las APIs públicas ratificadas, coordinado con P-07-C/P-05-C; no modificar runtime ni ejecutar tests hasta autorización específica.
+- Sin cambios de código ni ejecución. P-05-C RATIFICADA pero P-05 OPEN; P07-C UNKNOWN/BLOQUEANTE; P09 OPEN/UNKNOWN; E2/E3 PARTIAL; NCS M0 INCOMPLETO. `authorization: NOT_EVALUATED`; efectos protegidos STOP.
+
