@@ -1,10 +1,11 @@
 # Expediente consolidado — Auditoría documental Nexo M02 → M03 → M03-B
 
-**Misión:** MUSE-AUTONOMY-001 — Consolidación documental M02 → M03 → M03-B
+**Misión del expediente base (R1):** MUSE-AUTONOMY-001 — Consolidación documental M02 → M03 → M03-B
+**Misión de auditoría y revisión R2:** MUSE-AUTONOMY-002 — auditoría adversarial, correcciones documentales y verificación de publicación del expediente base
 **Modalidad:** ejecución autónoma, prioridad alta, exclusivamente documental
 **Fecha de consolidación:** 5 de noviembre de 2026
 **Fecha de consulta de las investigaciones de base:** 2026-11-05
-**Estado del documento:** Borrador consolidado para revisión del propietario
+**Estado del expediente base:** consolidación documental MUSE-AUTONOMY-001; versión R2 auditada y publicada bajo MUSE-AUTONOMY-002 (el dictamen sustantivo permanece PARTIAL)
 **Dictamen:** **APROBADO CONDICIONADO** como documentación de investigación y referencia, no como especificación técnica autorizada.
 **Sin autorización de implementación.** No se aprueba ninguna tecnología. NCS M0 y P07 quedan fuera de modificación. D-01 a D-12 permanecen **SIN DECIDIR** y reservadas exclusivamente al propietario.
 
@@ -444,13 +445,13 @@ En la entrega anterior estos tres puntos se presentaron como "divergencias pendi
 
 ### D. Informe de cambios R1 y estado final (2026-11-06)
 
-Los cinco puntos de la revisión independiente quedaron corregidos y demostrados en esta revisión: (1) conteo C12, (2) etiqueta de R1, (3) separación de afirmaciones y fuentes de R2, (4) autoridad A1–A3, (5) Anexo A completo con hashes reales. La comparación con la versión original (diff) muestra únicamente las ediciones de estos cinco puntos más la actualización del manifiesto; ningún contenido válido se perdió. **ESTADO: PARTIAL (reconciliación R2, MUSE-AUTONOMY-002, 2026-11-06).** Los cinco criterios R1 superan la comprobación en el ámbito local (ver matriz en el dictamen de auditoría independiente), pero el estado global es PARTIAL, no PASS, por dos razones que las propias reglas de este expediente imponen: (1) la regla de §9 —"PASS" exige evidencia de implementación y pruebas aplicables y no se concede por documentación— es categórica y no admite excepción para criterios de aceptación de misión; el sentido en que R1 usó "PASS" era aceptación documental de la misión, distinto del sentido epistémico de §9, y esa distinción no estaba declarada; queda declarada aquí. (2) La integridad del documento publicado en la rama del repositorio no pudo verificarse (sin acceso a GitHub) y el manifiesto del HTML entregado en R1 estaba desactualizado respecto a los archivos vigentes; ambos puntos se corrigen en R2, pero la verificación contra la rama sigue siendo UNKNOWN. Las verificaciones documentales pendientes (lectura verbatim de SP 800-63B-4 §2.3.2/Ap. B/Ap. E, del PDF final de IR 8547 y de la spec A2A §8.4) quedan como limitaciones registradas en §11 C, no como incumplimientos de aceptación: no son decisiones del propietario ni condiciones del dictamen APROBADO CONDICIONADO.
+Los cinco puntos de la revisión independiente quedaron corregidos y demostrados en esta revisión: (1) conteo C12, (2) etiqueta de R1, (3) separación de afirmaciones y fuentes de R2, (4) autoridad A1–A3, (5) Anexo A completo con hashes reales. La comparación con la versión original (diff) muestra únicamente las ediciones de estos cinco puntos más la actualización del manifiesto; ningún contenido válido se perdió. **ESTADO: PARTIAL (reconciliación R2, MUSE-AUTONOMY-002, 2026-11-06).** Los cinco criterios R1 superan la comprobación en el ámbito local (ver matriz en el dictamen de auditoría independiente), pero el estado global es PARTIAL, no PASS, por dos razones que las propias reglas de este expediente imponen: (1) la regla de §9 —"PASS" exige evidencia de implementación y pruebas aplicables y no se concede por documentación— es categórica y no admite excepción para criterios de aceptación de misión; el sentido en que R1 usó "PASS" era aceptación documental de la misión, distinto del sentido epistémico de §9, y esa distinción no estaba declarada; queda declarada aquí. (2) La integridad del documento publicado en la rama del repositorio no pudo verificarse (sin acceso a GitHub) y el manifiesto del HTML entregado en R1 estaba desactualizado respecto a los archivos vigentes; ambos puntos se corrigen en R2, pero la verificación contra la rama era UNKNOWN al redactar R2; quedó verificada posteriormente el 2026-11-07 con PASS de integridad documental, según `closure-r2.md`. Las verificaciones documentales pendientes (lectura verbatim de SP 800-63B-4 §2.3.2/Ap. B/Ap. E, del PDF final de IR 8547 y de la spec A2A §8.4) quedan como limitaciones registradas en §11 C, no como incumplimientos de aceptación: no son decisiones del propietario ni condiciones del dictamen APROBADO CONDICIONADO.
 
 ### E. Cambios R2 (MUSE-AUTONOMY-002, 2026-11-06)
 
 Versión R2 separada, preparada por la auditoría adversarial independiente de R1 (MISIÓN MUSE-AUTONOMY-002). R1 se conserva intacto como evidencia; R2 no lo sustituye. Cambios exactos respecto a R1:
 
-1. **H-01 — Reconciliación de PASS (§11 D):** el estado global pasa de "ESTADO: PASS" a "ESTADO: PARTIAL", con la distinción explícita entre el sentido epistémico de PASS (§9: exige evidencia de implementación, no se concede por documentación) y el sentido de aceptación documental de la misión R1 (cinco criterios demostrados en el ámbito local). La integridad contra la rama sigue siendo UNKNOWN.
+1. **H-01 — Reconciliación de PASS (§11 D):** el estado global pasa de "ESTADO: PASS" a "ESTADO: PARTIAL", con la distinción explícita entre el sentido epistémico de PASS (§9: exige evidencia de implementación, no se concede por documentación) y el sentido de aceptación documental de la misión R1 (cinco criterios demostrados en el ámbito local). La integridad contra la rama era UNKNOWN al redactar R2; la comprobación posterior del 2026-11-07 resultó PASS para los artefactos publicados, según `closure-r2.md`.
 2. **H-02 — Anexo A del HTML actualizado:** el manifiesto del documento web se actualiza a los archivos vigentes, incluido el PDF R1 (141.597 bytes, 28 páginas). Ver Anexo A.
 3. **H-B2 — Fila A2A de §12:** §8.4 (firma JWS opcional, SHOULD) queda como análisis secundario, no "Verificado en vivo".
 4. **H-03 — Cita de C03:** la cita entrecomillada que no aparecía en la página citada se sustituye por la redacción real de GitHub Docs ("previously verified commits retain their verified status… GitHub will not re-verify previously signed commits"). La sustancia de C03 no cambia.
@@ -460,7 +461,7 @@ Versión R2 separada, preparada por la auditoría adversarial independiente de R
 8. **H-08 — D9:** la fila distingue las 4 incorporaciones de C12 del conjunto completo de seis controles ("recursos" ya existía en M02).
 9. **H-06 — Sección añadida del HTML:** la sección de informe final que solo existe en la versión web se declara como apéndice de entrega, no como parte del expediente.
 
-**Estado de R2:** PARTIAL (bajo la regla de §9). Los cinco criterios R1 superan la comprobación en el ámbito local tras estas correcciones; la integridad del documento publicado en la rama sigue siendo UNKNOWN (sin acceso a GitHub) y las verificaciones documentales pendientes (§11 C) se mantienen como limitaciones.
+**Estado de R2:** PARTIAL (bajo la regla de §9). Los cinco criterios R1 superan la comprobación en el ámbito local tras estas correcciones; la integridad del documento publicado en la rama era UNKNOWN al redactar R2; se verificó posteriormente con PASS documental el 2026-11-07 (véase `closure-r2.md`). Las verificaciones documentales pendientes (§11 C) se mantienen como limitaciones.
 
 ### C. Limitaciones restantes
 
