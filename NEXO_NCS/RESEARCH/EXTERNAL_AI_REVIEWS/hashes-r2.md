@@ -13,7 +13,7 @@ texto reconstruido, fragmentos o contenido copiado parcialmente.
 
 | Archivo | Ruta en la rama | Tamaño (bytes) | SHA-256 |
 |---|---|---|---|
-| `report-r2.md` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/report-r2.md` | 100.546 | `d6e184061670b17ba72f465e7b5af0d1123206faa6fe5f68457a63fa3eb8dff4` |
+| `report-r2.md` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/report-r2.md` | 101.280 | `99719452d35fcec7e1d6187f6ca9c81808fa49d683313f7d1ab0ac10b00790d1` |
 | `expediente-consolidado-nexo-r2.html` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/expediente-consolidado-nexo-r2.html` | 138.565 | `f0ba66c8709866c0dbc16f80bd7b09f724833f17f83b72a9b005dab182ee5f46` |
 | `expediente-consolidado-nexo-r2.pdf` (representación equivalente; no publicada por separado) | No existe archivo PDF independiente en el árbol de la rama; se conserva como referencia de la representación local | 148.668 (declarado en preparación) | `2ab42be873d9f0684dd6d9e4d6c96da0f0f67fd40643754875b1b24a0fb721fa` (declarado en preparación; no recalculado desde la rama) |
 | `hashes-r2.md` (este manifiesto) | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/hashes-r2.md` | — | — (ver nota) |
