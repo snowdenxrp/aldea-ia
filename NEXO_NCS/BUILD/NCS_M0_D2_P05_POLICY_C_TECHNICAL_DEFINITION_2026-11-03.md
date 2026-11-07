@@ -144,3 +144,40 @@ La recomendación C no se puede describir como ya implementada por el comportami
 - Chronicle rechaza stale recovery, pero su release sigue sujeto a validación/borrado por path.
 
 Esto confirma la necesidad de resolver E3/E4/E5/E6 y demostrar enforcement E7. No se ejecutaron pruebas; los hallazgos son estáticos y están ligados a los blobs anteriores. No se modificó código ejecutable.
+
+
+---
+
+## DELTA — RATIFICACIÓN EXPRESA DEL PROPIETARIO DE POLÍTICA P-05-C (2026-11-07)
+
+El propietario ratificó expresamente en conversación el **7 de noviembre de 2026** la política C: conservar `UNKNOWN/BLOCKED` sin recuperación automática. Esta ratificación supera el estado histórico «C NO RATIFICADA» de las secciones anteriores, pero no convierte la política en mecanismo implementado ni cierra P-05.
+
+### Condiciones ratificadas
+
+1. Si no puede demostrarse enforcement durable/interproceso de `BLOCKED`, la instancia permanece operacionalmente bloqueada y M0 permanece STOP; no se improvisa workaround.
+2. Cualquier desbloqueo o recuperación futura queda reservado a una decisión expresa posterior del propietario y a evidencia de un procedimiento concreto aprobado. Esta ratificación no aprueba hoy ningún procedimiento de recuperación.
+3. Se prohíbe borrar o reemplazar manualmente el lock como método predeterminado de recuperación.
+4. La reclasificación futura requiere evidencia verificable de resolución que no convierta el diagnóstico D2 en readmisión. Los predicados y el procedimiento concretos siguen siendo un gate explícito: no se inventan ni se presumen aprobados por esta ratificación.
+
+### Invariantes operativos ratificados
+
+- Resultado de negocio/persistencia y resultado de release se conservan por separado.
+- Persistencia confirmada no se revierte ni se repite por incertidumbre de release.
+- Release/cleanup incierto permanece `UNKNOWN/BLOCKED`; no hay retry automático de negocio ni readmisión normal.
+- No se realiza limpieza destructiva por path si la identidad del objeto afectado no está demostrada.
+- Ausencia, antigüedad, PID, timeout, error de parseo o estado local no demuestran por sí solos release ni quiescencia.
+- Diagnóstico D2 se limita a evidencia externa y metadata del protocolo; no abre stores canónicos, no modifica locks ni concede readmisión.
+- Si no se puede demostrar que el bloqueo se hace cumplir entre procesos —incluido después de crash— el gate permanece `UNKNOWN/STOP`.
+
+### Estado tras la ratificación
+
+- Política P-05-C: **RATIFICADA POR EL PROPIETARIO (2026-11-07)**.
+- P-05: **OPEN — C RATIFICADA; MECANISMO, ENFORCEMENT, RESOLUCIÓN Y EVIDENCIA PENDIENTES**.
+- E1–E9: sin PASS nuevo; los hallazgos y gaps heredados no cambian por una decisión documental.
+- P07-C: **UNKNOWN / BLOQUEANTE**; P09: **OPEN / UNKNOWN**.
+- P-03/P-04 D1–D6: **RATIFICADAS**; implementación/enforcement/cobertura pendientes.
+- M0: **INCOMPLETO**.
+- `authorization: NOT_EVALUATED`; raíz constitucional **PENDING/UNKNOWN**; ROOT_READY no establecido.
+- Primera publicación, commissioning y efectos protegidos: **STOP**.
+- Esta ratificación no autoriza cambios de runtime, tests, workflows, configuración, dispositivo, bootstrap, publicación ni efectos protegidos. No se ejecutaron tests/CI/Actions.
+
