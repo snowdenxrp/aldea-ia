@@ -33,7 +33,7 @@ El resultado es **APROBADO CONDICIONADO** como documentación de investigación 
 
 **Fallo estructural central sin solución demostrada (heredado de M03, no resuelto por M03-B):** no existe estándar de versionado de una Constitución de agente, ni verificación de continuidad semántica/comportamental entre modelos, ni revocación o sucesión sin un tercero de confianza cuando la clave raíz se compromete o el propietario queda incapacitado. Este expediente no afirma lo contrario en ningún punto.
 
-**Conteo consolidado (verificado en todo el documento):** 16 correcciones C01–C16 · 15 discrepancias D1–D15 · 12 correcciones materiales supervivientes · 7 riesgos nuevos R1–R7 · 9 registros U1–U9 (6 UNKNOWN, 3 RESUELTOS, 0 PARCIAL) · 12 decisiones D-01 a D-12 SIN DECIDIR · 5 correcciones materiales de M03 · 13 riesgos omitidos de M03 · 12 requisitos a preservar de M03 · matriz de amenazas T1–T14.
+**Conteo consolidado (verificado en todo el documento):** 16 correcciones C01–C16 · 15 discrepancias D1–D15 · 12 correcciones materiales supervivientes · 7 riesgos nuevos R1–R7 · 9 registros U1–U9 (4 UNKNOWN, 5 RESUELTOS, 0 PARCIAL) · 12 decisiones D-01 a D-12 SIN DECIDIR · 5 correcciones materiales de M03 · 13 riesgos omitidos de M03 · 12 requisitos a preservar de M03 · matriz de amenazas T1–T14.
 
 ## 2. Índice navegable
 
