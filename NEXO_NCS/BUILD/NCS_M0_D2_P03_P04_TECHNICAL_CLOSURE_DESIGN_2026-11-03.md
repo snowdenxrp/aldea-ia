@@ -235,3 +235,20 @@ El diseño de fronteras D1–D6 queda definido a nivel contractual, pero la admi
 - Primera publicación, commissioning y efectos protegidos: **STOP**.
 - Solo documento; sin cambios runtime/tests/workflows/configuración/dispositivo.
 - No se ejecutaron tests/CI/Actions.
+
+
+---
+
+## DELTA — P-05-C RATIFICADA; DEPENDENCIAS DE CIERRE SIN CAMBIO (2026-11-07)
+
+El propietario ratificó P-05-C el 2026-11-07. Las referencias anteriores a «P-05 OPEN / NOT RATIFIED» quedan superadas únicamente en cuanto a la decisión de política.
+
+- P-05-C queda **RATIFICADA**: incertidumbre de release/cleanup conserva `UNKNOWN/BLOCKED`, sin retry automático de negocio ni readmisión normal.
+- P-05 continúa **OPEN**: no hay mecanismo de enforcement durable/interproceso, predicados de resolución ni evidencia de aceptación demostrados.
+- D1–D6 continúan ratificadas y el diseño de fronteras de este documento no cambia.
+- La implementación de admisión P-03/P-04 debe respetar C y D4: si terminación/release es incierto, no reintentar negocio ni readmitir; el estado bloqueado debe ser efectivo para competidores, también tras crash, o el gate permanece UNKNOWN/STOP.
+- P-07-C y P-09 siguen siendo dependencias bloqueantes para demostrar identidad/cleanup replacement-safe y cobertura de callers/escritores. Esta delta no selecciona primitiva ni afirma que los callers estén cubiertos.
+- P-03/P-04: diseño propuesto; implementación/enforcement/cobertura pendientes. NCS M0: **INCOMPLETO**.
+- Sin runtime/tests/workflows/CI/dispositivo; no se ejecutaron pruebas ni se autoriza ningún efecto protegido.
+
+Registro de ratificación: [definición técnica P-05-C](NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md).
