@@ -212,3 +212,14 @@ Estas correcciones no resuelven:
 Estado: P07 OPEN; P07-C UNKNOWN/BLOCKING; P05-C OPEN/NOT RATIFIED; P09 OPEN/UNKNOWN; mecanismo seleccionado NINGUNO; harness NO IMPLEMENTADO; pruebas NO EJECUTADAS; authorization NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
 
 La existencia de este delta no constituye ratificación ni autorización de ejecución.
+
+
+---
+
+## DELTA — PRECEDENCIA P-05-C Y P-09 (2026-11-07)
+
+Las referencias del snapshot original a `P05-C OPEN / NOT RATIFIED` quedan superadas por la ratificación expresa del propietario del 2026-11-07. El estado vigente es: **P-05-C RATIFICADA COMO POLÍTICA; P-05 OPEN** hasta mecanismo, enforcement interproceso, resolución y evidencia.
+
+La reconciliación P-09 del 2026-11-07 concluye que existe cobertura estática parcial de raíces/imports literales, pero permanecen UNKNOWN loaders no literales, consumidores externos y cobertura universal del despliegue. La admisión pre-read tampoco está implementada en las rutas path-based observadas. Véase `NCS_M0_P09_CALLER_COVERAGE_RECONCILIATION_2026-11-07.md`.
+
+No cambia la normativa de escenarios: P07-C sigue UNKNOWN/BLOCKING; un harness PASS no se convierte en PASS_GATE sin cobertura P09, modelo ratificado, seam exacto y oráculos completos. M0 INCOMPLETO. No tests/CI ejecutados ni cambios ejecutables.
