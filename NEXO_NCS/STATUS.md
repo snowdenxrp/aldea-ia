@@ -3620,3 +3620,16 @@ La delta fija el seam por API pública:
 
 No se eligió primitiva filesystem: P-07-C sigue UNKNOWN/BLOCKING. El mapeo no es implementación ni test. P-03/P-04 enforcement pendiente; P-05 OPEN; P-09 OPEN/UNKNOWN; E2/E3 PARTIAL; NCS M0 INCOMPLETO. Sin runtime/tests/CI/Actions/Termux/POCO ni efectos protegidos.
 
+
+
+---
+
+## DELTA — P-07 MECANISM COMPARISON RECONCILIATION (2026-11-07)
+
+El documento [NCS_M0_D2_P07_ANDROID_TERMUX_FILESYSTEM_MECHANISM_COMPARISON_2026-11-03.md](BUILD/NCS_M0_D2_P07_ANDROID_TERMUX_FILESYSTEM_MECHANISM_COMPARISON_2026-11-03.md) incorpora una delta de precedencia (blob `1feb5510454ee486c1d632d24d0dbdf620c56f01`):
+- P-05-C está ratificada como política; P-05 sigue OPEN por falta de enforcement durable/interproceso y resolución.
+- R1 fue aceptado por el propietario el 2026-11-02; E2/E3 siguen PARTIAL/NOT CLOSED.
+- P-09 continúa OPEN/UNKNOWN; la cobertura estática parcial no cierra consumidores externos ni loaders no literales.
+- Mecanismo filesystem seleccionado: **NINGUNO**. dirfd/openat2 + lock kernel por descriptor continúa como candidato condicionado; cleanup replacement-safe sigue sin solución demostrada.
+- P07-C permanece UNKNOWN/BLOQUEANTE. No hay PASS nuevo ni pruebas ejecutadas.
+
