@@ -6,23 +6,27 @@ NCS is the official continuity entry point for the new Nexo architecture.
 
 The exact user command **NCS** means:
 
-1. Read [`NEXO_NCS/STATUS.md`](STATUS.md) first.
+1. Read [STATUS](STATUS.md) first.
 2. Read [MASTER](MASTER/README.md) and its governing [strategic vision directive](MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md).
 3. Read [CORE](CORE/README.md) for the protected foundation's conceptual contract.
-4. Read the current [handoff](HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md).
-5. Continue from the exact current BUILD task and its cited snapshot/evidence.
-6. Consult RESEARCH/PROOF only when a concrete unresolved claim requires it.
+4. Read the [permanent continuity and non-repetition protocol](OPERATIONS/NON_REPETITION_PROTOCOL.md).
+5. Read the current [handoff](HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md).
+6. Continue from the exact current BUILD task and its cited snapshot/evidence.
+7. Consult RESEARCH/PROOF only when a concrete unresolved claim requires it.
+
+Before starting any investigation or edit, apply the protocol's known-work check and reopening rule. A new chat, a different AI, or a missing recollection is not new evidence.
 
 ## Physical source-of-truth paths
 
-- `NEXO_NCS/STATUS.md` — exact operational resume point and current gate states.
-- `NEXO_NCS/MASTER/README.md` — product/architectural vision index.
-- `NEXO_NCS/MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md` — permanent strategic direction.
-- `NEXO_NCS/CORE/README.md` — protected Core conceptual boundary.
-- `NEXO_NCS/BUILD/` — current construction, implementation mapping and open technical work.
-- `NEXO_NCS/RESEARCH/` and `NEXO_NCS/PROOF/` — historical evidence and proof artifacts, consulted only as needed.
-- `NEXO_NCS/DECISIONS/` — owner-ratified architectural decisions.
-- `NEXO_NCS/HANDOFF/` — current continuation handoffs; STATUS identifies the active one.
+- NEXO_NCS/STATUS.md — exact operational resume point and current gate states.
+- NEXO_NCS/MASTER/README.md — product/architectural vision index.
+- NEXO_NCS/MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md — permanent strategic direction.
+- NEXO_NCS/CORE/README.md — protected Core conceptual boundary.
+- NEXO_NCS/OPERATIONS/NON_REPETITION_PROTOCOL.md — mandatory pre-work continuity, known-work registry and evidence-based reopening rules.
+- NEXO_NCS/BUILD/ — current construction, implementation mapping and open technical work.
+- NEXO_NCS/RESEARCH/ and NEXO_NCS/PROOF/ — historical evidence and proof artifacts, consulted only as needed.
+- NEXO_NCS/DECISIONS/ — owner-ratified architectural decisions.
+- NEXO_NCS/HANDOFF/ — current continuation handoffs; STATUS identifies the active one.
 
 ## Separation rule
 
