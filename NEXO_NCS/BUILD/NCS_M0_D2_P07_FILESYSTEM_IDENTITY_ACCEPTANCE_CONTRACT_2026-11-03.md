@@ -154,3 +154,19 @@ Para cierre se requiere:
 - authorization: NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN.
 - Primera publicación, commissioning y efectos protegidos: **STOP**.
 - Sin cambios runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
+
+
+---
+
+## DELTA — DEPENDENCIA P-05 TRAS RATIFICACIÓN DE POLÍTICA C (2026-11-07)
+
+La sección de estado original es un snapshot anterior a la decisión del propietario. P-05-C quedó **RATIFICADA POR EL PROPIETARIO** el 2026-11-07 como política `UNKNOWN/BLOCKED` sin recuperación automática.
+
+- P-05 permanece **OPEN**: la ratificación no implementa enforcement ni resuelve la incertidumbre interproceso después de crash.
+- P-07 conserva su alcance propio: identidad de raíz/destino, aliases, sustitución, cleanup replacement-safe, orden de publicación y límites filesystem.
+- P07-C continúa **UNKNOWN / BLOQUEANTE** hasta demostrar operaciones replacement-safe bajo R1 y cobertura P09.
+- La política C refuerza el requisito de no ejecutar cleanup destructivo por path cuando la identidad del objeto no esté demostrada; no selecciona una primitiva.
+- P-09 sigue **OPEN / UNKNOWN**; E1–E9 no obtienen PASS nuevo; NCS M0 sigue **INCOMPLETO**.
+- No se ejecutaron tests/CI ni se modificó runtime, workflows, configuración o dispositivo.
+
+Registro autoritativo: [definición técnica P-05-C y ratificación del propietario](NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md).
