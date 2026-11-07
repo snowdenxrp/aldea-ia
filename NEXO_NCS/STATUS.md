@@ -3699,3 +3699,30 @@ Clasificación:
 La rama `ncs-m0-lock-acquisition-cleanup` fue contrastada y no es progreso posterior: su HEAD `20cdf0715523256256a789271e283a452bd69b78` revierte la propuesta de cleanup inseguro tras revisión TOCTOU. No reutilizar esa propuesta.
 
 Solo lectura estática y documentación. Sin cambios de código, tests, CI/Actions, syscalls, harness, POCO/Termux, bootstrap, publicación ni efectos protegidos.
+
+
+---
+
+## DELTA — P08 ROOT→STORES Y CHRONICLE INIT/APPEND RECONCILIADOS (2026-11-07)
+
+Se integró trabajo documental previo que no estaba incorporado a esta rama, sin fusionar ramas divergentes ni repetir auditorías:
+[NCS_M0_P08_ROOT_TO_STORE_MAPPING_AND_CHRONICLE_INIT_RECONCILIATION_2026-11-07.md](BUILD/NCS_M0_P08_ROOT_TO_STORE_MAPPING_AND_CHRONICLE_INIT_RECONCILIATION_2026-11-07.md), commit `622361824ad493c2a254510e4ea366f6e487446f`.
+
+Procedencia: rama `ncs-m0-documentary-reconciliation-2026-11-02`, addendum blob `287e2585219206ff7281eef962b2884489719de9`, §§11–13. La reconciliación se liga al snapshot de producto `d8b5ca8720908d926acc18130614cce132a43b5d`.
+
+Hallazgos incorporados:
+- P08: O-08 ratificado como diseño, pero no hay resolver común demostrado que derive Continuity y Chronicle desde una sola root; CLI/APIs/factories siguen aceptando paths independientes.
+- Candidato histórico, NO RATIFICADO: `<root>/.nexo-continuity.json` + `<root>/.nexo-chronicle.json`. Preserva el objeto Continuity publicado; el nombre Chronicle es candidato y no está creado/autorizado.
+- El inventario Termux previo solo observó primer nivel y no detectó sidecars/temporales candidatos; no cubre subdirectorios, aliases/mounts ni cambios futuros. No repetir salvo brecha de alcance concreta.
+- Brecha Chronicle: parser CLI admite `--initialize-chronicle` y el use case puede inicializar Chronicle dentro de append. Contrato objetivo: append nunca inicializa; flag rechazado antes de I/O; inicialización independiente con admisión y autorización propias.
+- Sidecars derivados: `.lock`, `.tmp`, `.tmp-*`; el inventario futuro debe tratarlos como objetos separados, sin cleanup por nombre.
+
+Estado:
+- P08 OPEN / LAYOUT UNSELECTED; candidato no ratificado.
+- Chronicle init/append separation: brecha estática identificada; corrección no implementada.
+- P-03/P-04 D1–D6 ratificadas; enforcement pendiente.
+- P-05-C ratificada; P-05 OPEN.
+- P07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; E2/E3 PARTIAL/NOT CLOSED.
+- M0 INCOMPLETO; no se eleva ningún gate.
+
+No se fusionaron ramas divergentes. Solo lectura estática/documentación; sin cambios runtime/tests/workflows, sin comandos POCO/Termux, sin bootstrap ni efectos protegidos.
