@@ -204,3 +204,20 @@ Estas fuentes describen APIs/modelos generales; no prueban disponibilidad ni sem
 - authorization: NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN.
 - Primera publicación, commissioning y efectos protegidos: **STOP**.
 - Sin cambios runtime/tests/workflows/configuración/dispositivo; no se ejecutaron pruebas, CI, Actions ni comandos de dispositivo.
+
+
+---
+
+## DELTA — PRECEDENCIA DE P-05-C Y P-09 (2026-11-07)
+
+La recomendación §9 y el estado §11 son una fotografía anterior a la ratificación del propietario. Se actualizan así:
+
+- P-05-C ya está **RATIFICADA POR EL PROPIETARIO** el 2026-11-07. La frase histórica «P05-C no ratificada» queda superada.
+- P-05 continúa **OPEN**: C es política, no mecanismo. No demuestra enforcement durable/interproceso, resolución tras crash ni readmisión segura.
+- R1 fue **ACEPTADO POR EL PROPIETARIO** el 2026-11-02; su aceptación delimita el modelo de confianza, pero E2/E3 continúan PARTIAL/NOT CLOSED y no demuestra que todos los writers estén controlados.
+- P-09 sigue OPEN/UNKNOWN. La reconciliación del 2026-11-07 demuestra guardas parciales de raíces/imports literales, pero no cierre de loaders no literales, consumidores externos ni del universo de despliegue.
+- El mecanismo seleccionado continúa **NINGUNO**. dirfd/openat2 + lock de kernel por descriptor sigue siendo candidato condicionado; ni openat2 ni el lock por descriptor resuelven por sí solos cleanup condicionado a identidad/reemplazo de objeto.
+- La alternativa Node path-based permanece insuficiente como única barrera para P07-C. No degradar a `realpath/stat/open/unlink` ni a temporal+rename como sustituto de una operación replacement-safe.
+- P07-C permanece **UNKNOWN / BLOQUEANTE** hasta demostrar el seam real de cleanup/release replacement-safe, identidad contextual, cobertura de actores P-09 y oráculos completos.
+
+No se ejecutaron pruebas, syscalls, experimentos filesystem, CI/Actions ni comandos POCO/Termux. Esta delta no selecciona mecanismo ni autoriza implementación. NCS M0 continúa INCOMPLETO.
