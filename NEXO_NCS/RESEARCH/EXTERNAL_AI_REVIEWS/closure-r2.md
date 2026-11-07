@@ -7,7 +7,8 @@ Este registro cierra la publicación y la integridad documental de los artefacto
 - Repositorio: `snowdenxrp/aldea-ia`
 - Rama: `nexo-mission-02-pdf-2026-11-05`
 - Commit de publicación inicial: `96e227eb06134037fa5e01fabc8cfba4c384f476`
-- Commit de este cierre: `0ef2f2b837d8472e22c633ba3e2b3029fc47f6e9`
+- Commit que contiene las tres correcciones documentales: `0ef2f2b837d8472e22c633ba3e2b3029fc47f6e9`.
+- Este registro se incorpora después como constancia persistente; su propio commit queda identificado en el historial de la rama.
 
 ## Integridad de archivos publicados
 
