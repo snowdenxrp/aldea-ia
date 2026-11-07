@@ -1,6 +1,6 @@
 # Manifiesto SHA-256 — Publicación R2 (MUSE-AUTONOMY-002)
 
-**Fecha:** 2026-11-06.
+**Fecha de actualización:** 2026-11-07.
 **Repositorio:** `snowdenxrp/aldea-ia`.
 **Rama:** `nexo-mission-02-pdf-2026-11-05`.
 **Carpeta:** `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/`.
@@ -13,8 +13,8 @@ texto reconstruido, fragmentos o contenido copiado parcialmente.
 
 | Archivo | Ruta en la rama | Tamaño (bytes) | SHA-256 |
 |---|---|---|---|
-| `report-r2.md` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/report-r2.md` | 101.280 | `99719452d35fcec7e1d6187f6ca9c81808fa49d683313f7d1ab0ac10b00790d1` |
-| `expediente-consolidado-nexo-r2.html` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/expediente-consolidado-nexo-r2.html` | 138.565 | `f0ba66c8709866c0dbc16f80bd7b09f724833f17f83b72a9b005dab182ee5f46` |
+| `report-r2.md` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/report-r2.md` | 101.948 | `6125da45ea97ad081bbf284a8142711e507537bcaee344503909b8e312787d5f` |
+| `expediente-consolidado-nexo-r2.html` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/expediente-consolidado-nexo-r2.html` | 139.944 | `5b3baa6ab738861617fdd02298023e96e84172a5735590457db015fc77580af0` |
 | `expediente-consolidado-nexo-r2.pdf` (representación equivalente; no publicada por separado) | No existe archivo PDF independiente en el árbol de la rama; se conserva como referencia de la representación local | 148.668 (declarado en preparación) | `2ab42be873d9f0684dd6d9e4d6c96da0f0f67fd40643754875b1b24a0fb721fa` (declarado en preparación; no recalculado desde la rama) |
 | `hashes-r2.md` (este manifiesto) | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/hashes-r2.md` | — | — (ver nota) |
 | `consolidation-method.md` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/consolidation-method.md` | 9.720 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` |
@@ -45,7 +45,7 @@ como archivos publicados en la rama.
 | `audit-r1-independent.md` | 23.857 | `0f9d37303a15865d1b035cea148210569cd96054a49ea0ac84862a94328a7028` |
 | `manifest-r1-verified.md` | 5.765 | `4e7fe75dc7d986e2891ffdfd9cde88680ad9bcda2cae2b0f3c45fdc4cd62e655` |
 | `audit-r1-criteria-matrix.md` (informe exacto de cambios R2; nombre conservado) | 6.272 | `9ec420f532497eb4658ee1cb3ca628abc22408a62713c6ef21fda57b58f13707` |
-| `auditoria-muse-autonomy-002-r1-independiente.html` (HTML R2 bajo nombre anterior; se conserva, no se borra) | 138.565 | `f0ba66c8709866c0dbc16f80bd7b09f724833f17f83b72a9b005dab182ee5f46` |
+| `auditoria-muse-autonomy-002-r1-independiente.html` (snapshot R2 anterior a las correcciones de publicación; se conserva como evidencia histórica) | 138.565 | `f0ba66c8709866c0dbc16f80bd7b09f724833f17f83b72a9b005dab182ee5f46` |
 
 ## Nota sobre la autorreferencia
 
