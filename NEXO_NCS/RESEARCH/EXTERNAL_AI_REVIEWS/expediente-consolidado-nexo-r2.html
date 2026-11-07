@@ -144,7 +144,7 @@ footer p{margin:.3em 0}
       <div class="count"><b>15</b><span>discrepancias D1–D15 con resolución</span></div>
       <div class="count"><b>12</b><span>correcciones materiales supervivientes</span></div>
       <div class="count"><b>7</b><span>riesgos nuevos R1–R7</span></div>
-      <div class="count"><b>9</b><span>Registro U1–U9 · 4 UNKNOWN, U1, U4, U6, U7 y U8 RESUELTOS</span></div>
+      <div class="count"><b>9</b><span>Registro U1–U9 · 3 UNKNOWN, U1, U4, U6, U7, U8 y U9 RESUELTOS</span></div>
       <div class="count"><b>12</b><span>decisiones D-01 a D-12 · todas SIN DECIDIR</span></div>
     </div>
   </div>
@@ -229,7 +229,7 @@ footer p{margin:.3em 0}
 <p><strong>M02 queda corregida</strong> en los puntos identificados por M03 y M03-B. <strong>M03 queda auditada</strong> con las precisiones de esta hoja y de M03-B. <strong>Las correcciones C01–C16 quedan evaluadas</strong> (15 CONFIRMADA, 1 PARCIALMENTE CONFIRMADA — C14 —, 0 REFUTADA, 0 NO EVALUABLE).</p>
 <p>El resultado es <strong>APROBADO CONDICIONADO</strong> como documentación de investigación y referencia, <strong>no como especificación técnica autorizada</strong>. No se aprueba ninguna tecnología ni se autoriza implementación. NCS M0 debe terminar antes de cualquier implementación, como ya estaba establecido.</p>
 <p><strong>Fallo estructural central sin solución demostrada (heredado de M03, no resuelto por M03-B):</strong> no existe estándar de versionado de una Constitución de agente, ni verificación de continuidad semántica/comportamental entre modelos, ni revocación o sucesión sin un tercero de confianza cuando la clave raíz se compromete o el propietario queda incapacitado. Este expediente no afirma lo contrario en ningún punto.</p>
-<p><strong>Conteo consolidado (verificado en todo el documento):</strong> 16 correcciones C01–C16 · 15 discrepancias D1–D15 · 12 correcciones materiales supervivientes · 7 riesgos nuevos R1–R7 · 9 registros U1–U9 · 4 UNKNOWN, 5 RESUELTOS, 0 PARCIAL · 12 decisiones D-01 a D-12 SIN DECIDIR · 5 correcciones materiales de M03 · 13 riesgos omitidos de M03 · 12 requisitos a preservar de M03 · matriz de amenazas T1–T14.</p>
+<p><strong>Conteo consolidado (verificado en todo el documento):</strong> 16 correcciones C01–C16 · 15 discrepancias D1–D15 · 12 correcciones materiales supervivientes · 7 riesgos nuevos R1–R7 · 9 registros U1–U9 · 3 UNKNOWN, 6 RESUELTOS, 0 PARCIAL · 12 decisiones D-01 a D-12 SIN DECIDIR · 5 correcciones materiales de M03 · 13 riesgos omitidos de M03 · 12 requisitos a preservar de M03 · matriz de amenazas T1–T14.</p>
 </section><section id="correcciones" class="searchable-sec"><h2>3. Registro consolidado de correcciones C01–C16</h2><div class="filters" role="group" aria-label="Filtrar correcciones"><button class="chip is-active" data-filter="all">Todas · 16</button><button class="chip" data-filter="confirmada">Confirmadas · 15</button><button class="chip" data-filter="parcial">Parcialmente confirmada · 1</button><button class="chip" data-filter="nueva">Aportaciones nuevas · 5</button><span class="filter-note" id="filter-note" aria-live="polite"></span></div>
 <p>Veredicto global: <strong>15 CONFIRMADA, 1 PARCIALMENTE CONFIRMADA (C14), 0 REFUTADA, 0 NO EVALUABLE.</strong> La mayoría no corrige un error de M02: C01, C03, C08, C10 y C13 ya estaban dichas en M02; C02, C04, C15 y C16 repiten correcciones que M03 ya había hecho. Son confirmaciones, no descubrimientos (M03-B, Dictamen).</p>
 
@@ -828,7 +828,7 @@ footer p{margin:.3em 0}
 <tr>
 <td>U9</td>
 <td>Demostración de ausencia de eventos no registrados mediante Merkle</td>
-<td>UNKNOWN</td>
+<td><strong>RESUELTO</strong> (Merkle prueba inclusión/consistencia, no completitud del universo de eventos; se requieren recibos y monitores independientes)</td>
 </tr>
 </tbody>
 </table></div>
@@ -841,7 +841,7 @@ footer p{margin:.3em 0}
 - <strong>U6:</strong> <strong>RESUELTO como corrección de afirmación, no como prueba física universal.</strong> ASML afirma que la fabricación de microchips implica cientos de pasos y que el ciclo de capas puede repetirse hasta 100 veces; sus máquinas EUV se usan para capas críticas, no todas. ASML/JRC documentan una cadena de suministro global: unas 100.000 partes y más de 5.000 proveedores para herramientas EUV; ASML describe dependencias de proveedores únicos y componentes cuya multifuente no es económicamente viable. Entre las fuentes primarias revisadas no se encontró respaldo para el número exacto &gt;1.000 pasos ni para una imposibilidad física universal. Se conserva C16: límite práctico/económico/temporal bajo aislamiento de recursos, no imposibilidad física. Fuentes: <a href="https://www.asml.com/en/technology/all-about-microchips/how-microchips-are-made" target="_blank" rel="noopener">ASML, How microchips are made</a>, <a href="https://publications.jrc.ec.europa.eu/repository/bitstream/JRC133850/JRC133850_01.pdf" target="_blank" rel="noopener">JRC Semiconductors in the EU (2023)</a>, <a href="https://www.sec.gov/Archives/edgar/data/937966/000162828026011377/asml-2025xannualxreportx.htm" target="_blank" rel="noopener">ASML Annual Report 2025</a>.
 - <strong>U7:</strong> <strong>RESUELTO con alcance acotado a NIST SP 800-53 Rev. 5.1.</strong> La palabra <code>quarantine</code> sí aparece en AC-4(8) (datos tras fallo de filtro), SC-18(1) (código móvil inaceptable) y SI-3 (código malicioso). Esos usos son filtrado/contención, no restauración. CP-10 define recovery/reconstitution a un estado conocido y no incluye quarantine como fase; IR-9 exige aislar el sistema contaminado y erradicar la información. Por tanto, cuarentena puede ser una acción de contención, pero <code>quarantine</code> como etapa general de restauración sigue siendo una propuesta de diseño Nexo, no un requisito de CP-10. Fuente primaria: <a href="https://csrc.nist.gov/CSRC/media/Projects/risk-management/800-53%20Downloads/800-53r5/SP_800-53_v5_1-derived-OSCAL.pdf" target="_blank" rel="noopener">NIST SP 800-53 Rev. 5.1</a>.
 - <strong>U8:</strong> RESUELTO. El PDF primario de Miller (2024), arXiv:2411.00640v1, se leyó directamente (14 páginas; 2026-11-07). Se verificaron las secciones 2–5 y los apéndices A–C. La maquinaria estadística de C11 se contrasta ahora con el texto original, no con una fuente secundaria.
-- <strong>U9:</strong> la frase de M02 §2.3 "un Merkle con diseño adecuado sí [prueba ausencia]" es ambigua (¿ausencia de qué, respecto a qué STH?); se resolvió a favor de la lectura M03/C08, pero no se localizó un diseño Merkle que pruebe la ausencia de eventos no registrados.</p>
+- <strong>U9:</strong> <strong>RESUELTO como precisión criptográfica.</strong> RFC 9162 §2.1.3 define la prueba de inclusión: demuestra que una hoja existe en un árbol. §2.1.4 define consistencia: demuestra que un árbol posterior conserva las primeras m hojas del anterior (propiedad append-only). Ninguna de las dos prueba que el universo de eventos esté completo ni detecta por sí sola un evento que nunca se envió al log. §§8.2–8.3 exige monitores que inspeccionen todas las nuevas entradas y auditen STH/inclusión/consistencia; §11.3 advierte que logs pueden mostrar vistas distintas y que gossip entre clientes detecta divergencia. En CT, un SCT/recibo firmado permite exigir inclusión dentro del Maximum Merge Delay; sin recibo o fuente independiente de eventos, la ausencia de un evento omitido no es demostrable por Merkle. RFC 9162 es Experimental, no Standards Track, y se usa aquí como modelo técnico de transparencia, no como estándar general de Nexo. Fuente primaria: <a href="https://www.rfc-editor.org/rfc/rfc9162.html" target="_blank" rel="noopener">RFC 9162</a>.</p>
 <p>UNKNOWN no significa falso ni verdadero. No puede transformarse en PASS por repetición documental.</p>
 <p><strong>Correspondencia con los UNKNOWN de M03 (9, lista anterior):</strong> correcciones de ChatGPT (resuelto por M03-B, ya no UNKNOWN) · texto verbatim SP 800-63B-4 §2.3.2/Ap. B (→ U1) · fechas exactas DID 19-07-2022 / VC 15-05-2025 en extracto primario (corroboradas, no en líneas leídas; se conservan como salvedad de método en §12, no como UNKNOWN abierto) · cifra HELM/lm-eval 4–5 pt (→ U5) · "&gt;1.000 pasos" EUV e imposibilidad física (→ U6) · periodo de garantía de snapshots OpenAI (fuentes secundarias en conflicto: 3 vs 6 vs 12 meses según tipo; se conserva como limitación en §11, no renumerado en U1–U9) · existencia/no-existencia exhaustiva de estándar de versionado de Constitución (→ U3 en sentido amplio; búsqueda sin resultado ≠ prueba de inexistencia) · equivalencia semántica entre modelos (sin métrica demostrada; se conserva como fallo estructural central en §1) · sucesión legal aplicable (jurisdicción no especificada; se conserva como limitación en §11).</p>
 </section><section id="decisiones" class="searchable-sec"><h2>8. Matriz de impactos D-01 a D-12</h2>
@@ -1293,6 +1293,15 @@ footer p{margin:.3em 0}
 <td>Citado en M02/M03; paper no re-leído en M03-B</td>
 </tr>
 <tr>
+<tr>
+<tr>
+<td>IETF RFC 9162 — Certificate Transparency v2.0</td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc9162.html" target="_blank" rel="noopener">https://www.rfc-editor.org/rfc/rfc9162.html</a></td>
+<td>Diciembre 2021; Experimental, no Standards Track</td>
+<td>§§1, 2.1.3–2.1.4, 8.2–8.3, 11.3</td>
+<td>Pruebas Merkle de inclusión/consistencia; monitores, STH y gossip</td>
+<td>Texto RFC primario leído directamente (2026-11-07)</td>
+</tr>
 <tr>
 <td>HELM — paper original</td>
 <td><a href="https://arxiv.org/abs/2211.09110" target="_blank" rel="noopener">https://arxiv.org/abs/2211.09110</a></td>
