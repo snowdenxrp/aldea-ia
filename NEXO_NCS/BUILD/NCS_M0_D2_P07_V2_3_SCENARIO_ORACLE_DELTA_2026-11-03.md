@@ -149,3 +149,14 @@ El escenario no ejecutado nunca es PASS. Todo `PASS_GATE` debe incluir `gate_bas
 - P05-C: OPEN/NOT RATIFIED.
 - P09: OPEN/UNKNOWN.
 - NCS M0: INCOMPLETO.
+
+
+---
+
+## DELTA — ESTADO VIGENTE DE DEPENDENCIAS (2026-11-07)
+
+- P-05-C: RATIFICADA POR EL PROPIETARIO como política UNKNOWN/BLOCKED sin recuperación automática; P-05 continúa OPEN por falta de mecanismo/enforcement/resolución/evidencia.
+- P-09: OPEN/UNKNOWN. La cobertura literal del guard existente es parcial y no cierra loaders computados ni consumidores externos.
+- P07-C: UNKNOWN/BLOCKING. La ratificación de P-05-C y la existencia de guardas estáticas no satisfacen oráculos de identidad/cleanup replacement-safe ni cobertura de actores.
+- Ningún escenario recibe PASS/PASS_GATE por esta delta. Harness NO IMPLEMENTADO según la evidencia documental consultada; pruebas NO EJECUTADAS.
+- NCS M0 INCOMPLETO; commissioning/efectos protegidos STOP.
