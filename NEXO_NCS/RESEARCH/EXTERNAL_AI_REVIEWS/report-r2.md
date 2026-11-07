@@ -538,6 +538,8 @@ Manifiesto de entregables de la versión R2. Un archivo no puede contener su pro
 | `notes/consolidation-method.md` (nota de método, sin cambios) | `workspace/research_notes/nexo-autonomy-001-20261105-2210/notes/consolidation-method.md` | 2.209 | `ac1efe9f9e8d7a5224f6de8011bb3ce47540e8975f7d6574d14297abd2c9a679` | VERIFICADO — hash calculado sobre el archivo real, 2026-11-06 |
 | `hashes-r2.md` (manifiesto externo R2) | `workspace/research_notes/nexo-autonomy-002/r2/hashes-r2.md` | — | — | Manifiesto; contiene los SHA-256 finales de `report-r2.md`, el HTML R2, el PDF R2 y la nota de método |
 
+**Nota de publicación y correspondencia del paquete R2 (verificación posterior):** el archivo PDF R2 citado arriba corresponde a una representación generada durante la preparación; no hay un PDF independiente publicado en esta rama. El propietario confirmó que el HTML y el PDF representan el mismo expediente y aceptó el HTML como entrega suficiente. Por tanto, el HTML R2 es el artefacto canónico publicado; no se afirma identidad binaria ni publicación del PDF. La nota de método R2 publicada es `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/consolidation-method.md` (raíz de la carpeta); la fila histórica que menciona `notes/consolidation-method.md` y 2.209 bytes corresponde a la nota R1 fuente, no a la nota R2 publicada.
+
 **Archivos R1 conservados como evidencia (sin modificar):**
 
 | Archivo | Ruta | Tamaño (bytes) | SHA-256 |
