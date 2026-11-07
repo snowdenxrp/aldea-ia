@@ -4,6 +4,18 @@ Antes de cualquier investigación, auditoría, edición o propuesta, seguir [OPE
 
 ---
 
+## DELTA — RATIFICACIÓN DEL PROPIETARIO SOBRE CLEANUP ATRIBUIBLE (2026-11-07)
+
+- El propietario ratifica que el producto solo puede ejecutar cleanup sobre objetos cuya atribución a la operación esté demostrada y cuya identidad y nombre estén protegidos por el protocolo.
+- Ante cualquier incertidumbre, el residuo se conserva y el estado permanece `UNKNOWN/BLOCKED`.
+- Nombre, token, PID o antigüedad, por sí solos, nunca justifican cleanup.
+- Esta política no permite readmisión cuando falta evidencia suficiente para atribuir el objeto.
+- Alcance: política normativa de cleanup para P05/P07; no demuestra que el mecanismo actual la cumpla, no satisface O4/O5, no cierra P05 ni P07-C y no selecciona una arquitectura.
+- No autoriza implementación, harness, tests, CI, POCO/Termux, cleanup real, readmisión, commissioning ni efectos protegidos.
+- Gates sin cambio: P05-C RATIFICADA / P05 OPEN; P07-C UNKNOWN / BLOCKING; `authorization: NOT_EVALUATED`; NCS M0 INCOMPLETO.
+
+---
+
 ## DELTA — DECISIÓN DEL PROPIETARIO SOBRE AFECTACIÓN REVERSIBLE P07-C (2026-11-07)
 
 - El propietario autoriza la interpretación conservadora: **cualquier desplazamiento temporal del nombre protegido o modificación de `nlink` cuenta como afectación del objeto protegido, aunque después se restaure el estado original**.
