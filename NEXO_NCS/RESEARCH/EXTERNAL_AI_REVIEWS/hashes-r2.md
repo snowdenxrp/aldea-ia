@@ -17,7 +17,7 @@ texto reconstruido, fragmentos o contenido copiado parcialmente.
 | `expediente-consolidado-nexo-r2.html` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/expediente-consolidado-nexo-r2.html` | 138.565 | `f0ba66c8709866c0dbc16f80bd7b09f724833f17f83b72a9b005dab182ee5f46` |
 | `expediente-consolidado-nexo-r2.pdf` (representación equivalente; no publicada por separado) | No existe archivo PDF independiente en el árbol de la rama; se conserva como referencia de la representación local | 148.668 (declarado en preparación) | `2ab42be873d9f0684dd6d9e4d6c96da0f0f67fd40643754875b1b24a0fb721fa` (declarado en preparación; no recalculado desde la rama) |
 | `hashes-r2.md` (este manifiesto) | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/hashes-r2.md` | — | — (ver nota) |
-| `consolidation-method.md` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/consolidation-method.md` | 7.666 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` |
+| `consolidation-method.md` | `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/consolidation-method.md` | 9.720 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` |
 
 **Nota de publicación:** el HTML R2 es el artefacto canónico efectivamente publicado. El propietario confirmó que HTML y PDF representan el mismo expediente y aceptó el HTML como suficiente; no se afirma que exista un PDF binario independiente en la rama ni identidad binaria entre ambos formatos. La nota de método R2 se encuentra en la raíz de la carpeta, no en `notes/`.
 
