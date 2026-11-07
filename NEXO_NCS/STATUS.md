@@ -3536,3 +3536,29 @@ Estado sin cambios: M0 INCOMPLETO; P-01/P01-A/P01-G OPEN / UNKNOWN; D0/D1/D2/D3 
 - NCS M0: **INCOMPLETO**. `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; ROOT_READY no establecido; commissioning y efectos protegidos STOP.
 - Alcance de esta actualización: documentación solamente. No runtime, tests, workflows, CI/Actions, Termux/POCO, bootstrap, publicación ni efectos protegidos.
 
+
+
+---
+
+## DELTA — RECONCILIACIÓN DE DOCUMENTOS DEPENDIENTES P-05/P-07 (2026-11-07)
+
+Tras la ratificación de P-05-C se añadieron deltas de precedencia documental —sin borrar el historial del 2026-11-03— a los siguientes registros:
+
+- Política P-05-C y decisión del propietario: blob `97e24c03d2c63dbab025a8a9912d788a63d9c125`.
+- Matriz de aceptación E1–E9: blob `a678e721f1198f8d5ec9098c313b11f90f79d8e5`.
+- Contrato de aceptación P-07 filesystem: blob `b64e7ee6fb1746bff4574c06527dc40f11403835`.
+- Diseño técnico P-03/P-04: blob `6c61e6ac212e92c7b02e0238f445998be888f63e`.
+- Propuesta de cierre técnico P-05: blob `589280b67d974874841002cee76f7ed5da1ad555`.
+
+Las frases históricas «C no ratificada» en las versiones originales se conservan como historial y quedan superadas por sus deltas del 2026-11-07. No deben leerse como estado vigente.
+
+**Ruta mínima hacia M0 — estado actualizado:**
+1. P-05-C está ratificada; P-05 sigue OPEN hasta que exista enforcement durable/interproceso, resolución aprobada y evidencia.
+2. P-07-C sigue UNKNOWN/BLOQUEANTE: falta identidad/cleanup replacement-safe demostrable.
+3. P-09 sigue OPEN/UNKNOWN: falta cobertura demostrable de callers/escritores directos, dinámicos y externos.
+4. P-03/P-04 D1–D6 están ratificadas; falta implementación y evidencia de admisión en todas las fronteras públicas cubiertas.
+5. E2/E3 permanecen PARTIAL / NOT CLOSED; la evidencia del POCO no acredita exclusión sostenida ni prevención de relanzamiento.
+6. Después de cerrar contratos y dependencias: implementar únicamente cambios/tests autorizados, validar en un SHA congelado y completar el acta de aceptación M0 criterio por criterio.
+
+No se seleccionó mecanismo filesystem ni se ejecutaron tests/CI/Actions. No runtime, workflows, Termux/POCO, bootstrap, publicación o efectos protegidos. `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP; **NCS M0 INCOMPLETO**.
+
