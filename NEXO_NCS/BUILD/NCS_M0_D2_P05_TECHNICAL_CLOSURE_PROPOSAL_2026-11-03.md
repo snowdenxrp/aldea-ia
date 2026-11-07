@@ -208,3 +208,21 @@ La afirmación de §7 y §10 de que P-03/P-04 permanecían como propuesta no rat
 - Primera publicación, commissioning y efectos protegidos: STOP.
 - Solo delta documental; sin runtime/tests/workflows/configuración/dispositivo.
 - No se ejecutaron tests/CI/Actions.
+
+
+---
+
+## DELTA — DECISIÓN DEL PROPIETARIO SOBRE POLÍTICA P-05-C (2026-11-07)
+
+La decisión A/B/C que §8–§9 reservaban al propietario queda resuelta en cuanto a política: el propietario ratificó **C — conservar UNKNOWN/BLOCKED sin recuperación automática** el 2026-11-07.
+
+- Cualquier release/cleanup incierto permanece UNKNOWN/BLOCKED; no retry automático de negocio ni readmisión normal.
+- No se borra/reemplaza manualmente el lock como recuperación predeterminada.
+- Cualquier desbloqueo o recuperación futura exige una decisión expresa posterior y un procedimiento concreto demostrado.
+- Si no se demuestra enforcement durable/interproceso de BLOCKED, la instancia permanece STOP y M0 no se declara completo.
+- Esta decisión no escoge una primitiva filesystem, no define por sí sola los predicados de resolución, no implementa cuarentena y no convierte E1–E9 en PASS.
+- P-05: **OPEN — C RATIFICADA; MECANISMO/ENFORCEMENT/RESOLUCIÓN/EVIDENCIA PENDIENTES**.
+- P-07-C: UNKNOWN/BLOQUEANTE; P-09: OPEN/UNKNOWN; M0: INCOMPLETO.
+- No se modificó runtime/tests/workflows/configuración/dispositivo ni se ejecutaron tests/CI/Actions.
+
+Registro autoritativo: [NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md](NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md), delta del 2026-11-07.
