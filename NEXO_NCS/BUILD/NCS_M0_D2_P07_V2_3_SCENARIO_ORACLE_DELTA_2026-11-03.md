@@ -160,3 +160,20 @@ El escenario no ejecutado nunca es PASS. Todo `PASS_GATE` debe incluir `gate_bas
 - P07-C: UNKNOWN/BLOCKING. La ratificación de P-05-C y la existencia de guardas estáticas no satisfacen oráculos de identidad/cleanup replacement-safe ni cobertura de actores.
 - Ningún escenario recibe PASS/PASS_GATE por esta delta. Harness NO IMPLEMENTADO según la evidencia documental consultada; pruebas NO EJECUTADAS.
 - NCS M0 INCOMPLETO; commissioning/efectos protegidos STOP.
+
+
+---
+
+## DELTA — CLASIFICACIÓN DE ACTORES BAJO R1 ACEPTADO (2026-11-07)
+
+La frase de §2 «R1 no ratificado = no enforcement claim» queda superada en cuanto al estado de autoridad: el propietario **ACEPTÓ R1 el 2026-11-02**. La regla vigente es:
+
+- R1 define el límite de confianza aceptado; no demuestra que los actores reales estén dentro de él ni que estén controlados.
+- `COVERED` solo puede asignarse a un participante cuya ruta esté demostrablemente sometida al protocolo de admisión P-03/P-04; no se infiere por UID, instalación, nombre de proceso o pertenencia al repo.
+- `RAW` sigue siendo actor que ignora el protocolo y queda fuera del enforcement cooperativo, sujeto al límite R1.
+- `PRIVILEGED` sigue fuera del modelo aceptado.
+- Si no puede determinarse la clase antes del subcaso: `UNCLASSIFIABLE` → UNKNOWN-STOP.
+- P07-E continúa OPEN; E2/E3 PARTIAL/NOT CLOSED; P-09 OPEN/UNKNOWN.
+- P07-C UNKNOWN/BLOCKING; ningún escenario recibe PASS_GATE por esta actualización.
+
+No se ejecutaron escenarios, harness, tests ni CI.
