@@ -94,3 +94,14 @@ Hallazgos relevantes para el expediente:
 Fuente primaria: https://arxiv.org/pdf/2411.00640
 
 **Resultado:** U8 RESUELTO con lectura primaria directa. U2 permanece UNKNOWN: el artículo es investigación/recomendación estadística, no una norma que prescriba 200–500 casos.
+
+
+## Revisión primaria de U2 — umbral de casos de prueba (2026-11-07)
+
+Se contrastaron fuentes primarias adicionales:
+- **NIST AI 200-3, ARIA Evaluation Planning Manual (septiembre 2026):** §3 y §4 recomiendan definir tamaños según objetivos y análisis de potencia. Appendix C presenta ejemplos específicos: Healthcare-Privacy usa ≈20–40 red teamers, ≈100 user testers por aplicación y ≈3–5 annotators; Manufacturing-Safety usa ≈30–50 red teamers, ≈60–100 user testers por aplicación y ≈3–5 annotators. Son participantes humanos en ejemplos hipotéticos, no un número universal de prompts o casos.
+- **NIST AI RMF 1.0, Measure 2.1–2.3:** exige documentar test sets, métricas y herramientas; pide representatividad y evaluación para condiciones similares a despliegue. No fija N universal.
+- **Reglamento (UE) 2024/1689, art. 10(2)–(4):** exige gobernanza de datos, relevancia, representatividad, completitud y propiedades estadísticas apropiadas; no fija N en ese artículo.
+- **Miller (2024), §5:** el cálculo ≈969 y la sugerencia ≈1.000 se basan en parámetros hipotéticos, no en una norma.
+
+**Resultado:** U2 permanece UNKNOWN. No se encontró un umbral universal obligatorio de 200–500 casos en estas fuentes primarias, pero la búsqueda no cubre exhaustivamente todas las normas sectoriales ni jurisdicciones. Se conserva la distinción entre número de prompts/casos, número de participantes humanos y número de anotadores.
