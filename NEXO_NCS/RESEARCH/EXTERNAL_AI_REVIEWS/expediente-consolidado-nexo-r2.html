@@ -792,8 +792,8 @@ footer p{margin:.3em 0}
 </tr>
 <tr>
 <td>U2</td>
-<td>Norma que prescriba 200–500 casos</td>
-<td>UNKNOWN</td>
+<td>Norma universal que prescriba 200–500 casos de prueba para evaluar un agente</td>
+<td>UNKNOWN (sin umbral universal en las fuentes primarias revisadas; búsqueda no exhaustiva)</td>
 </tr>
 <tr>
 <td>U3</td>
@@ -834,7 +834,7 @@ footer p{margin:.3em 0}
 </table></div>
 <p>Motivos (M03-B, conservados; actualización de evidencia 2026-11-07):
 - <strong>U1:</strong> M03/M03-B no habían leído directamente el texto normativo completo. Esta revisión leyó el texto oficial NIST en HTML y contrastó §2.3.2, §3.2.13, Appendix B y Appendix E. Se confirma clave privada no exportable, resistencia al phishing, entorno aislado protegido por hardware y exclusión de autenticadores sincronizables en AAL3. §3.2.13 admite hardware separado o procesador/entorno de ejecución integrado protegido (secure element, TEE, TPM) separado del host. U1 permanece RESUELTO con evidencia primaria directa.
-- <strong>U2:</strong> ninguna norma localizada en M02, M03 ni M03-B prescribe 200–500 casos (o cualquier N) para evaluar un agente. El número sigue siendo heurística por construcción; no es un UNKNOWN por falta de búsqueda, sino por ausencia de norma localizada (la ausencia no se demuestra exhaustivamente).
+- <strong>U2:</strong> revisión primaria adicional (2026-11-07): NIST AI 200-3, <em>ARIA Evaluation Planning Manual</em> (septiembre 2026), §§3–4 y Appendix C; NIST AI RMF 1.0, Measure 2.1–2.3; y Reglamento (UE) 2024/1689, art. 10. Ninguno de estos textos establece un umbral universal de 200–500 casos. NIST AI 200-3 pide determinar el tamaño de muestra según objetivos y análisis de potencia; sus ejemplos ilustrativos usan 20–40 red teamers, ~100 user testers por aplicación y 3–5 annotators para Healthcare-Privacy, y 30–50 red teamers, 60–100 user testers por aplicación y 3–5 annotators para Manufacturing-Safety. Son tamaños de grupos humanos en dos ejemplos contextuales, no un requisito general de número de prompts/casos. Miller (2024), §5, usa parámetros hipotéticos y calcula ≈969 preguntas independientes para detectar una diferencia absoluta de 3% con potencia 80% y α=0,05; sugiere alrededor de 1.000 preguntas para nuevos evals bajo ese escenario. El AI Act exige datos relevantes, suficientemente representativos y con propiedades estadísticas apropiadas (art. 10), sin fijar N en ese artículo. U2 permanece UNKNOWN: la búsqueda primaria es más sólida, pero no exhaustiva de todas las normas sectoriales aplicables.
 - <strong>U3:</strong> UCAN (ucan-wg/spec v1.0, trabajo comunitario) y ZCAP-LD (borrador CCG v0.4.0) no se re-verificaron en M03-B; su estatus es heredado de M02. No se afirma que no exista nada: solo que nada localizado lo resuelve para Nexo.
 - <strong>U4:</strong> la spec leída en vivo (versión <code>dev</code>) no menciona a la Linux Foundation en su texto; las fechas (donación junio 2025, AAIF agosto 2026, v1.0.0 12-03-2026, v1.0.1 mayo 2026) proceden de fuentes secundarias. La nota de prensa de la Linux Foundation del 23-06-2025 fue verificada durante la construcción del documento M03-B (donación), pero el alojamiento en la Agentic AI Foundation y la fecha de la v1.0.1 siguen apoyados en secundarias. Estado PARCIAL.
 - <strong>U5:</strong> heredado de M03; C11 no la repara ni la verifica. Motivo: ninguna comparación primaria localizada.
@@ -1051,6 +1051,30 @@ footer p{margin:.3em 0}
 <td>Abstract, Two-level scheme, Format</td>
 <td>Backup de wallets HD BIP-32, no autenticación/sucesión</td>
 <td>Verificado en vivo</td>
+</tr>
+<tr>
+<td>NIST AI 200-3</td>
+<td><a href="https://doi.org/10.6028/NIST.AI.200-3" target="_blank" rel="noopener">https://doi.org/10.6028/NIST.AI.200-3</a></td>
+<td>Septiembre 2026</td>
+<td>§§2–4, Appendix C; tamaños muestrales ilustrativos y dependientes de contexto</td>
+<td>Planificación ARIA: model testing, red teaming, user testing</td>
+<td>PDF primario de 36 páginas leído directamente (2026-11-07); no prescribe 200–500 casos universales</td>
+</tr>
+<tr>
+<td>NIST AI RMF 1.0</td>
+<td><a href="https://airc.nist.gov/airmf-resources/airmf/5-sec-core/" target="_blank" rel="noopener">https://airc.nist.gov/airmf-resources/airmf/5-sec-core/</a></td>
+<td>2023</td>
+<td>Measure 2.1–2.3</td>
+<td>Documentar test sets, métricas, herramientas y representatividad</td>
+<td>Texto oficial leído directamente (2026-11-07); no fija N universal</td>
+</tr>
+<tr>
+<td>Reglamento (UE) 2024/1689 (AI Act)</td>
+<td><a href="https://eur-lex.europa.eu/eli/reg/2024/1689/oj" target="_blank" rel="noopener">https://eur-lex.europa.eu/eli/reg/2024/1689/oj</a></td>
+<td>13-06-2024</td>
+<td>Art. 10(2)–(4)</td>
+<td>Calidad, representatividad y propiedades estadísticas de datasets de alto riesgo</td>
+<td>Texto legal primario consultado (2026-11-07); art. 10 no fija N universal</td>
 </tr>
 <tr>
 <td>NIST SP 800-63B-4</td>
