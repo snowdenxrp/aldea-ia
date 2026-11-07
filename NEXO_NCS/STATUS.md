@@ -3602,3 +3602,21 @@ Estado:
 
 No runtime, tests, workflows, CI/Actions, Termux/POCO, bootstrap ni publicación. No se ejecutaron pruebas.
 
+
+
+---
+
+## DELTA — SEAMS DE ADMISIÓN P-03/P-04 MAPEADOS (2026-11-07)
+
+El diseño técnico P-03/P-04 incorpora ahora un mapeo de integración contra los blobs actuales:
+[ NCS_M0_D2_P03_P04_TECHNICAL_CLOSURE_DESIGN_2026-11-03.md ](BUILD/NCS_M0_D2_P03_P04_TECHNICAL_CLOSURE_DESIGN_2026-11-03.md), blob vigente `d9a55256bb9c3557a61ef14afe551f5934872ea3`.
+
+La delta fija el seam por API pública:
+- cinco queries/previews: wrapper público adquiere una vez antes de `loadCurrent()`; helper privado consume snapshot/contexto y no reentra;
+- request→draft: una adquisición en el wrapper superior; draft directo conserva su propia admisión;
+- Chronicle: `runNexoChronicleAppend` adquiere antes de cualquier lectura; el hijo es independiente; el padre no adquiere;
+- compatibility reexports y factories path-based no son fronteras de seguridad y no pueden quedar como bypass público;
+- se conserva admisión exclusiva D3, D2 forense sin stores, P-05-C fail-closed y locks per-store con semántica separada.
+
+No se eligió primitiva filesystem: P-07-C sigue UNKNOWN/BLOCKING. El mapeo no es implementación ni test. P-03/P-04 enforcement pendiente; P-05 OPEN; P-09 OPEN/UNKNOWN; E2/E3 PARTIAL; NCS M0 INCOMPLETO. Sin runtime/tests/CI/Actions/Termux/POCO ni efectos protegidos.
+
