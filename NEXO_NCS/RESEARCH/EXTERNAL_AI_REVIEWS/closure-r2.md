@@ -16,9 +16,9 @@ SHA-256 recalculado sobre el contenido UTF-8 recuperado de la rama, con tamaño 
 
 | Archivo | Bytes | SHA-256 | Resultado |
 |---|---:|---|---|
-| `report-r2.md` | 104.970 | `e873748f193e6156a1c3c8c91252e64f755776e75717c6ee7ca856524aeba3e9` | PASS |
-| `expediente-consolidado-nexo-r2.html` | 143.251 | `6283e471831622615466280d913876d63d973137850dca117eba56dd3443638f` | PASS |
-| `hashes-r2.md` | 4.450 | `ec39125f11d9feff4720efb6daddc2ef055fb1dc81fc95c6a5d7d9a7005861c2` | PASS externo |
+| `report-r2.md` | 107.092 | `7dc758152f99db66dab2dfe15fc095376026517bf2d34a66b1eddf70cb0db640` | PASS |
+| `expediente-consolidado-nexo-r2.html` | 145.976 | `97a4ba138e5bf7d024947492eafd917f17c55d613991ec63b4929fb1cd21dce9` | PASS |
+| `hashes-r2.md` | 4.450 | `108ef68f1227a5108b9a268c5e135abda3db98e60bb89e231ce9defb7fc9588a` | PASS externo |
 | `consolidation-method.md` | 9.720 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` | PASS |
 
 El hash del manifiesto se registra aquí, fuera del propio manifiesto, para evitar autorreferencia. Los hashes de los otros tres archivos coinciden con los valores del manifiesto R2.
@@ -59,9 +59,9 @@ Una lectura adversarial posterior detectó metadatos heredados del expediente ba
 - El manifiesto fue actualizado con los nuevos tamaños y SHA-256 de Markdown y HTML.
 
 Verificación final posterior a estas correcciones:
-- `report-r2.md`: 104.970 bytes; SHA-256 `e873748f193e6156a1c3c8c91252e64f755776e75717c6ee7ca856524aeba3e9`.
-- `expediente-consolidado-nexo-r2.html`: 143.251 bytes; SHA-256 `6283e471831622615466280d913876d63d973137850dca117eba56dd3443638f`.
-- `hashes-r2.md`: 4.450 bytes; SHA-256 externo `ec39125f11d9feff4720efb6daddc2ef055fb1dc81fc95c6a5d7d9a7005861c2`.
+- `report-r2.md`: 107.092 bytes; SHA-256 `7dc758152f99db66dab2dfe15fc095376026517bf2d34a66b1eddf70cb0db640`.
+- `expediente-consolidado-nexo-r2.html`: 145.976 bytes; SHA-256 `97a4ba138e5bf7d024947492eafd917f17c55d613991ec63b4929fb1cd21dce9`.
+- `hashes-r2.md`: 4.450 bytes; SHA-256 externo `108ef68f1227a5108b9a268c5e135abda3db98e60bb89e231ce9defb7fc9588a`.
 - `consolidation-method.md`: 9.720 bytes; SHA-256 `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285`.
 
 Los tres hashes de archivos distintos del manifiesto coinciden con el manifiesto final. El hash del manifiesto se conserva aquí como comprobación externa.
