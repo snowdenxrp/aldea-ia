@@ -5,7 +5,7 @@
 **Repositorio:** `snowdenxrp/aldea-ia`.
 **Rama:** `nexo-mission-02-pdf-2026-11-05`.
 **Carpeta:** `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/`.
-**Commit de publicación:** PENDIENTE — este documento se preparó antes de la publicación; el commit se registra en el informe de cierre y en una revisión posterior del manifiesto.
+**Commit de publicación de los cuatro archivos R2:** `96e227eb06134037fa5e01fabc8cfba4c384f476` (07-11-2026).
 
 ## Archivos fuente utilizados
 
@@ -64,3 +64,18 @@ Se conservan con su significado: **EVIDENCE** solo para afirmaciones verificadas
 - P2/P4/P6/P7 (documentos entregados como artefactos) no se re-verificaron en esta misión; sus hashes se heredan de la consolidación.
 - `hashes.md` (R1) y `hashes-r2.md` no tienen ancla de integridad propia; su integridad descansa en la verificación externa posterior.
 - Las lecturas verbatim de SP 800-63B-4, del PDF final de IR 8547 y de la spec A2A §8.4 siguen pendientes.
+
+
+## Actualización de publicación y verificación posterior (2026-11-07)
+
+Esta sección actualiza las notas de preparación anteriores, que describían el estado previo a la subida. Para el estado vigente prevalece esta sección.
+
+- **Rama:** `nexo-mission-02-pdf-2026-11-05`.
+- **Commit de publicación:** `96e227eb06134037fa5e01fabc8cfba4c384f476`.
+- **Archivos efectivamente presentes en la rama:** `report-r2.md`, `expediente-consolidado-nexo-r2.html`, `hashes-r2.md` y esta nota de método en la raíz de `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/`.
+- **Ruta canónica de esta nota:** `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/consolidation-method.md`. La ruta `notes/consolidation-method.md` que figuraba en la primera versión del manifiesto no existe en el árbol publicado y debe corregirse allí.
+- **PDF R2:** se generó una representación PDF durante la preparación, pero no existe un archivo PDF R2 separado en el árbol de la rama. El propietario confirmó que el HTML y el PDF representan el mismo expediente y aceptó el HTML como entrega suficiente. Por tanto, el HTML es el artefacto publicado canónico; esta aceptación de equivalencia de contenido no afirma identidad binaria ni publicación del PDF.
+- **Integridad posterior a la subida:** se recuperaron los bytes UTF-8 de los cuatro archivos presentes en la rama y se recalcularon sus SHA-256 y tamaños. Los cuatro coinciden con los valores declarados para ellos en el manifiesto R2. El SHA-256 propio del manifiesto se conserva como comprobación externa, no dentro del mismo manifiesto.
+- **Alcance del dictamen:** esta verificación prueba integridad documental de los archivos publicados; no prueba implementación, seguridad operativa, autoridad, conformidad técnica ni cierre de los UNKNOWN.
+
+La frase anterior que indicaba que el commit de publicación era pendiente y que la integridad posterior a la subida seguía UNKNOWN queda superada por esta verificación posterior. La limitación sobre la falta de agentes independientes permanece vigente: las tres pasadas fueron subagentes con contexto compartido y no revisores externos independientes.
