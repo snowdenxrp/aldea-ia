@@ -39,7 +39,7 @@ No se modificaron código, pruebas, CI, workflows, NCS M0, P07 ni decisiones D-0
 
 - **Publicación e integridad documental R2:** PASS.
 - **Cierre sustantivo global de MUSE-AUTONOMY-002:** PARTIAL.
-- **UNKNOWN:** U1, U2, U3, U5, U6, U7, U8 y U9 permanecen abiertos; U4 permanece parcial.
+- **UNKNOWN:** U2, U3, U5, U6, U7, U8 y U9 permanecen abiertos (7); U1 está RESUELTO con lectura primaria directa de NIST SP 800-63B-4; U4 permanece PARCIAL.
 - **C14:** parcialmente confirmada.
 - **D-01 a D-12:** SIN DECIDIR.
 - **Independencia de revisiones:** las tres pasadas fueron subagentes con contexto compartido; no se presentan como revisores externos independientes.
@@ -65,3 +65,16 @@ Verificación final posterior a estas correcciones:
 - `consolidation-method.md`: 9.720 bytes; SHA-256 `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285`.
 
 Los tres hashes de archivos distintos del manifiesto coinciden con el manifiesto final. El hash del manifiesto se conserva aquí como comprobación externa.
+
+
+## Verificación primaria U1 / C02 (2026-11-07)
+
+Se leyó directamente el texto oficial NIST de SP 800-63B-4:
+- §2.3.2: AAL3 exige autenticador criptográfico con clave privada no exportable, resistencia al phishing y entorno aislado protegido por hardware; los autenticadores sincronizables no se permiten en AAL3.
+- §3.2.13: define la no exportabilidad y admite hardware separado o procesador/entorno de ejecución integrado (secure element, TEE, TPM) separado del procesador host.
+- Appendix B: describe las claves clonadas/exportadas a sync fabric.
+- Appendix E: confirma que Rev.4 exige autenticador criptográfico no exportable en lugar de exigir un autenticador basado necesariamente en hardware.
+
+Fuente primaria: https://pages.nist.gov/800-63-4/sp800-63b.html
+
+**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 7 UNKNOWN, 1 RESUELTO (U1) y 1 PARCIAL (U4).
