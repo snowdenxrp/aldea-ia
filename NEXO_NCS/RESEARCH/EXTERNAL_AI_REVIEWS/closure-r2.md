@@ -120,3 +120,12 @@ Fuentes primarias contrastadas:
 Discrepancia documental: el archivo `docs/specification.md` en el tag `v1.0.1` y la página versionada `/v1.0.1/specification/` aún presentan en el frontmatter `Latest Released Version 1.0.0`, aunque el release oficial v1.0.1 existe. La discrepancia se conserva como deuda editorial de la documentación upstream; no invalida el tag ni el release.
 
 **Resultado:** U4 RESUELTO con evidencia primaria. La omisión de referencias a la Linux Foundation en el texto técnico de la especificación no contradice los registros de gobernanza y anuncios oficiales del proyecto.
+
+
+## Revisión primaria U3 — UCAN y ZCAP (2026-11-07)
+
+**UCAN v1.0.0** (`ucan-wg/spec`) fue leído directamente. La especificación describe autorización distribuida, local-first y originada por el usuario; principales identificados por DID; delegación, invocación, atenuación y cadenas de prueba. Declara expresamente que una cadena criptográficamente válida puede ser semánticamente inválida, que UCAN no ofrece confinement y que el conocimiento de todas las subdelegaciones no está garantizado. Revocation y Promise son RECOMMENDED, no REQUIRED.
+
+**Authorization Capabilities (ZCAP)** fue contrastado en la página W3C CCG `v0.4.0-draft` y en el release GitHub `v0.4.0` (07-10-2026). Es un Draft Community Group Report, no una W3C Recommendation. El release indica que todos los cambios v0.4.0 son no normativos. La especificación cubre root/delegated capabilities, Data Integrity proofs, caveats y cadenas; el detalle normativo de revocación permanece en backlog. La página de versiones enumera `v0.4.0-draft` y `v0.3.0`.
+
+**Resultado:** U3 permanece UNKNOWN. UCAN y ZCAP son mecanismos de autorización basados en capabilities, no una solución integral de identidad, autoridad raíz, recuperación o continuidad de Nexo. El inventario de protocolos/estándares de identidad y delegación sigue sin ser exhaustivo.
