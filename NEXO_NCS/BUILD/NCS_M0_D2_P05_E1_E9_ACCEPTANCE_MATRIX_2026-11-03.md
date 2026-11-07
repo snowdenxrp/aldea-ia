@@ -195,3 +195,19 @@ Un PASS individual no cierra E1–E9 ni amplía el modelo de amenaza. No declara
 - authorization: NOT_EVALUATED; raíz constitucional PENDING/UNKNOWN.
 - Primera publicación, commissioning y efectos protegidos: **STOP**.
 - Sin cambios runtime/tests/workflows/configuración/dispositivo; tests/CI/Actions no ejecutados.
+
+
+---
+
+## DELTA — ESTADO DE P-05-C TRAS RATIFICACIÓN DEL PROPIETARIO (2026-11-07)
+
+La sección de estado original de este documento es un snapshot del 2026-11-03. El propietario ratificó P-05-C el 2026-11-07; por tanto, la frase histórica «C sigue sin ratificar» queda superada.
+
+- P-05-C: **RATIFICADA POR EL PROPIETARIO** como política `UNKNOWN/BLOCKED` sin recuperación automática.
+- Esta decisión no selecciona una primitiva ni un mecanismo de cuarentena, no demuestra enforcement durable/interproceso y no define un procedimiento de recuperación.
+- E1–E9 siguen siendo criterios diseñados; ningún caso se convierte en PASS por la ratificación.
+- E3/E4 continúan dependiendo de P-07; E6/E7 requieren enforcement interproceso y cobertura de actores; E8 sigue sin ruta positiva de recuperación aprobada.
+- P-05 permanece **OPEN** hasta implementación, enforcement y evidencia de aceptación ligados al SHA correspondiente.
+- NCS M0 permanece **INCOMPLETO**; no se ejecutaron tests/CI ni se autorizan cambios ejecutables por este delta.
+
+Registro autoritativo de la decisión: [definición técnica P-05-C, delta de ratificación del 2026-11-07](NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md).
