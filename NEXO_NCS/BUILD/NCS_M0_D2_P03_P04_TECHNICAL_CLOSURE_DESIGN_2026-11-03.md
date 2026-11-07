@@ -252,3 +252,72 @@ El propietario ratificó P-05-C el 2026-11-07. Las referencias anteriores a «P-
 - Sin runtime/tests/workflows/CI/dispositivo; no se ejecutaron pruebas ni se autoriza ningún efecto protegido.
 
 Registro de ratificación: [definición técnica P-05-C](NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md).
+
+
+---
+
+## DELTA — MAPEO DE INTEGRACIÓN SOBRE LOS BLOBS ACTUALES (2026-11-07)
+
+Esta delta convierte la propiedad de admisión ya ratificada en un mapa de seams sobre el snapshot de código `d8b5ca8720908d926acc18130614cce132a43b5d`. No añade decisiones de autoridad, no elige primitiva filesystem y no autoriza implementación.
+
+### A. Queries de Continuity
+
+Fuente: `continuity-queries.mjs`, blob `e1915e94e53e71d37a37952fead37ba62bdae79a`.
+
+Las funciones públicas actuales que deben adquirir una admisión exclusiva por caso de uso son:
+- `loadNexoContinuityStatus(continuityPath)`
+- `loadNexoMissionStatus(continuityPath, missionId)`
+- `loadNexoMissionPlan(continuityPath, missionId)`
+- `previewNexoMissionDraft(continuityPath, missionDraft)`
+- `loadNexoOpenLoops(continuityPath)`
+
+Todas llaman a una factory path-based y ejecutan `loadCurrent()`. La frontera ratificada es la API pública de aplicación, no el CLI. Por tanto, no basta con envolver `scripts/nexo.mjs`: cada API pública debe ser segura en llamada directa. La implementación interna debe separar:
+1. wrapper público: validar inputs superficiales, resolver raíz contractual, adquirir una admisión;
+2. helper privado: recibir capacidad no falsificable + snapshot/contexto y no adquirir/reentrar;
+3. release: después del último uso del snapshot y de construir el resultado, conservando separado el resultado de negocio y el de release.
+
+### B. Preview request → draft
+
+Fuentes: `mission-request-preview.mjs` blob `4e317b646d0c7b7403acfb63732dec8c3fe7778b`; `continuity-queries.mjs` blob `e1915e94e53e71d37a37952fead37ba62bdae79a`.
+
+La API pública `previewNexoMissionRequest` debe adquirir exactamente una vez y delegar a un helper interno no reentrante. La API pública `previewNexoMissionDraft`, si se invoca directamente, debe adquirir por sí misma y delegar al mismo helper. Prohibido usar `alreadyAdmitted: true`, un objeto plano falsificable o un token aceptado de callers arbitrarios como bypass.
+
+### C. Chronicle directo y delegado
+
+Fuentes: `chronicle-append.mjs` blob `c1964467d68043d06e035ad59720f8cec2e52e52`; `scripts/nexo.mjs` blob `e471eb478a09aa8a9a8323795583e198cdf0a127`; `scripts/nexo-chronicle-session.mjs` blob `30a53de2f108aa255a1dfd61ce78c19788de160b`.
+
+- El propietario único es la API pública `runNexoChronicleAppend`, tanto cuando se invoca desde el hijo como cuando se llama directamente.
+- La adquisición debe preceder a la construcción/lectura de stores y, en particular, a los dos `loadCurrent()` actuales.
+- El hijo valida/adquiere por sí mismo en ambas formas de invocación.
+- El padre puede hacer dispatch y propagar el resultado; nunca adquiere ni retiene el lock mientras espera al hijo.
+- No transferir una capacidad serializada por argumentos como prueba de admisión.
+
+### D. Compatibilidad y primitivas
+
+Fuentes: `application/index.mjs` blob `fd2f219f5f3731cb0badfe0b4ab2f26afdea14c3`; `scripts/nexo-continuity.mjs` blob `7a2003f78a83ce5d65b53f02470156c3dd4cfefd`.
+
+El índice de aplicación reexporta operaciones path-based. El wrapper de compatibilidad reexporta `openNexoContinuityOwner`, bootstrap y preflight. Ninguno es una frontera de seguridad. La migración debe retirar las factories/owner de la superficie pública soportada o imponer el contrato de admisión en toda API exportada que pueda alcanzar stores. La mera etiqueta `INTERNAL_ONLY` o mover imports al CLI no prueba inaccesibilidad de consumidores directos.
+
+### E. Orden y resultados que no se pueden alterar
+
+Se mantiene el orden de diseño ya descrito:
+`canonical root → exclusive instance admission → per-store locks → store I/O → per-store release → instance admission release`.
+
+- D3 ratificada: las operaciones normales cubiertas, incluidas queries/previews, usan admisión exclusiva; no reader/writer compartido en M0.
+- D2 es un carril forense separado y limitado a evidencia externa/metadata; nunca lee los stores canónicos ni concede readmisión.
+- P-05-C ratificada: incertidumbre de release/cleanup conserva UNKNOWN/BLOCKED; no retry de negocio, no readmisión y no cleanup destructivo por path sin identidad demostrada.
+- P-07-C sigue UNKNOWN/BLOCKING: no implementar una primitiva filesystem por inferencia ni afirmar que el orden abstracto anterior ya es ejecutable.
+- No se cambian los contratos actuales de locks per-store por analogía; su orden, límites y release se caracterizan separadamente.
+
+### F. Criterios de aceptación específicos del seam
+
+Para el futuro SHA candidato, sin ejecutar ahora:
+1. Cada API pública de query/preview falla antes de store I/O si falta `--root` o la admisión no se adquiere.
+2. Cada query conserva admisión hasta el último uso del snapshot.
+3. Request→draft adquiere una vez; draft directo adquiere una vez; helper privado no reentra.
+4. Chronicle no ejecuta ningún `loadCurrent()` antes de admisión, tanto en llamada directa como desde el hijo.
+5. El padre Chronicle no adquiere admisión; no hay doble adquisición ni deadlock padre/hijo.
+6. Imports/callers no cubiertos, capacidad falsificada, loader no resuelto o API path-based alcanzable fuera de la frontera resultan en fallo del gate o UNKNOWN/BLOCKED, nunca PASS por omisión.
+7. Fallo de release después de persistencia confirmada conserva el hecho de persistencia y bloquea readmisión conforme a P-05-C.
+
+**Estado:** diseño de seams alineado con D1–D6 y evidencia de fuente; no implementado, no probado. P-03/P-04 siguen OPEN en enforcement/cobertura; P-05 OPEN; P-07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; M0 INCOMPLETO.
