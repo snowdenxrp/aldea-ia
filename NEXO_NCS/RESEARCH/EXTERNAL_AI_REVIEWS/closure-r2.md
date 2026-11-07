@@ -169,3 +169,40 @@ Se leyó directamente IETF RFC 9162 (Certificate Transparency v2.0; Experimental
 El RFC espera que las CAs envíen todos los certificados emitidos y contempla SCT/recibos firmados, inclusión dentro del Maximum Merge Delay y monitores que detecten incumplimiento. Sin recibo firmado ni inventario independiente de eventos, un evento que nunca se envió al log no deja una hoja que Merkle pueda probar ausente.
 
 **Resultado:** U9 RESUELTO como precisión criptográfica: Merkle demuestra inclusión y consistencia del conjunto registrado, no completitud del universo de eventos. La detección de omisiones requiere fuentes/recibos independientes, monitores y comparación de checkpoints/árboles. RFC 9162 es un modelo técnico de transparencia, no un estándar general de Nexo.
+
+
+## Rectificación final de integridad UTF-8 y SHA-256 (2026-11-07)
+
+Esta sección es la verificación vigente de los bytes publicados en la rama. Se recuperaron íntegramente los cuatro documentos desde GitHub en UTF-8 y se calcularon los bytes UTF-8 reales y SHA-256 sobre el contenido completo, no sobre longitudes de caracteres ni fragmentos. El autocontrol de la implementación SHA-256 con el vector conocido `abc` produjo exactamente `ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad`.
+
+| Archivo | Bytes UTF-8 | SHA-256 recalculado | Comparación con manifiesto |
+|---|---:|---|---|
+| `report-r2.md` | 113.706 | `e41c8f3ba4d86d1daec958ec80ed69ac405a36eeec83ee00a9d20f94915be80a` | Coincide |
+| `expediente-consolidado-nexo-r2.html` | 153.699 | `af343327e190a37fbc317774e4b3da77b84724ee73bff50eb6053b835b728e7b` | Coincide |
+| `hashes-r2.md` | 4.450 | `cde302f068cb2e07a6e5079b2cabcd8296e555a264a4cfa0b24da15a7bb4ace4` | Ancla externa; no se autorreferencia |
+| `consolidation-method.md` | 9.720 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` | Coincide |
+
+Los cuatro valores coinciden con el manifiesto R2 en los archivos a los que este asigna hash. El SHA-256 de `hashes-r2.md` queda registrado externamente en este cierre. El propio `closure-r2.md` no se incluye en el manifiesto ni contiene su propio hash; su huella final se registra externamente junto al commit de esta rectificación.
+
+### Supersesión expresa de una verificación histórica
+
+La sección anterior **“Revisión editorial adicional (2026-11-07)”**, en el bloque que comienza “Verificación final posterior a estas correcciones” y contiene tamaños de 112.505 y 152.279 bytes y hashes que comienzan `6d111749`, `d27ad56e` y `f09815f1`, queda **SUPERSEDIDA** para la integridad de los archivos actualmente publicados. Esos valores no corresponden a los bytes recuperados del HEAD comprobado. Se conservan arriba únicamente como historial de una comprobación anterior; no deben citarse como hashes vigentes ni como evidencia de integridad actual.
+
+La tabla de integridad de § “Integridad de archivos publicados” y esta rectificación contienen los valores vigentes, recalculados sobre los bytes completos recuperados de la rama. No se modificó el manifiesto porque sus tamaños y hashes vigentes ya coinciden exactamente.
+
+### HEAD y alcance documental comprobado
+
+- HEAD inmediatamente anterior a esta rectificación: `459e56722ac5fdf1bc539be6fc2a60e8aec30916`.
+- La comparación desde el commit de publicación inicial `96e227eb06134037fa5e01fabc8cfba4c384f476` hasta ese HEAD devuelve exactamente seis rutas modificadas, todas dentro de `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/`: este cierre, el handoff R2, `consolidation-method.md`, el HTML R2, `hashes-r2.md` y `report-r2.md`.
+- No aparecen cambios de código, pruebas, CI, workflows, NCS M0, P07 ni D-01 a D-12 en ese alcance comparado.
+- Esta rectificación modifica únicamente este archivo de cierre documental.
+
+### Estado que no cambia
+
+- **Integridad de los cuatro documentos publicados y comprobados arriba:** PASS, limitado a bytes UTF-8 y SHA-256 de esos archivos.
+- **Cierre sustantivo global de MUSE-AUTONOMY-002:** PARTIAL.
+- **UNKNOWN:** U2, U3 y U5 permanecen UNKNOWN. U1, U4, U6, U7, U8 y U9 permanecen RESUELTOS según la evidencia ya documentada. No se altera ningún estado.
+- **C14:** PARCIALMENTE CONFIRMADA.
+- **D-01 a D-12:** SIN DECIDIR.
+- **PDF R2 independiente:** no publicado en la rama; el HTML continúa siendo el artefacto canónico aceptado.
+- No se deriva autorización de implementación, autoridad, seguridad operativa ni conformidad técnica de esta comprobación documental.
