@@ -4,6 +4,15 @@ Antes de cualquier investigación, auditoría, edición o propuesta, seguir [OPE
 
 ---
 
+## DELTA — DECISIÓN DEL PROPIETARIO SOBRE AFECTACIÓN REVERSIBLE P07-C (2026-11-07)
+
+- El propietario autoriza la interpretación conservadora: **cualquier desplazamiento temporal del nombre protegido o modificación de `nlink` cuenta como afectación del objeto protegido, aunque después se restaure el estado original**.
+- Alcance: criterio semántico para evaluar “afectar” en P07-C; la reversibilidad posterior no neutraliza la afectación ocurrida durante la ventana.
+- Esta decisión resuelve únicamente ese punto reservado al propietario en P07 V2.2 §8. No ratifica P07 V2.3 ni el conjunto de V2.2/V2.3; no selecciona mecanismo, no satisface P07-C y no autoriza implementación, harness, tests, CI, POCO/Termux ni cleanup.
+- P07-C permanece **UNKNOWN / BLOCKING**; mecanismo seleccionado **NINGUNO**; autorización de ejecución **NOT_EVALUATED**.
+
+---
+
 ## DELTA PRIORITARIA — RUTAS Y HANDOFF CANÓNICO CORREGIDOS (2026-11-07)
 
 **Punto de entrada vigente:** [HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md](HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md).
