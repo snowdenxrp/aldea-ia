@@ -3650,3 +3650,19 @@ Corrección transversal para evitar que snapshots V2.3 antiguos sigan mostrando 
 - NCS M0 INCOMPLETO; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP.
 
 Artefactos reconciliados: P07 V2.3 normativa (blob `7a6fcd2e3d1c93fc725b43dd903f1d117efb9ee3`), oráculos (blob `39c59981a6036bb4f902560ffc9d756499174abe`), trazabilidad (blob `36c947aace1b68b2159d857cde13491ca811d006`) y contrato de aceptación filesystem con delta R1.
+
+
+---
+
+## DELTA — P-05/P-07 CRASH-PERSISTENCE PROOF OBLIGATIONS (2026-11-07)
+
+Nuevo análisis de cierre técnico:
+[ NCS_M0_D2_P05_P07_CRASH_PERSISTENCE_AND_ADMISSION_PROOF_OBLIGATIONS_2026-11-07.md ](BUILD/NCS_M0_D2_P05_P07_CRASH_PERSISTENCE_AND_ADMISSION_PROOF_OBLIGATIONS_2026-11-07.md), commit documental `c9e11c801bbfcf51831e094bd19c41a3a4f0f1d6`.
+
+Resultado central: exclusión viva y cuarentena durable son garantías distintas. Un lock efímero asociado al proceso/descriptor puede coordinar participantes mientras está adquirido, pero su liberación por crash no demuestra que la operación anterior terminó de forma segura. Un path presente o ausente tampoco prueba identidad ni quiescencia. Por ello P-05-C exige una obligación durable/interproceso que no está demostrada actualmente.
+
+Se formalizaron nueve obligaciones de aceptación O1–O9 para cualquier mecanismo futuro: supervivencia a crash, descubrimiento independiente, identidad estable, cleanup del objeto adquirido, no readmisión ante ausencia/ilegibilidad/sustitución, resolución aprobada, cobertura P-09, evidencia R1 y separación negocio/release/readmisión.
+
+No se selecciona mecanismo ni se inventa marcador, lock hermano, tombstone, epoch, daemon o journal. Ninguna primitiva parcial se eleva a solución. Secuencia: P-07 identidad/target → P-07-C replacement-safe → P-05 durable → P-09 universo/callers → implementación P-03/P-04 autorizada → E2/E3 y aceptación ligada a SHA.
+
+Estado sin cambio: P-05-C RATIFICADA; P-05 OPEN; P-07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; E2/E3 PARTIAL/NOT CLOSED; NCS M0 INCOMPLETO; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP. Solo documentación; sin código, tests, CI, runtime, workflows, Termux/POCO, bootstrap o efectos protegidos.
