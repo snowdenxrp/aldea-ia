@@ -170,3 +170,19 @@ La sección de estado original es un snapshot anterior a la decisión del propie
 - No se ejecutaron tests/CI ni se modificó runtime, workflows, configuración o dispositivo.
 
 Registro autoritativo: [definición técnica P-05-C y ratificación del propietario](NCS_M0_D2_P05_POLICY_C_TECHNICAL_DEFINITION_2026-11-03.md).
+
+
+---
+
+## DELTA — MODELO R1 ACEPTADO Y DEPENDENCIAS VIGENTES (2026-11-07)
+
+R1 fue **ACEPTADO POR EL PROPIETARIO el 2026-11-02**. El límite de confianza aceptado es el entorno restringido Android sandbox + HOME privado Termux, con invocación manual foreground única; quedan fuera root/OS comprometido y procesos maliciosos con el mismo UID, conforme al perfil R1 registrado.
+
+La aceptación de R1 no acredita que el entorno esté configurado ni que se cumplan las precondiciones operacionales:
+- P07-E sigue OPEN: permisos, ownership, namespace y actores deben verificarse en el target.
+- E2/E3 PARTIAL / NOT CLOSED: no se ha demostrado control sostenido de todos los launchers/writers relevantes ni prevención de relanzamiento.
+- P-09 OPEN/UNKNOWN: guardas estáticas parciales no cierran loaders no literales ni consumidores externos.
+- P-05-C RATIFICADA como política; P-05 OPEN por falta de mecanismo/enforcement durable y resolución.
+- P07-C UNKNOWN/BLOCKING; mecanismo seleccionado NINGUNO.
+
+Por tanto, «R1 no ratificado» en cualquier artefacto anterior es estado histórico superado; no debe reutilizarse. Esta delta no ratifica P07 V2.3, no selecciona mecanismo y no autoriza pruebas/implementación. NCS M0 INCOMPLETO.
