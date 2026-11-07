@@ -39,7 +39,7 @@ No se modificaron código, pruebas, CI, workflows, NCS M0, P07 ni decisiones D-0
 
 - **Publicación e integridad documental R2:** PASS.
 - **Cierre sustantivo global de MUSE-AUTONOMY-002:** PARTIAL.
-- **UNKNOWN:** U2, U3, U5, U6, U7, U8 y U9 permanecen abiertos (7); U1 está RESUELTO con lectura primaria directa de NIST SP 800-63B-4; U4 permanece PARCIAL.
+- **UNKNOWN:** U2, U3, U5, U6, U7 y U9 permanecen abiertos (6); U1 está RESUELTO con lectura primaria directa de NIST SP 800-63B-4; U8 está RESUELTO con lectura primaria directa de Miller (2024); U4 permanece PARCIAL.
 - **C14:** parcialmente confirmada.
 - **D-01 a D-12:** SIN DECIDIR.
 - **Independencia de revisiones:** las tres pasadas fueron subagentes con contexto compartido; no se presentan como revisores externos independientes.
@@ -77,4 +77,20 @@ Se leyó directamente el texto oficial NIST de SP 800-63B-4:
 
 Fuente primaria: https://pages.nist.gov/800-63-4/sp800-63b.html
 
-**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 7 UNKNOWN, 1 RESUELTO (U1) y 1 PARCIAL (U4).
+**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 6 UNKNOWN, 2 RESUELTOS (U1 y U8) y 1 PARCIAL (U4).
+
+
+## Verificación primaria U8 / Miller (2024) (2026-11-07)
+
+Se leyó directamente el PDF primario de Evan Miller, *Adding Error Bars to Evals: A Statistical Approach to Language Model Evaluations*, arXiv:2411.00640v1 (14 páginas; v1 presentada el 2024-11-01; PDF fechado 2024-11-04).
+
+Hallazgos relevantes para el expediente:
+- §§2–2.2: marco de superpoblación de preguntas, SEM por CLT y errores estándar agrupados cuando las preguntas comparten clusters.
+- §3: reducción de varianza mediante múltiples respuestas por pregunta o probabilidades del siguiente token; no recomienda alterar la temperatura solo para reducir varianza.
+- §4: comparación pareada a nivel de pregunta, con errores estándar sobre diferencias; también formula la variante agrupada.
+- §5 y Ap. B–C: fórmula de tamaño de muestra/potencia y extensión para clusters. El ejemplo de ≈969 preguntas usa parámetros hipotéticos (diferencia absoluta 3%, potencia 80%, α=0,05) y el autor sugiere al menos 1.000 preguntas para nuevos evals bajo ese ejemplo; no es norma ni umbral universal.
+- Precisión editorial: el artículo dice que el bootstrap suele ser innecesario cuando el CLT aplica a muestras grandes con varianza finita y muestreo simple; lo reserva para esquemas o estimadores complejos. Por ello, la frase previa de C11 que resumía la recomendación como “bootstrap, intervalos y pruebas pareadas” era incompleta y se corrigió.
+
+Fuente primaria: https://arxiv.org/pdf/2411.00640
+
+**Resultado:** U8 RESUELTO con lectura primaria directa. U2 permanece UNKNOWN: el artículo es investigación/recomendación estadística, no una norma que prescriba 200–500 casos.
