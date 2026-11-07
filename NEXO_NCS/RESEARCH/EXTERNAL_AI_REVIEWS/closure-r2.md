@@ -39,7 +39,7 @@ No se modificaron código, pruebas, CI, workflows, NCS M0, P07 ni decisiones D-0
 
 - **Publicación e integridad documental R2:** PASS.
 - **Cierre sustantivo global de MUSE-AUTONOMY-002:** PARTIAL.
-- **UNKNOWN:** U2, U3, U5, U6, U7 y U9 permanecen abiertos (6); U1, U4 y U8 están RESUELTOS con lectura/verificación primaria directa; no quedan registros U1–U9 en estado PARCIAL.
+- **UNKNOWN:** U2, U3, U5 y U9 permanecen abiertos (4); U1, U4, U6, U7 y U8 están RESUELTOS con evidencia/revisión primaria; no quedan registros U1–U9 en estado PARCIAL.
 - **C14:** parcialmente confirmada.
 - **D-01 a D-12:** SIN DECIDIR.
 - **Independencia de revisiones:** las tres pasadas fueron subagentes con contexto compartido; no se presentan como revisores externos independientes.
@@ -77,7 +77,7 @@ Se leyó directamente el texto oficial NIST de SP 800-63B-4:
 
 Fuente primaria: https://pages.nist.gov/800-63-4/sp800-63b.html
 
-**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 6 UNKNOWN y 3 RESUELTOS (U1, U4 y U8), sin registros parciales.
+**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 4 UNKNOWN y 5 RESUELTOS (U1, U4, U6, U7 y U8), sin registros parciales.
 
 
 ## Verificación primaria U8 / Miller (2024) (2026-11-07)
@@ -143,3 +143,16 @@ Se leyó el paper original HELM (TMLR 2023) y los README oficiales actuales de H
 Se leyó el paper HELM (TMLR 2023) y los README oficiales actuales de HELM y lm-evaluation-harness. HELM documenta que las condiciones de evaluación pueden variar sustancialmente por escenarios, métricas, prompts y ejemplos few-shot; su paper cita rangos de 30–80% para el mismo modelo/escenario bajo condiciones distintas y promueve estandarización para comparaciones directas. El repositorio HELM declara maintenance mode desde 01-06-2026. El harness actual declara más de 60 benchmarks y cientos de subtareas/variantes, con prompts, few-shot, postprocesamiento, métricas y backends configurables.
 
 **Resultado:** no se encontró una comparación primaria pareada que sustente un diferencial general de 4–5 puntos. Para validar esa cifra se requieren mismo checkpoint, tarea/split, métrica/normalización, prompt, número de ejemplos, parser, versiones y semilla. U5 permanece UNKNOWN; no se atribuye la diferencia a una causa específica.
+
+
+## Resolución U6 — afirmación EUV (2026-11-07)
+
+ASML indica que fabricar un microchip implica cientos de pasos y que el ciclo de capas puede repetirse hasta 100 veces; EUV se usa para capas críticas y DUV para otras capas. El JRC de la Comisión Europea documenta que una herramienta EUV contiene alrededor de 100.000 partes y su cadena incluye más de 5.000 proveedores globales. ASML describe dependencia de proveedores únicos y componentes cuya multifuente puede ser económicamente impráctica. Estas fuentes apoyan complejidad y dependencia global, no el número exacto >1.000 ni una imposibilidad física universal.
+
+**Resultado:** U6 RESUELTO como corrección epistemológica. Se retira cualquier presentación de >1.000 pasos o imposibilidad física como EVIDENCE; se conserva solo la limitación práctica/económica/temporal bajo aislamiento de recursos. C16 sigue siendo la formulación aceptada.
+
+## Resolución U7 — cuarentena frente a recuperación (2026-11-07)
+
+Lectura directa de NIST SP 800-53 Rev. 5.1: `quarantine` aparece en AC-4(8) (datos tras fallo de filtro), SC-18(1) (código móvil inaceptable) y SI-3 (código malicioso). Estos usos corresponden a filtrado/contención, no a una fase de restauración. CP-10 define recovery/reconstitution a un estado conocido; IR-9 exige aislar sistemas contaminados y erradicar información. La actualización NIST 5.2.0 no cambió CP-10 ni IR-9 ni los controles AC-4/SC-18/SI-3 citados.
+
+**Resultado:** U7 RESUELTO en ese alcance. `Quarantine` como acción de contención está respaldada por controles; `quarantine` como etapa general de restauración no está prescrita por CP-10 y sigue siendo una propuesta de diseño Nexo.
