@@ -39,7 +39,7 @@ No se modificaron código, pruebas, CI, workflows, NCS M0, P07 ni decisiones D-0
 
 - **Publicación e integridad documental R2:** PASS.
 - **Cierre sustantivo global de MUSE-AUTONOMY-002:** PARTIAL.
-- **UNKNOWN:** U2, U3, U5 y U9 permanecen abiertos (4); U1, U4, U6, U7 y U8 están RESUELTOS con evidencia/revisión primaria; no quedan registros U1–U9 en estado PARCIAL.
+- **UNKNOWN:** U2, U3 y U5 permanecen abiertos (3); U1, U4, U6, U7, U8 y U9 están RESUELTOS con evidencia/revisión primaria; no quedan registros U1–U9 en estado PARCIAL.
 - **C14:** parcialmente confirmada.
 - **D-01 a D-12:** SIN DECIDIR.
 - **Independencia de revisiones:** las tres pasadas fueron subagentes con contexto compartido; no se presentan como revisores externos independientes.
@@ -77,7 +77,7 @@ Se leyó directamente el texto oficial NIST de SP 800-63B-4:
 
 Fuente primaria: https://pages.nist.gov/800-63-4/sp800-63b.html
 
-**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 4 UNKNOWN y 5 RESUELTOS (U1, U4, U6, U7 y U8), sin registros parciales.
+**Resultado:** U1 RESUELTO con evidencia primaria directa; C02 confirmada con precisión. Se elimina la limitación anterior de lectura verbatim pendiente para estas disposiciones. El registro conserva 9 identificadores U1–U9: 3 UNKNOWN y 6 RESUELTOS (U1, U4, U6, U7, U8 y U9), sin registros parciales.
 
 
 ## Verificación primaria U8 / Miller (2024) (2026-11-07)
@@ -156,3 +156,16 @@ ASML indica que fabricar un microchip implica cientos de pasos y que el ciclo de
 Lectura directa de NIST SP 800-53 Rev. 5.1: `quarantine` aparece en AC-4(8) (datos tras fallo de filtro), SC-18(1) (código móvil inaceptable) y SI-3 (código malicioso). Estos usos corresponden a filtrado/contención, no a una fase de restauración. CP-10 define recovery/reconstitution a un estado conocido; IR-9 exige aislar sistemas contaminados y erradicar información. La actualización NIST 5.2.0 no cambió CP-10 ni IR-9 ni los controles AC-4/SC-18/SI-3 citados.
 
 **Resultado:** U7 RESUELTO en ese alcance. `Quarantine` como acción de contención está respaldada por controles; `quarantine` como etapa general de restauración no está prescrita por CP-10 y sigue siendo una propuesta de diseño Nexo.
+
+
+## Resolución U9 — límites de pruebas Merkle (2026-11-07)
+
+Se leyó directamente IETF RFC 9162 (Certificate Transparency v2.0; Experimental, no Standards Track):
+- §2.1.3: una Merkle inclusion proof demuestra que una hoja concreta existe en el árbol.
+- §2.1.4: una Merkle consistency proof demuestra que un árbol posterior conserva el prefijo del árbol anterior (append-only).
+- §§8.2–8.3: los monitores inspeccionan cada nueva entrada, validan STH y pruebas de consistencia/inclusión; las auditorías verifican que las promesas firmadas se cumplan.
+- §11.3: un log puede mostrar vistas inconsistentes a distintos clientes; la comparación de STH entre clientes (gossip) puede detectar divergencias, pero el RFC indica que gossip es un área activa de investigación y queda fuera de su especificación.
+
+El RFC espera que las CAs envíen todos los certificados emitidos y contempla SCT/recibos firmados, inclusión dentro del Maximum Merge Delay y monitores que detecten incumplimiento. Sin recibo firmado ni inventario independiente de eventos, un evento que nunca se envió al log no deja una hoja que Merkle pueda probar ausente.
+
+**Resultado:** U9 RESUELTO como precisión criptográfica: Merkle demuestra inclusión y consistencia del conjunto registrado, no completitud del universo de eventos. La detección de omisiones requiere fuentes/recibos independientes, monitores y comparación de checkpoints/árboles. RFC 9162 es un modelo técnico de transparencia, no un estándar general de Nexo.
