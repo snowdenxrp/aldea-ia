@@ -17,8 +17,8 @@ SHA-256 recalculado sobre el contenido UTF-8 recuperado de la rama, con tamaño 
 | Archivo | Bytes | SHA-256 | Resultado |
 |---|---:|---|---|
 | `report-r2.md` | 103.271 | `22aa17bda1441026f2e8a95a75e9ab857a5a286cd80883deb843cc027f101ec8` | PASS |
-| `expediente-consolidado-nexo-r2.html` | 140.883 | `933c55b25186730ec5bb021f1e08a589893a638b9ec1b4e4ed23ca0d6732e063` | PASS |
-| `hashes-r2.md` | 4.450 | `8332fd498129ed0f33cdbb3678c5dca35a2cc383037cf96430ad4b9866010ba3` | PASS externo |
+| `expediente-consolidado-nexo-r2.html` | 140.889 | `3b93e9f605eaba4f0a913d67a061b9a38107661500fb52d2d699a31721921e4f` | PASS |
+| `hashes-r2.md` | 4.450 | `4421c24b65a136be60550690a8ba0d0c38462fb70497df338db4753c1ce8bef1` | PASS externo |
 | `consolidation-method.md` | 9.720 | `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285` | PASS |
 
 El hash del manifiesto se registra aquí, fuera del propio manifiesto, para evitar autorreferencia. Los hashes de los otros tres archivos coinciden con los valores del manifiesto R2.
@@ -60,8 +60,8 @@ Una lectura adversarial posterior detectó metadatos heredados del expediente ba
 
 Verificación final posterior a estas correcciones:
 - `report-r2.md`: 103.271 bytes; SHA-256 `22aa17bda1441026f2e8a95a75e9ab857a5a286cd80883deb843cc027f101ec8`.
-- `expediente-consolidado-nexo-r2.html`: 140.883 bytes; SHA-256 `933c55b25186730ec5bb021f1e08a589893a638b9ec1b4e4ed23ca0d6732e063`.
-- `hashes-r2.md`: 4.450 bytes; SHA-256 externo `8332fd498129ed0f33cdbb3678c5dca35a2cc383037cf96430ad4b9866010ba3`.
+- `expediente-consolidado-nexo-r2.html`: 140.889 bytes; SHA-256 `3b93e9f605eaba4f0a913d67a061b9a38107661500fb52d2d699a31721921e4f`.
+- `hashes-r2.md`: 4.450 bytes; SHA-256 externo `4421c24b65a136be60550690a8ba0d0c38462fb70497df338db4753c1ce8bef1`.
 - `consolidation-method.md`: 9.720 bytes; SHA-256 `7295fedb65aa2c7462cd894a8ee47ba5fb534425130b6b1ac493f82ec8c24285`.
 
 Los tres hashes de archivos distintos del manifiesto coinciden con el manifiesto final. El hash del manifiesto se conserva aquí como comprobación externa.
