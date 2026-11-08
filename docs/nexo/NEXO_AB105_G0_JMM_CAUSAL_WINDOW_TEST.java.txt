@@ -1,0 +1,330 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements. See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.kafka.metadata.authorizer;
+
+import org.apache.kafka.common.Endpoint;
+import org.apache.kafka.common.Uuid;
+import org.apache.kafka.common.metrics.Metrics;
+import org.apache.kafka.common.metrics.internals.PluginMetricsImpl;
+import org.apache.kafka.common.resource.ResourcePattern;
+import org.apache.kafka.common.security.auth.KafkaPrincipal;
+import org.apache.kafka.common.security.auth.SecurityProtocol;
+import org.apache.kafka.server.authorizer.Action;
+import org.apache.kafka.server.authorizer.AuthorizationResult;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import static org.apache.kafka.common.acl.AclOperation.WRITE;
+import static org.apache.kafka.common.acl.AclPermissionType.ALLOW;
+import static org.apache.kafka.common.resource.PatternType.LITERAL;
+import static org.apache.kafka.common.resource.ResourceType.TOPIC;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Timeout(value = 120)
+public class NexoJmmCausalWindowTest {
+    private static final Endpoint PLAINTEXT =
+        new Endpoint("PLAINTEXT", SecurityProtocol.PLAINTEXT, "127.0.0.1", 9022);
+    private static final String USER = "nexo-jmm-causal";
+    private static final String TOPIC_NAME = "nexo-jmm-causal-topic";
+    private static final int ITERATIONS = 100;
+    private static final int READERS = 4;
+    private static final long PRE_REMOVE_NANOS = TimeUnit.MILLISECONDS.toNanos(5);
+    private static final long OBSERVATION_END_NANOS = TimeUnit.MILLISECONDS.toNanos(15);
+
+    private static StandardAuthorizer newAuthorizer() {
+        StandardAuthorizer authorizer = new StandardAuthorizer();
+        authorizer.configure(Map.of(StandardAuthorizer.SUPER_USERS_CONFIG, "User:superman"));
+        Metrics metrics = new Metrics();
+        authorizer.withPluginMetrics(new PluginMetricsImpl(metrics, Map.of()));
+        authorizer.start(new AuthorizerTestServerInfo(List.of(PLAINTEXT)));
+        authorizer.completeInitialLoad();
+        return authorizer;
+    }
+
+    private static StandardAcl acl() {
+        return new StandardAcl(
+            TOPIC, TOPIC_NAME, LITERAL, "User:" + USER, "*", WRITE, ALLOW);
+    }
+
+    private static org.apache.kafka.server.authorizer.AuthorizableRequestContext context() throws Exception {
+        return new MockAuthorizableRequestContext.Builder()
+            .setPrincipal(new KafkaPrincipal(KafkaPrincipal.USER_TYPE, USER))
+            .build();
+    }
+
+    private static Action writeAction() {
+        return new Action(
+            WRITE,
+            new ResourcePattern(TOPIC, TOPIC_NAME, LITERAL),
+            0,
+            false,
+            false);
+    }
+
+    private static final class Observation {
+        final long enter;
+        final long exit;
+        final AuthorizationResult result;
+        final Object cacheBeforeAuthorize;
+        final Object authorizeSnapshot;
+
+        Observation(long enter, long exit, AuthorizationResult result, Object cacheBeforeAuthorize, Object authorizeSnapshot) {
+            this.enter = enter;
+            this.exit = exit;
+            this.result = result;
+            this.cacheBeforeAuthorize = cacheBeforeAuthorize;
+            this.authorizeSnapshot = authorizeSnapshot;
+        }
+    }
+
+    private static Object authorizeSnapshotOf(StandardAuthorizer authorizer) throws Exception {
+        Field dataField = StandardAuthorizer.class.getDeclaredField("data");
+        dataField.setAccessible(true);
+        Object data = dataField.get(authorizer);
+        Field snapshotField = data.getClass().getDeclaredField("nexoDiagnosticAuthorizeSnapshot");
+        snapshotField.setAccessible(true);
+        ThreadLocal<?> snapshot = (ThreadLocal<?>) snapshotField.get(data);
+        return snapshot.get();
+    }
+
+    private static Object aclCacheOf(StandardAuthorizer authorizer) throws Exception {
+        Field dataField = StandardAuthorizer.class.getDeclaredField("data");
+        dataField.setAccessible(true);
+        Object data = dataField.get(authorizer);
+        Field cacheField = data.getClass().getDeclaredField("aclCache");
+        cacheField.setAccessible(true);
+        return cacheField.get(data);
+    }
+
+    private static final class WriterObservation {
+        long enter = Long.MAX_VALUE;
+        long exit = Long.MAX_VALUE;
+    }
+
+    private static final class ClassificationCounts {
+        long postReturnAllowed;
+        long postReturnDenied;
+        long overlapAllowed;
+        long overlapDenied;
+        long unexpected;
+        long observations;
+        long postReturnAllowedWithPreRemoveCache;
+        long postReturnPreRemoveCache;
+        long postReturnPostRemoveCache;
+        long postReturnUnknownCache;
+        long postReturnPreRemoveSnapshot;
+        long postReturnPostRemoveSnapshot;
+        long postReturnUnknownSnapshot;
+    }
+
+    private static void classifyObservation(
+        Observation observation,
+        WriterObservation writerObservation,
+        ClassificationCounts counts,
+        Object preRemoveCache,
+        Object postRemoveCache
+    ) {
+        counts.observations++;
+        if (observation.result == null) {
+            counts.unexpected++;
+        } else if (observation.enter > writerObservation.exit) {
+            classifyPostReturn(observation, counts, preRemoveCache, postRemoveCache);
+        } else if (observation.enter <= writerObservation.exit
+            && observation.exit >= writerObservation.enter) {
+            classifyOverlap(observation, counts);
+        }
+    }
+
+    private static void classifyPostReturn(
+        Observation observation,
+        ClassificationCounts counts,
+        Object preRemoveCache,
+        Object postRemoveCache
+    ) {
+        if (observation.result == AuthorizationResult.ALLOWED) {
+            counts.postReturnAllowed++;
+        } else if (observation.result == AuthorizationResult.DENIED) {
+            counts.postReturnDenied++;
+        } else {
+            counts.unexpected++;
+        }
+        if (observation.cacheBeforeAuthorize == preRemoveCache) {
+            counts.postReturnPreRemoveCache++;
+        } else if (observation.cacheBeforeAuthorize == postRemoveCache) {
+            counts.postReturnPostRemoveCache++;
+        } else {
+            counts.postReturnUnknownCache++;
+        }
+        if (observation.authorizeSnapshot == preRemoveCache) {
+            counts.postReturnPreRemoveSnapshot++;
+        } else if (observation.authorizeSnapshot == postRemoveCache) {
+            counts.postReturnPostRemoveSnapshot++;
+        } else {
+            counts.postReturnUnknownSnapshot++;
+        }
+    }
+
+    private static void classifyOverlap(
+        Observation observation,
+        ClassificationCounts counts
+    ) {
+        if (observation.result == AuthorizationResult.ALLOWED) {
+            counts.overlapAllowed++;
+        } else if (observation.result == AuthorizationResult.DENIED) {
+            counts.overlapDenied++;
+        } else {
+            counts.unexpected++;
+        }
+    }
+
+    private static boolean isPostReturnAllowedWithPreRemoveCache(
+        Observation observation,
+        WriterObservation writerObservation,
+        Object preRemoveCache
+    ) {
+        return observation.result == AuthorizationResult.ALLOWED
+            && observation.enter > writerObservation.exit
+            && observation.cacheBeforeAuthorize == preRemoveCache;
+    }
+
+    private static void runReader(
+        StandardAuthorizer authorizer,
+        long scheduledRemove,
+        long observationEnd,
+        ArrayList<Observation> local
+    ) {
+        while (System.nanoTime() < observationEnd) {
+            long enter = System.nanoTime();
+            AuthorizationResult result;
+            Object cacheBeforeAuthorize;
+            Object authorizeSnapshot;
+            try {
+                cacheBeforeAuthorize = aclCacheOf(authorizer);
+                result = authorizer.authorize(context(), List.of(writeAction())).get(0);
+                authorizeSnapshot = authorizeSnapshotOf(authorizer);
+            } catch (Throwable t) {
+                local.add(new Observation(enter, System.nanoTime(), null, null, null));
+                return;
+            }
+            long exit = System.nanoTime();
+            if (enter >= scheduledRemove) {
+                local.add(new Observation(enter, exit, result, cacheBeforeAuthorize, authorizeSnapshot));
+            }
+        }
+    }
+
+    private static void runIteration(int iteration, ClassificationCounts counts) throws Exception {
+        StandardAuthorizer authorizer = newAuthorizer();
+        Uuid id = new Uuid(iteration + 501L, iteration + 1501L);
+        authorizer.addAcl(id, acl());
+        Object preRemoveCache = aclCacheOf(authorizer);
+
+        List<AuthorizationResult> baseline =
+            authorizer.authorize(context(), List.of(writeAction()));
+        assertEquals(AuthorizationResult.ALLOWED, baseline.get(0),
+            "baseline authorization must be ALLOWED");
+
+        long raceStart = System.nanoTime();
+        long scheduledRemove = raceStart + PRE_REMOVE_NANOS;
+        long observationEnd = raceStart + OBSERVATION_END_NANOS;
+        WriterObservation writerObservation = new WriterObservation();
+        @SuppressWarnings("unchecked")
+        ArrayList<Observation>[] readerObservations = new ArrayList[READERS];
+        for (int r = 0; r < READERS; r++) {
+            readerObservations[r] = new ArrayList<>();
+        }
+
+        Thread writer = new Thread(() -> {
+            while (System.nanoTime() < scheduledRemove) {
+                Thread.onSpinWait();
+            }
+            writerObservation.enter = System.nanoTime();
+            authorizer.removeAcl(id);
+            writerObservation.exit = System.nanoTime();
+        }, "nexo-jmm-causal-writer");
+
+        Thread[] readers = new Thread[READERS];
+        for (int r = 0; r < READERS; r++) {
+            final ArrayList<Observation> local = readerObservations[r];
+            readers[r] = new Thread(
+                () -> runReader(authorizer, scheduledRemove, observationEnd, local),
+                "nexo-jmm-causal-reader-" + r);
+        }
+
+        writer.start();
+        for (Thread reader : readers) {
+            reader.start();
+        }
+
+        writer.join(5000);
+        for (Thread reader : readers) {
+            reader.join(5000);
+            assertTrue(!reader.isAlive(), "reader did not finish");
+        }
+        assertTrue(!writer.isAlive(), "writer did not finish");
+
+        Object postRemoveCache = aclCacheOf(authorizer);
+        assertTrue(postRemoveCache != preRemoveCache,
+            "removeAcl must publish a distinct cache instance");
+        for (ArrayList<Observation> local : readerObservations) {
+            for (Observation observation : local) {
+                classifyObservation(
+                    observation, writerObservation, counts, preRemoveCache, postRemoveCache);
+                if (isPostReturnAllowedWithPreRemoveCache(
+                    observation, writerObservation, preRemoveCache)) {
+                    counts.postReturnAllowedWithPreRemoveCache++;
+                }
+            }
+        }
+    }
+
+    @Test
+    public void causalPostReturnWindowIsDiagnosticOnly() throws Exception {
+        ClassificationCounts counts = new ClassificationCounts();
+        for (int iteration = 0; iteration < ITERATIONS; iteration++) {
+            runIteration(iteration, counts);
+        }
+
+        System.out.println(
+            "CAUSAL_JMM_RACE ITERATIONS=" + ITERATIONS +
+            " READERS=" + READERS +
+            " OBSERVATIONS=" + counts.observations +
+            " POST_RETURN_ALLOWED=" + counts.postReturnAllowed +
+            " POST_RETURN_DENIED=" + counts.postReturnDenied +
+            " OVERLAP_ALLOWED=" + counts.overlapAllowed +
+            " OVERLAP_DENIED=" + counts.overlapDenied +
+            " POST_RETURN_PRE_REMOVE_CACHE=" + counts.postReturnPreRemoveCache +
+            " POST_RETURN_POST_REMOVE_CACHE=" + counts.postReturnPostRemoveCache +
+            " POST_RETURN_UNKNOWN_CACHE=" + counts.postReturnUnknownCache +
+            " POST_RETURN_PRE_REMOVE_SNAPSHOT=" + counts.postReturnPreRemoveSnapshot +
+            " POST_RETURN_POST_REMOVE_SNAPSHOT=" + counts.postReturnPostRemoveSnapshot +
+            " POST_RETURN_UNKNOWN_SNAPSHOT=" + counts.postReturnUnknownSnapshot +
+            " POST_RETURN_ALLOWED_WITH_PRE_REMOVE_CACHE=" + counts.postReturnAllowedWithPreRemoveCache +
+            " UNEXPECTED=" + counts.unexpected);
+
+        assertEquals(0, counts.unexpected, "diagnostic encountered unexpected execution failures");
+    }
+
+}
