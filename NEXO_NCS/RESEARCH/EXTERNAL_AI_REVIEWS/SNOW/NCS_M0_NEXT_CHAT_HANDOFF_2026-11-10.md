@@ -34,7 +34,7 @@ Actualización 2026-11-12: **T-01/B-DOC-1 PARTIAL**. P08/P09 ya están registrad
 - `NCS_M0_OWNER_DECISIONS_AND_AUTHORIZATION_REQUIRED_2026-11-10.md`
 - `NCS_M0_NEXT_CHAT_HANDOFF_2026-11-10.md` (este archivo)
 
-Destino en rama: `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/SNOW/`. GitHub NOT_CONNECTED: sube el propietario; Snow verifica y reporta el HEAD resultante. No reenviar archivos ya entregados (regla de Kevin): el contrato de cierre ya está en rama (`40f50d1d…`); el delta P09 (`6e59e0e6…`) sigue sin subir.
+Destino en rama: `NEXO_NCS/RESEARCH/EXTERNAL_AI_REVIEWS/SNOW/`. GitHub connector: CONNECTED y usado para las actualizaciones documentales del 2026-11-12. HEAD actual de investigación: `ea4319415b53a4871c3cda37dff30672f67e35f3`; HEAD canónico: `53c1524b858e069c9af181d8e0b8715ddd94dd9b`. No reenviar archivos ya entregados (regla de Kevin): el contrato de cierre ya está en rama (`40f50d1d…`); el delta P09 (`6e59e0e6…`) sigue sin subir.
 
 ## 5. Límites vigentes
 
