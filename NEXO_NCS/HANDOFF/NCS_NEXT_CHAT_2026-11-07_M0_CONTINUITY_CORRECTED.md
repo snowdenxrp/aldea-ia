@@ -41,8 +41,8 @@ Cuando el propietario escriba exactamente NCS, continuar en este orden:
 
 ## 4. Evidencia vigente ya disponible — NO REPETIR
 
-1. **P09 caller coverage:** [reconciliación 2026-11-07](../BUILD/NCS_M0_P09_CALLER_COVERAGE_RECONCILIATION_2026-11-07.md), blob `a9bcd78d8ddf6f27ebfec427aed0750b57bed714`, snapshot de código `d8b5ca8720908d926acc18130614cce132a43b5d`. Reutilizarla: roots Lúmina separadas, guard estático solo para imports/reexports literales, loaders no literales/consumidores externos/deployment UNKNOWN; cinco queries path-based y Chronicle pre-read sin admisión común. No repetir el censo estático ni el barrido histórico de 188 archivos.
-2. **P08 root→stores/Chronicle:** [reconciliación 2026-11-07](../BUILD/NCS_M0_P08_ROOT_TO_STORE_MAPPING_AND_CHRONICLE_INIT_RECONCILIATION_2026-11-07.md), snapshot `d8b5ca8`. No existe resolver común root→Continuity/Chronicle; el candidato de rutas no está ratificado; append aún puede inicializar Chronicle. P08 OPEN / LAYOUT UNSELECTED. No repetir inventario local ni tratar el candidato como decisión.
+1. **P09 caller coverage:** [reconciliación 2026-11-07](../BUILD/NCS_M0_P09_CALLER_COVERAGE_RECONCILIATION_2026-11-07.md), blob `a9bcd78d8ddf6f27ebfec427aed0750b57bed714`, snapshot de código `d8b5ca8720908d926acc18130614cce132a43b5d`. El **universo declarado** fue ratificado el 09-11: repositorio/package, entrypoints, procesos hijos, workflows y launchers declarados. Loaders dinámicos y consumidores externos no identificados siguen UNKNOWN; no hay claim universal. Reutilizar la reconciliación técnica: guard literal, cinco queries path-based y Chronicle pre-read sin admisión común. P09 sigue OPEN/UNKNOWN en cobertura efectiva. No repetir el censo ni el barrido histórico de 188 archivos.
+2. **P08 root→stores/Chronicle:** [reconciliación 2026-11-07](../BUILD/NCS_M0_P08_ROOT_TO_STORE_MAPPING_AND_CHRONICLE_INIT_RECONCILIATION_2026-11-07.md), blob `1ced1d0d9c435db9d224a5d347e16ea0d89af237`, snapshot `d8b5ca8`. El propietario ratificó el 09-11 una root canónica que deriva `<root>/.nexo-continuity.json` y `<root>/.nexo-chronicle.json`; sin paths independientes ni fallback ambiental en operación normal; Chronicle init separado y con admisión/autorización propias; append no inicializa Chronicle. La reconciliación 07-11 conserva valor como evidencia del gap del snapshot, no como estado vigente de la decisión. P08 DECIDED / IMPLEMENTATION PENDING.
 3. **P03/P04 integración de admisión:** [diseño técnico](../BUILD/NCS_M0_D2_P03_P04_TECHNICAL_CLOSURE_DESIGN_2026-11-03.md), blob vigente `d9a55256bb9c3557a61ef14afe551f5934872ea3`. Ya mapea las cinco queries, request→draft, Chronicle directo/hijo/padre y superficies de compatibilidad. D1–D6 ratificadas; el diseño no está implementado ni probado. No volver a dibujar estos seams: resolver solo dependencias y gaps nuevos.
 4. **P05-C y O1–O9:** política ratificada en blob `97e24c03d2c63dbab025a8a9912d788a63d9c125`; [obligaciones crash/persistencia/admisión](../BUILD/NCS_M0_D2_P05_P07_CRASH_PERSISTENCE_AND_ADMISSION_PROOF_OBLIGATIONS_2026-11-07.md), blob `7af04a84748bb1174ca5c361d8d0ed24b8d97a43`. C exige UNKNOWN/BLOCKED sin recuperación automática; P05 sigue OPEN porque falta enforcement durable/interproceso, resolución y evidencia. O1–O9 son criterios, no resultados.
 5. **P07 V2.2 + V2.3:** V2.1 es histórico y no debe usarse como referencia normativa más reciente. V2.2 es la base de la propuesta; V2.3 es un delta posterior que debe aplicarse sobre V2.2, sin sustituirlo en Git. Refs exactos:
@@ -75,13 +75,22 @@ No rehacer Qwen/D4/D5, desacoplamiento Lúmina, inventario Termux histórico, re
 - Reapertura: solo si STATUS cambia a un ref/blob posterior, o aparece un cambio concreto de código/contrato que contradiga esos documentos.
 - Fuente de precedencia: STATUS, V2.2 + delta V2.3, obligaciones O1–O9 y reconciliación de locks citadas arriba.
 
-## 5. Estado de gates — conservar literalmente
+### 4.3 Ratificaciones P08/P09 del propietario (2026-11-09)
+
+El contenido exacto quedó registrado en la delta superior de [STATUS.md](../STATUS.md), bajo «RATIFICACIONES P08/P09 DEL PROPIETARIO». No volver a pedir estas decisiones:
+- P08: root canónica y mapping Continuity/Chronicle, con init separado de append.
+- P09: universo acotado declarado; loaders dinámicos y consumidores externos no identificados permanecen UNKNOWN.
+- P01-B=C ya está en el registro existente, §10.6; no seleccionar launcher por inferencia.
+
+**T-01/B-DOC-1 permanece PARTIAL** únicamente por DISC-08A/B no localizados. La ausencia de localización no demuestra inexistencia. P08/P09 siguen pendientes de implementación/cobertura técnica; no elevar G-4/G-5 a PASS.
+
+## 5. Estado de gates — reconciliado con ratificaciones 09-11
 
 - P-03/P-04: D1–D6 RATIFICADAS; enforcement pre-read pendiente.
 - P-05-C: RATIFICADA; P-05 OPEN.
 - P-07-C: UNKNOWN / BLOCKING; mecanismo seleccionado NINGUNO.
-- P-08: OPEN / LAYOUT UNSELECTED.
-- P-09: OPEN / UNKNOWN.
+- P-08: DECIDED / IMPLEMENTATION PENDING (mapping ratificado 09-11; resolver e init/append aún no implementados).
+- P-09: SCOPE DECIDED (universo acotado 09-11) / COVERAGE OPEN-UNKNOWN.
 - E2/E3: PARTIAL / NOT CLOSED.
 - authorization: NOT_EVALUATED.
 - Raíz constitucional: PENDING / UNKNOWN.
@@ -112,9 +121,9 @@ Esto resuelve solo la interpretación reservada en P07 V2.2 §8. No ratifica V2.
 1. **No repetir las bases ya cerradas documentalmente:** P09, P08, seams P03/P04 y lock/release del snapshot `d8b5ca8` ya tienen reconciliaciones. Reabrir solo UNKNOWN o evidencia nueva con SHA/ruta concreta.
 2. **P07-C — siguiente problema técnico:** evaluar una arquitectura candidata que satisfaga O4/O5 y los oráculos bloqueantes V2.2+V2.3 (P07-05/06/07/16/18b/19/21). Debe demostrar prevención o serialización dentro del modelo aprobado; DETECTION_ONLY y RETENTION_VERIFIED no cierran el gate. No seleccionar primitivas ni inventar marker, lock hermano, tombstone, epoch, daemon o journal.
 3. **P05 — cuarentena durable:** cualquier candidato debe responder O1–O9, preservando P05-C ratificada. Exclusión viva por lock efímero no equivale a BLOCKED durable tras crash. Si no existe mecanismo demostrado, conservar STOP; no improvisar readmisión.
-4. **P09 — únicamente el residuo:** loaders no literales, consumers externos y universo real de deployment siguen UNKNOWN. No repetir el guard ni el censo; acotar solo las superficies que puedan cambiar el claim.
+4. **P09 — únicamente el residuo:** cobertura técnica dentro del universo ratificado sigue OPEN/UNKNOWN; loaders dinámicos y consumidores externos no identificados permanecen UNKNOWN y fuera de cualquier claim universal. No repetir el guard ni el censo.
 5. **P03/P04:** el mapa de integración ya existe en el diseño técnico. Implementación pre-read solo después de resolver dependencias P07/P05 y con autorización específica. Mantener el orden abstracto: canonical root → instance admission → per-store locks → store I/O → per-store release → instance release.
-6. **P08:** decisión explícita del propietario sobre mapping Chronicle; candidato histórico no ratificado. Separación append/init también sigue sin implementar.
+6. **P08:** mapping ya ratificado por el propietario el 09-11 y registrado en STATUS. Falta implementar/probar el resolver común y la separación efectiva init/append. No volver a solicitar la decisión.
 7. **E2/E3 y aceptación:** completar evidencia de control de launchers/writers y después pruebas/CI/POCO solo con autorización específica, ligados a SHA, comando, entorno y run exactos.
 8. Preparar acta de cierre M0 únicamente cuando todos los gates tengan evidencia admisible.
 
