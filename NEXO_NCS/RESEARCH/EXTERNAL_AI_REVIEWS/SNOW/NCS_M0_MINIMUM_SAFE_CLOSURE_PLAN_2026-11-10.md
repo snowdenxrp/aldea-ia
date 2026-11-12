@@ -1,7 +1,7 @@
 # NCS M0 — Plan mínimo de cierre seguro
 
 **Fecha:** 2026-11-10. **Veredicto de ruta:** `M0 CLOSURE PATH PARTIAL` (auditoría adversarial §7).
-**Principio:** mínimo necesario para demostrar cumplimiento del claim restringido con exclusiones explícitas, o del modelo cambiado si el propietario lo elige en T-03. Sin alcance M1/STEP 7/YubiKey. Sin reactivar nada del moratorio D-RB-01 (RB-1–RB-4 prohibidos; se detecta su violación, no se «habilita» ningún alcance).
+**Principio:** mínimo necesario para demostrar cumplimiento del claim restringido con exclusiones explícitas, usando la arquitectura MED+SUP ratificada solo a nivel conceptual en A-01. No se considera implementada ni demostrada por esa ratificación. Sin alcance M1/STEP 7/YubiKey. Sin reactivar nada del moratorio D-RB-01 (RB-1–RB-4 prohibidos; se detecta su violación, no se «habilita» ningún alcance).
 
 ## Delta de decisión del propietario — 2026-11-12
 
