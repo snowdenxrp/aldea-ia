@@ -1,3 +1,79 @@
+## DELTA PRIORITARIA — RATIFICACIONES P08/P09 DEL PROPIETARIO (2026-11-09; REGISTRADAS 2026-11-12)
+
+**Fuente de procedencia:** handoff maestro NCS fechado 2026-11-10, suministrado por el propietario en esta conversación el 2026-11-12. La fecha de decisión consignada es 2026-11-09. Esta entrada transcribe el contenido declarado; no inventa SHA-256 para el handoff conversacional.
+
+### P08 — mapping root→stores
+
+- **DECIDED — RATIFICADA POR EL PROPIETARIO (2026-11-09).**
+- Una única root canónica deriva los destinos normales: `<root>/.nexo-continuity.json` y `<root>/.nexo-chronicle.json`.
+- En operación normal no se aceptan rutas independientes para esos stores ni fallback ambiental.
+- La inicialización de Chronicle es una operación separada, con su propia admisión y autorización del destino.
+- Append no inicializa Chronicle. Inicialización y append no comparten una misma invocación.
+- **No implica implementación:** el resolver común, la admisión y la separación efectiva init/append siguen pendientes de implementación y pruebas. La reconciliación técnica P08 del 2026-11-07 continúa siendo evidencia del gap del snapshot, no una decisión vigente sobre el layout.
+
+### P09 — universo declarado de callers
+
+- **DECIDED — ALCANCE RATIFICADO POR EL PROPIETARIO (2026-11-09).**
+- Universo declarado y acotado: repositorio/package, entrypoints, procesos hijos, workflows y launchers declarados.
+- Loaders dinámicos y consumidores externos no identificados permanecen **UNKNOWN**; no se afirma cobertura universal ni ausencia de consumidores fuera del universo declarado.
+- **No implica cierre técnico:** P09 permanece OPEN/UNKNOWN para la cobertura efectiva dentro del universo hasta que las aristas y superficies pendientes se clasifiquen y prueben.
+
+### Referencia cruzada y límites
+
+- P01-B=C ya consta en el registro existente `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`, §10.6; no se duplica ni se selecciona launcher.
+- DISC-08A/B: **NO LOCALIZADOS** en la búsqueda documental citada por el contrato de cierre §3.1. Esto no demuestra inexistencia. No se inventa su contenido.
+- T-01/B-DOC-1 queda **PARTIAL**: P08/P09 ya tienen contenido registrable y P01-B=C está referenciado; falta resolver la constancia DISC-08A/B con una fuente exacta.
+- **Precedencia:** esta delta supersede los estados históricos P08 OPEN/LAYOUT UNSELECTED y P09 OPEN/UNKNOWN que aparecen en las deltas anteriores de este archivo. Esos textos conservan valor histórico sobre la evidencia disponible entonces; no describen la decisión del propietario del 09-11.
+- Esta ratificación no cierra G-4/G-5, no declara P08/P09 IMPLEMENTED/TESTED/CI-VERIFIED, no altera P05/P07/E2/E3 y no modifica `authorization: NOT_EVALUATED`, ROOT_READY, commissioning ni efectos protegidos STOP.
+- Sin cambios de código, tests, workflows, CI, ramas de producto, Termux/POCO, stores o PR.
+
+---
+
+## PROTOCOLO OBLIGATORIO DE CONTINUIDAD — NO REPETICIÓN
+
+Antes de cualquier investigación, auditoría, edición o propuesta, seguir [OPERATIONS/NON_REPETITION_PROTOCOL.md](OPERATIONS/NON_REPETITION_PROTOCOL.md). La secuencia de recuperación está en [NEXO_NCS/README.md](README.md) y el handoff vigente. Un asunto conocido solo se reabre con evidencia nueva verificable; cambiar de chat o de IA no constituye evidencia. No crear otro informe para una causa ya registrada: actualizar el artefacto canónico y continuar desde el siguiente gap abierto.
+
+---
+
+## DELTA — RATIFICACIÓN DEL PROPIETARIO SOBRE CLEANUP ATRIBUIBLE (2026-11-07)
+
+- El propietario ratifica que el producto solo puede ejecutar cleanup sobre objetos cuya atribución a la operación esté demostrada y cuya identidad y nombre estén protegidos por el protocolo.
+- Ante cualquier incertidumbre, el residuo se conserva y el estado permanece `UNKNOWN/BLOCKED`.
+- Nombre, token, PID o antigüedad, por sí solos, nunca justifican cleanup.
+- Esta política no permite readmisión cuando falta evidencia suficiente para atribuir el objeto.
+- Alcance: política normativa de cleanup para P05/P07; no demuestra que el mecanismo actual la cumpla, no satisface O4/O5, no cierra P05 ni P07-C y no selecciona una arquitectura.
+- No autoriza implementación, harness, tests, CI, POCO/Termux, cleanup real, readmisión, commissioning ni efectos protegidos.
+- Gates sin cambio: P05-C RATIFICADA / P05 OPEN; P07-C UNKNOWN / BLOCKING; `authorization: NOT_EVALUATED`; NCS M0 INCOMPLETO.
+
+---
+
+## DELTA — DECISIÓN DEL PROPIETARIO SOBRE AFECTACIÓN REVERSIBLE P07-C (2026-11-07)
+
+- El propietario autoriza la interpretación conservadora: **cualquier desplazamiento temporal del nombre protegido o modificación de `nlink` cuenta como afectación del objeto protegido, aunque después se restaure el estado original**.
+- Alcance: criterio semántico para evaluar “afectar” en P07-C; la reversibilidad posterior no neutraliza la afectación ocurrida durante la ventana.
+- Esta decisión resuelve únicamente ese punto reservado al propietario en P07 V2.2 §8. No ratifica P07 V2.3 ni el conjunto de V2.2/V2.3; no selecciona mecanismo, no satisface P07-C y no autoriza implementación, harness, tests, CI, POCO/Termux ni cleanup.
+- P07-C permanece **UNKNOWN / BLOCKING**; mecanismo seleccionado **NINGUNO**; autorización de ejecución **NOT_EVALUATED**.
+
+---
+
+## DELTA PRIORITARIA — RUTAS Y HANDOFF CANÓNICO CORREGIDOS (2026-11-07)
+
+**Punto de entrada vigente:** [HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md](HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md).
+
+Correcciones de navegación verificadas en esta rama:
+- La ruta física de Core es `NEXO_NCS/CORE/README.md`; no `NEXO_NCS/CORE.md` ni `NEXO_NCS/MASTER/CORE.md`.
+- La ruta canónica de estado es `NEXO_NCS/STATUS.md`; no la abreviatura `NCS/STATUS`.
+- El handoff solicitado `NEXO_NCS/HANDOFF/NCS_NEXT_CHAT_2026-10-31_D1_CONTINUITY_OPEN_BOOTSTRAP.md` no fue recuperable en la rama estratégica consultada. El handoff del 07-11 lo sustituye como instrucción vigente, sin borrar historia.
+- La navegación obligatoria queda: `STATUS → MASTER/README + directiva → CORE/README → handoff vigente → BUILD/tarea`.
+
+Aplicar obligatoriamente el [protocolo permanente de continuidad y no repetición](OPERATIONS/NON_REPETITION_PROTOCOL.md): comprobar el registro conocido antes de investigar; no repetir P08/P09, D4/D5, el guard de separación Lúmina, el inventario estático previo ni el inventario local Termux. Reabrir un asunto solo ante evidencia nueva verificable conforme al protocolo. Consultar el handoff vigente para los UNKNOWN concretos y el orden de cierre.
+
+**Gates sin cambio:** D1–D6 ratificadas; P05-C ratificada/P05 OPEN; P07-C UNKNOWN/BLOCKING; P08 OPEN/LAYOUT UNSELECTED; P09 OPEN/UNKNOWN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning/efectos protegidos STOP; **NCS M0 INCOMPLETO**.
+
+Esta delta corrige navegación y continuidad documental únicamente. No cambia runtime, tests, CI, workflows, dispositivo, stores ni autorizaciones.
+
+---
+
 ## DIRECTIVA ESTRATÉGICA PERMANENTE — VISIÓN INTEGRAL DE NEXO (2026-11-05)
 
 - Directiva del propietario preservada en [MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md](MASTER/NEXO_STRATEGIC_VISION_AND_AUTONOMY_DIRECTIVE.md) y enlazada desde [MASTER/README.md](MASTER/README.md).
