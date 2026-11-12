@@ -6,12 +6,15 @@
 
 **D-A08 — RATIFICADA, opción A.** El propietario autoriza mantener R1 y aceptar un claim de cierre M0 restringido, con exclusiones explícitas; las garantías imposibles I-1–I-7 se contienen por política dentro del alcance declarado. Se rechaza cualquier cambio implícito de modelo (opción B). Esta decisión no autoriza MED/SUP, no selecciona ni realiza el ancla externa monotónica D-RB-04 A, no levanta la moratoria D-RB-01 (RB-1–RB-4 continúan prohibidos y cualquier rollback conocido o sospechado implica STOP/UNKNOWN), no autoriza implementación, pruebas, CI, operaciones de dispositivo ni efectos protegidos. D-RB-04 A sigue siendo requisito ratificado cuya forma y realización permanecen pendientes. La decisión A-08 no convierte ningún gate en PASS ni declara T-02/T-03/M0 completos.
 
+
+**D-A06 / D-P07A — RATIFICADA, opción A (2026-11-12).** El propietario aprueba el criterio P07-A y el procedimiento REC de re-identificación con estas restricciones: identidad del objeto y nombre/ruta se verifican por separado; los atributos descriptivos no prueban identidad post-restore; si la identidad no es verificable, el objeto permanece bloqueado (`UNKNOWN/STOP`); la re-identificación posterior requiere atestación externa/off-band del propietario registrada fuera del objeto restaurado; no se infieren equivalencias entre aliases sin política aprobada. A-04 (atestación del propietario como raíz de confianza) permanece como decisión separada y pendiente; esta ratificación no la define ni la satisface, no demuestra técnicamente I-3, no realiza D-RB-04 A, no levanta D-RB-01 ni autoriza implementación, REC operativo, pruebas, CI, dispositivo o efectos protegidos.
+
 ## 1. Decisiones del propietario pendientes (sin solicitarlas en este documento)
 
 | ID | Decisión | Estado hoy | Qué desbloquea | Cuándo se presentará |
 |---|---|---|---|---|
 | D-ANCLA | Forma del ancla monotónica externa (D-RB-04 A) + encaje en R1; canal/formato/custodio del registro (D-RB-09 A) | Requisito DECIDED; **forma PENDIENTE** | Enforcement single-use bajo restore; fin verificable de la moratoria | En T-03, con propuesta T-02 |
-| D-P07A | Criterio de identidad P07-A (mismo objeto, política de aliases) + procedimiento de re-identificación | PENDIENTE (sin decidir en canónicos) | O3/O5, P07-16/P07-21, readmisión (E8) | En T-03, con especificación T-02 |
+| D-P07A | Criterio de identidad y procedimiento de re-identificación P07-A | **RATIFICADA, opción A (2026-11-12)** con límites del delta superior; aliases sin política siguen sin equivalencia inferida | O3/O5, P07-16/P07-21, readmisión (E8), sujetos a A-04 y enforcement posterior | No volver a solicitar; aplicar solo tras decisiones/autorizaciones técnicas separadas |
 | D-A01 | Arquitectura de mediación/supervisión aceptada (MED+SUP de ACA-1 u otra) | PENDIENTE (PROPUESTA) | Implementación G-1/G-2/G-3 | En T-03 |
 | D-A04/A07 | Atestación del propietario como raíz de REC; diseño del testigo | PENDIENTE, condicionadas al diseño | Recuperación controlada G-2/G-3 | En T-03 si el diseño las requiere |
 | D-A03 | Clasificación del SO/backup (¿restaura HOME de Termux?) | UNKNOWN/PENDING — **se resuelve con evidencia (T-04), no con votación previa** | Enforzabilidad de la moratoria frente al OS | Tras T-04 |
@@ -19,7 +22,7 @@
 | D-DISC | DISC-08A/B | **No localizados** en el repo (129 ramas) ni en workspace | Desconocido hasta localizarlos | Primero localizar (T-01); solo entonces clasificar |
 | D-01…D-12 / Misión 01 (9) | SIN DECIDIR (expedientes 004/005) | Fuera de la ruta M0 salvo intersección futura | — | No se reabren en este paquete |
 
-**Decisiones ya tomadas que NO se vuelven a pedir:** R1 (02-11); P01-B=C; D1–D6 + O-08/O-10/O-11; P05-C + cleanup atribuible + afectación reversible (07-11); P07 V2.3 (8-Nov, declarada); P08/P09 (9-Nov, declaradas); D-RB-01…09 (10-Nov); línea de meta (24-10); H-05 A / D-02 B documentales.
+**Decisiones ya tomadas que NO se vuelven a pedir:** R1 (02-11); P01-B=C; D1–D6 + O-08/O-10/O-11; P05-C + cleanup atribuible + afectación reversible (07-11); P07 V2.3 (8-Nov, declarada); P07-A opción A (12-Nov); P08/P09 (9-Nov, declaradas); D-RB-01…09 (10-Nov); línea de meta (24-10); H-05 A / D-02 B documentales.
 
 ## 2. Autorizaciones de ejecución pendientes (separadas, en orden)
 
