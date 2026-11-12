@@ -1,0 +1,30 @@
+# NCS M0 — Decisiones y autorizaciones realmente pendientes
+
+**Fecha:** 2026-11-10. **Regla:** aquí solo aparecen decisiones **no tomadas** o autorizaciones **no concedidas**. Nada de lo ya ratificado se pide de nuevo.
+
+## 1. Decisiones del propietario pendientes (sin solicitarlas en este documento)
+
+| ID | Decisión | Estado hoy | Qué desbloquea | Cuándo se presentará |
+|---|---|---|---|---|
+| D-A08 | Alcance del claim de cierre: contención por política con exclusiones explícitas **o** cambio de modelo (fuera de R1) | PENDIENTE (ACA-1 §8 propuesta; Qwen B = cambio de R1) | Criterio de éxito de G-2/G-3; viabilidad de la ruta | En T-03, con propuesta T-02 (opciones + consecuencias) |
+| D-ANCLA | Forma del ancla monotónica externa (D-RB-04 A) + encaje en R1; canal/formato/custodio del registro (D-RB-09 A) | Requisito DECIDED; **forma PENDIENTE** | Enforcement single-use bajo restore; fin verificable de la moratoria | En T-03, con propuesta T-02 |
+| D-P07A | Criterio de identidad P07-A (mismo objeto, política de aliases) + procedimiento de re-identificación | PENDIENTE (sin decidir en canónicos) | O3/O5, P07-16/P07-21, readmisión (E8) | En T-03, con especificación T-02 |
+| D-A01 | Arquitectura de mediación/supervisión aceptada (MED+SUP de ACA-1 u otra) | PENDIENTE (PROPUESTA) | Implementación G-1/G-2/G-3 | En T-03 |
+| D-A04/A07 | Atestación del propietario como raíz de REC; diseño del testigo | PENDIENTE, condicionadas al diseño | Recuperación controlada G-2/G-3 | En T-03 si el diseño las requiere |
+| D-A03 | Clasificación del SO/backup (¿restaura HOME de Termux?) | UNKNOWN/PENDING — **se resuelve con evidencia (T-04), no con votación previa** | Enforzabilidad de la moratoria frente al OS | Tras T-04 |
+| D-P08/P09 (contenido) | **No es decisión nueva**: P08 decidida y universo P09 ratificado el 9-Nov (declarado por el propietario) | Contenido **no referenciado** en el repo | Verificabilidad de G-4/G-5 | T-01 es referencia/registro, no re-ratificación |
+| D-DISC | DISC-08A/B | **No localizados** en el repo (129 ramas) ni en workspace | Desconocido hasta localizarlos | Primero localizar (T-01); solo entonces clasificar |
+| D-01…D-12 / Misión 01 (9) | SIN DECIDIR (expedientes 004/005) | Fuera de la ruta M0 salvo intersección futura | — | No se reabren en este paquete |
+
+**Decisiones ya tomadas que NO se vuelven a pedir:** R1 (02-11); P01-B=C; D1–D6 + O-08/O-10/O-11; P05-C + cleanup atribuible + afectación reversible (07-11); P07 V2.3 (8-Nov, declarada); P08/P09 (9-Nov, declaradas); D-RB-01…09 (10-Nov); línea de meta (24-10); H-05 A / D-02 B documentales.
+
+## 2. Autorizaciones de ejecución pendientes (separadas, en orden)
+
+1. **T-04:** inspección de solo lectura en POCO/Termux (fingerprint, A-03, pre-checks E2/E3). Sin bootstrap, sin crear archivos, sin detener procesos.
+2. **T-05…T-07 (A-09):** implementación limitada a los contratos decididos en T-03. Cualquier necesidad de decisión nueva detiene el cambio.
+3. **T-08:** ejecución de tests/harness sobre SHA congelado, con `actor_B_class` fijado por escenario. Sin efectos protegidos.
+4. **T-09:** CI sobre el SHA congelado (jobs inspeccionados por ID).
+5. **T-10:** ventana R1 con operación real (propietario como launcher único; STOP ante actor no controlado; invalida ante reboot/update).
+6. **T-11:** firma del acta (incluidas exclusiones, si las hay).
+
+Ninguna de estas autorizaciones levanta: commissioning, `ROOT_READY`, `authorization` (NOT_EVALUATED), efectos protegidos (STOP), fusión de PR #110/#111, ni el moratorio D-RB-01.
