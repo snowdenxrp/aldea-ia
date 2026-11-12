@@ -23,6 +23,7 @@
 - P01-B=C ya consta en el registro existente `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`, §10.6; no se duplica ni se selecciona launcher.
 - DISC-08A/B: **NO LOCALIZADOS** en la búsqueda documental citada por el contrato de cierre §3.1. Esto no demuestra inexistencia. No se inventa su contenido.
 - T-01/B-DOC-1 queda **PARTIAL**: P08/P09 ya tienen contenido registrable y P01-B=C está referenciado; falta resolver la constancia DISC-08A/B con una fuente exacta.
+- **Precedencia:** esta delta supersede los estados históricos P08 OPEN/LAYOUT UNSELECTED y P09 OPEN/UNKNOWN que aparecen en las deltas anteriores de este archivo. Esos textos conservan valor histórico sobre la evidencia disponible entonces; no describen la decisión del propietario del 09-11.
 - Esta ratificación no cierra G-4/G-5, no declara P08/P09 IMPLEMENTED/TESTED/CI-VERIFIED, no altera P05/P07/E2/E3 y no modifica `authorization: NOT_EVALUATED`, ROOT_READY, commissioning ni efectos protegidos STOP.
 - Sin cambios de código, tests, workflows, CI, ramas de producto, Termux/POCO, stores o PR.
 
