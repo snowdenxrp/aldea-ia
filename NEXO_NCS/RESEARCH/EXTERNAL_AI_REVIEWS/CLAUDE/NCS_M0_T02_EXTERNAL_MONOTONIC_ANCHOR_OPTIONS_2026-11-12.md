@@ -58,7 +58,7 @@ Estado: **A-07 no decidido.** La recomendación de ACA-1 (C con B mínimo) es [P
 
 ## 6. Encaje en R1 (A-08)
 
-- **A-08 opción A** (aceptar contención por política): el ancla no se adopta; el claim se restringe (veredicto PARCIAL de ACA-1). Consistente con el estado actual.
+- **A-08 opción A** (aceptar contención por política): el ancla no se adopta y el claim se restringe. Esta opción no satisface D-RB-04 A, que permanece DECIDED pero no satisfecho mientras no exista un ancla externa monótona realizada y verificable. El claim restringido debe declarar expresamente esa carencia y excluir cualquier claim de detección de RB-3/RB-4; la detección de esa capacidad permanece UNKNOWN/STOP. A-08 sigue PENDIENTE para T-03; esta sección no selecciona la opción A ni revoca o modifica D-RB-04 A.
 - **A-08 opción B** (cambiar el modelo): autorizar ancla externa y/o mediador a nivel de kernel, es decir, un **nuevo R1**. Es una decisión de modelo, no de arquitectura (ACA-1, A-08). Si la forma elegida vive fuera de R1, su adopción es cambio de modelo y exige decisión separada (Reconciliación C-02).
 - Si la forma elegida es el registro del propietario (D-RB-09), su encaje en R1 queda **abierto** (Reconciliación C-02).
 
