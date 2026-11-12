@@ -1,6 +1,6 @@
 # NCS M0 — T-02: Predicados de REC y de verificación de cuarentena (BORRADOR REVISADO)
 
-**Estado del documento:** PROPUESTA. No es decisión, no autoriza implementación, no cierra G-2/G-5 y no levanta la moratoria D-RB-01.
+**Estado del documento:** PROPUESTA. No es decisión, no autoriza implementación, no cierra G-2/G-3 y no levanta la moratoria D-RB-01.
 **Tarea:** T-02, entregable 2 de 3 — corrección independiente de REC/cuarentena.
 **Sustituye a:** `NCS_M0_T02_REC_QUARANTINE_PREDICATES_SPEC_2026-11-12.md` (para uso en revisión; el original no se modifica).
 **Fecha de elaboración:** 2026-11-11 (nombre de entregable: 2026-11-12).
