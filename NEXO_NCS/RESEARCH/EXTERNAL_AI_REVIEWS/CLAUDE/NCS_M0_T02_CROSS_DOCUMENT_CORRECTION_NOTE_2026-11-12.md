@@ -110,7 +110,7 @@ Tras aplicar y verificar estas propuestas en los documentos destinatarios:
 
 ## 7. Enmienda de aplicación documental — 2026-11-12
 
-**Autorización del propietario:** el 2026-11-12, en esta conversación, el propietario respondió «Muy bien continúa sin límites» después de recibir la propuesta de aplicación documental de la delta. Se interpretó como autorización para aplicar las correcciones documentales descritas en esta nota a sus cinco archivos destinatarios, exclusivamente. Esta trazabilidad registra el origen conversacional de la autorización; no es una nueva decisión arquitectónica ni autoriza código, pruebas, CI, runtime, dispositivo, PR, merge o efectos protegidos. Esta enmienda prevalece sobre las frases de §5/§6 que describían la aplicación como futura o prohibida en el alcance inicial de creación de la nota.
+**Autorización del propietario:** el 2026-11-12, en el registro conversacional de ChatGPT asociado a esta tarea, el propietario respondió «Muy bien continúa sin límites» después de recibir la propuesta de aplicación documental de la delta. Se interpretó como autorización para aplicar las correcciones documentales descritas en esta nota a sus cinco archivos destinatarios, exclusivamente. La frase y su alcance están corroborados en el contexto conversacional disponible para esta revisión, pero no existe un artefacto Git que pruebe por sí mismo esa conversación; por tanto, se registra como procedencia conversacional atribuida, no como evidencia verificable desde el repositorio aislado. No es una nueva decisión arquitectónica ni autoriza código, pruebas, CI, runtime, dispositivo, PR, merge o efectos protegidos. Esta enmienda prevalece sobre las frases de §5/§6 que describían la aplicación como futura o prohibida en el alcance inicial de creación de la nota.
 
 - El HEAD `6228d61fe8bc7d0db52d7be984d4ff67f6af0d4c` citado en §5.1 es el HEAD base observado por Claude antes de publicar la nota, no el HEAD actual.
 - P01-B = C significa exclusivamente «no seleccionar todavía»; no ratifica A ni B, no produce PASS, P-01 sigue OPEN/UNKNOWN y la primera creación sigue STOP.
@@ -119,3 +119,12 @@ Tras aplicar y verificar estas propuestas en los documentos destinatarios:
 - Las correcciones se aplicaron a REC V4, ancla §6, README CLAUDE y filas T-01/T-02 del plan. P07-A no se modificó porque no se identificó corrección obligatoria.
 
 No se modificaron código, runtime, tests, workflows, CI, dispositivo/Termux, PR ni decisiones ratificadas. No se declara T-02 COMPLETE ni M0 completo.
+
+
+## 8. Revisión independiente y reconciliación de reservas — 2026-11-12
+
+Snow realizó una revisión cruzada independiente del expediente T-02 sobre el HEAD base `80b000bcd848f19ed52923e971de4107eb704778` de `ncs-m0-architecture-research-2026-11-10`; veredicto `CONSISTENT WITH RESERVATIONS`. No encontró contradicciones sustantivas entre REC V4, el ancla, P07-A, esta nota y el plan. Identificó cuatro reservas: (a) SHA/líneas de fuentes superados; (b) HEAD de revisión no fijado en los entregables; (c) procedencia conversacional no verificable dentro del repositorio aislado; (d) handoff SNOW desactualizado.
+
+La reconciliación documental posterior: actualiza los SHA-256 del plan y contrato citados por los tres entregables; desplaza las referencias de REC al contrato vigente (G-2 línea 135 y respuesta por defecto línea 301); conserva `HEAD: UNKNOWN` como descripción honesta del snapshot de elaboración y fija `80b000b…` únicamente como HEAD base de la revisión independiente; etiqueta la autorización como procedencia conversacional, sin presentarla como evidencia Git; y actualiza el handoff para reflejar el estado real de T-02 y la referencia interrama P08/P09.
+
+Fuentes vigentes después de la primera reconciliación: plan de cierre SHA-256 `6db9b6daac569e1bfa4c35ffcb6d9b422983328eb273803a78862fd34578e49f`; contrato de cierre SHA-256 `a5c4710a0b5ef0426d5980cbadf4790a420620bb75fd2ab3b94765724f4547ce`. La verificación incremental de los commits de esta delta sigue pendiente. **T-02 permanece PARTIAL** hasta esa verificación y la aceptación expresa del propietario. No se declara implementación, pruebas, CI ni cierre de M0.
