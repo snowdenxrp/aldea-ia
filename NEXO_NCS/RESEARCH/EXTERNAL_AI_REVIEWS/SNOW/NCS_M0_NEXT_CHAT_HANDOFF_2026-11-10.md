@@ -4,7 +4,7 @@
 
 ## Delta de decisión del propietario — 2026-11-12
 
-**A-08 RATIFICADA, opción A:** mantener R1 y definir el claim M0 como restringido, con exclusiones explícitas; I-1–I-7 quedan contenidos por política dentro del alcance declarado. No se autoriza cambio de modelo (opción B). Esto no realiza el ancla externa D-RB-04 A ni levanta D-RB-01: RB-1–RB-4 siguen prohibidos y rollback conocido/sospechado → STOP/UNKNOWN. No autoriza MED/SUP, implementación, pruebas, CI, dispositivo ni efectos protegidos. En T-03 solo permanecen las decisiones restantes: forma/encaje del ancla, P07-A, A-01 y A-04/A-07 si aplican.
+**A-08 RATIFICADA, opción A:** mantener R1 y definir el claim M0 como restringido, con exclusiones explícitas; I-1–I-7 quedan contenidos por política dentro del alcance declarado. No se autoriza cambio de modelo (opción B). Esto no realiza el ancla externa D-RB-04 A ni levanta D-RB-01: RB-1–RB-4 siguen prohibidos y rollback conocido/sospechado → STOP/UNKNOWN. En ese momento A-08 no seleccionó MED/SUP; la selección conceptual posterior quedó ratificada por A-01 (véase delta específico inferior). No autoriza implementación, pruebas, CI, dispositivo ni efectos protegidos. En T-03 solo permanecen la forma/encaje del ancla D-RB-04 A y A-04/A-07 si aplican; A-06/P07-A y A-01 ya están ratificadas.
 
 **Control de snapshot:** el entregable Claude `NCS_M0_T02_EXTERNAL_MONOTONIC_ANCHOR_OPTIONS_2026-11-12.md` permanece intacto como propuesta congelada. Su §6 conserva el estado «A-08 PENDIENTE» vigente al elaborarse; esa frase queda supersedida por la ratificación anterior y no debe motivar una nueva auditoría ni la reescritura del entregable. Prevalece el registro de decisión del propietario.
 
