@@ -21,7 +21,7 @@
 
 ### Delta de continuidad 2026-11-12
 
-T-01/B-DOC-1: PARTIAL. P08/P09 registradas en STATUS; P01-B=C preexistente referenciada; DISC-08A/B no localizados. Próxima acción documental limitada: localizar una fuente exacta para DISC-08A/B. Si no aparece nueva fuente, no repetir la búsqueda ya documentada en el contrato §3.1. T-02 y T-12 continúan según su estado independiente.
+T-01/B-DOC-1: PARTIAL. P08/P09 registradas en `NEXO_NCS/STATUS.md` blob `5681e9677d8c3a23ef78bfdaabba95c844975952`; P01-B=C preexistente en `NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md` blob `53691bce19edc20c6a3acb6dd99aca4d6d58e33a`, §10.6; DISC-08A/B no localizados. Próxima acción documental limitada: localizar una fuente exacta para DISC-08A/B. Si no aparece nueva fuente, no repetir la búsqueda ya documentada en el contrato §3.1. T-02 y T-12 continúan según su estado independiente.
 
 Actualización 2026-11-12: **T-01/B-DOC-1 PARTIAL**. P08/P09 ya están registrados en la delta superior de `NEXO_NCS/STATUS.md`; P01-B=C ya consta en el decision register §10.6. No volver a pedir ni re-registrar esos puntos. El único residuo de T-01 es localizar la fuente exacta de DISC-08A/B; siguen UNKNOWN y no se presume inexistencia. En paralelo: T-02 (corrigendum ACA-1 + especificaciones P07-A/REC + propuesta de ancla) y T-12 (subir delta P09 `6e59e0e6…` + este paquete; Snow verifica hashes tras la subida). Después: T-03 decisiones → T-04 fingerprint/A-03 (autorizada) → T-05/T-06/T-07 implementación → T-08 harness → T-09 CI SHA congelado → T-10 ventana E2/E3 → T-11 acta.
 
