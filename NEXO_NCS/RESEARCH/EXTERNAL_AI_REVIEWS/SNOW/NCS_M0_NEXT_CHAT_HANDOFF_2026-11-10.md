@@ -6,6 +6,8 @@
 
 **A-08 RATIFICADA, opción A:** mantener R1 y definir el claim M0 como restringido, con exclusiones explícitas; I-1–I-7 quedan contenidos por política dentro del alcance declarado. No se autoriza cambio de modelo (opción B). Esto no realiza el ancla externa D-RB-04 A ni levanta D-RB-01: RB-1–RB-4 siguen prohibidos y rollback conocido/sospechado → STOP/UNKNOWN. No autoriza MED/SUP, implementación, pruebas, CI, dispositivo ni efectos protegidos. En T-03 solo permanecen las decisiones restantes: forma/encaje del ancla, P07-A, A-01 y A-04/A-07 si aplican.
 
+**Control de snapshot:** el entregable Claude `NCS_M0_T02_EXTERNAL_MONOTONIC_ANCHOR_OPTIONS_2026-11-12.md` permanece intacto como propuesta congelada. Su §6 conserva el estado «A-08 PENDIENTE» vigente al elaborarse; esa frase queda supersedida por la ratificación anterior y no debe motivar una nueva auditoría ni la reescritura del entregable. Prevalece el registro de decisión del propietario.
+
 ## 1. Punto de entrada (en este orden)
 
 1. `NEXO_NCS/STATUS.md` canónico — rama `ncs-continuity-handoff-correction-2026-11-07` @ `53c1524b858e069c9af181d8e0b8715ddd94dd9b`, blob `5ec8f7a656978b034561a4fc8faa570441073fff`. **No** usar el STATUS de la rama de investigación (es STEP 7 histórico).
