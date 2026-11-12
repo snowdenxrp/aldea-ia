@@ -13,13 +13,17 @@
 ## 2. Estado verificado (2026-11-10 23:36 CST)
 
 - Repo `snowdenxrp/aldea-ia`; investigación @ `6283f6643cbbf67054e14a4f93006d512edafe75`; canónicos @ `eee2ae77…`; código auditado `d8b5ca8720908d926acc18130614cce132a43b5d` (rama `ncs-lumina-decoupling-2026-10-29`).
-- Gates: P05 OPEN; P07-C UNKNOWN/BLOCKING; P08 OPEN/LAYOUT UNSELECTED (decidida 9-Nov sin referenciar); P09 OPEN/UNKNOWN (universo 9-Nov sin referenciar); E2/E3 PARTIAL/NOT CLOSED; E4 NOT READY para cierre; `authorization: NOT_EVALUATED`; raíz PENDING/UNKNOWN; commissioning/efectos STOP; **M0 INCOMPLETO**. Veredicto de ruta: `M0 CLOSURE PATH PARTIAL`.
+- Gates: P05 OPEN; P07-C UNKNOWN/BLOCKING; P08 DECIDED/documentada (09-Nov) / IMPLEMENTATION PENDING; P09 SCOPE DECIDED/documentado (09-Nov) / COVERAGE OPEN-UNKNOWN; E2/E3 PARTIAL/NOT CLOSED; E4 NOT READY para cierre; `authorization: NOT_EVALUATED`; raíz PENDING/UNKNOWN; commissioning/efectos STOP; **M0 INCOMPLETO**. Veredicto de ruta: `M0 CLOSURE PATH PARTIAL`.
 - CI verificado por API pública en esta auditoría: `7a7f3ffa…` 5 runs success; `d8b5ca87…` 1 run (decoupling/focused-regression); `5988d9b4…` 3 runs (corrige handoff 01-11); run PR#110 40972888688 = `572fe085…` (no es el snapshot).
 - No repetir: falsación CE, especificación de rollback, reconciliación D-RB, ACA-1, compatibilidad, delta P09 (63 módulos), censo 188, guard Lúmina, P08/P09 07-11, seams P03/P04, lectura estática de locks del snapshot `d8b5ca87`, Qwen/Gemini. Reabrir solo con SHA/seam nuevo o contradicción concreta.
 
 ## 3. Tareas pendientes (orden del plan T-01…T-12)
 
-Primera acción recomendada: **T-01** — referenciar el contenido exacto de P08/P09/P01-B=C (y constancia DISC-08A/B) en un registro localizable, sin pedir re-ratificación. En paralelo: T-02 (corrigendum ACA-1 + especificaciones P07-A/REC + propuesta de ancla) y T-12 (subir delta P09 `6e59e0e6…` + este paquete; Snow verifica hashes tras la subida). Después: T-03 decisiones → T-04 fingerprint/A-03 (autorizada) → T-05/T-06/T-07 implementación → T-08 harness → T-09 CI SHA congelado → T-10 ventana E2/E3 → T-11 acta.
+### Delta de continuidad 2026-11-12
+
+T-01/B-DOC-1: PARTIAL. P08/P09 registradas en STATUS; P01-B=C preexistente referenciada; DISC-08A/B no localizados. Próxima acción documental limitada: localizar una fuente exacta para DISC-08A/B. Si no aparece nueva fuente, no repetir la búsqueda ya documentada en el contrato §3.1. T-02 y T-12 continúan según su estado independiente.
+
+Actualización 2026-11-12: **T-01/B-DOC-1 PARTIAL**. P08/P09 ya están registrados en la delta superior de `NEXO_NCS/STATUS.md`; P01-B=C ya consta en el decision register §10.6. No volver a pedir ni re-registrar esos puntos. El único residuo de T-01 es localizar la fuente exacta de DISC-08A/B; siguen UNKNOWN y no se presume inexistencia. En paralelo: T-02 (corrigendum ACA-1 + especificaciones P07-A/REC + propuesta de ancla) y T-12 (subir delta P09 `6e59e0e6…` + este paquete; Snow verifica hashes tras la subida). Después: T-03 decisiones → T-04 fingerprint/A-03 (autorizada) → T-05/T-06/T-07 implementación → T-08 harness → T-09 CI SHA congelado → T-10 ventana E2/E3 → T-11 acta.
 
 ## 4. Archivos de este paquete (locales, pendientes de subida)
 
