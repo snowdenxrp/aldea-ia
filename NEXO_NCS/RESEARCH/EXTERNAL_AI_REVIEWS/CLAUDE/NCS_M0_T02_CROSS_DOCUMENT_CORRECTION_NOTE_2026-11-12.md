@@ -67,7 +67,7 @@ No insertar esta aclaración salvo que el propietario o el responsable documenta
 En la rama de esta nota, `ncs-m0-architecture-research-2026-11-10`:
 - `NEXO_NCS/STATUS.md` tiene blob `7b0eacd6395c34b9d16d316a5a9b704de211e5dc`.
 - Ese contenido no contiene las entradas P08, P09 ni DISC-08.
-- HEAD comprobado por la revisión de Claude: `6228d61fe8bc7d0db52d7be984d4ff67f6af0d4c`.
+- HEAD base observado por Claude antes de publicar esta nota: `6228d61fe8bc7d0db52d7be984d4ff67f6af0d4c` (padre del commit que publicó la nota); no es el HEAD actual de la rama.
 
 En la rama `ncs-continuity-handoff-correction-2026-11-07`:
 - `NEXO_NCS/STATUS.md` tiene blob `5ec8f7a656978b034561a4fc8faa570441073fff`.
@@ -84,7 +84,7 @@ La revisión de Claude verificó que ese commit no es ancestro de la rama de inv
 
 Sustituir la afirmación de que P08/P09 están «registrados en STATUS» sin indicar rama por:
 
-> **B-DOC-1 — PARTIAL:** P08/P09 están registrados en el STATUS de la rama documental `ncs-continuity-handoff-correction-2026-11-07` (commit `53c1524b858e069c9af181d8e0b8715ddd94dd9b`, blob `5ec8f7a656978b034561a4fc8faa570441073fff`); no están incorporados al STATUS de esta rama. P01-B=C consta en el decision register §10.6. DISC-08A/B sigue NO LOCALIZADO. G-4/G-5 no quedan cerrados técnicamente.
+> **B-DOC-1 — PARTIAL:** P08/P09 son legibles mediante referencia explícita al STATUS de la rama `ncs-continuity-handoff-correction-2026-11-07` (commit `53c1524b858e069c9af181d8e0b8715ddd94dd9b`, blob `5ec8f7a656978b034561a4fc8faa570441073fff`); no están incorporados al STATUS de esta rama. Esta separación no exige merge ni copia para satisfacer la trazabilidad de procedencia. P01-B = C significa «no seleccionar todavía»: no ratifica A ni B; B2/P01-B sigue sin PASS, P-01 OPEN/UNKNOWN y primera creación STOP (decision register §10.6). DISC-08A/B sigue NO LOCALIZADO y es el residuo que mantiene T-01 PARTIAL. G-4/G-5 no quedan cerrados técnicamente.
 
 En la columna de evidencia, conservar ambos registros con su rama explícita:
 - STATUS de la rama `ncs-continuity-handoff-correction-2026-11-07`: blob `5ec8f7a656978b034561a4fc8faa570441073fff`.
@@ -106,3 +106,16 @@ Tras aplicar y verificar estas propuestas en los documentos destinatarios:
 - M0 permanece INCOMPLETO. No se declara ningún gate PASS, TESTED, IMPLEMENTED ni CI-VERIFIED.
 
 **Esta nota no aplica las correcciones a los originales.** Su única función es proporcionar el texto preciso y la trazabilidad para una aplicación documental posterior, preservando los entregables originales.
+
+
+## 7. Enmienda de aplicación documental — 2026-11-12
+
+La autorización posterior del propietario permite aplicar esta delta a los documentos destinatarios. Esta enmienda prevalece sobre las frases de §5/§6 que describían la aplicación como futura o prohibida en el alcance inicial de creación de la nota.
+
+- El HEAD `6228d61fe8bc7d0db52d7be984d4ff67f6af0d4c` citado en §5.1 es el HEAD base observado por Claude antes de publicar la nota, no el HEAD actual.
+- P01-B = C significa exclusivamente «no seleccionar todavía»; no ratifica A ni B, no produce PASS, P-01 sigue OPEN/UNKNOWN y la primera creación sigue STOP.
+- P08/P09 conservan trazabilidad mediante referencia interrama explícita. No se exige merge, cherry-pick ni copia del STATUS para satisfacer la procedencia documental. T-01 permanece PARTIAL por DISC-08A/B NO LOCALIZADO, no por la mera separación entre ramas.
+- La fila T-02 del plan también se corrige: T-01 sigue PARTIAL por DISC, P08/P09 se citan con su rama de origen y T-02 queda PARTIAL hasta revisión cruzada posterior.
+- Las correcciones se aplicaron a REC V4, ancla §6, README CLAUDE y filas T-01/T-02 del plan. P07-A no se modificó porque no se identificó corrección obligatoria.
+
+No se modificaron código, runtime, tests, workflows, CI, dispositivo/Termux, PR ni decisiones ratificadas. No se declara T-02 COMPLETE ni M0 completo.
