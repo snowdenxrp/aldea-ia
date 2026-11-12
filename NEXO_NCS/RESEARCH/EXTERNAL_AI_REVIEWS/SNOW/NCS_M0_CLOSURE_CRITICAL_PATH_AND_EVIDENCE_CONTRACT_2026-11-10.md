@@ -1,3 +1,21 @@
+## DELTA DE TRAZABILIDAD — P08/P09 REGISTRADAS (2026-11-12)
+
+**Prevalencia:** esta delta actualiza las clasificaciones de §1, §3, §4 y §7 únicamente para P08/P09 y T-01. No reescribe el estado histórico que existía al 2026-11-10.
+
+- Fuente primaria de las decisiones: handoff maestro NCS fechado 2026-11-10 y suministrado por el propietario en esta conversación el 2026-11-12; fecha de ratificación indicada: 2026-11-09.
+- **P08 — DECIDED/documentada:** una root canónica deriva `<root>/.nexo-continuity.json` y `<root>/.nexo-chronicle.json`; sin paths independientes ni fallback ambiental en operación normal; Chronicle init es operación separada con admisión y autorización de destino propias; append no inicializa Chronicle; init y append no comparten invocación. El registro vigente está en `NEXO_NCS/STATUS.md` (delta «RATIFICACIONES P08/P09 DEL PROPIETARIO»). La reconciliación técnica 07-11 sigue demostrando el gap del snapshot, no contradice la decisión.
+- **P09 — SCOPE DECIDED/documentado; COVERAGE OPEN/UNKNOWN:** universo acotado = repositorio/package, entrypoints, procesos hijos, workflows y launchers declarados. Loaders dinámicos y consumidores externos no identificados siguen UNKNOWN. No hay afirmación de cobertura universal.
+- **P01-B=C:** ya estaba documentada en `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`, §10.6; se referencia, no se duplica.
+- **DISC-08A/B:** siguen NO LOCALIZADOS en la búsqueda documentada de §3.1. No se afirma inexistencia ni se reconstruye su contenido.
+- **T-01/B-DOC-1: PARTIAL.** P08/P09 están registrados y P01-B=C tiene referencia existente; la constancia DISC-08A/B sigue pendiente. Por tanto no se declara T-01 completo ni G-4/G-5 cerrados.
+- **G-4 P08:** DECIDED / IMPLEMENTATION PENDING; resolver común y separación init/append siguen sin implementar/probar.
+- **G-5 P09:** SCOPE DECIDED / COVERAGE OPEN-UNKNOWN; clasificación técnica, APIs path-based, fixtures y consumidores siguen como en la evidencia técnica existente.
+- **B-DOC-4:** parcialmente avanzado solo para P08/P09. No se cierra el registro de P07 V2.3 ni de D-RB-01…09 por esta delta.
+- Estados que no cambian: P05 OPEN; P07-C UNKNOWN/BLOCKING; E2/E3 PARTIAL; E4 según su evidencia; target SHA de cierre UNKNOWN; `authorization: NOT_EVALUATED`; ROOT_READY no establecido; commissioning/efectos protegidos STOP; M0 INCOMPLETO.
+- Solo documentación. No implementación, tests, CI, workflows, Termux/POCO, bootstrap, stores, PR ni efectos.
+
+---
+
 # NCS M0 — Ruta crítica de cierre y contrato de evidencia
 
 **Tipo:** integración documental y análisis técnico independiente (solo lectura).
