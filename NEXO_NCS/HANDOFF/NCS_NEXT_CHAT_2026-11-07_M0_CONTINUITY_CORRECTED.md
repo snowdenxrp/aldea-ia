@@ -77,7 +77,7 @@ No rehacer Qwen/D4/D5, desacoplamiento Lúmina, inventario Termux histórico, re
 
 ### 4.3 Ratificaciones P08/P09 del propietario (2026-11-09)
 
-El contenido exacto quedó registrado en [STATUS.md](../STATUS.md), blob `5681e9677d8c3a23ef78bfdaabba95c844975952`, bajo «RATIFICACIONES P08/P09 DEL PROPIETARIO». No volver a pedir estas decisiones:
+El contenido exacto quedó registrado en [STATUS.md](../STATUS.md), blob `5ec8f7a656978b034561a4fc8faa570441073fff`, bajo «RATIFICACIONES P08/P09 DEL PROPIETARIO». No volver a pedir estas decisiones:
 - P08: root canónica y mapping Continuity/Chronicle, con init separado de append.
 - P09: universo acotado declarado; loaders dinámicos y consumidores externos no identificados permanecen UNKNOWN.
 - P01-B=C ya está en `BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`, blob `53691bce19edc20c6a3acb6dd99aca4d6d58e33a`, §10.6; no seleccionar launcher por inferencia.
