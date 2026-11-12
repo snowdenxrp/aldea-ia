@@ -1,3 +1,33 @@
+## DELTA PRIORITARIA — RATIFICACIONES P08/P09 DEL PROPIETARIO (2026-11-09; REGISTRADAS 2026-11-12)
+
+**Fuente de procedencia:** handoff maestro NCS fechado 2026-11-10, suministrado por el propietario en esta conversación el 2026-11-12. La fecha de decisión consignada es 2026-11-09. Esta entrada transcribe el contenido declarado; no inventa SHA-256 para el handoff conversacional.
+
+### P08 — mapping root→stores
+
+- **DECIDED — RATIFICADA POR EL PROPIETARIO (2026-11-09).**
+- Una única root canónica deriva los destinos normales: `<root>/.nexo-continuity.json` y `<root>/.nexo-chronicle.json`.
+- En operación normal no se aceptan rutas independientes para esos stores ni fallback ambiental.
+- La inicialización de Chronicle es una operación separada, con su propia admisión y autorización del destino.
+- Append no inicializa Chronicle. Inicialización y append no comparten una misma invocación.
+- **No implica implementación:** el resolver común, la admisión y la separación efectiva init/append siguen pendientes de implementación y pruebas. La reconciliación técnica P08 del 2026-11-07 continúa siendo evidencia del gap del snapshot, no una decisión vigente sobre el layout.
+
+### P09 — universo declarado de callers
+
+- **DECIDED — ALCANCE RATIFICADO POR EL PROPIETARIO (2026-11-09).**
+- Universo declarado y acotado: repositorio/package, entrypoints, procesos hijos, workflows y launchers declarados.
+- Loaders dinámicos y consumidores externos no identificados permanecen **UNKNOWN**; no se afirma cobertura universal ni ausencia de consumidores fuera del universo declarado.
+- **No implica cierre técnico:** P09 permanece OPEN/UNKNOWN para la cobertura efectiva dentro del universo hasta que las aristas y superficies pendientes se clasifiquen y prueben.
+
+### Referencia cruzada y límites
+
+- P01-B=C ya consta en el registro existente `NEXO_NCS/BUILD/NCS_M0_D0_D1_D2_D3_DECISION_REGISTER_2026-10-24.md`, §10.6; no se duplica ni se selecciona launcher.
+- DISC-08A/B: **NO LOCALIZADOS** en la búsqueda documental citada por el contrato de cierre §3.1. Esto no demuestra inexistencia. No se inventa su contenido.
+- T-01/B-DOC-1 queda **PARTIAL**: P08/P09 ya tienen contenido registrable y P01-B=C está referenciado; falta resolver la constancia DISC-08A/B con una fuente exacta.
+- Esta ratificación no cierra G-4/G-5, no declara P08/P09 IMPLEMENTED/TESTED/CI-VERIFIED, no altera P05/P07/E2/E3 y no modifica `authorization: NOT_EVALUATED`, ROOT_READY, commissioning ni efectos protegidos STOP.
+- Sin cambios de código, tests, workflows, CI, ramas de producto, Termux/POCO, stores o PR.
+
+---
+
 ## PROTOCOLO OBLIGATORIO DE CONTINUIDAD — NO REPETICIÓN
 
 Antes de cualquier investigación, auditoría, edición o propuesta, seguir [OPERATIONS/NON_REPETITION_PROTOCOL.md](OPERATIONS/NON_REPETITION_PROTOCOL.md). La secuencia de recuperación está en [NEXO_NCS/README.md](README.md) y el handoff vigente. Un asunto conocido solo se reabre con evidencia nueva verificable; cambiar de chat o de IA no constituye evidencia. No crear otro informe para una causa ya registrada: actualizar el artefacto canónico y continuar desde el siguiente gap abierto.
