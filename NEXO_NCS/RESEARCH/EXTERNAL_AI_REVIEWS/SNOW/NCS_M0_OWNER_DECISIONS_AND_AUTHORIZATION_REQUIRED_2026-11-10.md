@@ -2,11 +2,14 @@
 
 **Fecha:** 2026-11-10. **Regla:** aquí solo aparecen decisiones **no tomadas** o autorizaciones **no concedidas**. Nada de lo ya ratificado se pide de nuevo.
 
+## Delta de decisión del propietario — 2026-11-12
+
+**D-A08 — RATIFICADA, opción A.** El propietario autoriza mantener R1 y aceptar un claim de cierre M0 restringido, con exclusiones explícitas; las garantías imposibles I-1–I-7 se contienen por política dentro del alcance declarado. Se rechaza cualquier cambio implícito de modelo (opción B). Esta decisión no autoriza MED/SUP, no selecciona ni realiza el ancla externa monotónica D-RB-04 A, no levanta la moratoria D-RB-01 (RB-1–RB-4 continúan prohibidos y cualquier rollback conocido o sospechado implica STOP/UNKNOWN), no autoriza implementación, pruebas, CI, operaciones de dispositivo ni efectos protegidos. D-RB-04 A sigue siendo requisito ratificado cuya forma y realización permanecen pendientes. La decisión A-08 no convierte ningún gate en PASS ni declara T-02/T-03/M0 completos.
+
 ## 1. Decisiones del propietario pendientes (sin solicitarlas en este documento)
 
 | ID | Decisión | Estado hoy | Qué desbloquea | Cuándo se presentará |
 |---|---|---|---|---|
-| D-A08 | Alcance del claim de cierre: contención por política con exclusiones explícitas **o** cambio de modelo (fuera de R1) | PENDIENTE (ACA-1 §8 propuesta; Qwen B = cambio de R1) | Criterio de éxito de G-2/G-3; viabilidad de la ruta | En T-03, con propuesta T-02 (opciones + consecuencias) |
 | D-ANCLA | Forma del ancla monotónica externa (D-RB-04 A) + encaje en R1; canal/formato/custodio del registro (D-RB-09 A) | Requisito DECIDED; **forma PENDIENTE** | Enforcement single-use bajo restore; fin verificable de la moratoria | En T-03, con propuesta T-02 |
 | D-P07A | Criterio de identidad P07-A (mismo objeto, política de aliases) + procedimiento de re-identificación | PENDIENTE (sin decidir en canónicos) | O3/O5, P07-16/P07-21, readmisión (E8) | En T-03, con especificación T-02 |
 | D-A01 | Arquitectura de mediación/supervisión aceptada (MED+SUP de ACA-1 u otra) | PENDIENTE (PROPUESTA) | Implementación G-1/G-2/G-3 | En T-03 |
