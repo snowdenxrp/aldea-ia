@@ -4,7 +4,7 @@
 
 ## 1. Punto de entrada (en este orden)
 
-1. `NEXO_NCS/STATUS.md` canónico — rama `ncs-continuity-handoff-correction-2026-11-07` @ `eee2ae772e5569ffbc90d6334f47c6633f4961fb`, blob `5ec8f7a656978b034561a4fc8faa570441073fff`. **No** usar el STATUS de la rama de investigación (es STEP 7 histórico).
+1. `NEXO_NCS/STATUS.md` canónico — rama `ncs-continuity-handoff-correction-2026-11-07` @ `53c1524b858e069c9af181d8e0b8715ddd94dd9b`, blob `5ec8f7a656978b034561a4fc8faa570441073fff`. **No** usar el STATUS de la rama de investigación (es STEP 7 histórico).
 2. `NEXO_NCS/MASTER/README.md` + directiva estratégica; `NEXO_NCS/CORE/README.md`.
 3. Handoff canónico `NEXO_NCS/HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md` (§5 gates literales, §6 orden).
 4. Contrato de cierre (rama de investigación `ncs-m0-architecture-research-2026-11-10`; base de publicación del paquete `56ab233bc628a27088640efe3e4869f0bf013abb`, contenido original `40f50d1d…`) + addendum §15.
