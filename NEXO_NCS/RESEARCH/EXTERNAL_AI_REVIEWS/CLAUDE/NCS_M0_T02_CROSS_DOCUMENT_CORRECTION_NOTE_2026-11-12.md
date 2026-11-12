@@ -110,7 +110,7 @@ Tras aplicar y verificar estas propuestas en los documentos destinatarios:
 
 ## 7. Enmienda de aplicación documental — 2026-11-12
 
-La autorización posterior del propietario permite aplicar esta delta a los documentos destinatarios. Esta enmienda prevalece sobre las frases de §5/§6 que describían la aplicación como futura o prohibida en el alcance inicial de creación de la nota.
+**Autorización del propietario:** el 2026-11-12, en esta conversación, el propietario respondió «Muy bien continúa sin límites» después de recibir la propuesta de aplicación documental de la delta. Se interpretó como autorización para aplicar las correcciones documentales descritas en esta nota a sus cinco archivos destinatarios, exclusivamente. Esta trazabilidad registra el origen conversacional de la autorización; no es una nueva decisión arquitectónica ni autoriza código, pruebas, CI, runtime, dispositivo, PR, merge o efectos protegidos. Esta enmienda prevalece sobre las frases de §5/§6 que describían la aplicación como futura o prohibida en el alcance inicial de creación de la nota.
 
 - El HEAD `6228d61fe8bc7d0db52d7be984d4ff67f6af0d4c` citado en §5.1 es el HEAD base observado por Claude antes de publicar la nota, no el HEAD actual.
 - P01-B = C significa exclusivamente «no seleccionar todavía»; no ratifica A ni B, no produce PASS, P-01 sigue OPEN/UNKNOWN y la primera creación sigue STOP.
