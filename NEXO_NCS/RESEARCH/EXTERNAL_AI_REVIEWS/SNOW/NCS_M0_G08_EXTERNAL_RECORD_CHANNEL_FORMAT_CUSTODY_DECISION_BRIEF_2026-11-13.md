@@ -86,6 +86,13 @@ Evaluar primero la **Opción A**: registro remoto privado dedicado, un Markdown 
 
 Esta recomendación no selecciona ni crea un repositorio, no define credenciales, no configura protección de ramas y no afirma que GitHub sea inmutable. Esos detalles deben quedar identificados y comprobados antes de cerrar G-08.
 
+
+## 6A. Restricción de confidencialidad del repositorio actual
+
+La consulta de metadatos de GitHub del 2026-11-13 confirma que `snowdenxrp/aldea-ia` tiene visibilidad **PUBLIC**. Por tanto, no debe utilizarse como canal de atestaciones personales ni como repositorio de incidentes con datos sensibles, salvo que el propietario decida expresamente que el contenido puede ser público y se haya minimizado/sanitizado.
+
+La Opción A recomendada debe interpretarse como **un repositorio remoto privado dedicado**, no como publicación de atestaciones en el repositorio público actual. No se ha creado ese repositorio ni se ha seleccionado su nombre, configuración o permisos. Su creación y configuración requieren decisión/autorización expresa del propietario.
+
 ## 7. Condiciones objetivas para cerrar G-08 documentalmente
 
 G-08 solo puede pasar de UNKNOWN a DECIDED cuando el propietario ratifique explícitamente:
