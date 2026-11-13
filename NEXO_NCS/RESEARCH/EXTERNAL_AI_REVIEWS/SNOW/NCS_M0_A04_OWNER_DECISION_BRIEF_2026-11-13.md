@@ -48,7 +48,7 @@ Por tanto:
 **RATIFICADA: opción A, con los límites de §3.** El propietario confirmó expresamente la ratificación el 2026-11-13. Esta disposición cierra únicamente la decisión A-04. G-08 permanece UNKNOWN y REC/readmisión operativa continúa bloqueado hasta resolver G-08 y todos los demás predicados aplicables. No hay autorización de operación, implementación, pruebas, CI, dispositivo, commissioning, rollback ni efectos protegidos.
 
 Hasta que el propietario decida:
-- A-04 permanece **UNKNOWN / PENDING OWNER DECISION**.
+- A-04 opción A está **RATIFICADA por el propietario (2026-11-13)**; G-08 y los demás predicados REC permanecen pendientes.
 - P-R1.6 y la ruta de REC que depende de él no pueden declararse satisfechos.
 - P07-A permanece ratificada como criterio, pero no se interpreta como autorización para readmisión ni operación.
 - G-08 permanece UNKNOWN.
