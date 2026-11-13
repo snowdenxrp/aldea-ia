@@ -122,3 +122,25 @@ La verificación del canal no prueba que cada registro futuro sea verdadero, com
 - M0: INCOMPLETO.
 
 **Ninguna opción de este documento autoriza operaciones protegidas.**
+
+
+## 9. Decisión del propietario — G-08 opción A (2026-11-13)
+
+**DECIDED — RATIFICADA por el propietario.** Se selecciona:
+- **Canal:** repositorio GitHub remoto, privado y dedicado, separado de `snowdenxrp/aldea-ia` (PUBLIC), del checkout y del HOME restaurable.
+- **Formato:** un archivo Markdown estructurado por incidente, con el esquema mínimo de §5 como base documental.
+- **Custodio:** propietario de Nexo, responsable de crear, conservar y revisar los registros.
+
+La ratificación selecciona el patrón, no un repositorio ya existente. **G-08 permanece OPEN / NOT VERIFIED** hasta que se identifique y cree el repositorio concreto, se confirme su visibilidad PRIVATE, se revisen sus colaboradores/permisos y se documente su separación del dominio restaurable. No se afirma inmutabilidad, monotonía, timestamp confiable ni satisfacción de D-RB-04 A.
+
+**Pendientes de materialización:** nombre/URL del repositorio; creación; visibilidad privada; lista de colaboradores y permisos mínimos; rama predeterminada y protección/retención si se adoptan; plantilla inicial; evidencia de acceso/custodia y de separación. No se han creado credenciales ni se ha cambiado ningún repositorio. La integración GitHub disponible en esta sesión no expone una operación de creación de repositorios; por tanto, no se declara creado.
+
+**Límite:** esta decisión no constituye una atestación de incidente, no habilita REC/readmisión, rollback, implementación, pruebas, CI, dispositivo, commissioning ni efectos protegidos.
+
+## 10. Estado actualizado
+
+- G-08: **DECIDED — opción A RATIFICADA; MATERIALIZATION/VERIFICATION PENDING**.
+- D-RB-09 A: RATIFICADA; canal/formato/custodia seleccionados a nivel de patrón, instancia concreta pendiente.
+- D-RB-04 A: RATIFICADA, NO SATISFECHA.
+- REC/readmisión operativa: BLOQUEADO.
+- P05: OPEN; P07-C: UNKNOWN/BLOCKING; M0: INCOMPLETO.
