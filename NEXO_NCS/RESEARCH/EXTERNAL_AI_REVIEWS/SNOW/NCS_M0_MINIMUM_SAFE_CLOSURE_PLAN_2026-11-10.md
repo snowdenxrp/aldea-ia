@@ -68,3 +68,8 @@ Se añadieron dos entregables de reconciliación en esta misma rama:
 - P05: OPEN; P07-C: UNKNOWN/BLOCKING; M0: INCOMPLETO.
 
 Esta actualización es documental. No cierra G-08, no cambia gates técnicos, no autoriza T-04…T-10, REC, rollback, implementación, pruebas, CI, dispositivo, commissioning ni efectos protegidos.
+
+
+### Hallazgo de confidencialidad para G-08 — 2026-11-13
+
+Los metadatos de GitHub confirman que `snowdenxrp/aldea-ia` es PUBLIC. No debe utilizarse para atestaciones personales ni detalles sensibles de incidentes. La alternativa documental recomendada en el brief G-08 queda acotada a un repositorio remoto **privado y dedicado**, todavía no creado ni configurado. Su creación requiere autorización expresa del propietario. Este hallazgo no cambia G-08: UNKNOWN.
