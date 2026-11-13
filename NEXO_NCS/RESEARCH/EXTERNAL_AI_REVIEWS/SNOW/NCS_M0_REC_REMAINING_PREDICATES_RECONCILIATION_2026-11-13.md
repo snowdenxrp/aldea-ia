@@ -73,3 +73,17 @@ Estos subpredicados impiden declarar P-R1.3/P-R1.8 satisfechos. No se deben rell
 - M0: INCOMPLETO.
 
 **Esta matriz no autoriza ni ejecuta REC y no altera ningún estado operativo.**
+
+
+## 7. Delta de decisión G-08 — 2026-11-13
+
+El propietario ratificó la Opción A: repositorio remoto GitHub privado y dedicado; un Markdown estructurado por incidente; custodia del propietario. Por tanto, la decisión de patrón ya no está pendiente. **La instancia concreta del canal no existe aún/no está verificada**, por lo que P-R1.6 no queda satisfecho: falta materializar y verificar el repositorio, y cada incidente futuro requerirá su propia atestación externa específica y referencia QRT.
+
+Estado actualizado:
+- G-08: DECIDED (Opción A ratificada); materialización y verificación pendientes.
+- P-R1.6: requisito de atestación decidido; satisfacción por incidente pendiente; no PASS.
+- D-RB-09 A: RATIFICADA; registro externo obligatorio.
+- D-RB-04 A: RATIFICADA, NO SATISFECHA; el registro no es ancla monotónica.
+- REC/readmisión: BLOQUEADO; P05 OPEN; P07-C UNKNOWN/BLOCKING; M0 INCOMPLETO.
+
+No se crea ni configura un repositorio en esta actualización documental. La integración GitHub disponible no expone creación de repositorios. No se autoriza REC, readmisión, rollback, implementación, pruebas, CI, dispositivo, commissioning ni efectos protegidos.
