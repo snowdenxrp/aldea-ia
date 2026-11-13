@@ -73,3 +73,17 @@ Esta actualización es documental. No cierra G-08, no cambia gates técnicos, no
 ### Hallazgo de confidencialidad para G-08 — 2026-11-13
 
 Los metadatos de GitHub confirman que `snowdenxrp/aldea-ia` es PUBLIC. No debe utilizarse para atestaciones personales ni detalles sensibles de incidentes. La alternativa documental recomendada en el brief G-08 queda acotada a un repositorio remoto **privado y dedicado**, todavía no creado ni configurado. Su creación requiere autorización expresa del propietario. Este hallazgo no cambia G-08: UNKNOWN.
+
+
+## 5A. Delta de decisión — G-08 opción A ratificada (2026-11-13)
+
+El propietario ratificó expresamente la Opción A del brief G-08:
+- canal: repositorio GitHub remoto **privado y dedicado**;
+- formato: un Markdown estructurado por incidente;
+- custodio: propietario.
+
+Esto reemplaza el estado de «decisión pendiente» sobre el patrón. **No cierra G-08:** el repositorio concreto no está creado ni verificado. `aldea-ia` es PUBLIC y queda excluido para atestaciones personales/datos sensibles. La integración GitHub de esta sesión no ofrece creación de repositorios; no se ha intentado una operación no disponible.
+
+**Siguiente paso documental/administrativo:** crear desde GitHub un repositorio nuevo con visibilidad PRIVATE, bajo la cuenta del propietario, sin colaboradores adicionales salvo decisión expresa; después compartir su URL para verificar metadatos, permisos visibles y añadir una plantilla mínima por incidente. Nombre sugerido (no ratificado): `nexo-drb09-external-register`. La elección del nombre no altera el diseño ratificado.
+
+Estado: G-08 = **DECIDED / MATERIALIZATION PENDING / NOT VERIFIED**. D-RB-09 A sigue obligatorio; D-RB-04 A sigue RATIFICADA/NO SATISFECHA. No se habilita REC, readmisión, rollback, implementación, pruebas, CI, dispositivo ni efectos protegidos.
