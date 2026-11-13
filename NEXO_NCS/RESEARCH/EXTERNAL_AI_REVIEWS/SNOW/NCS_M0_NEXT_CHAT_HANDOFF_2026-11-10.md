@@ -20,7 +20,7 @@
 1. `NEXO_NCS/STATUS.md` canónico — rama `ncs-continuity-handoff-correction-2026-11-07` @ `53c1524b858e069c9af181d8e0b8715ddd94dd9b`, blob `5ec8f7a656978b034561a4fc8faa570441073fff`. **No** usar el STATUS de la rama de investigación (es STEP 7 histórico).
 2. `NEXO_NCS/MASTER/README.md` + directiva estratégica; `NEXO_NCS/CORE/README.md`.
 3. Handoff canónico `NEXO_NCS/HANDOFF/NCS_NEXT_CHAT_2026-11-07_M0_CONTINUITY_CORRECTED.md` (§5 gates literales, §6 orden).
-4. Contrato de cierre `NCS_M0_CLOSURE_CRITICAL_PATH_AND_EVIDENCE_CONTRACT_2026-11-10.md` (rama de investigación; blob Git vigente `f9fa5d77b33eb4642e9e0a14de61bbda4be5974a`; SHA-256 vigente `a5c4710a0b5ef0426d5980cbadf4790a420620bb75fd2ab3b94765724f4547ce`) + addendum §15. El SHA-256 original `40f50d1d…` es histórico y quedó supersedido por la delta T-01 de 2026-11-12. Plan vigente: blob Git `ea04658e516dc52bfcfb3d2ccb04e220f0b3243a` (usar este identificador; no reutilizar el SHA-256 del snapshot anterior).
+4. Contrato de cierre `NCS_M0_CLOSURE_CRITICAL_PATH_AND_EVIDENCE_CONTRACT_2026-11-10.md` (rama de investigación; blob Git vigente `f9fa5d77b33eb4642e9e0a14de61bbda4be5974a`; SHA-256 vigente `a5c4710a0b5ef0426d5980cbadf4790a420620bb75fd2ab3b94765724f4547ce`) + addendum §15. El SHA-256 original `40f50d1d…` es histórico y quedó supersedido por la delta T-01 de 2026-11-12. Plan vigente: blob Git `c10cde5a3cdee9a9fd91c6a2d193b4ea4cfdf04a` (usar este identificador; no reutilizar el SHA-256 del snapshot anterior).
 5. Este paquete adversarial (carpeta SNOW): auditoría, ledger, plan, decisiones y este handoff; los cinco archivos están publicados en la rama de investigación.
 
 ## 2. Estado verificado (2026-11-10 23:36 CST)
