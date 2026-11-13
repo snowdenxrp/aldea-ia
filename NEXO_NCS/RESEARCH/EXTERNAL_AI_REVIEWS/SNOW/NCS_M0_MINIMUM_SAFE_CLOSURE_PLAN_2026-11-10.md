@@ -46,3 +46,25 @@
 ## 4. Optimización aplicada
 
 Se excluyeron deliberadamente: re-censos P09, re-auditorías CE/locks/P08 (cerradas salvo contradicción), cobertura universal P09, harness de escenarios no bloqueantes, y cualquier mejora sin dependencia hacia un gate. Cada tarea restante desbloquea al menos un gate o un oráculo; ninguna es «mejora» libre.
+
+
+## 5. Actualización documental — G-08 y predicados REC (2026-11-13)
+
+Se añadieron dos entregables de reconciliación en esta misma rama:
+
+1. `NCS_M0_G08_EXTERNAL_RECORD_CHANNEL_FORMAT_CUSTODY_DECISION_BRIEF_2026-11-13.md` — presenta alternativas y una recomendación para canal, formato y custodio del registro D-RB-09 A. **No selecciona** canal, formato ni custodio; G-08 permanece UNKNOWN hasta decisión expresa del propietario y verificación del canal.
+2. `NCS_M0_REC_REMAINING_PREDICATES_RECONCILIATION_2026-11-13.md` — reconcilia P-R1.1…P-R1.8 tras A-04 opción A y A-06/P07-A opción A ratificadas; separa regla documental de cumplimiento técnico y conserva Q-1/Q-2/Q-3 como UNKNOWN.
+
+### Delta de estado
+
+- A-04: RATIFICADA, opción A.
+- A-06/P07-A: RATIFICADA, opción A.
+- D-RB-09 A: RATIFICADA.
+- D-RB-04 A: RATIFICADA, NO SATISFECHA.
+- G-08: UNKNOWN; requiere decisión del propietario sobre canal, formato y custodio.
+- P-R1.1…P-R1.8: sin demostración técnica; P-R1.2, P-R1.4, P-R1.5, P-R1.6 y subpredicados Q mantienen dependencias abiertas.
+- E-B/E-C: excluidos de REC; E-D permanece BLOCKED/QRT; solo E-A es candidato a REC.
+- REC/readmisión: BLOQUEADO.
+- P05: OPEN; P07-C: UNKNOWN/BLOCKING; M0: INCOMPLETO.
+
+Esta actualización es documental. No cierra G-08, no cambia gates técnicos, no autoriza T-04…T-10, REC, rollback, implementación, pruebas, CI, dispositivo, commissioning ni efectos protegidos.
