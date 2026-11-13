@@ -1,7 +1,7 @@
-# NCS M0 — Propuesta de decisión del propietario A-04
+# NCS M0 — Decisión del propietario A-04
 
 **Fecha:** 2026-11-13  
-**Estado:** PROPUESTA — NO RATIFICADA  
+**Estado:** RATIFICADA — OPCIÓN A (2026-11-13)  
 **Alcance:** decisión de confianza para REC; no autoriza operación ni implementación.
 
 ## 1. Por qué A-04 vuelve a ser necesaria
@@ -43,9 +43,9 @@ Por tanto:
 - Reabrir A-07 solo si una decisión posterior incorpora el ancla D-RB-04 A o amplía el claim de forma que requiera diseñar ese testigo.
 - No confundir esta clasificación con la selección del canal G-08 para D-RB-09.
 
-## 5. Decisión reservada al propietario
+## 5. Disposición del propietario — 2026-11-13
 
-**Propuesta recomendada:** ratificar A-04, opción A, con los límites de §3, o mantener A-04 sin ratificar y dejar REC/readmisión operativa bloqueada.
+**RATIFICADA: opción A, con los límites de §3.** El propietario confirmó expresamente la ratificación el 2026-11-13. Esta disposición cierra únicamente la decisión A-04. G-08 permanece UNKNOWN y REC/readmisión operativa continúa bloqueado hasta resolver G-08 y todos los demás predicados aplicables. No hay autorización de operación, implementación, pruebas, CI, dispositivo, commissioning, rollback ni efectos protegidos.
 
 Hasta que el propietario decida:
 - A-04 permanece **UNKNOWN / PENDING OWNER DECISION**.
