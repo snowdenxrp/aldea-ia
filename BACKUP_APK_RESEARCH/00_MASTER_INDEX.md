@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.7 --- reconciliación con setState global y normalización de estados\
+**Versión:** 0.8 --- callback completion gap added to restore item state/error reconciliation\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1127,7 +1127,7 @@ Se añadió una nota de evidencia provisional a partir de los bloques y resultad
 
 **Jerarquía probatoria:** estos datos se registran como compartidos/recuperados de conversación, no como LOCAL-VERIFIED. El `error=7` del caller y el `error=1` del helper permanecen diferenciados.
 
-**Reconciliación analítica añadida en evidencia 25:** el caller registra `state=1` tras el helper cuando no detecta aborto, mientras el helper puede haber asignado `error=1` por ausencia del destino final. Si ambos actúan sobre el mismo `BRItem` y no hay limpieza intermedia, es posible `state=1,error=1`; el caller resumido no comprueba `error==0` antes de escribir state 1. La evidencia 15 indica que el adapter cuenta state 1 y 6 como éxito, por lo que existe un **riesgo de inconsistencia en el conteo de UI**, todavía no un bug demostrado: falta cotejar la identidad del objeto y el recorrido completo. La presencia del destino tampoco equivale por sí sola a integridad verificada; las validaciones adicionales del helper permanecen UNKNOWN.
+**Reconciliación analítica añadida en evidencia 25:** el caller registra `state=1` tras el helper cuando no detecta aborto, mientras el helper puede haber asignado `error=1` por ausencia del destino final. Si ambos actúan sobre el mismo `BRItem` y no hay limpieza intermedia, es posible `state=1,error=1`; el caller resumido no comprueba `error==0` antes de escribir state 1. La evidencia 15 indica que el adapter cuenta state 1 y 6 como éxito, por lo que existe un **riesgo de inconsistencia en el conteo de UI**, todavía no un bug demostrado: falta cotejar la identidad del objeto y el recorrido completo. La misma evidencia solo documenta normalización de `state=2` a 1 y fuerza `state=1` cuando `error=0`; no demuestra que `error!=0` repare un `state=1` preexistente, por lo que el callback de finalización no puede asumirse como saneador. La presencia del destino tampoco equivale por sí sola a integridad verificada; las validaciones adicionales del helper permanecen UNKNOWN.
 
 **Reconciliación con finalización global (evidencias 07 y 12):** `setState(IIII)` escribe `BRItem.state=3,error=9` sobre los elementos de `mBRItems` cuando el stage es 10 o 12, o cuando la acción de interrupción es 2. La evidencia 07 sitúa esa llamada antes de `handleTaskFinish`: ruta abortada stage 10, normal stage 11 y errores finales stage 12. Por ello, el `state=9` local puede ser transitorio si el objeto pertenece a `mBRItems`; el supuesto desajuste con `ProgressItemAdapter` se rebaja a estado intermedio posible, con normalización global recuperada y alcance por cotejar. En stage 11 no se activa esa normalización por stage, de modo que el posible par `state=1,error=1` requiere especial atención en la ruta normal. No está demostrado que el adapter reciba el objeto sin otras transformaciones.
 
