@@ -905,3 +905,29 @@ Registro detallado:
 de FakeBackupListenerImp, resolver `p3=2`, cotejar los dos anclajes
 state-6 y extraer el render/bind del adapter. Continúa siendo análisis
 estático y de solo lectura.
+
+
+## 23. Auditoría cruzada de repositorios e historial — 2026-11-19
+
+El inventario conectado de GitHub devolvió cuatro repositorios del owner:
+`aldea-ia`, `manual-supervivencia-nuclear`,
+`nexo-grand-mission-01` y `-nexo-drb09-external-register`.
+Los tres repositorios adicionales ya tenían auditoría de árboles de ramas
+en el registro 04; no contienen rutas de Smali MIUI.
+
+La búsqueda de mensajes de commits a nivel owner para
+`Backup.apk`, `BRService`, `MiAsistService` y `MIUI` devolvió cero.
+Los 3 hits de `Termux` corresponden a commits del repositorio privado
+external-register y solo modifican `G08_NON_OPERATIONAL_EVIDENCE_PLAN.md`.
+Sus parches fueron inspeccionados: documentan Termux targetSdk 28,
+allowBackup=false y el límite de la migración Xiaomi; son contexto
+antecedente, no evidencia de Backup.apk.
+
+Búsquedas de código owner-scoped para nombres/claves de la investigación
+devolvieron cero; no son concluyentes para repositorios privados no
+indexados. La primera página de PRs/issues de aldea-ia no mostró
+investigación MIUI; el endpoint de releases devolvió cero. Gists no
+pudieron auditarse con la superficie disponible y permanecen NOT AUDITED.
+
+Informe:
+[`evidence/2026-11-19/16_CROSS_REPOSITORY_HISTORY_AND_SURFACE_AUDIT.md`](evidence/2026-11-19/16_CROSS_REPOSITORY_HISTORY_AND_SURFACE_AUDIT.md).
