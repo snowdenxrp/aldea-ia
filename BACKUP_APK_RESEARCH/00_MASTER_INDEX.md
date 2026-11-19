@@ -808,3 +808,30 @@ juntos. Estado: UNKNOWN-STOP para el orden de argumentos.
 También se conservaron anclajes de sobrecargas de
 `startRestoreCommand` (5 y 7 argumentos), sin dar por probada la
 supuesta recursión del overload de 5 argumentos.
+
+
+## 19. setState(IIII) y llamada final — orden de argumentos resuelto
+
+Se recuperó el bloque Smali pegado por el usuario para
+`BRService.smali:14072–14220` y el invoke final literal de
+`BRService$5.run()`. La llamada final usa los registros
+`{v0,v4,v2,v5,v14}`, con `v4=4`, `v2=12`, `v5=0`; por tanto es
+`setState(4,12,0,v14)`. Queda descartada como transcripción errónea la
+forma anterior `setState(4,0,v2,v14)`.
+
+El método asigna `p1→mState`, `p2→mWorkingStage`,
+`p3→mUserInterruptAction`, y `p4→mLastError` solo si el error previo
+era cero. Con `p2==7` libera WakeLock. Con `p2==10/12` o `p3==2`,
+marca cada BRItem como `state=3,error=9`, si la lista existe y no está
+vacía; luego notifica cambio de estado y actualiza preferencias.
+
+Esto explica la separación: error global 8 puede coexistir con
+`BRItem.error=9`, pues el método escribe el marcador de error por
+elemento 9 en etapa 12, mientras conserva el candidato global 8/9 en
+`mLastError`.
+
+Detalle y callers relacionados:
+[`evidence/2026-11-19/12_SETSTATE_ARGUMENTS_AND_FINAL_CALL.md`](evidence/2026-11-19/12_SETSTATE_ARGUMENTS_AND_FINAL_CALL.md).
+
+**Estado:** orden de argumentos RESOLVED-DIRECT-CHAT; falta releer el
+checkout local para alcanzar LOCAL-VERIFIED.
