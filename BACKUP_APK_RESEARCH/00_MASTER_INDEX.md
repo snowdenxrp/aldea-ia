@@ -950,3 +950,35 @@ Archivo:
 Todos los comandos son de lectura; no ejecutan servicios ni backups/restores,
 ni modifican APK, extracción o Git. Este paso es necesario porque esta
 sesión no tiene acceso directo al filesystem Termux del dispositivo.
+
+
+## 25. ERRATUM: coordenadas Smali y conflicto de procedencia — 2026-11-19
+
+Se detectó que algunos informes mezclaron líneas físicas del archivo
+con directivas Smali `.line`. El bloque de 19-11 con `.line 1391–1418`
+proviene de una extracción física `sed -n '100,320p' "$F"`; no debe
+citarse como líneas físicas 1391–1418.
+
+Hay dos informes históricos del mapeo `mBakFilesType`:
+- 17-11, dato de usuario recuperado: 2→`mIsTransingTask`,
+  3→`mIsTransingTask`, 5→`mIsFlashDriveTask`, 1→`mIsLocalBackupTask`.
+- 19-11, interpretación del asistente de un bloque con directivas
+  `.line`: 2→`v8=1`, 3→`mIsTransingTask`,
+  5→`mIsFlashDriveTask`, 1→`mIsLocalBackupTask`.
+
+El bloque de 17-11 no está recuperado verbatim; el de 19-11 tampoco
+tiene aún instrucciones Smali completas recuperadas. No sabemos si son
+versiones distintas, bloques distintos o una lectura errónea. Por tanto,
+el mapeo queda **UNKNOWN — SOURCE BLOCK RECONCILIATION REQUIRED**.
+La sección 5 del documento 10 no debe elevarse a conclusión final hasta
+cotejar el archivo local y su hash.
+
+También se corrige la afirmación de dos productores físicos de state 6:
+la búsqueda grep recuperada reporta la escritura en línea física 2351;
+la referencia 1735 no está demostrada como línea física y puede ser una
+directiva `.line`. Véase erratum.
+
+[`evidence/2026-11-19/18_ERRATUM_COORDINATES_AND_TYPE_MAPPING_PROVENANCE.md`](evidence/2026-11-19/18_ERRATUM_COORDINATES_AND_TYPE_MAPPING_PROVENANCE.md).
+
+**Estado probatorio:** corrección documental incorporada; falta lectura
+local. No se modificó el APK ni la extracción Smali.
