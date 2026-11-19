@@ -76,6 +76,14 @@ La evidencia 15 conserva que `ProgressItemAdapter.getSuccessfulCount()` cuenta `
 
 Esto es una consecuencia del cruce entre dos resúmenes de conversación, no una observación local actual del recorrido completo desde `restoreLocalMediaFile()` hasta el adapter. Se clasifica como **RIESGO DE INCONSISTENCIA / REQUIERE COTEJO**, no como bug demostrado.
 
+### 5.3 Estado 9: posible desajuste con el modelo terminal del adapter
+
+El caller de restauración local asigna `BRItem.state=9` cuando `mIsAborted` es verdadero. La evidencia 15 conserva que `ProgressItemAdapter.initData()` trata como terminales los estados 1, 3 y 6; no incluye 9 en ese conjunto. También conserva que el conteo de éxito incluye 1 y 6, y que el total de fallos se calcula restando los éxitos del total.
+
+**Riesgo condicional:** si el mismo `BRItem` con `state=9` entra en ese adapter, el estado 9 no estaría reconocido como terminal por la lógica `initData()` descrita, aunque no sería contado como éxito. No está demostrado que esta ruta de restauración local use ese mismo ciclo de adapter ni que no exista una normalización posterior. Mantenerlo como **POTENCIAL DESAJUSTE DE ESTADO / REQUIERE COTEJO**.
+
+No confundir `BRItem.state=9` con `BRItem.error=9`: son campos distintos y el inventario conserva usos independientes de ambos.
+
 ### 5.3 El criterio de existencia no acredita integridad
 
 La condición recuperada del helper asigna `error=1` si el destino final no existe. El material disponible no demuestra que la ruta de éxito verifique además tamaño esperado, número de entradas, CRC, lectura completa o integridad semántica de los archivos extraídos. Por tanto:
