@@ -1091,3 +1091,16 @@ Los documentos 21 y 22 se crearon primero en `main` por omisión del parámetro 
 - [Evidencia 22 — historial exacto D-RB-09, 27 commits](evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md)
 
 Los tres commits exclusivos de `main` permanecen sin integrar. No se ejecutó merge, reset, rebase ni cherry-pick. La divergencia se conserva para resolución explícita posterior.
+## 31. Corrección de jerarquía probatoria — evidencias 23
+
+Una relectura completa de 02, 10, 15, 18 y 21 detectó que la evidencia 21 cerró prematuramente dos discrepancias. Su contenido permanece como historial, pero sus conclusiones de resolución quedan supersedidas por evidencia 23.
+
+- **mBakFilesType:** se conservan dos informes distintos. Reporte A (17-11, recuperado como dato histórico): tipo 2 y 3→`mIsTransingTask`; 5→Flash Drive; 1→local. Reporte B (19-11): tipo 2→`v8=1`; 3→transfer; 5→Flash Drive; 1→local. El Reporte B se refiere a `.line` directives dentro de `sed -n '100,320p'`, no a líneas físicas 1391–1418. Estado: `UNKNOWN — SOURCE BLOCK RECONCILIATION REQUIRED`.
+
+- **BRItem state 6:** physical line 2351 está preservada en el inventario grep histórico; la referencia 1735 se conserva, pero su condición de línea física está disputada. No afirmar dos writers físicos confirmados.
+
+- **Evidencia 21:** retirar sus afirmaciones de que Reporte A era solo una paráfrasis errónea y que el mapeo estaba reconciliado. La tabla de Reporte B y su cadena downstream siguen preservadas como un informe histórico.
+
+Documento autoritativo de corrección: [evidence/2026-11-19/23_EVIDENCE_HIERARCHY_CORRECTION_TYPE_AND_STATE6.md](evidence/2026-11-19/23_EVIDENCE_HIERARCHY_CORRECTION_TYPE_AND_STATE6.md).
+
+Esta actualización es documental; no implica verificación local ni operación en dispositivo.
