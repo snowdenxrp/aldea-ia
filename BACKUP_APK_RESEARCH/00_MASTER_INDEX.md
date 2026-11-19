@@ -1147,3 +1147,29 @@ La evidencia 15 conserva que el callback de finalización fuerza `state=1` si `e
 - [Evidencia 26 — reconciliación state=1/error=1 y stage 11](evidence/2026-11-19/26_STATE1_ERROR1_STAGE11_RECONCILIATION.md)
 
 La actualización es documental. No hubo lectura local nueva, ejecución de Backup/Restore ni modificación del APK.
+
+
+## 35. Identidad de BRItem en ArchiveHelper.unzipFiles() — evidencia 27
+
+Se recibió el cuerpo del overload de siete argumentos de `ArchiveHelper.unzipFiles()`, declarado en `ArchiveHelper.smali:1244`, y se buscó su firma exacta en todo el árbol smali.
+
+**Hallazgos directos del bloque compartido:**
+
+- El cuarto parámetro es `BRItem p3`; el método conserva esa referencia en `v1` mediante `move-object/from16 v1, p3`.
+- El helper lee sobre esa misma referencia `packageName`, `localFileList`, `totalSize` y `progress`; escribe `progress`.
+- En la rama donde el destino final no existe tras rename/fallback, ejecuta `iput v0, v1, BRItem->error:I` con `v0=1`. No escribe `state` en ese bloque y continúa con la siguiente entrada del ZIP.
+- `onZipFileSizeChanged(J,BRItem,String)` recibe `v1` como tercer argumento: misma referencia que entró en `p3`. Es callback de progreso/tamaño, no evidencia del callback terminal.
+- No se observó copia, parcelación o reconstrucción de BRItem dentro del overload analizado. Esta observación no cubre transformaciones externas.
+
+**Call sites exactos encontrados por grep global:**
+
+1. `ArchiveHelper.smali:1994`: reenvío desde el overload de cuatro argumentos al overload de siete argumentos.
+2. `BRService.smali:12918`: invocación directa del overload completo, con registros `v2..v8`.
+
+**Clasificación:** continuidad de referencia dentro del helper y hasta el callback de progreso = CONFIRMADO. Pertenencia a `mBRItems`, identidad hasta callback terminal y llegada sin transformación a `ProgressItemAdapter` = PENDIENTE. La posibilidad de que `state=1,error=1` alcance el conteo de éxito continúa como HIPÓTESIS FUERTE / RIESGO DE INCONSISTENCIA, no bug demostrado.
+
+**Siguiente paso P0:** inspeccionar el método contenedor de `BRService.smali` alrededor de 12918 y reconstruir la procedencia de los siete registros, especialmente el quinto registro de la invocación (`v5`), que ocupa el cuarto parámetro formal `BRItem p3` del helper. Seguir después listener terminal, `mBRItems` y `ProgressItemAdapter`.
+
+Informe completo: [Evidencia 27 — identidad de BRItem en ArchiveHelper.unzipFiles()](evidence/2026-11-19/27_ARCHIVEHELPER_UNZIPFILES_BRITEM_IDENTITY.md).
+
+La evidencia procede del bloque y comandos pegados por el usuario (DIRECT-CHAT); no es LOCAL-VERIFIED por lectura independiente. No se ejecutó Backup/Restore, no se realizaron pruebas dinámicas ni se modificó el APK.
