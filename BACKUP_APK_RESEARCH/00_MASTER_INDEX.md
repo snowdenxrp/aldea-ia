@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.6 --- cierre de recepción y reconciliación de estados/errores en restoreLocalMediaFile()\
+**Versión:** 0.7 --- reconciliación con setState global y normalización de estados\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1129,7 +1129,7 @@ Se añadió una nota de evidencia provisional a partir de los bloques y resultad
 
 **Reconciliación analítica añadida en evidencia 25:** el caller registra `state=1` tras el helper cuando no detecta aborto, mientras el helper puede haber asignado `error=1` por ausencia del destino final. Si ambos actúan sobre el mismo `BRItem` y no hay limpieza intermedia, es posible `state=1,error=1`; el caller resumido no comprueba `error==0` antes de escribir state 1. La evidencia 15 indica que el adapter cuenta state 1 y 6 como éxito, por lo que existe un **riesgo de inconsistencia en el conteo de UI**, todavía no un bug demostrado: falta cotejar la identidad del objeto y el recorrido completo. La presencia del destino tampoco equivale por sí sola a integridad verificada; las validaciones adicionales del helper permanecen UNKNOWN.
 
-**Hallazgo adicional de evidencia 25:** el caller asigna `BRItem.state=9` al detectar aborto. La evidencia 15 conserva que `ProgressItemAdapter.initData()` solo trata 1, 3 y 6 como terminales; por tanto, si el mismo elemento llega a ese adapter, state 9 podría no cerrar el ciclo de UI. Es un posible desajuste, no un bug demostrado, porque falta cotejar la ruta de ese `BRItem` hasta el adapter y cualquier normalización intermedia. `state=9` y `error=9` permanecen separados.
+**Reconciliación con finalización global (evidencias 07 y 12):** `setState(IIII)` escribe `BRItem.state=3,error=9` sobre los elementos de `mBRItems` cuando el stage es 10 o 12, o cuando la acción de interrupción es 2. La evidencia 07 sitúa esa llamada antes de `handleTaskFinish`: ruta abortada stage 10, normal stage 11 y errores finales stage 12. Por ello, el `state=9` local puede ser transitorio si el objeto pertenece a `mBRItems`; el supuesto desajuste con `ProgressItemAdapter` se rebaja a estado intermedio posible, con normalización global recuperada y alcance por cotejar. En stage 11 no se activa esa normalización por stage, de modo que el posible par `state=1,error=1` requiere especial atención en la ruta normal. No está demostrado que el adapter reciba el objeto sin otras transformaciones.
 
 **Estado de recepción:** TERMINADA. El usuario confirmó que el último bloque compartido es el final de su extracción de `restoreLocalMediaFile()`; no se espera continuación adicional en esta fase. **Pendiente:** cierre analítico y reconciliación del material recibido. El análisis permanece INCOMPLETO; no se confunde este estado con la espera de nuevos bloques.
 
