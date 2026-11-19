@@ -639,3 +639,24 @@ que sí se inspeccionó.
 **Estado de la rama documental al cierre de este addendum:** verificar
 HEAD y comparación con `main` en el siguiente checkpoint. No se modificó
 `main` ni ninguna rama NCS.
+
+
+## 11. Auditoría de los otros repositorios conocidos — 2026-11-19
+
+Se inspeccionaron los árboles recursivos completos de todas las ramas
+devueltas por GitHub para los dos repositorios restantes del inventario:
+
+- `snowdenxrp/manual-supervivencia-nuclear`: rama `main`, 77 rutas,
+  sin coincidencias de rutas relacionadas con MIUI/Backup.apk/Smali.
+- `snowdenxrp/nexo-grand-mission-01`: ramas `main` (1 ruta) y
+  `nexo-grand-mission-01-autonomous-2026-11-12` (32 rutas), sin
+  coincidencias.
+
+Los árboles no estaban truncados. El detalle y los límites están en
+[`evidence/2026-11-19/04_REMAINING_REPOSITORIES_AUDIT.md`](evidence/2026-11-19/04_REMAINING_REPOSITORIES_AUDIT.md).
+
+**Conclusión combinada y acotada:** en los repositorios conocidos y
+refs inspeccionados no aparece una copia directa archivada de los
+bloques Smali del 16–19 de noviembre. Esto no descarta almacenamiento
+local, adjuntos históricos, objetos Git no alcanzables ni otras fuentes
+no inventariadas.
