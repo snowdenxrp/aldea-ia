@@ -857,3 +857,19 @@ El informe completo está en
 ramas actuales, no la búsqueda de objetos Git inalcanzables/eliminados,
 historiales no referenciados, Gists, PRs, Actions artifacts, otros
 repositorios no inventariados ni almacenamiento local.
+
+
+## 21. Búsqueda de mensajes de commits
+
+Se buscaron mensajes de commits en `aldea-ia` con
+`Backup.apk`, `BRService`, `MiAsistService`, `MIUI Backup`,
+`miui`, `termux`, `mover` y `backup`. Las búsquedas específicas
+de MIUI/Smali devolvieron cero resultados. “backup” devolvió dos
+commits de septiembre de 2026 que solo añaden documentos de escrow
+Nexo, no investigación Xiaomi.
+
+Detalle:
+[`evidence/2026-11-19/14_COMMIT_MESSAGE_SEARCH_AUDIT.md`](evidence/2026-11-19/14_COMMIT_MESSAGE_SEARCH_AUDIT.md).
+
+Esto audita mensajes de commits, no el contenido de todos los parches
+históricos ni objetos Git no alcanzables.
