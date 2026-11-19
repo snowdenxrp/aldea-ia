@@ -99,7 +99,7 @@ La condición recuperada del helper asigna `error=1` si el destino final no exis
 
 - `error=7`: asignación directa del caller en la rama sin ZIP y sin `InputStream`.
 - `error=1`: fallo de destino atribuido al helper.
-- **No es un código exclusivo del helper:** la evidencia 02 recupera otra rama en `BRService$5` (líneas físicas reportadas 1951–1965): si `bakFile` existe pero `v5==null`, asigna también `BRItem.error=1`; si `bakFile` no existe y `v5==null`, asigna `error=10`; si `v5!=null`, esa rama no asigna un error nuevo. Este es un productor distinto y no debe fusionarse con el fallo de destino de `ArchiveHelper`.
+- **No es un código exclusivo del helper:** la evidencia 02 recupera otra rama en `BRService$5` (líneas físicas reportadas 1951–1965): si `bakFile` existe pero `v5==null`, asigna también `BRItem.error=1`; si `bakFile` no existe y `v5==null`, asigna `error=10`; si `v5!=null`, esa rama no asigna un error nuevo. Este es un productor distinto y no debe fusionarse con el fallo de destino de `ArchiveHelper`. La misma evidencia informa `state=3` en una ruta de fallo alrededor de la línea 1983, pero no conserva el bloque de control completo para demostrar que esa escritura pertenezca necesariamente a la misma rama de `error=1`. Por tanto, ese productor alternativo no demuestra ni refuta por sí solo el par `state=1,error=1`; refuerza que el valor de `error` debe analizarse junto con su productor y el estado final de su propia ruta.
 - Los códigos de entrada `p3` del listener y sus traducciones a `BRItem.error` son otro nivel; no inferir equivalencias por compartir números.
 
 ### 5.6 Límites que permanecen abiertos
