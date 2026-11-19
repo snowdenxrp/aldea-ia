@@ -1,0 +1,585 @@
+# MIUI Backup.apk --- Expediente maestro de investigación estática
+
+**Versión:** 0.2 --- primera consolidación\
+**Fecha de corte:** 2026-11-19\
+**Estado:** INCOMPLETO --- consolidación documental en curso\
+**Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
+implica ejecución de restauraciones, modificación del APK ni pruebas
+dinámicas.
+
+> **Regla de integridad:** este expediente distingue evidencia primaria
+> observada, conclusiones conservadas en conversaciones, hipótesis y
+> pendientes. Una conclusión recordada no se convierte en evidencia
+> primaria por estar escrita aquí. Los fragmentos Smali completos y sus
+> hashes deben añadirse cuando se recuperen de la extracción local.
+
+------------------------------------------------------------------------
+
+## 0. Índice y estado general
+
+  -----------------------------------------------------------------------------------
+  Área                                Estado de preservación  Observación
+  ----------------------------------- ----------------------- -----------------------
+  Identidad y extracción de           PARCIAL                 Directorio y
+  `Backup.apk`                                                herramienta
+                                                              conservados; ruta, tamaño, SHA-256 y copia idéntica
+                                                              recuperados del chat
+                                                              16-11-2026; hash no
+                                                              recalculado aquí
+
+  Manifiesto y componentes            CONSERVADO              `MiAsistService` y
+                                                              `BRService` reportados
+                                                              como `exported=false`
+
+  `MiAsistService`                    CONSERVADO              Cadena hacia
+                                                              `BRService` y
+                                                              `bindBRService()`
+
+  Binder / `IBRService.Stub`          CONSERVADO              14 transacciones; lista
+                                                              funcional resumida
+
+  `BRService` / restauración          PARCIAL                 Métodos, hilo y flujo
+                                                              general conservados
+
+  `BRService$5`                       PARCIAL                 Varias ramas y
+                                                              variables conservadas;
+                                                              fragmentos originales
+                                                              incompletos
+
+  `BRService$FakeBackupListenerImp`   PARCIAL                 Mapeos y escrituras de
+                                                              estado conservados
+
+  `ProgressItemAdapter`               PARCIAL                 Escrituras y rutas
+                                                              resumidas
+
+  `BRItem`                            PARCIAL                 Distinción state/error
+                                                              conservada
+
+  Notificaciones / códigos globales 8 CONFIRMADO EN EL CHAT   Despacho, IDs públicos
+  y 9                                                         y textos de recursos
+                                                              reportados con
+                                                              extracción directa
+
+  Condiciones causales que producen 8 PENDIENTE               Hay rutas candidatas;
+  y 9                                                         falta cerrar la
+                                                              causalidad completa
+
+  Registro de comandos y salidas de   NO RECUPERADO           Se conserva una
+  los \~20 chats                      ÍNTEGRAMENTE            selección de
+                                                              resultados, no el
+                                                              transcript completo
+  -----------------------------------------------------------------------------------
+
+### Convenciones probatorias
+
+-   **CONFIRMADO (extracción directa):** el usuario compartió en el chat
+    la salida de un comando o fragmento concreto.
+-   **CONSERVADO (resumen):** el dato procede de una síntesis recuperada
+    de conversaciones previas, sin tener aquí el fragmento original
+    completo.
+-   **HIPÓTESIS / CANDIDATO:** interpretación aún no cerrada.
+-   **PENDIENTE:** requiere localizar y leer el método o la rama que
+    falta.
+-   **NO RECUPERADO:** no hay datos suficientes para reconstruir
+    fielmente el resultado original.
+
+No se debe convertir `CONSERVADO` en `CONFIRMADO` sin volver a cotejar
+la fuente local.
+
+------------------------------------------------------------------------
+
+## 1. Entorno de investigación
+
+### 1.1 Rutas y variables
+
+-   Directorio decodificado: `$HOME/backup-static/decoded`
+-   Ruta observada en Termux:
+    `/data/data/com.termux/files/home/backup-static/decoded`
+-   Variable `D` utilizada para apuntar a:
+    `$HOME/backup-static/decoded/smali`
+-   Por ello, los recursos se consultan mediante
+    `"$D/../res/values/..."`.
+-   En mensajes anteriores también se usó `F` para apuntar a un archivo
+    Smali concreto; definirla de nuevo si Termux pierde las variables.
+-   Ejemplo de archivo frecuente: `BRService$5.smali`; para el shell,
+    escapar `$` cuando se escriba literalmente en una ruta.
+
+**Aviso de entorno:** el 19-11-2026 falló `"$D/res/values/public.xml"`
+porque `D` apuntaba a `smali`, no a la raíz decodificada. La ruta
+correcta observada fue `"$D/../res/values/public.xml"`.
+
+### 1.2 Datos de extracción conservados
+
+-   `BRService$5.smali`: tamaño reportado 128,021 bytes y 4,261 líneas
+    (17-11-2026).
+-   Apktool 3.0.3 aparece en el contexto de extracción.
+-   Se mencionan directorios `smali`, `smali_classes2` y
+    `smali_classes3`.
+
+**RECUPERADO EN CHAT (16-11-2026; no recalculado en esta sesión):**
+- Paquete: com.miui.backup.
+- Ruta de origen: /product/priv-app/Backup/Backup.apk.
+- Tamaño reportado: 16,866,352 bytes.
+- Copia en Termux: $HOME/Backup.apk.
+- Comparación de copia: IDENTICAL (resultado reportado por el usuario).
+- SHA-256 reportado: 36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae.
+
+**AÚN NO RECUPERADO:** versión exacta/build del APK, comando exacto de
+apktool usado para decodificar, hashes de los archivos Smali y una
+recomputación independiente del SHA-256. No inventar estos datos.
+
+
+### 1.3 Identidad del APK de origen — recuperada del chat
+
+El 16-11-2026 el usuario compartió que el paquete com.miui.backup reside en
+/product/priv-app/Backup/Backup.apk, con tamaño 16,866,352 bytes. La copia
+$HOME/Backup.apk fue reportada como IDENTICAL y se proporcionó el SHA-256
+36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae.
+
+Clasificación: CONFIRMADO EN CHAT, no verificado de nuevo contra los bytes
+del dispositivo en esta sesión. El hash identifica los bytes si es
+correcto; no demuestra por sí solo origen, versión ni integridad del
+proceso de adquisición.
+
+------------------------------------------------------------------------
+
+## 2. Cronología recuperada
+
+### 16-11-2026 --- `MiAsistService`, `BRService` y Binder
+
+**CONSERVADO:**
+
+-   Investigación estática en `$HOME/backup-static/decoded`.
+-   `MiAsistService` llama:
+    -   `BRService.startRestoreCommand(...)`, líneas 2939--2942.
+    -   `BRService.startBackupCommand(...)`, líneas 2862--2865.
+-   Después llama a `bindBRService()`.
+-   `bindBRService()` construye un Intent explícito hacia `BRService`,
+    añade `extra_is_from_miasist=true`, llama `startService()` y
+    `bindService()`.
+-   `MiAsistService` obtiene `mBRService.getBRItems()` y desregistra el
+    listener al destruirse.
+-   `MiAsistService` opera en proceso `:remote`.
+-   `MiAsistService` y `BRService` fueron reportados como
+    `exported=false`.
+-   `IBRService.Stub` expone 14 transacciones de
+    consulta/control/listeners, incluyendo consulta de estado/ítems y
+    operaciones de pausa, abort/forceClose y registro de listeners.
+-   No se identificó `startRestoreCommand` como transacción directa de
+    `IBRService` en el fragmento revisado.
+-   La cadena de alcanzabilidad externa y la autoridad/accesibilidad de
+    Huanji quedaron pendientes.
+
+**Pendiente histórico de esa etapa:** cuerpos completos de
+`startRestoreCommand`, `onBind`, `onStartCommand`, `onTransact`,
+activación y permisos. La regla de trabajo fue demostrar la cadena
+completa de alcanzabilidad antes de afirmar una vía externa.
+
+### 17-11-2026 --- flujo de restauración
+
+**CONSERVADO:**
+
+-   `restoreFiles()` aparece en `BRService.smali` alrededor de la línea
+    12672.
+-   `restoreFiles()` controla estado, guarda `mBRItems`/descriptor,
+    notifica e invoca `startRestore()`; en el fragmento resumido no se
+    observó validación explícita del descriptor, de los archivos o de
+    autorización.
+-   `startRestore()` crea y arranca `BRService$5` como hilo
+    `"RestoreThread"`.
+-   `BRService$5.run()` registra inicio, adquiere WakeLock/BMS,
+    clasifica `mBakFilesType` e inicia `StorageMonitor`.
+-   **MAPEO EN CONFLICTO — NO CERRADO:** un bloque Smali pegado por el usuario el 19-11-2026 (líneas 1391–1418 de BRService$5.run) indica 2 → mIsTransingTask, 3 → mIsFlashDriveTask, 1 → mIsLocalBackupTask. Resúmenes anteriores indicaban 2/3 → mIsTransingTask y 5 → mIsFlashDriveTask. No usar ninguno como mapeo definitivo hasta cotejar el bloque completo y todos los usos de mBakFilesType.
+-   La llamada `startMonitor()` se resume así: resultado `0` continúa;
+    resultado `1` produce resultado `2`; otros resultados producen `5` y
+    abortan.
+-   Si falla BMS, el flujo termina con error; un fallo de almacenamiento
+    puede marcar `mIsAborted`.
+-   En el cierre de `startRestore()` se conservó la forma
+    `setState(4,v2,0,v14)`:
+    -   `v16 != 0` → `v14=v16`, `v2=12`.
+    -   abortado → `v14=3`, `v2=10`.
+    -   normal → `v14=0`, `v2=11`.
+-   Después limpia temp root/descriptor/`StorageMonitor`, llama
+    `handleTaskFinish(4,v2,v14,mBRItems)` y libera WakeLock.
+-   `handleTaskFinish()` tiene cuerpo reportado en
+    `BRService.smali:8328`; puente sintético alrededor de línea 1835. Su
+    implementación completa queda pendiente de cotejo.
+
+### 18-11-2026 --- estados y errores de restauración
+
+**CONSERVADO:**
+
+-   Se inspeccionaron `BRService$FakeBackupListenerImp.smali`,
+    `BRItem.smali`, `BRService$5.smali` y `ProgressItemAdapter`.
+-   Se rastrearon estados 6, 7 y 8.
+-   En `BRService$FakeBackupListenerImp` se reportaron tres escrituras
+    directas a `BRItem.state`:
+    -   línea 5719 → `state=2`.
+    -   línea 5834 → `state=3`.
+    -   línea 5921 → `state=1`.
+-   No se encontraron escrituras directas `BRItem.state=7/8` en esa
+    clase, `BRService$6` ni `BRItem` en las búsquedas resumidas.
+-   `ProgressItemAdapter`:
+    -   `itemStart` → `state=2`.
+    -   abortos → `state=3,error=9`.
+    -   errores → `state=3,error=p3`.
+    -   finalización puede asignar `state=1`.
+-   `BRService$5`:
+    -   línea 1151: `state=v14`.
+    -   línea 1259: para `files_for_backup`, hereda estado; de otro modo
+        `state=4`.
+    -   líneas 1283, 1336 y 1441: `state=v10`.
+    -   línea 2351 → `state=6`.
+    -   abortos → `state=3,error=9`.
+    -   restauración fallida → `state=3`.
+-   `v10` y `v14` quedaron pendientes de resolución en ese momento.
+-   `BRService$5`:
+    -   `v6` = BRItem.
+    -   `v5` = ZipFile.
+    -   `v4` = source list.
+    -   `v3` = restored list.
+-   Rama de error conservada:
+    -   si `v5 == null` y `bakFile` es null/no existe,
+        `BRItem.error=10`.
+    -   si `bakFile` existe, `BRItem.error=1`.
+    -   si `v5 != null`, no se asigna nuevo error en esa rama.
+-   Excepciones de extracción se capturan localmente y el bucle
+    continúa.
+-   Listas source/restored vacías o fallo al cerrar stream pueden
+    notificar listener error `7`.
+-   Ruta general "Restore failed" notifica listener error `6` y
+    `onRestoreEnd`; registra paquete/bakFile y asigna `BRItem.error=10`
+    si falta bakFile y `v5==null`, o `1` si existe y `v5==null`; en otro
+    caso conserva error previo.
+-   `clearLocalFiles()` limpia `localFileList` de BRItem con paquete
+    `"files_for_backup"` antes de parcelar.
+-   Mapeo de códigos locales de listener conservado:
+    -   `p3=0` → error 0.
+    -   `p3=3` → error 2.
+    -   `p3=4` → error 5.
+    -   `p3=5` → error 6.
+    -   `p3=6` → error 7.
+    -   `p3=8` → error 6.
+    -   `p3=9` → error 11.
+    -   otro → error 1.
+-   Reintento cuando `mState=3`, `error=7`, `retryCount<1`.
+-   Estos códigos locales de listener NO deben confundirse con los
+    códigos globales 8/9 de notificación.
+
+### 19-11-2026 --- `BRService$5`, preparación, conectividad y notificación
+
+#### 19.1 `StorageMonitor` y tipos de tarea
+
+**CONSERVADO de conversación:**
+
+-   **Conflicto pendiente:** el bloque directo de BRService$5.run líneas 1391–1418 recuperado el 19-11 indica 2 → mIsTransingTask, 3 → mIsFlashDriveTask, 1 → mIsLocalBackupTask; el resumen anterior afirmaba 2/3 → mIsTransingTask y 5 → mIsFlashDriveTask. Este expediente marca el mapeo como UNKNOWN / RECONCILIATION REQUIRED hasta releer la extracción local.
+-   Se reinicia `StatSpeedHelper`.
+-   Se crea `StorageMonitor(context,type)` y se llama `startMonitor()`.
+-   Resultado `0`: continúa.
+-   Resultado `1`: se asigna resultado `2`.
+-   Otros resultados: resultado `5` y aborto.
+-   Tipo `2` fue asociado a uso de `.tmp_bak_file` y
+    `getTransTempBackupRootPath()` en un análisis anterior. `v8=1`
+    cuando `mBakFilesType==2`; **no** es una bandera genérica de error.
+
+#### 19.2 Conexión remota durante `startRestore`
+
+**CONSERVADO de conversación:**
+
+-   `startRestore` limpia listas y llama `bindTransFileServiceLocked`.
+-   Se observó `setState(v4,3,v6)` al comenzar.
+-   Si `remoteConnectedLatch` no se conecta:
+    -   `setState(v4,7,v6)`.
+    -   espera (`await`).
+    -   registra `"not connected to remote"`.
+    -   `mIsAborted=true`.
+-   Si la conexión se establece, llama nuevamente `setState(v4,3,v6)`,
+    prepara/restaura y continúa.
+-   Se registraron mensajes como `"startRestore, prepared"` y descriptor
+    null en el flujo revisado.
+-   En un análisis posterior, `v13=9`, `v14=6`, `v15=7`; `v0=7` dentro
+    de `:cond_c` fue interpretado como indicador de resultado de
+    preparación, no como `BRItem.state=7`.
+-   `v15=7` está confirmado como argumento de `setState`; su semántica
+    exacta debe leerse en el método receptor.
+-   `v16=8` o `9` aparece como valor que llega a `setState(4,12,0,v16)`
+    en las ramas descritas más adelante.
+
+#### 19.3 Preparación y contraseña
+
+**CONSERVADO de conversación:**
+
+-   Líneas 1463--1471: recupera `encryptedPwd`, extrae
+    `BRItem.packageName` y llama `BRManager.setFutureTask()`.
+-   Falta de espacio fuerza resultado `2` y marca aborto.
+-   Líneas 1478--1486: comprueba conectividad, descifra `encryptedPwd`
+    en `mPasswd`, registra estados y finaliza con `handleTaskFinish`
+    cuando corresponde.
+-   Sin red → `v0=4`.
+-   Contraseña descifrada vacía → `v0=1`.
+-   Si `v0 != 0`, llama `setState(v4,v3,v0)`,
+    `handleTaskFinish(v4,v3,v0,mBRItems)` y retorna.
+-   Con contraseña válida continúa.
+-   Se observaron llamadas `setState(v4,v4,v6)`, `setState(v4,v3,v0)` y
+    `setState(v4,v11,v6)`; significados de `v3`, `v4`, `v6`, `v11` deben
+    cotejarse en el bloque original.
+
+#### 19.4 Códigos globales 8 y 9
+
+**CONFIRMADO EN EL CHAT mediante salidas de extracción compartidas:**
+
+La llamada observada en `showFinishNotification` es:
+
+``` smali
+invoke-static {p1, p3}, Lcom/miui/backup/service/BRService;->getErrStringRes(II)I
+```
+
+`getErrStringRes(II)` recibe el estado global como primer argumento y el
+código de error como segundo. El `packed-switch` se ejecuta sobre el
+segundo argumento.
+
+Correspondencia observada:
+
+  --------------------------------------------------------------------------------------------------------------------------------
+  Código de      Rama           ID de recurso  Nombre público                    Texto literal
+  error                                                                          
+  -------------- -------------- -------------- --------------------------------- -------------------------------------------------
+  8              `:pswitch_3`   `0x7f12014b`   `err_router_disconnected`         `Check your router's connection and try again.`
+
+  9              `:pswitch_2`   `0x7f120166`   `flash_drive_connection_failed`   `USB drive disconnected`
+  --------------------------------------------------------------------------------------------------------------------------------
+
+Extracciones compartidas:
+
+``` bash
+grep -n -E '0x7f12014b|0x7f120166' "$D/../res/values/public.xml"
+```
+
+Salida compartida:
+
+``` text
+6868: <public type="string" name="err_router_disconnected" id="0x7f12014b" />
+6895: <public type="string" name="flash_drive_connection_failed" id="0x7f120166" />
+```
+
+Y:
+
+``` bash
+grep -n -A3 -B2 -E 'name="(err_router_disconnected|flash_drive_connection_failed)"' "$D/../res/values/strings.xml"
+```
+
+Salida compartida:
+
+``` xml
+<string name="err_router_disconnected">"Check your router's connection and try again."</string>
+<string name="flash_drive_connection_failed">USB drive disconnected</string>
+```
+
+Por tanto: - `getErrStringRes(4,8)` → `0x7f12014b` → "Check your
+router's connection and try again." - `getErrStringRes(4,9)` →
+`0x7f120166` → "USB drive disconnected".
+
+Las dos ramas son directas e independientes del primer argumento `4`.
+
+**Etapa 12:** `getFinishNotificationTitle(ZII)` compara la etapa (`p3`)
+con `10` y `12`; la etapa `12` sigue una ruta especial que evita la
+selección ordinaria basada en transferencia/estado. El título y el
+mensaje de error se calculan por separado.
+
+**CANDIDATO CONSERVADO --- requiere cotejo del fragmento completo:** en
+`BRService$5/startRestore`, `v16=8` en una rama descrita como
+`v8/Themes`, o `v16=9` en Flash Drive/USB no disponible, llega a
+`setState(4,12,0,v16)`. Se indicó que conserva `mLastError=8/9` si
+estaba en cero. En la misma conversación se resumió que con
+`mWorkingStage=12`, `setState` escribe `BRItem.state=3` y `error=9`;
+este detalle debe cotejarse con el cuerpo exacto de `setState(IIII)`
+para no confundir argumentos ni capas de estado.
+
+Después se reportó: - `updatePkgStae(v14)`. -
+`handleTaskFinish(4,12,v14,mBRItems)`. - `releaseWakeLock`. - Flash
+Drive desregistra `StorageReceiver`. - Logs: `"startRestore, restored"`,
+`"startRestore, stoped"`, `"Restoring end"`,
+`"startRestore, released"`. - Tipo 5 → evento
+`backup_usb_restore_finish`. - Tipo 3 → `backup_pc_restore_finish` si
+`mIsFromMiAsist`; de lo contrario `backup_trans_restore_finish`. - Tipos
+1 y otros: eventos aún no extraídos.
+
+**Conclusión acotada:** conocemos con evidencia de recursos qué mensaje
+presenta MIUI para los códigos globales 8 y 9. Aún no se ha cerrado
+completamente la cadena causal desde la condición operativa hasta la
+asignación y notificación del código.
+
+------------------------------------------------------------------------
+
+## 3. Distinciones que no se deben colapsar
+
+Mantener separadas estas capas:
+
+1.  `BRItem.state`: estado de cada elemento/paquete.
+2.  `BRItem.error`: error asociado al elemento.
+3.  Códigos de error del listener (`FakeBackupListenerImp` y callbacks).
+4.  Argumentos de `setState(IIII)` y estado/etapa/error global del
+    servicio.
+5.  `mLastError` y `extra_last_errcode`.
+6.  ID de recurso y texto que se muestra en notificación.
+
+Un número igual en dos capas no demuestra que tenga el mismo
+significado. En particular, los códigos locales de listener `6`, `7`,
+`8`, `9` no deben confundirse automáticamente con el código global `8` o
+`9` de `getErrStringRes`.
+
+
+### 3.1 Semántica de setState(IIII) — corrección recuperada el 19-11
+
+**CONFIRMADO EN CHAT mediante bloque Smali pegado por el usuario:**
+
+- setState(III) (aprox. líneas 14061–14070) delega a setState(IIII)
+  pasando (p1, p2, mUserInterruptAction, p3).
+- En setState(IIII) (inicio aprox. línea 14072): p1 → mState,
+  p2 → mWorkingStage, p3 → mUserInterruptAction, p4 → mLastError
+  solo si mLastError era 0.
+- p2==7 libera WakeLock. Por tanto, el valor 7 como segundo
+  argumento de setState es una etapa global, no prueba BRItem.state=7.
+- En líneas 3419–3422, si p2==10 o p2==12, o p3==2, el método
+  recorre mBRItems y escribe BRItem.state=3 y BRItem.error=9;
+  luego notifica el cambio de estado del servicio.
+
+Esto obliga a mantener separadas la etapa global, mLastError,
+BRItem.state y BRItem.error. La relación entre error global 8/9 y
+error por elemento 9 no implica que sean el mismo código semántico.
+
+------------------------------------------------------------------------
+
+## 4. Pendientes priorizados
+
+### P0 --- cerrar causalidad de códigos globales 8 y 9
+
+1.  Recuperar el bloque completo de `BRService$5` donde se asigna
+    `v16=8` o `v16=9`.
+2.  Identificar con exactitud las condiciones que llevan a cada rama
+    (incluida la rama llamada `v8/Themes`, que no debe renombrarse ni
+    interpretarse sin el texto original).
+3.  Leer el método real `setState(IIII)` y etiquetar cada parámetro por
+    su uso efectivo.
+4.  Confirmar dónde se escribe `mLastError`, `extra_last_errcode` y qué
+    variable llega como `p3` a `getErrStringRes`.
+5.  Seguir `handleTaskFinish(4,12,...)` hasta la persistencia y
+    construcción de la notificación.
+6.  Confirmar qué eventos de finalización corresponden a los tipos 1, 2,
+    3 y 5.
+
+### P1 --- cerrar estados y variables
+
+1.  Resolver `v10`, `v14` y `v15` en sus bloques originales.
+2.  Resolver `v16` sin inferir por su valor numérico.
+3.  Leer `BRService.smali:8328` (`handleTaskFinish`) y el contexto de
+    `setState(IIII)`.
+4.  Revisar los bloques de `ProgressItemAdapter` conservados como
+    pendientes: alrededor de líneas 445--495, 550--600, 1350--1400 y
+    1450--1570, solo si siguen siendo necesarios.
+5.  Confirmar la diferencia entre escrituras directas a `BRItem.state` y
+    cambios globales de `BRService`.
+
+### P2 --- completar expediente de origen
+
+1.  Recuperar hash y metadatos exactos de `Backup.apk`.
+2.  Guardar hashes de archivos Smali relevantes.
+3.  Añadir bloques originales y comandos con sus salidas, con
+    referencias de línea.
+4.  Registrar cada método inspeccionado, incluso cuando una búsqueda no
+    encontró escritores.
+5.  Completar el inventario de clases revisadas y búsquedas negativas.
+
+------------------------------------------------------------------------
+
+## 5. Clases y métodos ya mencionados
+
+  ------------------------------------------------------------------------------------------------
+  Archivo/clase                             Método o zona                  Estado
+  ----------------------------------------- ------------------------------ -----------------------
+  `MiAsistService.smali`                    `startRestoreCommand`,         CONSERVADO
+                                            `startBackupCommand`,          
+                                            `bindBRService`, `onDestroy`   
+
+  `BRService.smali`                         `restoreFiles`,                PARCIAL / algunos
+                                            `startRestore`, `setState`,    resultados confirmados
+                                            `handleTaskFinish`,            
+                                            `showFinishNotification`,      
+                                            `getErrStringRes`,             
+                                            `getFinishNotificationTitle`   
+
+  `BRService$5.smali`                       `run`, `startRestore` y ramas  PARCIAL
+                                            de restauración                
+
+  `BRService$6.smali`                       búsqueda de escrituras de      búsqueda negativa
+                                            `BRItem.state`                 conservada
+
+  `BRService$FakeBackupListenerImp.smali`   callbacks, mapeo de códigos y  PARCIAL
+                                            escrituras de estado           
+
+  `ProgressItemAdapter.smali`               callbacks de progreso y        PARCIAL
+                                            finalización                   
+
+  `BRItem.smali`                            campos `state`, `error`,       PARCIAL
+                                            listas y parcelación           
+
+  `IBRService.Stub`                         14 transacciones Binder        CONSERVADO
+  ------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 6. Reglas para continuar sin perder trabajo
+
+-   No repetir extracciones ya documentadas, salvo que se necesite
+    recuperar el fragmento original o resolver una contradicción.
+-   No afirmar causa técnica basándose únicamente en el texto de una
+    notificación.
+-   No inferir la semántica de una variable Smali solo por su valor
+    numérico.
+-   No mezclar estados de BRItem, errores de BRItem, códigos del
+    listener y códigos globales.
+-   Registrar las búsquedas negativas con su alcance exacto; "no
+    encontrado en esta clase" no equivale a "no existe en todo el APK".
+-   Toda nueva evidencia debe añadirse con fecha, ruta, método, líneas,
+    comando, salida y clasificación.
+-   Mantener el trabajo estático y de solo lectura. No ejecutar
+    restauraciones, backups, servicios ni pruebas dinámicas salvo
+    autorización expresa del usuario.
+
+------------------------------------------------------------------------
+
+## 7. Plantilla para nuevas evidencias
+
+Para cada bloque nuevo:
+
+``` text
+ID:
+Fecha:
+APK / versión / SHA-256:
+Archivo:
+Método:
+Líneas:
+Comando de extracción:
+Salida original:
+Variables y registros:
+Interpretación:
+Clasificación: CONFIRMADO / CONSERVADO / HIPÓTESIS / PENDIENTE
+Qué demuestra:
+Qué NO demuestra:
+Dependencias / siguiente paso:
+```
+
+------------------------------------------------------------------------
+
+## 8. Advertencia de integridad y alcance
+
+Este documento es una **primera consolidación recuperada**, no una
+transcripción íntegra de aproximadamente 20 conversaciones. No contiene
+todos los comandos ni todos los fragmentos originales. Su función
+inmediata es evitar que se pierdan las conclusiones y marcar exactamente
+qué evidencia falta recuperar.
+
+**Estado final de esta versión:** útil para continuar el rastreo de
+códigos globales 8 y 9; no debe tratarse como expediente probatorio
+completo hasta incorporar los fragmentos Smali originales y los hashes.
