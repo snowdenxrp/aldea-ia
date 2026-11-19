@@ -1069,3 +1069,13 @@ Informe:
 getFinishNotificationTitle, getErrStringRes, y todos los callers
 y productores de errores globales. Recuperación de conversación, no
 LOCAL-VERIFIED.
+## 29. Verificación exacta del historial privado D-RB-09 — 27 commits
+
+Se consultó el historial GitHub del archivo exacto `G08_NON_OPERATIONAL_EVIDENCE_PLAN.md` con filtro por path y `per_page=100`. Resultado: **27 commits** (14–15 de noviembre), confirmando la cifra de la captura del usuario. El informe anterior de 17 commits era incompleto y queda corregido.
+
+El historial conserva la evolución documental sobre Termux, Android backup, Xiaomi local backup, Mi Mover, BackupManager y límites de evidencia del dispositivo. Sigue siendo contexto técnico antecedente, no el análisis Smali directo de `Backup.apk`.
+
+Informe con los 27 SHA, fechas y mensajes:
+[`evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md`](evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md).
+
+El repositorio privado no fue modificado.
