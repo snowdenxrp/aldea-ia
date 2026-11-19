@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.12 --- ProgressItemAdapter reference and UI reconciliation\
+**Versión:** 0.13 --- prior-chat recovery and global BRItem inventory\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1189,3 +1189,18 @@ Se recibió una nueva extracción de `ProgressItemAdapter` y su clase interna `P
 **Pendientes inmediatos:** (1) localizar el caller de `initData([BRItem])` y demostrar el origen del arreglo; (2) leer el cuerpo completo de `updateSingleItemUI()` alrededor de la línea 954; (3) verificar la ruta de exposición/getter de `BRItem[]`. El patrón grep que comienza con `->` debe llevar `--` antes del patrón para evitar que grep lo interprete como opción. Ver evidencia 28.
 
 **Procedencia:** DIRECT-CHAT, según bloques compartidos por el usuario; no LOCAL-VERIFIED por lectura independiente en esta sesión. La actualización es documental. No hubo ejecución de Backup/Restore, pruebas dinámicas ni modificación del APK.
+
+## 37. Recuperación del chat anterior e inventario global BRItem.state/error — evidencia 29
+
+Se recuperó contexto adicional del chat inmediatamente anterior:
+
+- Termux reportó disponibles `Backup.apk`, `$HOME/backup-static/decoded`, árboles `smali`, `smali_classes2`, `smali_classes3` y los archivos `BRService$5.smali`, `BRService.smali`, `BRService$FakeBackupListenerImp.smali`, `MiAsistService.smali`.
+- Se recuperaron tamaños reportados y prefijos abreviados de SHA-256 para esos cuatro Smali. Los hashes no están completos en el contexto; no deben reconstruirse ni usarse como identificadores. Recalcular localmente.
+- El usuario ejecutó un inventario de `iput` para `BRItem.state/error` sobre los árboles `smali*`. La primera búsqueda produjo cero coincidencias en su alcance inicial; después comprobó los tres directorios y compartió coincidencias en múltiples clases. La salida fue enviada en más de un bloque y terminó con `===== 3. FIN =====`.
+- Clases recuperadas: `ArchiveHelper`, `CompatibilityActivity$1`, `ProgressPageFragmentBase`, `ProgressPageFragmentBase$ProgressItemAdapter*`, `BRItem`, `BRService`, `BRService$5/$6/$7/$11`, `BRService$FakeBackupListenerImp` y `MiAsistService`.
+- Se recuperaron referencias físicas en `MiAsistService.smali` líneas 3175–3178 y 3296–3299, pero no la salida literal que permite asignar con seguridad cada registro, campo y valor.
+- Se recuperó del bloque `BRService$5` el mapeo reportado de `mBakFilesType` (2→`v8=1`, 3→`mIsTransingTask`, 5→`mIsFlashDriveTask`, 1→`mIsLocalBackupTask`) y `BRItem.state=6` en línea física 2351 / `.line 1735`. El mapeo sigue sujeto al conflicto y a la corrección de evidencia 23; no queda resuelto por esta recuperación.
+
+**Límite:** no se recuperó el transcript íntegro ni el inventario grep literal completo. La evidencia 29 es RECOVERED-CHAT, no LOCAL-VERIFIED. No se completan hashes abreviados ni se infieren valores ausentes. Mantener evidencias 15 y 25–28 como documentos específicos de callbacks, restore/helper y adapter; evidencia 29 añade contexto del inventario global sin duplicar ni reemplazar sus conclusiones.
+
+Informe: [evidencia 29 — recuperación del chat anterior e inventario global](evidence/2026-11-19/29_PREVIOUS_CHAT_RECOVERY_AND_GLOBAL_BRITEM_INVENTORY.md).
