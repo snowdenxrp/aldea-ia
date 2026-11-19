@@ -931,3 +931,22 @@ pudieron auditarse con la superficie disponible y permanecen NOT AUDITED.
 
 Informe:
 [`evidence/2026-11-19/16_CROSS_REPOSITORY_HISTORY_AND_SURFACE_AUDIT.md`](evidence/2026-11-19/16_CROSS_REPOSITORY_HISTORY_AND_SURFACE_AUDIT.md).
+
+
+## 24. Paquete de verificación local de solo lectura
+
+Se añadió una secuencia reproducible para Termux que:
+- localiza y calcula SHA-256 de los Smali relevantes en todos los
+  subdirectorios dex;
+- enumera todas las escrituras directas a `BRItem.state`;
+- recupera los callbacks completos de FakeBackupListenerImp;
+- resuelve el conflicto state 6 entre las líneas físicas 1735 y 2351;
+- coteja `setState(IIII)` y `handleTaskFinish`;
+- recupera los métodos de conteo/render de ProgressItemAdapter.
+
+Archivo:
+[`evidence/2026-11-19/17_LOCAL_READ_ONLY_VERIFICATION_BATCH.md`](evidence/2026-11-19/17_LOCAL_READ_ONLY_VERIFICATION_BATCH.md).
+
+Todos los comandos son de lectura; no ejecutan servicios ni backups/restores,
+ni modifican APK, extracción o Git. Este paso es necesario porque esta
+sesión no tiene acceso directo al filesystem Termux del dispositivo.
