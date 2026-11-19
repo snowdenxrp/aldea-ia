@@ -748,3 +748,37 @@ estado y el origen de state 6 siguen pendientes.
 
 Detalle:
 [`evidence/2026-11-19/09_PROGRESS_ADAPTER_UI_RECOVERY.md`](evidence/2026-11-19/09_PROGRESS_ADAPTER_UI_RECOVERY.md).
+
+
+## 17. Reconciliación de mBakFilesType / v8 / v16 — 2026-11-19
+
+Se recuperó el contexto preciso del bloque pegado por el usuario en la
+conversación del 19-11:
+
+- `mBakFilesType==2` → `v8=1`.
+- La comparación separada `mBakFilesType==3` → `mIsTransingTask`.
+- `mBakFilesType==5` → `mIsFlashDriveTask`.
+- `mBakFilesType==1` → `mIsLocalBackupTask`.
+
+Por tanto, la frase anterior que atribuía a los tipos 2 y 3
+`mIsTransingTask` era incorrecta. El índice v0.1 de Library conserva
+esa síntesis antigua; no se sobrescribe, pero queda supersedida por
+esta reconciliación y por el registro
+[`evidence/2026-11-19/10_MBAKFILESTYPE_V8_V16_RECONCILIATION.md`](evidence/2026-11-19/10_MBAKFILESTYPE_V8_V16_RECONCILIATION.md).
+
+También se recuperó la relación posterior:
+`v8!=0` → candidato `v16=8`; `mIsFlashDriveTask` con USB no
+disponible → candidato `v16=9`; ambos llegan al cierre con etapa 12
+(`setState(4,12,0,v14)`). La cadena es coherente en los fragmentos
+recuperados, pero aún NO es LOCAL-VERIFIED.
+
+El SHA-256 reportado en la recuperación posterior es
+`36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae`,
+procedente de una conversación del 16-11 y de una comparación reportada
+como IDENTICAL. No fue recalculado en esta sesión. La declaración
+anterior de hash desconocido era correcta para el corte v0.1 y queda
+actualizada únicamente como dato RECOVERED-CHAT.
+
+**Prioridad siguiente:** cotejo de solo lectura en Termux de
+`BRService$5.smali`, `setState(IIII)` y la cadena de notificación,
+con hashes locales registrados. No ejecutar servicios ni restauraciones.
