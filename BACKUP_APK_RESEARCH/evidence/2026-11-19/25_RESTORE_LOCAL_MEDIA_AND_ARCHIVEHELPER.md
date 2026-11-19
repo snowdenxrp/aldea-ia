@@ -76,34 +76,37 @@ La evidencia 15 conserva que `ProgressItemAdapter.getSuccessfulCount()` cuenta `
 
 Esto es una consecuencia del cruce entre dos resúmenes de conversación, no una observación local actual del recorrido completo desde `restoreLocalMediaFile()` hasta el adapter. Se clasifica como **RIESGO DE INCONSISTENCIA / REQUIERE COTEJO**, no como bug demostrado.
 
-### 5.3 Estado 9: posible desajuste con el modelo terminal del adapter
+### 5.3 Reconciliación con la finalización global: state 9 puede ser transitorio
 
-El caller de restauración local asigna `BRItem.state=9` cuando `mIsAborted` es verdadero. La evidencia 15 conserva que `ProgressItemAdapter.initData()` trata como terminales los estados 1, 3 y 6; no incluye 9 en ese conjunto. También conserva que el conteo de éxito incluye 1 y 6, y que el total de fallos se calcula restando los éxitos del total.
+La evidencia 12 conserva que `setState(IIII)` escribe `BRItem.state=3` y `BRItem.error=9` sobre los elementos de `mBRItems` cuando `mWorkingStage` (`p2`) es 10 o 12, o cuando la acción de interrupción (`p3`) es 2. La evidencia 07 sitúa la llamada de finalización del hilo de restauración antes de `handleTaskFinish`: la ruta abortada usa stage 10; la ruta normal usa stage 11; las rutas de error final usan stage 12.
 
-**Riesgo condicional:** si el mismo `BRItem` con `state=9` entra en ese adapter, el estado 9 no estaría reconocido como terminal por la lógica `initData()` descrita, aunque no sería contado como éxito. No está demostrado que esta ruta de restauración local use ese mismo ciclo de adapter ni que no exista una normalización posterior. Mantenerlo como **POTENCIAL DESAJUSTE DE ESTADO / REQUIERE COTEJO**.
+**Consecuencia:** si el `BRItem` modificado por `restoreLocalMediaFile()` pertenece a `mBRItems` y alcanza esa llamada final, la asignación local `state=9` de la ruta abortada puede ser reemplazada por `state=3,error=9` en stage 10. Por eso, el supuesto desajuste directo `state=9` frente a `ProgressItemAdapter.initData()` no debe presentarse como bug probable sin seguir el orden y la identidad del objeto. Se rebaja a **ESTADO INTERMEDIO POSIBLE; NORMALIZACIÓN GLOBAL RECUPERADA; ALCANCE POR COTEJAR**.
 
-No confundir `BRItem.state=9` con `BRItem.error=9`: son campos distintos y el inventario conserva usos independientes de ambos.
+En stage 12 ocurre la misma normalización global de los elementos. En la ruta normal stage 11, la condición descrita no activa esa escritura masiva por stage; por tanto, no se puede asumir que el posible par `state=1,error=1` sea corregido por `setState` en el camino normal.
 
-### 5.3 El criterio de existencia no acredita integridad
+No confundir `BRItem.state=9` con `BRItem.error=9`: son campos distintos. La normalización de stage 10/12 escribe explícitamente `state=3,error=9`.
+
+### 5.4 El criterio de existencia no acredita integridad
 
 La condición recuperada del helper asigna `error=1` si el destino final no existe. El material disponible no demuestra que la ruta de éxito verifique además tamaño esperado, número de entradas, CRC, lectura completa o integridad semántica de los archivos extraídos. Por tanto:
 - ausencia del destino final es un fallo detectado;
 - presencia del destino final no debe elevarse automáticamente a integridad verificada;
 - no afirmar que el helper carece de validaciones adicionales hasta cotejar el método completo.
 
-### 5.4 Separación de códigos
+### 5.5 Separación de códigos
 
 - `error=7`: asignación directa del caller en la rama sin ZIP y sin `InputStream`.
 - `error=1`: fallo de destino atribuido al helper.
 - Los códigos de entrada `p3` del listener y sus traducciones a `BRItem.error` son otro nivel; no inferir equivalencias por compartir números.
 
-### 5.5 Límites que permanecen abiertos
+### 5.6 Límites que permanecen abiertos
 
 1. Confirmar en el bloque Smali completo que el caller no limpia `BRItem.error` ni consulta el resultado del helper después del invoke.
 2. Confirmar que helper y caller operan sobre la misma instancia de `BRItem` en todos los caminos.
 3. Cotejar el recorrido de ese elemento hasta `ProgressItemAdapter` y comprobar si algún paso intermedio normaliza estado/error.
 4. Leer el helper completo para establecer qué valida además de la existencia del destino.
-5. Mantener como UNKNOWN las excepciones, salidas y limpieza no contenidas en el bloque final compartido.
+5. Confirmar que el `BRItem` de la ruta local está contenido en `mBRItems` y observar el orden exacto de la llamada final `setState` respecto de las actualizaciones de UI.
+6. Mantener como UNKNOWN las excepciones, salidas y limpieza no contenidas en el bloque final compartido.
 ## 5. Cuestiones abiertas
 
 1. Precisar el límite del bloque final recibido y el alcance exacto de cobertura; no asumir que habrá más extracción.
