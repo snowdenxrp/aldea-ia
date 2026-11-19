@@ -57,12 +57,51 @@ Síntesis de la extracción compartida:
 
 Este inventario contiene los call sites identificados en el material recuperado; no certifica exhaustividad global.
 
+## 5. Reconciliación analítica del caller, helper y UI
+
+Esta sección deriva consecuencias limitadas de los hallazgos conservados en §§2–4 y de la evidencia 15. No convierte resúmenes históricos en lectura local actual.
+
+### 5.1 `state` final no equivale a éxito de extracción
+
+- El caller registra `state=8` antes de invocar el helper.
+- El helper puede registrar `BRItem.error=1` cuando el archivo de destino final no aparece después de la ruta temporal, `rename` y fallback de copia.
+- Al volver de la invocación, el caller registra `state=9` si `mIsAborted`; de lo contrario, `state=1`.
+- En el resumen del caller no aparece una condición que compruebe `BRItem.error==0` antes de asignar `state=1`.
+
+**Consecuencia condicional:** si el helper asignó `error=1` al mismo `BRItem` y no hubo otra escritura que lo limpiara, el caller puede dejar el par `state=1,error=1`. La extracción disponible no demuestra una limpieza intermedia del error.
+
+### 5.2 Posible divergencia entre resultado interno y conteo de UI
+
+La evidencia 15 conserva que `ProgressItemAdapter.getSuccessfulCount()` cuenta `state=1` y `state=6`, mientras que `getFailedCount()` deriva el total menos los exitosos. Por ello, **si el `BRItem` de esta ruta llega a ese adapter sin normalización adicional**, un elemento con `state=1,error=1` podría entrar en el conteo de éxito aunque el helper haya registrado un fallo de destino.
+
+Esto es una consecuencia del cruce entre dos resúmenes de conversación, no una observación local actual del recorrido completo desde `restoreLocalMediaFile()` hasta el adapter. Se clasifica como **RIESGO DE INCONSISTENCIA / REQUIERE COTEJO**, no como bug demostrado.
+
+### 5.3 El criterio de existencia no acredita integridad
+
+La condición recuperada del helper asigna `error=1` si el destino final no existe. El material disponible no demuestra que la ruta de éxito verifique además tamaño esperado, número de entradas, CRC, lectura completa o integridad semántica de los archivos extraídos. Por tanto:
+- ausencia del destino final es un fallo detectado;
+- presencia del destino final no debe elevarse automáticamente a integridad verificada;
+- no afirmar que el helper carece de validaciones adicionales hasta cotejar el método completo.
+
+### 5.4 Separación de códigos
+
+- `error=7`: asignación directa del caller en la rama sin ZIP y sin `InputStream`.
+- `error=1`: fallo de destino atribuido al helper.
+- Los códigos de entrada `p3` del listener y sus traducciones a `BRItem.error` son otro nivel; no inferir equivalencias por compartir números.
+
+### 5.5 Límites que permanecen abiertos
+
+1. Confirmar en el bloque Smali completo que el caller no limpia `BRItem.error` ni consulta el resultado del helper después del invoke.
+2. Confirmar que helper y caller operan sobre la misma instancia de `BRItem` en todos los caminos.
+3. Cotejar el recorrido de ese elemento hasta `ProgressItemAdapter` y comprobar si algún paso intermedio normaliza estado/error.
+4. Leer el helper completo para establecer qué valida además de la existencia del destino.
+5. Mantener como UNKNOWN las excepciones, salidas y limpieza no contenidas en el bloque final compartido.
 ## 5. Cuestiones abiertas
 
-1. Determinar con precisión el límite final del bloque compartido y documentar qué parte del método quedó cubierta; no asumir que habrá más extracción.
+1. Precisar el límite del bloque final recibido y el alcance exacto de cobertura; no asumir que habrá más extracción.
 2. Cotejar el bloque completo de `ArchiveHelper.unzipFiles()` y sus overloads contra los archivos locales y registrar hashes.
 3. Recuperar las firmas exactas y todos los argumentos de cada call site.
-4. Determinar cómo el helper comunica el fallo al caller y cómo se propagan los estados/errores, sin colapsar `BRItem.state`, `BRItem.error` y los códigos de listener.
+4. Confirmar la posible coexistencia `state=1,error=1`, la identidad del `BRItem` y la propagación hacia el adapter, sin colapsar `BRItem.state`, `BRItem.error` y los códigos de listener.
 5. No concluir todavía si los estados 8/9/1 cubren todas las salidas del método.
 
 ## 6. Estado de recepción y siguiente paso
