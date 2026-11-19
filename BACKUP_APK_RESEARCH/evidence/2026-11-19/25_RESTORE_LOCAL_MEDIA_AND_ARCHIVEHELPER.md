@@ -76,6 +76,8 @@ La evidencia 15 conserva que `ProgressItemAdapter.getSuccessfulCount()` cuenta `
 
 Esto es una consecuencia del cruce entre dos resúmenes de conversación, no una observación local actual del recorrido completo desde `restoreLocalMediaFile()` hasta el adapter. Se clasifica como **RIESGO DE INCONSISTENCIA / REQUIERE COTEJO**, no como bug demostrado.
 
+**El callback de finalización no puede darse por corrector de esa combinación:** la evidencia 15 recupera que `workingItemFinished()` puede normalizar `state=2` a `state=1` y que, si `error==0`, fuerza `state=1`. El material recuperado no establece que la rama `error!=0` fuerce `state=3`, borre `error` o revoque un `state=1` que el caller ya hubiera escrito. Por tanto, no hay base para suponer que una notificación de finalización sanee automáticamente el par `state=1,error=1`. Esta inferencia sigue condicionada a que el mismo objeto pase por ese callback y a su orden real respecto de la escritura del caller.
+
 ### 5.3 Reconciliación con la finalización global: state 9 puede ser transitorio
 
 La evidencia 12 conserva que `setState(IIII)` escribe `BRItem.state=3` y `BRItem.error=9` sobre los elementos de `mBRItems` cuando `mWorkingStage` (`p2`) es 10 o 12, o cuando la acción de interrupción (`p3`) es 2. La evidencia 07 sitúa la llamada de finalización del hilo de restauración antes de `handleTaskFinish`: la ruta abortada usa stage 10; la ruta normal usa stage 11; las rutas de error final usan stage 12.
