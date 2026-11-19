@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.11 --- stage-11 state/error reconciliation\
+**Versión:** 0.12 --- ProgressItemAdapter reference and UI reconciliation\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1173,3 +1173,19 @@ Se recibió el cuerpo del overload de siete argumentos de `ArchiveHelper.unzipFi
 Informe completo: [Evidencia 27 — identidad de BRItem en ArchiveHelper.unzipFiles()](evidence/2026-11-19/27_ARCHIVEHELPER_UNZIPFILES_BRITEM_IDENTITY.md).
 
 La evidencia procede del bloque y comandos pegados por el usuario (DIRECT-CHAT); no es LOCAL-VERIFIED por lectura independiente. No se ejecutó Backup/Restore, no se realizaron pruebas dinámicas ni se modificó el APK.
+
+## 36. Identidad BRItem en ProgressItemAdapter y separación conteo/progreso/UI — evidencia 28
+
+Se recibió una nueva extracción de `ProgressItemAdapter` y su clase interna `ProgressItem`:
+
+- `initData([BRItem])` itera el arreglo y pasa cada elemento directamente al constructor de `ProgressItem`.
+- El constructor guarda `p2` directamente en `ProgressItem.brItem` mediante `iput-object`; dentro de los bloques compartidos no se observa reconstrucción del `BRItem`.
+- La clasificación inicial no consulta `error`: `state=1` y `state=6` incrementan `mSuccessfulCount`; `state=3` es terminal, pero no exitoso.
+- `ProgressItem.updateProgress()` asigna 100 % para `state=1/6` y no consulta `error`.
+- `updateSingleItemUI()` sí lee `BRItem.error` alrededor de la línea 954, pero su efecto visual no está cerrado.
+
+**Reconciliación:** queda confirmada en el material compartido la continuidad de referencia entre el elemento iterado por `initData` y `ProgressItem.brItem`. Sumado a evidencia 27 (misma referencia dentro del helper) y al caller resumido en evidencias 25–26 (escritura posterior de `state=1` en la ruta sin aborto), es plausible que `state=1,error=1` alcance el conteo de éxito y 100 % de progreso. La conclusión sigue condicionada a que el arreglo de `initData` contenga esa misma instancia y no existan escrituras intermedias. **No declarar bug** y no afirmar que la fila visual se presenta como exitosa: `updateSingleItemUI` lee `error` y falta inspeccionar sus ramas completas.
+
+**Pendientes inmediatos:** (1) localizar el caller de `initData([BRItem])` y demostrar el origen del arreglo; (2) leer el cuerpo completo de `updateSingleItemUI()` alrededor de la línea 954; (3) verificar la ruta de exposición/getter de `BRItem[]`. El patrón grep que comienza con `->` debe llevar `--` antes del patrón para evitar que grep lo interprete como opción. Ver evidencia 28.
+
+**Procedencia:** DIRECT-CHAT, según bloques compartidos por el usuario; no LOCAL-VERIFIED por lectura independiente en esta sesión. La actualización es documental. No hubo ejecución de Backup/Restore, pruebas dinámicas ni modificación del APK.
