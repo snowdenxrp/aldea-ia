@@ -1079,3 +1079,15 @@ Informe con los 27 SHA, fechas y mensajes:
 [`evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md`](evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md).
 
 El repositorio privado no fue modificado.
+## 28. Corrección autoritativa de procedencia — evidencia 21
+
+Se corrige la lectura conservadora errónea de la evidencia 18. Evidencias 02 y 10 preservan el mapeo directo reportado: tipo 2→`v8=1`; tipo 3→`mIsTransingTask=true`; tipo 5→`mIsFlashDriveTask=true`; tipo 1→`mIsLocalBackupTask=true`. Clasificación: RECOVERED-DIRECT-CHAT / HIGH-CONFIDENCE HISTORICAL; NOT LOCAL-VERIFIED. Los anchors de state 6 en líneas físicas 1735 y 2351 se conservan ambos como RECOVERED-CHAT, sin declarar aún número de writers. La referencia 1735 no se degrada a `.line` sin cotejo. Véase evidencia 21.
+
+## 30. Restauración de documentos en la rama de investigación
+
+Los documentos 21 y 22 se crearon primero en `main` por omisión del parámetro de rama. Sus contenidos se copiaron sin modificación a esta rama mediante commits nuevos. `main` no fue alterada durante esta restauración.
+
+- [Evidencia 21 — corrección de procedencia](evidence/2026-11-19/21_CORRECTIVE_ADDENDUM_RECOVERED_DIRECT_CHAT_EVIDENCE.md)
+- [Evidencia 22 — historial exacto D-RB-09, 27 commits](evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md)
+
+Los tres commits exclusivos de `main` permanecen sin integrar. No se ejecutó merge, reset, rebase ni cherry-pick. La divergencia se conserva para resolución explícita posterior.
