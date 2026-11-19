@@ -1,7 +1,7 @@
 # Evidencia 25 — restoreLocalMediaFile() y ArchiveHelper.unzipFiles()
 
 **Fecha:** 2026-11-19  
-**Estado:** PARCIAL / PROVISIONAL — extracción compartida en conversación; cierre del método caller pendiente.  
+**Estado:** PARCIAL / PROVISIONAL — recepción de la extracción terminada; cierre analítico pendiente.  
 **Tipo de trabajo:** análisis estático de Smali. No implica ejecución de Backup/Restore, modificación del APK ni pruebas dinámicas.
 
 ## 1. Procedencia y nivel probatorio
@@ -9,7 +9,7 @@
 Este registro separa:
 - **BLOQUE COMPARTIDO EN CHAT:** detalles de `restoreLocalMediaFile()` y el hash de `ArchiveHelper.smali` comunicados mediante extracción de Termux en la conversación.
 - **CONTEXTO RECUPERADO:** síntesis de la extracción completa de `ArchiveHelper.unzipFiles()` y de sus call sites; conservar como hallazgo recuperado hasta cotejar nuevamente los bloques completos.
-- **PENDIENTE:** continuación de `restoreLocalMediaFile()` después de la línea 3163 y cierre del método.
+- **PENDIENTE:** cierre analítico y reconciliación del material recibido; el usuario confirmó que el último bloque compartido es el final de su extracción.
 
 No elevar este registro a LOCAL-VERIFIED: esta sesión no tiene acceso directo al filesystem Termux.
 
@@ -31,7 +31,7 @@ Datos comunicados:
    - `state = 9` si `mIsAborted`;
    - `state = 1` en caso contrario.
 
-**Límite:** la extracción compartida disponible llega hasta el entorno de la línea 3163. La lógica posterior y el cierre completo del método permanecen pendientes. No inferir el tratamiento de excepciones, limpieza, notificaciones adicionales ni retornos posteriores.
+**Límite:** el usuario confirmó que el bloque compartido es el final de su extracción de este método. El análisis debe limitarse al material efectivamente recibido; no inferir lógica no incluida, tratamiento de excepciones, limpieza, notificaciones adicionales ni retornos posteriores.
 
 ## 3. `ArchiveHelper.unzipFiles()` — hallazgos recuperados
 
@@ -59,12 +59,15 @@ Este inventario contiene los call sites identificados en el material recuperado;
 
 ## 5. Cuestiones abiertas
 
-1. Recibir la continuación desde la línea 3163 hasta el cierre de `restoreLocalMediaFile()`.
+1. Determinar con precisión el límite final del bloque compartido y documentar qué parte del método quedó cubierta; no asumir que habrá más extracción.
 2. Cotejar el bloque completo de `ArchiveHelper.unzipFiles()` y sus overloads contra los archivos locales y registrar hashes.
 3. Recuperar las firmas exactas y todos los argumentos de cada call site.
 4. Determinar cómo el helper comunica el fallo al caller y cómo se propagan los estados/errores, sin colapsar `BRItem.state`, `BRItem.error` y los códigos de listener.
 5. No concluir todavía si los estados 8/9/1 cubren todas las salidas del método.
 
-## 6. Siguiente paso autorizado por el estado actual
+## 6. Estado de recepción y siguiente paso
 
-Esperar la continuación que comparta el usuario. No iniciar nuevas extracciones, no ejecutar servicios ni operaciones de restauración, y no cerrar el análisis hasta recibir y cotejar el resto del método.
+- **Recepción de la extracción:** TERMINADA en el último bloque compartido por el usuario.
+- **Continuación adicional:** NO ESPERADA para este método en el material de esta fase; el usuario confirmó que ahí termina su extracción.
+- **Cierre analítico:** PENDIENTE; reconciliar los bloques recibidos y separar con precisión el final de la extracción de los límites del material disponible.
+- No iniciar nuevas extracciones ni operaciones de restauración sin solicitud expresa.
