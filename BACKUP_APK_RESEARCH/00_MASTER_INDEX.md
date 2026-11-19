@@ -702,3 +702,18 @@ línea 838 y también en `MiAsistService.smali:2939–2942`. No se
 normalizará hasta identificar los descriptores exactos de archivo y
 método. Las declaraciones del manifiesto tampoco prueban grants
 efectivos ni alcanzabilidad externa.
+
+
+## 14. Ciclo de restauración y cierre — recuperación adicional
+
+Se recuperaron detalles adicionales de `BRService$5.run()/startRestore()`:
+preparación de listas, conexión remota, descriptor, contraseña cifrada,
+restauración local de archivos, errores por elemento, limpieza temporal,
+desconexión del servicio de transferencia y liberación de WakeLock.
+
+El registro está en
+[`evidence/2026-11-19/07_RESTORE_LIFECYCLE_RECOVERY.md`](evidence/2026-11-19/07_RESTORE_LIFECYCLE_RECOVERY.md).
+
+Se mantienen sin reconciliar los anclajes históricos de `restoreFiles()`
+(aprox. línea 12672 frente a 1351–1367) y se distingue la etapa
+intermedia 8 (`setState(4,8,0)`) del cierre con etapa 12 y error 8/9.
