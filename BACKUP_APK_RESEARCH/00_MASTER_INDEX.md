@@ -782,3 +782,29 @@ actualizada únicamente como dato RECOVERED-CHAT.
 **Prioridad siguiente:** cotejo de solo lectura en Termux de
 `BRService$5.smali`, `setState(IIII)` y la cadena de notificación,
 con hashes locales registrados. No ejecutar servicios ni restauraciones.
+
+
+## 18. Productor de state 6 y conflicto en la llamada final a setState — 2026-11-19
+
+Se recuperó que `BRService$5.smali:1735` asigna `BRItem.state=6`
+al elemento `files_for_backup` después de
+`waitingForFilesTransingEnd()`. También se recuperaron ramas de
+preservación de estados 1/6/3 (1789–1790), normalización de
+`files_for_backup` (1967–1968) y fallo a state 3 (1983). Esto reduce
+la incertidumbre del origen de state 6, pero no cierra su semántica UI
+ni excluye otros productores.
+
+Se recuperó además el inventario de escritores de `BRItem.state` en
+`BRService$5` y las llamadas a `handleTaskFinish` en líneas 99, 313,
+806 y 4090. El detalle está en
+[`evidence/2026-11-19/11_STATE6_FINISH_AND_CALL_SHAPE_RECOVERY.md`](evidence/2026-11-19/11_STATE6_FINISH_AND_CALL_SHAPE_RECOVERY.md).
+
+**Conflicto crítico:** una síntesis anterior dice que la llamada final
+es `setState(4,v2,0,v14)`; el mensaje recuperado del usuario dice
+explícitamente `setState(4,0,v2,v14)`. No elegir una forma. La orden
+`invoke-*` original y el cuerpo de `setState(IIII)` deben cotejarse
+juntos. Estado: UNKNOWN-STOP para el orden de argumentos.
+
+También se conservaron anclajes de sobrecargas de
+`startRestoreCommand` (5 y 7 argumentos), sin dar por probada la
+supuesta recursión del overload de 5 argumentos.
