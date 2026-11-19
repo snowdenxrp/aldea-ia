@@ -717,3 +717,21 @@ El registro está en
 Se mantienen sin reconciliar los anclajes históricos de `restoreFiles()`
 (aprox. línea 12672 frente a 1351–1367) y se distingue la etapa
 intermedia 8 (`setState(4,8,0)`) del cierre con etapa 12 y error 8/9.
+
+
+## 15. Callbacks y reconciliación de líneas físicas / `.line`
+
+Se recuperó una distinción crítica: las líneas físicas de `grep -n` /
+`sed -n` no son los números de las directivas Smali `.line`. En
+`BRService$FakeBackupListenerImp`, la correlación recuperada es:
+física 1455 ↔ `.line 5719` (state 2), física 1753 ↔ `.line 5834`
+(state 3), física 1273 ↔ `.line 5921` (state 1).
+
+También se recuperaron los callbacks de `BRService$11`,
+`FakeBackupListenerImp`, `ProgressItemAdapter`, sus traducciones
+`p3→BRItem.error`, y un comando de búsqueda que apuntó por error al
+archivo previo en vez de `BRService$5`. Detalles y límites:
+[`evidence/2026-11-19/08_CALLBACK_WRITERS_AND_LINE_MAP.md`](evidence/2026-11-19/08_CALLBACK_WRITERS_AND_LINE_MAP.md).
+
+No usar números `.line` como posiciones físicas ni atribuir la salida
+del comando equivocado a `BRService$5`.
