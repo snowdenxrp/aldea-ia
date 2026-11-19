@@ -107,15 +107,15 @@ La condición recuperada del helper asigna `error=1` si el destino final no exis
 4. Leer el helper completo para establecer qué valida además de la existencia del destino.
 5. Confirmar que el `BRItem` de la ruta local está contenido en `mBRItems` y observar el orden exacto de la llamada final `setState` respecto de las actualizaciones de UI.
 6. Mantener como UNKNOWN las excepciones, salidas y limpieza no contenidas en el bloque final compartido.
-## 5. Cuestiones abiertas
+## 6. Cuestiones abiertas
 
-1. Precisar el límite del bloque final recibido y el alcance exacto de cobertura; no asumir que habrá más extracción.
+1. Precisar la cobertura exacta del bloque final ya recibido; no esperar una continuación adicional.
 2. Cotejar el bloque completo de `ArchiveHelper.unzipFiles()` y sus overloads contra los archivos locales y registrar hashes.
 3. Recuperar las firmas exactas y todos los argumentos de cada call site.
 4. Confirmar la posible coexistencia `state=1,error=1`, la identidad del `BRItem` y la propagación hacia el adapter, sin colapsar `BRItem.state`, `BRItem.error` y los códigos de listener.
 5. No concluir todavía si los estados 8/9/1 cubren todas las salidas del método.
 
-## 6. Estado de recepción y siguiente paso
+## 7. Estado de recepción y siguiente paso
 
 - **Recepción de la extracción:** TERMINADA en el último bloque compartido por el usuario.
 - **Continuación adicional:** NO ESPERADA para este método en el material de esta fase; el usuario confirmó que ahí termina su extracción.
