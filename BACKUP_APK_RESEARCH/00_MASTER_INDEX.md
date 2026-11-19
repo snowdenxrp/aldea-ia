@@ -752,19 +752,16 @@ Detalle:
 
 ## 17. Reconciliación de mBakFilesType / v8 / v16 — 2026-11-19
 
-Se recuperó el contexto preciso del bloque pegado por el usuario en la
-conversación del 19-11:
+La evidencia 10 conserva el **Reporte B** (conversación del 19-11):
+tipo 2 → `v8=1`; tipo 3 → `mIsTransingTask`; tipo 5 →
+`mIsFlashDriveTask`; tipo 1 → `mIsLocalBackupTask`.
 
-- `mBakFilesType==2` → `v8=1`.
-- La comparación separada `mBakFilesType==3` → `mIsTransingTask`.
-- `mBakFilesType==5` → `mIsFlashDriveTask`.
-- `mBakFilesType==1` → `mIsLocalBackupTask`.
-
-Por tanto, la frase anterior que atribuía a los tipos 2 y 3
-`mIsTransingTask` era incorrecta. El índice v0.1 de Library conserva
-esa síntesis antigua; no se sobrescribe, pero queda supersedida por
-esta reconciliación y por el registro
-[`evidence/2026-11-19/10_MBAKFILESTYPE_V8_V16_RECONCILIATION.md`](evidence/2026-11-19/10_MBAKFILESTYPE_V8_V16_RECONCILIATION.md).
+**No es una resolución definitiva.** La evidencia 18 conserva un
+**Reporte A** atribuido al 17-11: tipos 2 y 3 → `mIsTransingTask`.
+Además, el bloque del 19-11 contiene directivas Smali `.line 1391–1418`
+dentro de `sed -n '100,320p' "$F"`; no son líneas físicas 1391–1418.
+Ambos informes se conservan con procedencia separada. Estado vigente:
+`UNKNOWN — SOURCE BLOCK RECONCILIATION REQUIRED`. Véase evidencia 23.
 
 También se recuperó la relación posterior:
 `v8!=0` → candidato `v16=8`; `mIsFlashDriveTask` con USB no
@@ -786,13 +783,14 @@ con hashes locales registrados. No ejecutar servicios ni restauraciones.
 
 ## 18. Productor de state 6 y conflicto en la llamada final a setState — 2026-11-19
 
-Se recuperó que `BRService$5.smali:1735` asigna `BRItem.state=6`
-al elemento `files_for_backup` después de
-`waitingForFilesTransingEnd()`. También se recuperaron ramas de
-preservación de estados 1/6/3 (1789–1790), normalización de
-`files_for_backup` (1967–1968) y fallo a state 3 (1983). Esto reduce
-la incertidumbre del origen de state 6, pero no cierra su semántica UI
-ni excluye otros productores.
+Se conserva un reporte histórico que asocia `BRService$5.smali`
+línea 1735 con `BRItem.state=6` para `files_for_backup` después de
+`waitingForFilesTransingEnd()`, pero su condición de línea física está
+disputada. El inventario grep directo conserva la escritura física 2351.
+No afirmar dos writers físicos confirmados ni descartar el reporte 1735.
+Estado vigente: coordenada 1735 / número de productores UNKNOWN; véase
+evidencia 23. Las ramas de preservación 1/6/3 y los estados 1/3 de
+finalización siguen siendo datos históricos separados.
 
 Se recuperó además el inventario de escritores de `BRItem.state` en
 `BRService$5` y las llamadas a `handleTaskFinish` en líneas 99, 313,
@@ -1079,9 +1077,13 @@ Informe con los 27 SHA, fechas y mensajes:
 [`evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md`](evidence/2026-11-19/22_D_RB09_EXACT_FILE_HISTORY_27_COMMITS.md).
 
 El repositorio privado no fue modificado.
-## 28. Corrección autoritativa de procedencia — evidencia 21
+## 28. Corrección de procedencia — evidencia 21 (SUPERSEDIDA)
 
-Se corrige la lectura conservadora errónea de la evidencia 18. Evidencias 02 y 10 preservan el mapeo directo reportado: tipo 2→`v8=1`; tipo 3→`mIsTransingTask=true`; tipo 5→`mIsFlashDriveTask=true`; tipo 1→`mIsLocalBackupTask=true`. Clasificación: RECOVERED-DIRECT-CHAT / HIGH-CONFIDENCE HISTORICAL; NOT LOCAL-VERIFIED. Los anchors de state 6 en líneas físicas 1735 y 2351 se conservan ambos como RECOVERED-CHAT, sin declarar aún número de writers. La referencia 1735 no se degrada a `.line` sin cotejo. Véase evidencia 21.
+La evidencia 21 intentó cerrar las discrepancias de mBakFilesType y
+state 6, pero una relectura de evidencia 18 mostró que esa resolución
+era prematura. Sus conclusiones quedan supersedidas por evidencia 23.
+Conservar evidencia 21 como historial; no usarla como autoridad para
+resolver el mapeo ni para declarar la línea 1735 física.
 
 ## 30. Restauración de documentos en la rama de investigación
 
