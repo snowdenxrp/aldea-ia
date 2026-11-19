@@ -20,7 +20,7 @@ dinámicas.
   -----------------------------------------------------------------------------------
   Área                                Estado de preservación  Observación
   ----------------------------------- ----------------------- -----------------------
-  Identidad y extracción de           PARCIAL                 Directorio y
+  Identidad y extracción de           CONFIRMADO EN CHAT      Directorio y
   `Backup.apk`                                                herramienta
                                                               conservados; ruta, tamaño, SHA-256 y copia idéntica
                                                               recuperados del chat
@@ -129,17 +129,15 @@ apktool usado para decodificar, hashes de los archivos Smali y una
 recomputación independiente del SHA-256. No inventar estos datos.
 
 
-### 1.3 Identidad del APK de origen — recuperada del chat
+### 1.3 Alcance probatorio de los metadatos de origen
 
-El 16-11-2026 el usuario compartió que el paquete com.miui.backup reside en
-/product/priv-app/Backup/Backup.apk, con tamaño 16,866,352 bytes. La copia
-$HOME/Backup.apk fue reportada como IDENTICAL y se proporcionó el SHA-256
-36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae.
-
-Clasificación: CONFIRMADO EN CHAT, no verificado de nuevo contra los bytes
-del dispositivo en esta sesión. El hash identifica los bytes si es
-correcto; no demuestra por sí solo origen, versión ni integridad del
-proceso de adquisición.
+La ruta, el tamaño, la comparación IDENTICAL y el SHA-256 anterior son
+datos recuperados de la conversación del 16-11-2026. Se clasifican como
+CONFIRMADO EN CHAT porque el usuario compartió esos resultados. No se
+recalcularon contra el APK del dispositivo durante esta sesión y no
+sustituyen una verificación local actual. El hash identifica bytes si el
+valor reportado es correcto; no demuestra por sí solo origen, versión,
+firma, integridad del proceso de adquisición ni comportamiento del APK.
 
 ------------------------------------------------------------------------
 
