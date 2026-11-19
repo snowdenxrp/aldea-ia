@@ -1127,6 +1127,8 @@ Se añadió una nota de evidencia provisional a partir de los bloques y resultad
 
 **Jerarquía probatoria:** estos datos se registran como compartidos/recuperados de conversación, no como LOCAL-VERIFIED. El `error=7` del caller y el `error=1` del helper permanecen diferenciados.
 
+**Reconciliación analítica añadida en evidencia 25:** el caller registra `state=1` tras el helper cuando no detecta aborto, mientras el helper puede haber asignado `error=1` por ausencia del destino final. Si ambos actúan sobre el mismo `BRItem` y no hay limpieza intermedia, es posible `state=1,error=1`; el caller resumido no comprueba `error==0` antes de escribir state 1. La evidencia 15 indica que el adapter cuenta state 1 y 6 como éxito, por lo que existe un **riesgo de inconsistencia en el conteo de UI**, todavía no un bug demostrado: falta cotejar la identidad del objeto y el recorrido completo. La presencia del destino tampoco equivale por sí sola a integridad verificada; las validaciones adicionales del helper permanecen UNKNOWN.
+
 **Estado de recepción:** TERMINADA. El usuario confirmó que el último bloque compartido es el final de su extracción de `restoreLocalMediaFile()`; no se espera continuación adicional en esta fase. **Pendiente:** cierre analítico y reconciliación del material recibido. El análisis permanece INCOMPLETO; no se confunde este estado con la espera de nuevos bloques.
 
 Documento de detalle: [evidencia 25 — restoreLocalMediaFile y ArchiveHelper](evidence/2026-11-19/25_RESTORE_LOCAL_MEDIA_AND_ARCHIVEHELPER.md).
