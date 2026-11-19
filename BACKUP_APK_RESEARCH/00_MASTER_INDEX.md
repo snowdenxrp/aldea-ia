@@ -1104,3 +1104,10 @@ Una relectura completa de 02, 10, 15, 18 y 21 detectó que la evidencia 21 cerr�
 Documento autoritativo de corrección: [evidence/2026-11-19/23_EVIDENCE_HIERARCHY_CORRECTION_TYPE_AND_STATE6.md](evidence/2026-11-19/23_EVIDENCE_HIERARCHY_CORRECTION_TYPE_AND_STATE6.md).
 
 Esta actualización es documental; no implica verificación local ni operación en dispositivo.
+## 32. GitHub continuidad, divergencia y superficies — evidencia 24
+
+Estado vivo consultado: `main`=`9e670885d0a183cd59541e9590c4cd1fb4ebb757`; rama de investigación comparada contra main: `diverged`, 48 commits ahead y 3 behind. Los tres commits exclusivos de main son `c511fdb`, `9b7141d` y `9e67088`; corresponden a la creación de evidencia 21, actualización del índice y creación de evidencia 22. Los documentos 21/22 se copiaron sin cambio a la rama de investigación; no se integraron los commits de main.
+
+El endpoint `git/matching-refs/tags/` devolvió array vacío para `aldea-ia`; gists no pudieron auditarse porque el conector rechazó el endpoint. No se hizo merge, reset, rebase, cherry-pick ni modificación de main.
+
+Véase [evidence/2026-11-19/24_GITHUB_CONTINUITY_AND_SURFACE_CORRECTION.md](evidence/2026-11-19/24_GITHUB_CONTINUITY_AND_SURFACE_CORRECTION.md).
