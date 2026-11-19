@@ -735,3 +735,16 @@ archivo previo en vez de `BRService$5`. Detalles y límites:
 
 No usar números `.line` como posiciones físicas ni atribuir la salida
 del comando equivocado a `BRService$5`.
+
+
+## 16. ProgressItemAdapter: conteos y semántica de finalización
+
+Se recuperó que `getSuccessfulCount` cuenta estados 1 y 6;
+`getFailedCount` equivale a total menos exitosos; `initData` trata
+1/3/6 como estados finalizados y cuenta 1/6 como éxito. El adapter
+normaliza `state=2` a 1 al finalizar y no mostró escrituras literales
+7/8 en los rangos inspeccionados. El significado UI completo de cada
+estado y el origen de state 6 siguen pendientes.
+
+Detalle:
+[`evidence/2026-11-19/09_PROGRESS_ADAPTER_UI_RECOVERY.md`](evidence/2026-11-19/09_PROGRESS_ADAPTER_UI_RECOVERY.md).
