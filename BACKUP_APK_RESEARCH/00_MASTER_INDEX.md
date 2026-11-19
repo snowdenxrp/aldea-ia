@@ -684,3 +684,21 @@ Los recursos 8/9 permanecen mapeados a
 `err_router_disconnected` y `flash_drive_connection_failed`.
 La causalidad completa y la reconciliación de las rutas con estado global
 3/4 siguen pendientes de relectura local.
+
+
+## 13. Manifiesto, MiAsistService y Binder — recuperación ampliada
+
+Se recuperaron datos históricos adicionales de los chats del 16–17 de
+noviembre: `sharedUserId="android.uid.backup"`, `allowBackup=false`,
+permisos declarados, servicios no exportados, acción
+`miui.intent.action.MIASIST_PROXY`, validación de `mimover_action` /
+`client_port`, los 14 IDs Binder y más referencias de línea. El registro
+completo, con límites probatorios, está en
+[`evidence/2026-11-19/06_MANIFEST_MIASIST_BINDER_RECOVERY.md`](evidence/2026-11-19/06_MANIFEST_MIASIST_BINDER_RECOVERY.md).
+
+Se conserva una discrepancia de anclaje: la llamada a
+`startRestoreCommand` aparece en el contexto histórico alrededor de la
+línea 838 y también en `MiAsistService.smali:2939–2942`. No se
+normalizará hasta identificar los descriptores exactos de archivo y
+método. Las declaraciones del manifiesto tampoco prueban grants
+efectivos ni alcanzabilidad externa.
