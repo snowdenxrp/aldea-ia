@@ -581,3 +581,36 @@ qué evidencia falta recuperar.
 **Estado final de esta versión:** útil para continuar el rastreo de
 códigos globales 8 y 9; no debe tratarse como expediente probatorio
 completo hasta incorporar los fragmentos Smali originales y los hashes.
+
+------------------------------------------------------------------------
+
+## 9. Addendum de recuperación histórica — 2026-11-19
+
+Se recuperaron detalles adicionales de conversaciones anteriores y se
+preservaron en
+[`evidence/2026-11-19/02_CHAT_RECOVERY_DELTA.md`](evidence/2026-11-19/02_CHAT_RECOVERY_DELTA.md).
+
+**Corrección importante de §2 y §19.1:** la paráfrasis anterior del
+bloque `BRService$5.run()` líneas 1391–1418 era incorrecta. Los datos
+recuperados del mensaje del usuario indican:
+
+- `mBakFilesType==2` → `v8=1`.
+- `mBakFilesType==3` → `mIsTransingTask=true`.
+- `mBakFilesType==5` → `mIsFlashDriveTask=true`.
+- `mBakFilesType==1` → `mIsLocalBackupTask=true`.
+
+No debe repetirse el mapeo incorrecto anterior (2→transing, 3→flash).
+La corrección está recuperada de la conversación, pero aún no se ha
+releído el bloque completo contra el checkout local; por tanto, el
+mapeo queda como DIRECT-CHAT / PENDING LOCAL-VERIFICATION, no como
+LOCAL-VERIFIED.
+
+El delta también recupera referencias adicionales de escritores de
+`BRItem.state`, callbacks de `BRService$11`, flujo de transferencia
+remota, ramas de `BRService$5` y referencias de entrada Binder de los
+días 16–19. No contiene todavía las transcripciones ni bloques Smali
+completos.
+
+**Estado general:** INCOMPLETO. La recuperación mejora la precisión
+documental, pero no cierra la causalidad de los errores globales 8/9 ni
+sustituye la verificación contra los archivos locales.
