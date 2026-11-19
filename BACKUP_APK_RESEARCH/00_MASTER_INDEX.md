@@ -660,3 +660,27 @@ refs inspeccionados no aparece una copia directa archivada de los
 bloques Smali del 16–19 de noviembre. Esto no descarta almacenamiento
 local, adjuntos históricos, objetos Git no alcanzables ni otras fuentes
 no inventariadas.
+
+
+## 12. Cadena global de errores 8/9 — recuperación adicional
+
+Se recuperaron de conversaciones del 19-11 detalles adicionales de
+`BRService$5.startRestore()`, `handleTaskFinish` y notificaciones.
+El registro está en
+[`evidence/2026-11-19/05_GLOBAL_ERROR_CHAIN_RECOVERY.md`](evidence/2026-11-19/05_GLOBAL_ERROR_CHAIN_RECOVERY.md).
+
+En esa reconstrucción, Theme Manager (`com.android.thememanager`)
+produce candidato `v16=8` bajo la condición `v8 != 0`; Flash Drive
+sin USB produce candidato `v16=9`. Se recuperó también
+`handleTaskFinish` en líneas 8328–8408, que registra estado/etapa/error,
+llama a `showFinishNotification` y ejecuta `stopSelf()`.
+
+Se registró una segunda invocación diferenciada:
+`setState(3,12,9)` → `handleTaskFinish(3,12,9,mBRItems)`, en líneas
+5562–5567. No debe mezclarse con el flujo de restauración que usa
+`(4,12,8/9)`.
+
+Los recursos 8/9 permanecen mapeados a
+`err_router_disconnected` y `flash_drive_connection_failed`.
+La causalidad completa y la reconciliación de las rutas con estado global
+3/4 siguen pendientes de relectura local.
