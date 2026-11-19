@@ -835,3 +835,25 @@ Detalle y callers relacionados:
 
 **Estado:** orden de argumentos RESOLVED-DIRECT-CHAT; falta releer el
 checkout local para alcanzar LOCAL-VERIFIED.
+
+
+## 20. Auditoría completa de árboles de ramas de aldea-ia
+
+Se enumeraron 134 ramas (100 + 34) y se consultó el árbol Git recursivo
+del commit tip de cada una. Los 134 árboles devolvieron
+`truncated=false`. El filtro de rutas incluyó Backup, MIUI, Mi Mover,
+Termux, `BRService`, `MiAsistService`, `ProgressItemAdapter`,
+`BRItem` y APK.
+
+No apareció en ninguna rama preexistente una ruta que contenga la
+investigación Smali directa de MIUI Backup.apk. Los hits de “BACKUP”
+restantes son documentos de escrow de Nexo; los hits de Termux son
+documentos NCS de filesystem/inspección, no archivos de MIUI Backup.
+
+El informe completo está en
+[`evidence/2026-11-19/13_COMPLETE_ALDEA_BRANCH_TREE_AUDIT.md`](evidence/2026-11-19/13_COMPLETE_ALDEA_BRANCH_TREE_AUDIT.md).
+
+**Alcance:** esto cierra la inspección de árboles de puntas de las 134
+ramas actuales, no la búsqueda de objetos Git inalcanzables/eliminados,
+historiales no referenciados, Gists, PRs, Actions artifacts, otros
+repositorios no inventariados ni almacenamiento local.
