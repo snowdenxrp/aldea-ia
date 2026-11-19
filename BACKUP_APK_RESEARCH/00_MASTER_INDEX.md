@@ -614,3 +614,28 @@ completos.
 **Estado general:** INCOMPLETO. La recuperación mejora la precisión
 documental, pero no cierra la causalidad de los errores globales 8/9 ni
 sustituye la verificación contra los archivos locales.
+
+
+## 10. Auditoría ampliada del repositorio antecedente — 2026-11-19
+
+Se inspeccionó directamente el repositorio privado
+`snowdenxrp/-nexo-drb09-external-register`. El árbol recursivo completo
+de `main` devolvió 9 rutas (`truncated=false`); conserva
+`G08_NON_OPERATIONAL_EVIDENCE_PLAN.md`, pero no contiene archivos
+Smali, `Backup.apk`, `BRService` ni `MiAsistService` en ese árbol.
+
+La historia de ese archivo contiene **27 commits** en total. La auditoría
+inicial destacaba 17 commits relevantes de 14–15 de noviembre; no era
+el recuento completo del historial. El detalle y los límites de la
+inspección están en
+[`evidence/2026-11-19/03_D_RB09_REPOSITORY_AUDIT.md`](evidence/2026-11-19/03_D_RB09_REPOSITORY_AUDIT.md).
+
+La búsqueda de código en ese repositorio no devolvió coincidencias para
+`BackupManager`, `MiuiBackup`, `com.miui.huanji` ni `Termux backup`;
+como la indexación no está acreditada, esos ceros no se usan como prueba
+de ausencia. La conclusión firme se limita al árbol completo de `main`
+que sí se inspeccionó.
+
+**Estado de la rama documental al cierre de este addendum:** verificar
+HEAD y comparación con `main` en el siguiente checkpoint. No se modificó
+`main` ni ninguna rama NCS.
