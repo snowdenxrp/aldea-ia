@@ -1113,3 +1113,20 @@ Estado vivo consultado: `main`=`9e670885d0a183cd59541e9590c4cd1fb4ebb757`; rama 
 El endpoint `git/matching-refs/tags/` devolvió array vacío para `aldea-ia`; gists no pudieron auditarse porque el conector rechazó el endpoint. No se hizo merge, reset, rebase, cherry-pick ni modificación de main.
 
 Véase [evidence/2026-11-19/24_GITHUB_CONTINUITY_AND_SURFACE_CORRECTION.md](evidence/2026-11-19/24_GITHUB_CONTINUITY_AND_SURFACE_CORRECTION.md).
+
+## 33. restoreLocalMediaFile() y ArchiveHelper.unzipFiles() — 2026-11-19
+
+Se añadió una nota de evidencia provisional a partir de los bloques y resultados compartidos en la conversación:
+
+- `restoreLocalMediaFile()` construye `backup_<suffix>.zip`, obtiene el sufijo mediante `Utils.getZipSuffixType(packageName, type)` y usa `mCurrentBackupRootPath`.
+- Si el ZIP no existe y `p3 == null`, se reportan `BRItem.state=3` y `BRItem.error=7`, con notificación de error/finalización y retorno.
+- Si existe el ZIP o hay `InputStream`, se establece `state=8` y se invoca `ArchiveHelper.unzipFiles()`.
+- Después de esa invocación, se reporta `state=9` si `mIsAborted`, o `state=1` en caso contrario.
+- Para `ArchiveHelper.smali` se recuperó el SHA-256 `fc0e3c930246162176b7eab6415a55629555360688fb8326b28a5bcb2f19285c`. La síntesis del helper indica entrada desde `p5` InputStream o `FileInputStream(p0)`, escritura temporal `.tmp`, rename con fallback a `Utils.copyFile`, y `BRItem.error=1` si el destino final no aparece.
+- Call sites recuperados: `ArchiveHelper.smali:1994` (overload 4→7 argumentos), `BRService.smali:12918` (overload completo desde restore local) y `BRService$UnpackThread.smali:81` (caller separado de 4 argumentos).
+
+**Jerarquía probatoria:** estos datos se registran como compartidos/recuperados de conversación, no como LOCAL-VERIFIED. El `error=7` del caller y el `error=1` del helper permanecen diferenciados.
+
+**Pendiente bloqueante:** continuación de `restoreLocalMediaFile()` después de la línea 3163 y cierre del método. No se declara completo el análisis ni se inicia una nueva extracción.
+
+Documento de detalle: [evidencia 25 — restoreLocalMediaFile y ArchiveHelper](evidence/2026-11-19/25_RESTORE_LOCAL_MEDIA_AND_ARCHIVEHELPER.md).
