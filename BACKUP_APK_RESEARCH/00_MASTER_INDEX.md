@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.9 --- independent error=1 producer added to restore reconciliation\
+**Versión:** 0.10 --- error=1 producer and state=3 failure-path qualification\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1125,7 +1125,7 @@ Se añadió una nota de evidencia provisional a partir de los bloques y resultad
 - Para `ArchiveHelper.smali` se recuperó el SHA-256 `fc0e3c930246162176b7eab6415a55629555360688fb8326b28a5bcb2f19285c`. La síntesis del helper indica entrada desde `p5` InputStream o `FileInputStream(p0)`, escritura temporal `.tmp`, rename con fallback a `Utils.copyFile`, y `BRItem.error=1` si el destino final no aparece.
 - Call sites recuperados: `ArchiveHelper.smali:1994` (overload 4→7 argumentos), `BRService.smali:12918` (overload completo desde restore local) y `BRService$UnpackThread.smali:81` (caller separado de 4 argumentos).
 
-**Jerarquía probatoria:** estos datos se registran como compartidos/recuperados de conversación, no como LOCAL-VERIFIED. El `error=7` del caller y el `error=1` del helper permanecen diferenciados. Además, `error=1` no es exclusivo del helper: evidencia 02 recupera otro productor en `BRService$5` cuando `bakFile` existe y `v5==null`; si `bakFile` no existe y `v5==null`, esa rama asigna `error=10`. Los productores deben mantenerse separados.
+**Jerarquía probatoria:** estos datos se registran como compartidos/recuperados de conversación, no como LOCAL-VERIFIED. El `error=7` del caller y el `error=1` del helper permanecen diferenciados. Además, `error=1` no es exclusivo del helper: evidencia 02 recupera otro productor en `BRService$5` cuando `bakFile` existe y `v5==null`; si `bakFile` no existe y `v5==null`, esa rama asigna `error=10`. Evidencia 02 también reporta `state=3` en una ruta de fallo alrededor de la línea 1983, pero no conserva el bloque completo para ligar esa escritura a la misma rama de `error=1`. Los productores deben mantenerse separados y el estado debe analizarse dentro de cada ruta.
 
 **Reconciliación analítica añadida en evidencia 25:** el caller registra `state=1` tras el helper cuando no detecta aborto, mientras el helper puede haber asignado `error=1` por ausencia del destino final. Si ambos actúan sobre el mismo `BRItem` y no hay limpieza intermedia, es posible `state=1,error=1`; el caller resumido no comprueba `error==0` antes de escribir state 1. La evidencia 15 indica que el adapter cuenta state 1 y 6 como éxito, por lo que existe un **riesgo de inconsistencia en el conteo de UI**, todavía no un bug demostrado: falta cotejar la identidad del objeto y el recorrido completo. La misma evidencia solo documenta normalización de `state=2` a 1 y fuerza `state=1` cuando `error=0`; no demuestra que `error!=0` repare un `state=1` preexistente, por lo que el callback de finalización no puede asumirse como saneador. La presencia del destino tampoco equivale por sí sola a integridad verificada; las validaciones adicionales del helper permanecen UNKNOWN.
 
