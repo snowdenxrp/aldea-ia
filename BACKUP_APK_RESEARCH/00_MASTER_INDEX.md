@@ -1204,3 +1204,13 @@ Se recuperó contexto adicional del chat inmediatamente anterior:
 **Límite:** no se recuperó el transcript íntegro ni el inventario grep literal completo. La evidencia 29 es RECOVERED-CHAT, no LOCAL-VERIFIED. No se completan hashes abreviados ni se infieren valores ausentes. Mantener evidencias 15 y 25–28 como documentos específicos de callbacks, restore/helper y adapter; evidencia 29 añade contexto del inventario global sin duplicar ni reemplazar sus conclusiones.
 
 Informe: [evidencia 29 — recuperación del chat anterior e inventario global](evidence/2026-11-19/29_PREVIOUS_CHAT_RECOVERY_AND_GLOBAL_BRITEM_INVENTORY.md).
+
+## 38. Regla de preservación por respuesta y siguiente extracción P0 — evidencia 30
+
+El usuario estableció como regla permanente que cada respuesta que avance esta investigación deje sus resultados guardados en GitHub antes de cerrar. Se formaliza el ciclo: preservar hallazgos y procedencia, actualizar el índice, crear evidencia numerada cuando exista material técnico o handoff nuevo, releer lo guardado y comunicar commit/SHA. No fabricar documentos vacíos para respuestas meramente aclaratorias.
+
+**Punto exacto de continuación:** cerrar la continuidad entre el array BRItem entregado a initData, la identidad retenida en ProgressItem y la lógica de updateSingleItemUI que lee error. Después rastrear getter/exposición de BRItem[] y regresar al call site BRService.smali:12918 para reconstruir el registro v5 (BRItem p3 del helper), listener terminal y escrituras intermedias.
+
+La evidencia 30 contiene los comandos grep de solo lectura, la secuencia de extracción y los límites. No ejecutar Backup/Restore ni servicios; no modificar APK. La salida futura seguirá clasificada DIRECT-CHAT hasta cotejo local independiente.
+
+Informe: [evidencia 30 — regla de continuidad y siguiente extracción P0](evidence/2026-11-19/30_CONTINUITY_RULE_AND_NEXT_P0_EXTRACTION.md).
