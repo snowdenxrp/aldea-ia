@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.4 --- inventario ampliado y evidencia provisional de restauración local\
+**Versión:** 0.5 --- corrección del estado de recepción de restoreLocalMediaFile()\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1127,6 +1127,6 @@ Se añadió una nota de evidencia provisional a partir de los bloques y resultad
 
 **Jerarquía probatoria:** estos datos se registran como compartidos/recuperados de conversación, no como LOCAL-VERIFIED. El `error=7` del caller y el `error=1` del helper permanecen diferenciados.
 
-**Pendiente bloqueante:** continuación de `restoreLocalMediaFile()` después de la línea 3163 y cierre del método. No se declara completo el análisis ni se inicia una nueva extracción.
+**Estado de recepción:** TERMINADA. El usuario confirmó que el último bloque compartido es el final de su extracción de `restoreLocalMediaFile()`; no se espera continuación adicional en esta fase. **Pendiente:** cierre analítico y reconciliación del material recibido. El análisis permanece INCOMPLETO; no se confunde este estado con la espera de nuevos bloques.
 
 Documento de detalle: [evidencia 25 — restoreLocalMediaFile y ArchiveHelper](evidence/2026-11-19/25_RESTORE_LOCAL_MEDIA_AND_ARCHIVEHELPER.md).
