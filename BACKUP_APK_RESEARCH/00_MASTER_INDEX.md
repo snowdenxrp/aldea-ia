@@ -982,3 +982,65 @@ directiva `.line`. Véase erratum.
 
 **Estado probatorio:** corrección documental incorporada; falta lectura
 local. No se modificó el APK ni la extracción Smali.
+
+
+## 26. Estado autoritativo vigente — supersede resúmenes anteriores
+
+Esta sección es la referencia vigente cuando alguna sección histórica
+anterior contradiga su clasificación.
+
+### mBakFilesType
+
+**UNKNOWN — SOURCE BLOCK RECONCILIATION REQUIRED.**
+
+- Reporte recuperado del 17-11: tipos 2 y 3 → `mIsTransingTask`;
+  tipo 5 → `mIsFlashDriveTask`; tipo 1 → `mIsLocalBackupTask`.
+  Es dato de usuario recuperado, pero no se recuperó el bloque verbatim.
+- Reporte del 19-11: una interpretación posterior atribuyó tipo 2 a
+  `v8=1`, tipo 3 a `mIsTransingTask`, tipo 5 a
+  `mIsFlashDriveTask`, tipo 1 a `mIsLocalBackupTask`. El fragmento
+  completo no fue recuperado verbatim; la referencia `.line 1391–1418`
+  estaba dentro de `sed -n '100,320p' "$F"`, no son líneas físicas.
+- No sabemos si hay distintas versiones, métodos o error de lectura.
+  No usar como definitivo ni 2→transferencia ni 2→v8.
+- Fuente de reconciliación: evidencia 18.
+
+### Estado 6 de BRItem
+
+- El grep histórico directo enumera una escritura física en
+  `BRService$5.smali:2351`.
+- La asociación con `files_for_backup` después de
+  `waitingForFilesTransingEnd()` se conserva como contexto histórico,
+  pero el anclaje “1735” no está demostrado como línea física y puede
+  ser una directiva `.line`.
+- No afirmar dos productores físicos de state 6 sin comparar el archivo
+  y sus coordenadas. Evidencia 18 corrige el documento 15 y cualquier
+  resumen anterior que presentara dos líneas físicas confirmadas.
+
+### Llamada final setState
+
+**DIRECT-CHAT / USER-PASTED-SOURCE:** el invoke final recuperado es
+`setState(4,12,0,v14)`; parámetros: `p1=mState`,
+`p2=mWorkingStage`, `p3=mUserInterruptAction`,
+`p4=mLastError` si el previo era cero. No está aún LOCAL-VERIFIED.
+Véase evidencia 12.
+
+### GitHub histórico
+
+La búsqueda de PR/Actions/releases no encontró un archivo directo de
+MIUI Backup.apk; tags y gists siguen sin auditarse, y los endpoints de
+Actions solo cubrieron primera página. Véase evidencia 19.
+
+### Próximo paso decisivo
+
+El trabajo remoto de recuperación documental llegó al límite útil sin
+la extracción local. Para resolver de verdad los dos conflictos
+anteriores se requiere la salida local de solo lectura con:
+ruta exacta, SHA-256 del Smali, `grep -n -B 12 -A 18 'mBakFilesType'`,
+`sed -n '1360,1445p'`, y `grep -n -B 15 -A 15
+'BRItem;->state:I'` sobre el mismo archivo. La evidencia 18 contiene
+la secuencia completa. No ejecutar Backup/Restore ni servicios.
+
+**Estado general:** expediente documental actualizado; recuperación
+histórica parcial; ingeniería inversa estática INCOMPLETA; ningún
+resultado se declara LOCAL-VERIFIED sin leer el checkout del usuario.
