@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.10 --- error=1 producer and state=3 failure-path qualification\
+**Versión:** 0.11 --- stage-11 state/error reconciliation\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1134,3 +1134,16 @@ Se añadió una nota de evidencia provisional a partir de los bloques y resultad
 **Estado de recepción:** TERMINADA. El usuario confirmó que el último bloque compartido es el final de su extracción de `restoreLocalMediaFile()`; no se espera continuación adicional en esta fase. **Pendiente:** cierre analítico y reconciliación del material recibido. El análisis permanece INCOMPLETO; no se confunde este estado con la espera de nuevos bloques.
 
 Documento de detalle: [evidencia 25 — restoreLocalMediaFile y ArchiveHelper](evidence/2026-11-19/25_RESTORE_LOCAL_MEDIA_AND_ARCHIVEHELPER.md).
+
+
+## 34. Reconciliación state=1/error=1 y condición completa de setState — evidencia 26
+
+Se precisó la condición de normalización de `setState(IIII)`: se activa por `mWorkingStage==10`, `mWorkingStage==12` **o** `mUserInterruptAction==2`. Por tanto, stage 11 no la activa por sí solo, pero no debe describirse como exclusión absoluta sin comprobar también la acción de interrupción. La llamada final ordinaria recuperada corresponde a stage 11 y acción 0; bajo ese bloque, no se activa la normalización masiva.
+
+La evidencia 15 conserva que el callback de finalización fuerza `state=1` si `error==0`, mientras que la rama con error no nulo puede preservar el estado existente. Esto refuerza, de forma condicional, la hipótesis de que un `state=1,error=1` preexistente no se sanee automáticamente.
+
+**Conclusión:** sigue siendo una hipótesis fuerte que el helper pueda asignar `error=1`, el caller asigne después `state=1`, y el adapter cuente ese elemento como éxito. No está demostrado que sea la misma instancia desde helper hasta `mBRItems` y adapter, ni que no existan escrituras intermedias. No declarar bug.
+
+- [Evidencia 26 — reconciliación state=1/error=1 y stage 11](evidence/2026-11-19/26_STATE1_ERROR1_STAGE11_RECONCILIATION.md)
+
+La actualización es documental. No hubo lectura local nueva, ejecución de Backup/Restore ni modificación del APK.
