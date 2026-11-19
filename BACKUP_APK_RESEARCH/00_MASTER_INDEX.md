@@ -873,3 +873,35 @@ Detalle:
 
 Esto audita mensajes de commits, no el contenido de todos los parches
 históricos ni objetos Git no alcanzables.
+
+
+## 22. Callbacks y semántica de estados BRItem — 2026-11-19
+
+Se consolidaron los bloques históricos pegados para
+`BRService$FakeBackupListenerImp`, `BRService$11` y
+`ProgressItemAdapter`.
+
+Hallazgos recuperados:
+- FakeBackupListenerImp escribe estados 1, 2 y 3 en las posiciones
+  físicas 1273, 1455 y 1753; sus `.line` Smali son 5921, 5719 y 5834.
+- En el callback de restauración, `state=3` se escribe antes de mapear
+  `p3` a `BRItem.error`; `p3=6→error=7` y `p3=8→error=6`.
+- El callback de backup finaliza con state 1 cuando `error==0`; la
+  condición de retry con error 7 no significa state 7.
+- BRService$11 inicia items con state 2 y maneja errores con state 3;
+  sus valores `p3` también se traducen a `BRItem.error`.
+- ProgressItemAdapter cuenta state 1 y 6 como éxito; state 1, 3 y 6
+  como estados terminales. State 6 es éxito en la UI/conteo.
+
+**Conflicto abierto:** existen dos anclajes históricos para state 6 en
+`BRService$5.smali`: línea física 2351 en el inventario previo y 1735
+en el contexto posterior de `files_for_backup`. No se fusionan sin
+comparar el mismo archivo y hash.
+
+Registro detallado:
+[`evidence/2026-11-19/15_CALLBACK_STATE_SEMANTICS_AND_STATE6_CONFLICT.md`](evidence/2026-11-19/15_CALLBACK_STATE_SEMANTICS_AND_STATE6_CONFLICT.md).
+
+**Siguiente verificación local:** recuperar los dos bloques completos
+de FakeBackupListenerImp, resolver `p3=2`, cotejar los dos anclajes
+state-6 y extraer el render/bind del adapter. Continúa siendo análisis
+estático y de solo lectura.
