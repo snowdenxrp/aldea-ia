@@ -1044,3 +1044,28 @@ la secuencia completa. No ejecutar Backup/Restore ni servicios.
 **Estado general:** expediente documental actualizado; recuperación
 histórica parcial; ingeniería inversa estática INCOMPLETA; ningún
 resultado se declara LOCAL-VERIFIED sin leer el checkout del usuario.
+
+## 27. Cadena de notificación final y callers — 2026-11-19
+
+Se recuperaron detalles adicionales del output pegado por el usuario:
+
+- handleTaskFinish en BRService.smali:8328–8408: registra
+  estado/etapa/error, elimina progreso de transferencia si aplica,
+  realiza limpieza de tres directorios de aplicaciones, llama
+  showFinishNotification(p1,p2,p3,p4) y después stopSelf().
+- showFinishNotification agrega extra_last_task_state=p1,
+  extra_last_workingstage=p2, extra_last_errcode=p3,
+  extra_title=v1 y extra_last_britems=p4 después de clearLocalFiles.
+- getErrStringRes(II) usa el segundo parámetro como código de error
+  (packed-switch p1 en método estático de dos argumentos).
+- Existe otra llamada distinta: handleTaskFinish(3,12,9,mBRItems)
+  desde BRService.smali:5562–5567; no confundirla con la ruta de
+  BRService$5 handleTaskFinish(4,12,8/9,mBRItems).
+
+Informe:
+[evidence/2026-11-19/20_FINISH_NOTIFICATION_PIPELINE_AND_CALLERS.md](evidence/2026-11-19/20_FINISH_NOTIFICATION_PIPELINE_AND_CALLERS.md).
+
+**Pendiente:** cuerpo completo de showFinishNotification,
+getFinishNotificationTitle, getErrStringRes, y todos los callers
+y productores de errores globales. Recuperación de conversación, no
+LOCAL-VERIFIED.
