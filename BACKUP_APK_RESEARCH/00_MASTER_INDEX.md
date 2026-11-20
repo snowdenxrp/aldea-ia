@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.46 --- RetransferUtils branch and RestoreThread recovery\
+**Versión:** 0.47 --- BRService restore thread map and signature correction\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1355,3 +1355,22 @@ Se incorporó evidencia 57: [`57_RETRANSFER_BRANCHES_AND_RESTORE_THREAD_RECOVERY
 **restoreFiles:** el resumen que ubica `restoreFiles(BRItem[],BackupDescriptor,int)` alrededor de línea física 12672 y le atribuye asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()` es PRIOR-ASSISTANT-OUTPUT / NEEDS SOURCE REVALIDATION, no fuente directa recuperada. No elevar a hecho cerrado.
 
 **Conflicto abierto:** el mensaje directo de CMD_RESTORE dice “tipo=3/reinicio” para la condición con lista ausente; un resumen anterior lo reformuló como tipo 3 o `mIsReStartCommand`. La segunda formulación no está revalidada. Mantener el texto directo y el conflicto hasta leer el bloque.
+
+
+## 53. BRService$5.run() y firma exacta de restoreFiles — 2026-11-20
+
+Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md`](evidence/2026-11-20/58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md). Se corrigió también evidencia 57.
+
+**Corrección de firma importante:**
+- `BRService.smali:12672` declara `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V`.
+- La firma es `restoreFiles(BRItem[],BackupDescriptor[],int)`, no `restoreFiles(BRItem[],BackupDescriptor,int)`.
+- Invocaciones reportadas: BRService.smali:19483 y 19519.
+
+**BRService$5.run():**
+- Inicio: asigna `mBRStartTime`, log `startRestore`, `acquireWakeLock()`, `acquireBMS()`, configura flags según `mBakFilesType`, inicia `StorageMonitor`.
+- Anclas: `restoreStreamSplitApk` 1899; executor 1951/1964; creación `PerformAdbRestoreTask` 1996; `BRManager.restorePackage()` 2079; `restoreLocalMediaFile` 2419/3006/3561.
+- `restoreAppData` no aparece en el mapa de este run(); no inferir ausencia global del método.
+
+**Lecturas mBRItems** reportadas en BRService.smali: 12050, 12733, 13610, 14140–14151, 16635, 16891, 17001–17010, 17114, 17170, 17183, 17345–17354, 19002, 19016, 19025. Sin contexto completo, no asignarles semántica.
+
+La secuencia se clasifica USER-PASTED-SOURCE / DIRECT-CHAT para los rangos y llamadas reportados; no LOCAL-VERIFIED y no prueba éxito runtime.
