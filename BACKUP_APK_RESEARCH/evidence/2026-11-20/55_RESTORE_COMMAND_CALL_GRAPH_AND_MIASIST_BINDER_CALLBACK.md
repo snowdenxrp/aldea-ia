@@ -74,12 +74,9 @@ Caller separado reportado:
 
 ## 3. Rama CMD_RESTORE de BRService.onStartCommand
 
-Un resumen de asistente posterior afirmó que la rama `CMD_RESTORE` de `onStartCommand()` lee `extra_is_from_miasist`, `extra_bakfiles_type`, `extra_britems`, descriptor y `mDescriptorPath`. La conversación recuperada no contiene el bloque literal de esa rama; por tanto, esta descripción queda **PRIOR-ASSISTANT-OUTPUT / NO REVALIDATED**. No usarla como prueba primaria ni dar por cerrada la transición entre Intent y ejecución restore.
+La búsqueda histórica posterior recuperó un mensaje del usuario del 16-11-2026, 16:50:47Z, que describe directamente parte de la rama. Los datos explícitos —extras leídos, descriptor desde `BRServiceDataHolder` o `extra_descriptor_dir`, llamada a `restoreFiles()` y tratamiento de lista null— se conservan con procedencia y límites en evidencia 56.
 
-Anclas históricas de archivo reportadas en una extracción posterior:
-- `BRService.onBind()`: alrededor de línea física 18672.
-- `BRService.onStartCommand()`: alrededor de línea física 19067.
-- `restoreAppData(String,int,int)`: alrededor de línea física 12550; bridge sintético reportado alrededor de 2085.
+Clasificación corregida: **USER-FACT / DIRECT-CHAT**, no Smali literal reproducido ni LOCAL-VERIFIED. El mensaje recuperado está truncado al describir el retorno (“retorna 1 en tipo…”), y no permite reconstruir todas las condiciones. No tratar la rama como cerrada ni completar el retorno por inferencia.
 
 ## 4. MiAsistService$2: conexión Binder a IBRService
 
