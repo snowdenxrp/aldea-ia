@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.45 --- partial CMD_RESTORE branch and MiAsist bridge recovery\
+**Versión:** 0.46 --- RetransferUtils branch and RestoreThread recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1336,3 +1336,22 @@ Se incorporó evidencia 56: [`56_BRSERVICE_CMD_RESTORE_ENTRY_BRANCH_RECOVERY.md`
 **Manifest:** se recuperó la declaración `foregroundServiceType="systemExempted"` para MiAsistService, junto a proceso `:remote`, action `miui.intent.action.MIASIST_PROXY` y `exported=false` (evidencia 52). Este atributo no demuestra acceso externo ni autorización.
 
 La sección 3 de evidencia 55 fue corregida: la rama CMD_RESTORE ya no se clasifica enteramente como resumen de asistente; los detalles explícitos anteriores se clasifican como USER-FACT / DIRECT-CHAT con truncamiento declarado.
+
+
+## 52. Ramas de restoreTransfering y arranque de RestoreThread — 2026-11-20
+
+Se incorporó evidencia 57: [`57_RETRANSFER_BRANCHES_AND_RESTORE_THREAD_RECOVERY.md`](evidence/2026-11-20/57_RETRANSFER_BRANCHES_AND_RESTORE_THREAD_RECOVERY.md) y se amplió la sección correspondiente de evidencia 55.
+
+**RetransferUtils / restoreTransfering:**
+- `RetransferUtils.smali:154` llama `BRService.restoreTransfering(Context,BackupDescriptor)`.
+- Rama `brState==3`: inicia `CMD_BACKUP` y añade `extra_is_retransfering=true`.
+- Rama `brState==4`: llama `startRestoreCommand(5 args)`.
+- No se conocen todos los demás valores de brState ni el cuerpo íntegro del método.
+
+**RestoreThread:**
+- `startRestore()` crea una `WeakReference`, instancia `BRService$5("RestoreThread")` y llama `start()`.
+- Esto acredita el arranque del hilo descrito, no que el restore finalice correctamente.
+
+**restoreFiles:** el resumen que ubica `restoreFiles(BRItem[],BackupDescriptor,int)` alrededor de línea física 12672 y le atribuye asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()` es PRIOR-ASSISTANT-OUTPUT / NEEDS SOURCE REVALIDATION, no fuente directa recuperada. No elevar a hecho cerrado.
+
+**Conflicto abierto:** el mensaje directo de CMD_RESTORE dice “tipo=3/reinicio” para la condición con lista ausente; un resumen anterior lo reformuló como tipo 3 o `mIsReStartCommand`. La segunda formulación no está revalidada. Mantener el texto directo y el conflicto hasta leer el bloque.
