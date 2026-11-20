@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.30 --- supplemental memory recovery and coverage\
+**Versión:** 0.31 --- expanded service lifecycle memory recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1070,3 +1070,12 @@ También conserva la secuencia histórica de `restoreLocalMediaFile()` (ZIP deri
 **Pendientes que siguen abiertos:** completar `MiAsistService → bindBRService → ServiceConnection → onServiceConnected → IBRService.Stub.asInterface(IBinder) → mBRService → getBRItems()`; resolver Proxy frente a interfaz local; investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos; reconciliar el mapeo histórico conflictivo de `mBakFilesType`; no repetir evidencias 35–45.
 
 **Regla:** antes de solicitar nuevos comandos, reconciliar el expediente completo y los hallazgos existentes. Solo lectura estática; no ejecutar servicios ni operaciones de Backup/Restore.
+
+
+## 37. Lifecycle de MiAsistService y superficie de acceso — 2026-11-20
+
+Se amplió la evidencia 46 con una segunda recuperación histórica del 16-11-2026. Añade detalles de `MiAsistService.onStartCommand()` (`mi_backup`/`mi_restore`), validación de `client_port` 57447–57449, `isOwnerSpace()` reportado como true, `onBind()` que devuelve null, conexiones `MiAsistService$2`/ `$4`, asignaciones `mBRService`/`mTransService`, etapas y el catálogo nominal de 14 transacciones de `IBRService.Stub`.
+
+También conserva la superficie del manifest: los tres servicios `MiAsistService`, `BRService`, `TransFileService` reportados como `exported=false`; acción `miui.intent.action.MIASIST_PROXY`; permisos `BACKUP_PROXY` y `BACKUP_FILE_SERVER` reportados como `signatureOrSystem`; intermediarios exportados identificados sin demostrar que alcancen la ruta protegida. La alcanzabilidad externa, autorización efectiva y restauración de datos privados permanecen UNKNOWN/NOT DEMONSTRATED.
+
+**Procedencia:** RECOVERED-CHAT; no LOCAL-VERIFIED. La conexión concreta del caller sigue abierta en la evidencia 45. No repetir el inventario Binder ni asumir que la acción de Intent anula `exported=false`.
