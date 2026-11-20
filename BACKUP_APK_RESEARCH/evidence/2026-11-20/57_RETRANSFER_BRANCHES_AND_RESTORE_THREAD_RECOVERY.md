@@ -57,6 +57,7 @@ La formulación con `mIsReStartCommand` es PRIOR-ASSISTANT-OUTPUT y no debe sust
 **Conclusión:** `restoreTransfering()` no es exclusivamente una ruta de restore: el resumen directo recuperado describe `brState==3 → CMD_BACKUP + extra_is_retransfering=true` y `brState==4 → startRestoreCommand(5 args)`. `startRestore()` crea e inicia `BRService$5("RestoreThread")`. El cuerpo de restoreFiles y la condición exacta para lista ausente permanecen incompletos.
 
 
-## 6. Corrección de firma
+## 6. Conflicto de firmas de restoreFiles
 
-La declaración exacta recuperada posteriormente del usuario en `BRService.smali:12672` es `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V`: ambos primeros parámetros son arrays. La firma abreviada anterior con descriptor singular queda corregida. Evidencia 58 conserva la declaración y las invocaciones reportadas en 19483/19519.
+La evidencia 34 conserva una firma directa con descriptor singular de paquete `com.miui.backup.data`; la recuperación posterior del 20-11 reporta un descriptor array de paquete `com.miui.backup`, ambos atribuidos a BRService.smali:12672. Son incompatibles y quedan UNKNOWN-STOP. No tratar la recuperación posterior como corrección definitiva ni descartar evidencia 34. Evidencia 58 conserva ambos descriptores, callers reportados y las hipótesis de reconciliación.
+
