@@ -899,7 +899,7 @@ comparar el mismo archivo y hash.
 Registro detallado:
 [`evidence/2026-11-19/15_CALLBACK_STATE_SEMANTICS_AND_STATE6_CONFLICT.md`](evidence/2026-11-19/15_CALLBACK_STATE_SEMANTICS_AND_STATE6_CONFLICT.md).
 
-## 18. Callers de initData y separación de rutas Binder — 2026-11-19
+## 23. Callers de initData y separación de rutas Binder — 2026-11-19
 
 Se incorporó la evidencia 33: [`33_BRITEM_ARRAY_CALLERS_AND_BINDER_SPLIT.md`](evidence/2026-11-19/33_BRITEM_ARRAY_CALLERS_AND_BINDER_SPLIT.md).
 
