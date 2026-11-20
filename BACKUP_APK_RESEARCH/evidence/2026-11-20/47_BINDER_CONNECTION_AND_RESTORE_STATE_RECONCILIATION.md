@@ -23,7 +23,7 @@ La evidencia 45 dejó como pendiente seguir MiAsistService hasta onServiceConnec
 
 **Corrección de estado:** no está pendiente localizar ni demostrar la existencia de onServiceConnected() ni su llamada a Stub.asInterface(); eso ya está RECOVERED-DIRECT-CHAT en evidencia 02. Lo que sigue sin resolverse es:
 1. recuperar el cuerpo exacto de IBRService$Stub.asInterface(IBinder); el callback MiAsistService$2, su asignación a mBRService y la desconexión ya están documentados en evidencias 02/55;
-2. establecer si el Binder devuelto es local (rama queryLocalInterface) o remoto (rama Proxy) para la configuración de procesos de esta APK;
+2. establecer si el Binder devuelto es local (rama queryLocalInterface) o remoto (rama Proxy) para la configuración de procesos de esta APK. El caller de `getBRItems()` ya está identificado en evidencia 59;
 3. conectar ese resultado con el caller getBRItems() en la ruta concreta, sin inferir una ejecución solo por la presencia de Proxy;
 4. recuperar la etiqueta `<application>` del manifest para determinar si fija un proceso por defecto; después resolver el proceso efectivo de BRService (su declaración de servicio no muestra `android:process` en el fragmento disponible) y compararlo con MiAsistService `:remote`. Solo entonces concluir si la conexión cruza procesos y si se espera Proxy.
 
