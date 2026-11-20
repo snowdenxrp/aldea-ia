@@ -111,3 +111,23 @@ Se reportó stopSelf() al terminar el flujo de MiAsistService. No se recuperó e
 8. Solo lectura estática.
 
 **Conclusión:** se amplía el mapa de control MiAsist con las etapas de autorización/conexión/BRService/TransFileService, parámetros de entrada, campos de estado y errores de parsing/escritura/ocupación. No se ha reconstruido el transporte de red ni el gate completo. Estado: INCOMPLETE.
+
+
+## 7. Manifest y bridges sintéticos: precisión adicional
+
+Recuperación de mensajes del usuario del 16-11-2026:
+- El manifest reportado declara `MiAsistService` y `BRService` con `android:exported="false"`.
+- `MiAsistService` declara acción `miui.intent.action.MIASIST_PROXY`, proceso `:remote` y `foregroundServiceType="systemExempted"`.
+- `MiAsistService.smali:416–453` contiene bridges sintéticos Nest para `doSendFile(String)`, `sendAllBRItemsDescriptor()`, `startRestoreCommand()` y `startBackupCommand()`. Delegan a métodos privados; no contienen la implementación de transferencia.
+
+No inferir que `foregroundServiceType` concede por sí mismo permiso de acceso externo, bypass de restricciones de foreground service o autorización Binder. Tampoco inferir exposición externa desde la action cuando el componente está declarado exported=false.
+
+## 8. Recuperación parcial de CMD_RESTORE
+
+La descripción histórica directa del usuario para `BRService.onStartCommand()` se preserva en evidencia 56:
+- lectura de `extra_is_from_miasist`, `extra_bakfiles_type` (default 1), `extra_britems` y `extra_zip_file_path`;
+- descriptor obtenido desde `BRServiceDataHolder` o `extra_descriptor_dir`;
+- llamada a `restoreFiles()` con BRItems, o en la condición descrita como tipo 3/reinicio;
+- lista null: log `restoreFiles brItems is null` y llamada reportada `setState(mState,0xc,6)`.
+
+La recuperación está truncada en “retorna 1 en tipo…”. No reconstruir la condición de retorno ni tratarla como bloque Smali completo.
