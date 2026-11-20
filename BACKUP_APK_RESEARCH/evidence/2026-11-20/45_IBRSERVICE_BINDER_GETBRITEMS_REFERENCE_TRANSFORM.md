@@ -105,4 +105,4 @@ No se inspeccionaron ni ejecutaron operaciones de backup/restauración, ni se mo
 
 ## 8. Siguiente objetivo
 
-Seguir la obtención de `IBRService` por `MiAsistService`: conexión/binding, `onServiceConnected()`, llamada a `IBRService$Stub.asInterface(IBinder)`, asignación a `mBRService` y caller de `getBRItems()`. Determinar si la ruta usa Proxy o interfaz local sin inferirlo solo por la existencia de las clases generadas.
+El caller concreto de `getBRItems()` ya fue pegado por el usuario en `MiAsistService.smali:1606`; véase evidencia 59. No repetir su búsqueda. Pendiente: cuerpo de `IBRService$Stub.asInterface(IBinder)` y proceso efectivo de BRService para decidir si el objeto de `mBRService` es local o Proxy. La declaración de método `asInterface(IBinder)` está recuperada, pero no su cuerpo (evidencia 47).
