@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.39 --- BRService direct state/error writer reconciliation\
+**Versión:** 0.40 --- expanded BRService writer provenance map\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1230,3 +1230,14 @@ Se incorporó evidencia 53: [`53_BRService_DIRECT_STATE_ERROR_WRITERS_AND_PROPAG
 **Regla de interpretación reforzada:** el valor 7 en 12856/12859 es `BRItem.error=7`, no state. No deducir destino de un campo por la constante; leer el iput.
 
 La procedencia de `clearCallingIdentity()` y UID 6100 se corrige en sección 44 y evidencia 51: referencia line 7380 no tiene fuente primaria recuperada; UID 6100 carece de soporte y queda UNSUPPORTED.
+
+
+## 46. Ampliación de procedencia de propagación BRService/PkgInfo — 2026-11-20
+
+Evidencia 53 se amplió con referencias históricas adicionales:
+- BRService.smali:7004/7009: resumen previo describe lectura de `PkgInfo.state/error` y escritura hacia `BRItem.state/error`; clase concreta, método y caller desconocidos.
+- BRService.smali:16821, 16843–16845 y 16870–16872: lecturas state/error reportadas, sin bloque completo ni método.
+- `clearLocalFiles(ArrayList)`: resumen previo indica que limpia `localFileList` de `files_for_backup` sin cambiar state/error; no hay fuente literal recuperada.
+- Se reitera relación `showFinishNotification`/extras y `getErrStringRes(8/9)`, ya documentada en evidencia 47.
+
+Estas ampliaciones no elevan la clasificación: lo que no procede de instrucciones pegadas sigue marcado PRIOR-ASSISTANT-SUMMARY; no se conocen encabezados .method/callers para esos bloques.
