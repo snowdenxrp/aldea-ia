@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.51 --- restoreFiles callers and mBakFilesType provenance reconciliation\
+**Versión:** 0.52 --- mBakFilesType field-flow and restoreFiles caller reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1379,7 +1379,7 @@ La evidencia 51 incorpora además el detalle de branches `mBakFilesType` de BRSe
 
 
 
-## 40. Caller getBRItems y límite del getter — 2026-11-20
+## 54. Caller getBRItems y límite del getter — 2026-11-20
 
 Se incorporó evidencia 59: [`59_GETBRITEMS_CALLER_AND_PARTIAL_GETTER_SOURCE_BOUNDARY.md`](evidence/2026-11-20/59_GETBRITEMS_CALLER_AND_PARTIAL_GETTER_SOURCE_BOUNDARY.md).
 
@@ -1390,8 +1390,17 @@ El fragmento directo de `BRService.smali:6750–6815` alcanza creación del arre
 **Estado Binder:** callback `$2`, caller `getBRItems()` y transporte Stub/Proxy están identificados; rama local/Proxy no resuelta porque falta el cuerpo de `Stub.asInterface()` y el proceso efectivo de BRService. No repetir la búsqueda del caller 1606.
 
 
-## 41. Reconciliación de callers restoreFiles y mBakFilesType — 2026-11-20
+## 55. Reconciliación de callers restoreFiles y mBakFilesType — 2026-11-20
 
 Se actualizaron evidencias 51, 57 y 58 con recuperaciones directas adicionales. Los invokes de BRService.smali:19483 y 19519 usan el descriptor singular `([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`; el segundo está precedido por `const/4 v0, 0x3` y `if-eq v3, v0`. Esto confirma los callers de la firma singular de evidencia 34. La variante descriptor array queda exclusivamente como `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
 
 La salida Termux de BRService$5.smali:103–186 confirma los branches `0x2→:cond_1/v8`, `0x3→:cond_2/mIsTransingTask`, `0x5→:cond_3/mIsFlashDriveTask` y `0x1→:cond_4/mIsLocalBackupTask`. La atribución antigua de tipo 2 a `mIsTransingTask` se descarta. Véanse evidencias 51, 57 y 58 para procedencia y límites.
+
+
+## 56. mBakFilesType: escrituras, lecturas y ramas — 2026-11-20
+
+Se incorporó evidencia 60: [`60_MBAKFILESTYPE_FIELD_FLOW_AND_SOURCE_LIMITS.md`](evidence/2026-11-20/60_MBAKFILESTYPE_FIELD_FLOW_AND_SOURCE_LIMITS.md).
+
+El campo `mBakFilesType:I` está declarado en BRService.smali:267. La salida directa del usuario del 19-11 conserva `iput v4` en 3325, `const/4 v4, 0x3` en 3327 y escritura de `mIsFromMiAsist` en 3339; en `restoreFiles`, conserva `iput p3` en 12697, `const/4 p3, 0x3` en 12699 y lectura/comparación del campo con `0x3` en 12716. Las referencias grep adicionales aparecen en `copyFile` 4093, `createFile` 5676, `deleteFile` 5812, `mIsFromMiAsist` 7346, lectura de `mBakFilesType` 7355 y `makeDirs` 8762.
+
+La salida directa de `BRService$5.smali:103–186` confirma branches para 2, 3, 5 y 1; tipo 3 configura `mIsTransingTask`, tipo 5 `mIsFlashDriveTask`, tipo 1 `mIsLocalBackupTask`; tipo 2 dirige a `:cond_1` y `v8`. La atribución previa de tipo 2 a `mIsTransingTask` queda corregida. No atribuir semántica al getter de 7355 ni comparaciones exactas en 4093/5676/5812/8762 sin cuerpos literales. Véase evidencia 60 para procedencia y límites.
