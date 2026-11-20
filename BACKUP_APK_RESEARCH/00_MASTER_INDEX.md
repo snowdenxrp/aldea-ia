@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.24 --- BRItem boolean Parcel helper resolved\
+**Versión:** 0.25 --- BRItem constructor and copy semantics\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -994,3 +994,17 @@ El helper `Utils$$ExternalSyntheticApiModelOutline0` contiene wrappers que deleg
 Las búsquedas de descriptores exactos `Lcom/miui/backup/service/BRItem;->apkSize:J` y `...;->dataSize:J` en todo el árbol decodificado no produjeron coincidencias visibles. No se observaron accesos directos con esos descriptores; reflexión, JNI u otros mecanismos quedan NO DETERMINADOS.
 
 **Siguiente prioridad:** inspeccionar constructor ordinario y métodos restantes de BRItem para determinar si los campos declarados pero no parcelados tienen asignaciones/consumidores indirectos; después conectar Parcelable con Stub/Proxy y un caller concreto de `BRItem[]`. No afirmar que se haya demostrado transporte Binder efectivo.
+
+
+## 31. BRItem: constructores ordinarios y semántica de copia — 2026-11-19
+
+Se incorporó la evidencia 41:
+[`41_BRITEM_CONSTRUCTORS_AND_COPY_SEMANTICS.md`](evidence/2026-11-19/41_BRITEM_CONSTRUCTORS_AND_COPY_SEMANTICS.md).
+
+El inventario de métodos confirma constructores vacío, por tipo, Parcel y copia, además de `addItem`, `isInternalFeature`, `isMedia` y `toString`. Los constructores vacío y por tipo establecen valores predeterminados; los campos no asignados conservan sus valores Java iniciales. En particular, `apkSize` y `dataSize` permanecen en cero en objetos recién construidos por esas rutas.
+
+El constructor `BRItem(BRItem)` copia explícitamente la mayoría de los campos operativos, pero omite `apkSize` y `dataSize`. Para `localFileList`, crea una lista nueva y ejecuta `addAll`: nuevo contenedor, mismas referencias de elementos (copia superficial).
+
+Esto coincide con la omisión de `apkSize` y `dataSize` en Parcelable, pero no permite afirmar que ambos campos sean globalmente inútiles ni que nunca se asignen fuera de `BRItem`.
+
+**Siguiente prioridad:** inspeccionar los métodos restantes de `BRItem` y enlazar Parcelable con la transacción Stub/Proxy y un caller concreto. La evidencia sigue siendo DIRECT-CHAT, no LOCAL-VERIFIED.
