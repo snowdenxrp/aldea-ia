@@ -202,3 +202,21 @@ La interpretación de asistente que acompañó esa salida resumió los efectos c
 **Procedencia:** USER-PASTED-SOURCE / DIRECT-CHAT para la salida de comparaciones, registros, constantes y branch labels. Las asignaciones concretas a flags se conservan solo en la medida que la salida directa las muestra; `v8=1` se mantiene como resumen previo no verificado. No confundir estos flags con `BRItem.state`, `BRItem.error`, `DeviceStage` o códigos del listener.
 
 **Corrección de contradicción:** una paráfrasis anterior había atribuido tipo 2 a `mIsTransingTask`; la salida directa ubica `mIsTransingTask` en la comparación con `0x3`. La atribución anterior a tipo 2 queda invalidada. El mapa debe leerse junto con la asignación de `mBakFilesType` en `restoreFiles()` y no como enum universal para todos los contextos.
+
+## 10. Cobertura negativa precisa de los métodos MiAsist (grep del 16-11)
+
+El usuario indicó el 16-11-2026 17:04:28Z que la salida compartida de `MiAsistService.smali` era grep de ubicaciones, no cuerpos de método. Referencias físicas reportadas:
+
+- `bindBRService`: 675–708;
+- `bindTransFileService`: 709–738;
+- `doSendFile`: 739–829;
+- `isActionParamsValid`: 1639–1734;
+- `sendAllBRItemsDescriptor`: 2032–2047;
+- `startAsClientOrServer`: 2685–2789;
+- `onStartCommand`: 3691 en adelante.
+
+En la salida de grep del 16-11 18:06:32Z también aparecieron referencias a `MiAsistService.smali:809` (llamada a `doSendFile`) y líneas 419, 453, 509; referencias de `MiAsistService$5.smali` hasta 778, `$6.smali` hasta 245 y `$7.smali` hasta 155. Son referencias/alcances de grep, no bloques literales completos.
+
+El usuario confirmó que no había pegado cuerpos completos nuevos de `onStartCommand`, `sendAllBRItemsDescriptor`, `doSendFile` ni de `$5/$6/$7`. `BRService.routeBackupData()` y `runOnSendingThread()` tampoco aparecieron en esa salida. El resultado de grep terminaba truncado a mitad de la salida.
+
+**Clasificación:** USER-FACT / DIRECT-CHAT para los rangos y la afirmación de cobertura de grep; no Smali literal de los cuerpos. Este resultado negativo evita repetir la búsqueda de esos mismos cuerpos como si ya estuvieran presentes en el historial. La siguiente fuente primaria tendría que ser un bloque Smali nuevo, no otra reformulación de estas coordenadas.
