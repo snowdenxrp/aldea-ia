@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.14 --- per-response continuity rule and next P0 extraction\
+**Versión:** 0.15 --- IBRService BRItem array to ProgressItemAdapter caller mapping\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
