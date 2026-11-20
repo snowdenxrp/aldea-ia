@@ -162,3 +162,28 @@ La evidencia disponible todavía no demuestra qué método concreto mueve cada a
 9. Solo lectura estática; no iniciar servicios, transferencia, backup ni restore.
 
 **Conclusión:** se recuperó una parte adicional del pipeline de transferencia MiAsist y de las etapas/errores de comunicación, además de dos anclas del subsistema de envío BRService. La transferencia efectiva, el protocolo de descriptor, la relación entre los canales y el contexto de clearCallingIdentity permanecen incompletos. Estado general: INCOMPLETE.
+
+
+## 8. Callers sintéticos y recuperación negativa de cuerpos
+
+Recuperación adicional de mensajes del usuario del 16-11-2026:
+- MiAsistService.smali líneas 416–453 contiene bridges sintéticos:
+  - `-$$Nest$mdoSendFile(String)` delega mediante `invoke-direct` al método privado `doSendFile(String)`.
+  - `-$$Nest$msendAllBRItemsDescriptor()` delega al método privado homónimo.
+  - También se reportaron bridges para `startRestoreCommand()` y `startBackupCommand()`.
+- Estas líneas acreditan delegación de los bridges a métodos privados, no el cuerpo de los métodos ni el formato de transferencia.
+
+Más detalle de MiAsistService$5 recuperado:
+- aparecen `STAGE_BRITEMS_LOADING`, `getItemName`, `updateProgressNotification`, `ERR_CONNECTED_FAILED` y `STAGE_REMOTE_CONNECTED`.
+- Se mantienen las anclas previas: ERR_CONNECTED_FAILED alrededor de línea 223, ERR_SEND_FAILED alrededor de 507 y ERR_RECEIVE_FAILED alrededor de 737 en la extracción de $5.
+
+**Resultado negativo explícito de la búsqueda histórica:** no se recuperó un bloque literal completo del usuario para:
+- `doSendFile(String)`;
+- `sendAllBRItemsDescriptor()`;
+- `startAsClientOrServer()`;
+- `routeBackupData(...)`;
+- `runOnSendingThread(Runnable)`;
+- cuerpos completos de `MiAsistService$5/$6/$7);
+- rama `BRService.onStartCommand()` CMD_RESTORE.
+
+Sí se conservan coordenadas/referencias y anotaciones de métodos, pero no equivalen al cuerpo Smali. No seguir citando estas funciones como si sus implementaciones hubieran sido leídas íntegramente.
