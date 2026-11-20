@@ -1214,3 +1214,17 @@ El usuario estableció como regla permanente que cada respuesta que avance esta 
 La evidencia 30 contiene los comandos grep de solo lectura, la secuencia de extracción y los límites. No ejecutar Backup/Restore ni servicios; no modificar APK. La salida futura seguirá clasificada DIRECT-CHAT hasta cotejo local independiente.
 
 Informe: [evidencia 30 — regla de continuidad y siguiente extracción P0](evidence/2026-11-19/30_CONTINUITY_RULE_AND_NEXT_P0_EXTRACTION.md).
+
+## 39. IBRService.getBRItems() → ProgressItemAdapter: callers y UI — evidencia 31
+
+La salida DIRECT-CHAT de grep localiza múltiples rutas de `ProgressPageFragmentBase` y clases internas `$7$1` a `$7$7` que llaman `ProgressItemAdapter.initData([BRItem])`. En varias de ellas, la obtención inmediata del array se realiza mediante `IBRService.getBRItems()`; el método principal también construye arrays y entrega uno al adapter y a `ListScollThread`.
+
+El servicio declara `mBRItems:ArrayList`, expone bridges sintéticos y contiene `getBRItems()[BRItem]`; `BRService$1.getBRItems()` invoca el bridge del servicio. La implementación exacta del getter (copia de array y conservación de identidad de cada elemento) sigue pendiente de lectura.
+
+`updateSingleItemUI()` tiene definición en `ProgressPageFragmentBase$ProgressItemAdapter.smali:869` y callers en 855 y 2267. El cuerpo no está incluido en la salida actual; su lectura sigue siendo necesaria para conocer el efecto visual de `BRItem.error`.
+
+**Conclusión:** la ruta de obtención del array queda localizada, pero no está cerrada la identidad entre el BRItem entregado a ArchiveHelper en `BRService.smali:12918` y el elemento recibido por el adapter. La salida cubre el árbol `smali` al que apuntaba `$D`; no acredita cobertura de `smali_classes2/3`.
+
+Informe: [evidencia 31 — IBRService.getBRItems() hacia ProgressItemAdapter](evidence/2026-11-19/31_IBRSERVICE_GETBRITEM_TO_PROGRESS_ADAPTER_CALLERS.md).
+
+La actualización es documental y DIRECT-CHAT; no LOCAL-VERIFIED. No se ejecutó Backup/Restore, servicios ni pruebas dinámicas, y no se modificó el APK.
