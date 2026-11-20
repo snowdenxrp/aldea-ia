@@ -15,15 +15,18 @@
 - Caller en BRService.smali:12918.
 - Caller desde BRService$UnpackThread.smali:81.
 
-La sobrecarga de siete argumentos recibe directamente un BRItem y trabaja con sus campos packageName, localFileList y totalSize. No se ha recuperado evidencia de que clone ese BRItem antes de procesarlo.
+La sobrecarga de siete argumentos recibe directamente un BRItem y trabaja con sus campos packageName, localFileList y totalSize. No se ha recuperado evidencia de que clone ese BRItem antes de procesarlo. La sobrecarga de cuatro argumentos delega a la de siete con listener y BRItem nulos y booleano false (resumen histórico; verificar descriptor/orden de registros en fuente). La única llamada adicional localizada fue BRService.smali:12918.
 
 ## 2. Comportamiento de extracción ZIP
 
 **USER-PASTED-SOURCE / DIRECT-CHAT del 19-11:**
-- Actualiza progreso del BRItem y notifica mediante callback utilizando el mismo objeto BRItem recibido.
+- Actualiza progreso del BRItem y notifica mediante callback onZipFileSizeChanged(long,BRItem,String), utilizando la misma referencia BRItem recibida.
+- La fuente de datos de entrada se selecciona entre InputStream y FileInputStream.
+- Para nombres de entrada inválidos se reportó uso de getRealFileName()/buildValidName().
 - Recorre las entradas ZIP.
 - Para el archivo restaurado que no existe en la condición descrita, asigna BRItem.error=1 y continúa el ciclo de entradas.
 - Crea un archivo temporal .tmp; elimina un temporal existente antes de escribir.
+- Si rename falla y el destino no existe, se reportó fallback mediante Utils.copyFile().
 - Escribe al temporal y trata de renombrarlo; si el rename no funciona, existe una ruta fallback de copia.
 - Si el archivo final ya existe, se registra el caso correspondiente; si no existe el original, también se registra.
 - Si el temporal y el archivo final tienen la misma longitud en la rama descrita, elimina el temporal.
@@ -61,6 +64,7 @@ No se infiere si delete() tuvo éxito; el retorno debe revisarse en el Smali par
 
 **USER-PASTED-SOURCE / continuidad de conversación:**
 - BRService.smali:12772: inicio reportado de restoreLocalMediaFile(BRItem,boolean,InputStream).
+- Si mCurrentBackupRootPath es null, el método retorna (hallazgo directo recuperado de la conversación del 20-11; cuerpo literal no está reproducido aquí).
 - Deriva backup_<suffix>.zip desde mCurrentBackupRootPath.
 - Utiliza Utils.getZipSuffixType(packageName,type).
 - Si falta ZIP y InputStream es null: state=3, error=7, notificación y retorno.
