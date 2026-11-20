@@ -2,33 +2,31 @@
 
 - Fecha de consolidación: 2026-11-20
 - Rama: backup-apk-static-research-2026-11-19
-- Procedencia: mensajes del usuario del 17-11-2026 y coordenadas Smali pegadas el 20-11-2026.
+- Procedencia: fragmentos Smali pegados por el usuario el 17-11-2026 y referencias recuperadas posteriormente. Corrección de procedencia del 20-11: la variante de descriptor array no procede de un mensaje del usuario ni de Smali literal; apareció únicamente en una respuesta anterior del asistente.
 - Clasificación: USER-PASTED-SOURCE / DIRECT-CHAT para la firma de restoreFiles, anclas de llamadas y secuencia inicial de run(); RECOVERED-CHAT para el mapa consolidado.
 - No LOCAL-VERIFIED en esta sesión. No ejecución dinámica.
 
-## 1. Conflicto de firmas reportadas para BRService.restoreFiles
+## 1. Procedencia y estado de la firma BRService.restoreFiles
 
-La evidencia 34 (19-11-2026) preserva una declaración Smali pegada directamente por el usuario:
+La evidencia 34 (19-11-2026) conserva el bloque Smali pegado directamente por el usuario:
 
     .method private restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V
+    .locals 4
 
-Su descriptor es restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int). El cuerpo asociado usa p2 como descriptor singular y p3 como int/mBakFilesType. Los callers preservados en evidencia 34 pasan v0, v6, v3 y v5, v6, v3 respectivamente.
+El cuerpo asociado, también preservado en evidencia 34, usa p1 como array BRItem[], p2 como descriptor singular `com.miui.backup.data.BackupDescriptor` y p3 como int/mBakFilesType. Muestra la construcción de un ArrayList a partir de Arrays.asList(p1), y su asignación a `mBRItems`.
 
-Una recuperación posterior de un mensaje del usuario del 20-11 reporta para BRService.smali:12672 otra declaración:
+**Corrección crítica de procedencia:** una revisión de la búsqueda histórica determinó que la supuesta segunda declaración:
 
     restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V
 
-Este segundo descriptor es restoreFiles(BRItem[],com.miui.backup.BackupDescriptor[],int), con un array de BackupDescriptor y además paquete distinto (com.miui.backup frente a com.miui.backup.data).
+no aparece en un mensaje del usuario recuperado ni en un bloque Smali pegado. Esa variante fue introducida por una respuesta anterior del asistente y luego propagada como si fuera una recuperación directa. Por tanto, debe clasificarse **PRIOR-ASSISTANT-OUTPUT / UNVERIFIED**, no USER-FACT ni DIRECT-CHAT. No constituye evidencia primaria de una segunda firma ni de un conflicto real entre dos builds.
 
-**Conflicto no resuelto:** ambas referencias se atribuyen a BRService.smali:12672, pero no son el mismo descriptor. No se debe sustituir la evidencia 34 ni declarar que la firma array es la correcta hasta determinar si:
-- proceden de builds/versiones distintas del APK;
-- las rutas/archivos Smali pertenecen a extracciones distintas;
-- una referencia de clase o descriptor se transcribió mal;
-- existe otra definición/overload y una de las coordenadas no es la línea física correcta.
+Las referencias a BRService.smali:19483 y 19519 también fueron repetidas en resúmenes anteriores, pero los invokes literales completos no se han recuperado en el contexto actual. No usarlas para confirmar descriptor ni aridad hasta leerlas.
 
-Invocaciones adicionales reportadas en la recuperación posterior: BRService.smali:19483 y 19519. No asociarlas a uno u otro descriptor hasta leer el invoke completo.
+**Estado corregido:** `DIRECT-CHAT / PRIMARY-SOURCE-PRESERVED; LOCAL-UNVERIFIED` para la firma singular de evidencia 34. La alternativa array queda `UNSUPPORTED-PRIOR-ASSISTANT-OUTPUT`. No hay base documental suficiente para mantener `SIGNATURE-CONFLICT`; sigue pendiente verificar la firma contra el archivo local exacto, su hash y la extracción/build correspondiente.
 
-**Estado:** SIGNATURE-CONFLICT / UNKNOWN-STOP. La semántica de p1/p2/p3 descrita en evidencia 34 sigue válida solo para el cuerpo/descriptor de esa evidencia; no extrapolarla a la firma alternativa.
+La semántica p1/p2/p3 y construcción de ArrayList descrita en evidencia 34 aplica al bloque singular que el usuario compartió. No extrapolarla a una firma alternativa no sustentada.
+
 ## 2. BRService$5.run(): entrada al hilo de restore
 
 El usuario pegó literalmente `.method public run()V` desde coordenada 39 de `BRService$5.smali`. Secuencia inicial recuperada:
@@ -88,7 +86,7 @@ La descripción de `startRestore()` que crea `WeakReference`, instancia `BRServi
 
 ## 7. Pendientes
 
-1. Recuperar el cuerpo completo de `restoreFiles(BRItem[],BackupDescriptor[],int)` en torno a 12672.
+1. Verificar en el archivo local exacto la declaración y cuerpo de `restoreFiles()` alrededor de 12672, registrando SHA-256, ruta y origen/build de la extracción.
 2. Leer las invocaciones 19483/19519 y mapear argumentos reales.
 3. Recuperar bloques de `BRService$5.run()` en torno a 1899, 1951–2079, 2419, 3006 y 3561.
 4. Reconstruir las ramas de flags `mBakFilesType` sin confundirlas con estado de item.
@@ -96,4 +94,4 @@ La descripción de `startRestore()` que crea `WeakReference`, instancia `BRServi
 6. Mantener `restoreAppData` como método separado de las llamadas reportadas en run().
 7. Solo lectura estática.
 
-**Conclusión:** el método restoreFiles tiene dos descriptores históricos incompatibles reportados para la misma coordenada 12672; la firma real queda UNKNOWN-STOP hasta reconciliar build/hash/extracción. BRService$5.run() inicia el restore con wake lock/BMS/StorageMonitor y coordina restauración de APK, paquetes y medios mediante executor y llamadas específicas. El mapa de ejecución está incompleto y no prueba éxito runtime.
+**Conclusión:** la única firma con soporte primario recuperado es `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)` en evidencia 34. La supuesta variante array provino de una respuesta anterior del asistente y queda descartada como evidencia primaria. La firma singular sigue pendiente de verificación LOCAL-VERIFIED contra el archivo/hash de extracción. BRService$5.run() inicia el restore con wake lock/BMS/StorageMonitor y coordina restauración de APK, paquetes y medios mediante executor y llamadas específicas. El mapa de ejecución está incompleto y no prueba éxito runtime.
