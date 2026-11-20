@@ -50,7 +50,7 @@ La formulación con `mIsReStartCommand` es PRIOR-ASSISTANT-OUTPUT y no debe sust
 
 1. Recuperar cuerpo completo de `restoreTransfering(Context,BackupDescriptor)`, incluyendo todos los valores de brState y argumentos.
 2. Recuperar `startRestore()` y `BRService$5.run()` para reconstruir el hilo RestoreThread sin asumir éxito.
-3. Recuperar `restoreFiles(BRItem[],BackupDescriptor,int)` en el rango físico reportado alrededor de 12672 y verificar asignaciones/condiciones.
+3. Recuperar `restoreFiles()` en el rango físico reportado alrededor de 12672 y resolver el conflicto de descriptor singular vs array y paquete antes de verificar asignaciones/condiciones.
 4. Resolver la condición de lista null en CMD_RESTORE y la posible relación con tipo 3/`mIsReStartCommand`.
 5. Solo lectura estática.
 
