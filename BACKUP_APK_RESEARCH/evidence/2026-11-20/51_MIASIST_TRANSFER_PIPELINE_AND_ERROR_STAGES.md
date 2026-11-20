@@ -125,14 +125,22 @@ Comportamiento:
 
 Esto acredita una cola de ejecución asociada al hilo de envío en el bloque observado. No acredita el contenido del Runnable ni su relación exacta con routeBackupData.
 
-## 5. Identidad Binder y UID: límites de lo recuperado
+## 5. Identidad Binder y UID: corrección de procedencia
 
-- BRService.smali:7380 contiene una invocación a Binder.clearCallingIdentity(), recuperada como referencia de fuente pegada el 16-11.
-- No se conserva en el contexto actual el bloque completo que la rodea: caller, posición de clearCallingIdentity()/restoreCallingIdentity(), token almacenado ni operaciones ejecutadas bajo identidad limpia permanecen UNKNOWN.
-- No concluir que la APK elimina controles de autorización o eleva privilegios por esa llamada aislada; clearCallingIdentity() cambia temporalmente la identidad Binder del hilo y su impacto depende del bloque completo y del finally/restore.
-- El manifest reporta sharedUserId="android.uid.backup". En una conversación anterior se distinguió ese nombre de un UID numérico 6100, pero no se conserva una lectura primaria de PackageManager, dumpsys o manifest que permita confirmar la asignación numérica efectiva. Por tanto, 6100 queda como dato histórico NO VERIFICADO, no como UID confirmado de la APK.
-- No confundir sharedUserId nominal, UID Linux asignado en instalación, UID del proceso, Binder calling UID y permisos/grants efectivos.
+La referencia a `Binder.clearCallingIdentity()` alrededor de `BRService.smali:7380` aparece en un resumen previo del expediente (evidencia 06), pero la recuperación de conversaciones no encontró el bloque fuente ni un mensaje del usuario que pegara esa línea. Los fragmentos de BRService que sí se recuperaron directamente abarcan otras regiones (entre ellas 5183–5523 y 6839–6857), no la línea 7380.
 
+Por tanto:
+- La mención de `clearCallingIdentity()` en línea 7380 debe clasificarse como **PRIOR-ASSISTANT-SUMMARY / UNVERIFIED-REFERENCE**, no USER-PASTED-SOURCE.
+- No se recuperó caller, token, operaciones posteriores, ni llamada a `restoreCallingIdentity()`.
+- No hay base para interpretar la referencia como bypass, elevación o eliminación de controles de autorización.
+
+Respecto al UID numérico 6100:
+- No aparece evidencia primaria de `dumpsys`, `pm list packages`, PackageManager, manifest, instalación, salida de comando ni una inferencia documentada que origine el número.
+- La distinción anterior entre 6100 y `sharedUserId="android.uid.backup"` fue una afirmación de asistente sin soporte recuperado.
+- **UID 6100 queda UNKNOWN / UNSUPPORTED; no debe citarse como dato del paquete.**
+- El único dato histórico conservado es la declaración de manifest `sharedUserId="android.uid.backup"`; no determina por sí sola el UID Linux instalado, Binder calling UID ni grants efectivos.
+
+Mantener separados sharedUserId nominal, UID instalado, UID del proceso, Binder calling UID y permisos efectivos.
 ## 6. Relación con el pipeline BRService/IBRService
 
 La cadena estática recuperada contiene dos canales conceptualmente distintos:
