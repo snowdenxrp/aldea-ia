@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.62 --- application default process and Binder route inference\
+**Versión:** 0.63 --- BRService Binder Stub initialization and onBind source\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -39,8 +39,11 @@ dinámicas.
                                                               `BRService` y
                                                               `bindBRService()`
 
-  Binder / `IBRService.Stub`          CONSERVADO              14 transacciones; lista
-                                                              funcional resumida
+  Binder / `IBRService.Stub`          PARCIAL                 Stub concreto creado y
+                                                              almacenado en mBinder;
+                                                              onBind lo devuelve;
+                                                              14 transacciones y
+                                                              transporte conservados
 
   `BRService` / restauración          PARCIAL                 Métodos, hilo y flujo
                                                               general conservados
@@ -1445,3 +1448,14 @@ El usuario compartió la salida de Termux del bloque de `AndroidManifest.xml:82�
 **Inferencia Android:** bajo la semántica estándar de procesos de componentes Android, `BRService` se ejecuta en el proceso predeterminado de la aplicación, mientras `MiAsistService` se ejecuta en el proceso separado `:remote`. Por tanto, para el enlace entre ambos, la ruta esperable de `IBRService$Stub.asInterface()` es fallback a `IBRService$Stub$Proxy`, no interfaz local. La conclusión combina el Manifest compartido con el cuerpo `asInterface()` de evidencia 62.
 
 **Límite probatorio:** es una inferencia estática fuerte sobre la configuración declarada; no es observación runtime del Binder recibido ni excluye mecanismos no mostrados que alteren el contexto real. La instancia concreta devuelta y el transporte efectivo siguen sin confirmación dinámica. No presentar como prueba de ejecución.
+
+
+## 64. Inicialización del Stub Binder de BRService y devolución por onBind — 2026-11-20
+
+Se incorporó evidencia 64: [`64_BRSERVICE_BINDER_STUB_INITIALIZATION_AND_ONBIND_RETURN.md`](evidence/2026-11-20/64_BRSERVICE_BINDER_STUB_INITIALIZATION_AND_ONBIND_RETURN.md).
+
+La salida directa compartida muestra que BRService crea `new BRService$1`, invoca su constructor con la instancia actual de BRService y almacena el objeto en `mBinder` (BRService.smali:2607–2611). El constructor de `BRService$1` guarda `this$0` y llama a `IBRService$Stub.<init>()`. Por tanto, `BRService$1` es el Stub concreto de `IBRService` usado por BRService.
+
+El cuerpo de `BRService.onBind()` (18672–18679) lee `mBinder` y devuelve esa misma referencia como `IBinder`; no crea un Binder nuevo durante `onBind()`. **Conclusión estática:** el endpoint entregado por BRService es la instancia almacenada de `BRService$1`.
+
+**Límite:** el fragmento grep no incluyó la cabecera del método que contiene la inicialización; no atribuirla a constructor/onCreate sin recuperar esa cabecera. Tampoco hay observación runtime del objeto concreto. La evidencia se clasifica `USER-PASTED-LOCAL-SMALI / DIRECT-CHAT`.
