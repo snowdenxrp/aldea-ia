@@ -942,3 +942,14 @@ Binder.
 `CREATOR`, constructor Parcel completo, `describeContents()` y
 `writeToParcel()`; después cotejar los campos serializados en ambas
 direcciones.
+
+
+## 26. BRItem Parcelable: comparación de lectura y escritura — 2026-11-19
+
+Se incorporó la evidencia 36: [`36_BRITEM_PARCELABLE_READ_WRITE_COMPARISON.md`](evidence/2026-11-19/36_BRITEM_PARCELABLE_READ_WRITE_COMPARISON.md).
+
+Los cuerpos compartidos de `BRItem(Parcel)` y `writeToParcel(Parcel,int)` presentan 23 posiciones de lectura/escritura en el mismo orden y con operaciones correspondientes. Se confirma que `state` y `error` se escriben/leen como enteros y que `localFileList` usa `writeList/readArrayList` con ClassLoader de `String`. `describeContents()` devuelve 0; `<clinit>()` crea `BRItem$1` y lo asigna a `CREATOR`.
+
+**Límites:** salida local compartida, aún no LOCAL-VERIFIED por relectura/hash. Faltan `BRItem$1.smali`, comparación con todos los campos declarados, resolución de helpers sintéticos boolean y conexión con una transacción Binder concreta. No afirmar copia profunda ni identidad de elementos de `localFileList`.
+
+**Siguiente extracción P0:** `BRItem$1.smali`, todos los `.field` de `BRItem.smali`, helpers Parcel/boolean y ruta Stub/Proxy/caller de `BRItem[]`.
