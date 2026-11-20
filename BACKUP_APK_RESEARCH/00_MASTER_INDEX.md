@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.18 --- restoreFiles and getBRItems reference semantics\
+**Versión:** 0.19 --- BRItem Parcelable entrypoint inventory\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -918,3 +918,27 @@ Se incorporó la evidencia 34: [`34_RESTOREFILES_GETBRITEMS_REFERENCE_SEMANTICS.
 El caller de `v4.toArray(new BRItem[])` crea un array nuevo, pero conserva las referencias de los elementos. `restoreFiles` crea otro contenedor `ArrayList`, también sin clonar los elementos. El getter `getBRItems()` crea un array nuevo y devuelve referencias originales para los elementos ordinarios; para `files_for_backup` crea un BRItem nuevo y copia campos seleccionados, incluidos `state` y `error`, compartiendo la referencia `localFileList`.
 
 **Límite:** conclusiones confirmadas en los fragmentos pegados por el usuario, no LOCAL-VERIFIED por relectura/hash independiente. La semántica in-process no demuestra identidad a través de Binder/Parcel. Siguiente prioridad: Parcelable de `BRItem`, asignación en `MiAsistService`, origen del segundo argumento array `v5` y callers locales/remotos de `initData`.
+
+
+## 25. BRItem Parcelable: inventario inicial de entrypoints — 2026-11-19
+
+Se incorporó la evidencia 35:
+[`35_BRITEM_PARCELABLE_ENTRYPOINT_INVENTORY.md`](evidence/2026-11-19/35_BRITEM_PARCELABLE_ENTRYPOINT_INVENTORY.md).
+
+La extracción local compartida identifica `BRItem.smali` en
+`smali/com/miui/backup/service/` y confirma que la clase implementa
+`Parcelable`, declara `CREATOR` (asignado en línea física 158), y
+contiene constructor `BRItem(Parcel)` (línea 278),
+`describeContents()` (línea 700) y
+`writeToParcel(Parcel,int)` (línea 1012).
+
+**Estado:** entrypoints CONFIRMADOS por salida local pegada. Aún no se
+han inspeccionado los cuerpos ni comparado los campos y el orden de
+lectura/escritura. No afirmar todavía simetría Parcelable ni
+reconstrucción de `state`, `error` o `localFileList` a través de
+Binder.
+
+**Siguiente extracción P0:** inicializador estático/implementación de
+`CREATOR`, constructor Parcel completo, `describeContents()` y
+`writeToParcel()`; después cotejar los campos serializados en ambas
+direcciones.
