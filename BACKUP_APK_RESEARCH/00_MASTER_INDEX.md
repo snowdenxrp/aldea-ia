@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.54 --- state6, setState and restore recursion reconciliation\
+**Versión:** 0.55 --- state6 coordinate and producer inventory reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1394,3 +1394,9 @@ La salida directa de `BRService$5.smali:103–186` confirma branches para 2, 3, 
 Se actualizaron evidencias 11 y 15: la escritura `BRItem.state=6` de `BRService$5.smali` está en la línea física 2351 y se asocia a la directiva `.line 1735`. La aparente discrepancia era mezclar coordenadas físicas con líneas fuente Smali; no son dos escritores.
 
 Evidencia 12 también resuelve el orden de argumentos de la llamada final: `setState(4,12,0,v14)`. La forma `setState(4,0,v2,v14)` queda invalidada. Un productor adicional state=6 se reporta en `BRService.smali:16787–16791`, evidencia 53; no inferir exclusividad del productor de `files_for_backup`.
+
+## 58. Cierre de coordenadas y productores state 6 — 2026-11-20
+
+Se corrigieron las evidencias 11 y 15: `BRService$5.smali` physical line 2351 corresponde a la directiva Smali `.line 1735` y a una sola escritura `BRItem.state=6` para `files_for_backup` tras `waitingForFilesTransingEnd()`. No es un conflicto entre dos líneas físicas. Además, evidencia 53 reporta otro productor en `BRService.smali:16787–16791`, por lo que no debe afirmarse exclusividad del productor de `BRService$5`.
+
+Evidencia 12 conserva el invoke final exacto `setState(4,12,0,v14)`; la forma antigua `setState(4,0,v2,v14)` queda descartada. Véanse evidencias 11, 12, 15 y 53.
