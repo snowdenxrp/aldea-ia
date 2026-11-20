@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.38 --- provenance correction for Binder identity and UID\
+**Versión:** 0.39 --- BRService direct state/error writer reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1202,3 +1202,31 @@ Se corrigió la sección 5 de evidencia 51 tras una búsqueda histórica focaliz
 - El único dato histórico disponible es la declaración `sharedUserId="android.uid.backup"`, que no determina UID Linux instalado, Binder calling UID ni grants efectivos.
 
 Esta corrección reduce el nivel de certeza respecto de la versión anterior del expediente y prevalece sobre cualquier mención más antigua en evidencia 06/51. No se eliminó la referencia histórica: se conserva con procedencia y límites explícitos.
+
+
+## 45. Escrituras directas y propagación BRItem.state/error en BRService — 2026-11-20
+
+Se incorporó evidencia 53: [`53_BRService_DIRECT_STATE_ERROR_WRITERS_AND_PROPAGATION.md`](evidence/2026-11-20/53_BRService_DIRECT_STATE_ERROR_WRITERS_AND_PROPAGATION.md).
+
+**Bloque 12849–12956 (contexto restoreLocalMediaFile):**
+- 12851: `BRItem.state=3`.
+- 12856 carga 0x7; 12859 escribe ese valor en `BRItem.error`, no en state.
+- 12903: `BRItem.state=8`.
+- 12948/12953 preparan final según `mIsAborted`; 12956 escribe state=9 si abortado o state=1 si no.
+- No se recuperó encabezado/descriptor del método en el mismo fragmento; mantener atribución como ancla histórica contextual.
+
+**Bloque 16787–17436:**
+- 16787/16791: constante 6 → escritura directa `BRItem.state=6`.
+- 16914/16917: copia `p1` a state y `p2` a error.
+- 17141: literal `files_for_backup`; 17153/17158: state desde `v1` y error 9.
+- 17431–17436: propagación `PkgInfo.state/error` → `BRItem.state/error`.
+- Firmas/nombres de métodos no estaban visibles. Este producer adicional de state 6 impide atribuir ese estado exclusivamente al flujo `files_for_backup` de `BRService$5`.
+
+**Bloques con procedencia más débil:**
+- 5201 state=2 tras `notifyItemTaskStart`, 5511–5519 state=3 si abortado o 1 si normal, y 6855–6857 copia de state/tamaños son resúmenes recuperados.
+- La supuesta escritura state=7 en 5363 es solo PRIOR-ASSISTANT-SUMMARY; mantener UNKNOWN hasta verificar el iput y su campo destino.
+- Las búsquedas negativas de evidencias 08/15 solo cubrían clases/rangos concretos; no prueban ausencia global. El bloque 12849–12956 demuestra state=8 en BRService.smali fuera de esos ámbitos.
+
+**Regla de interpretación reforzada:** el valor 7 en 12856/12859 es `BRItem.error=7`, no state. No deducir destino de un campo por la constante; leer el iput.
+
+La procedencia de `clearCallingIdentity()` y UID 6100 se corrige en sección 44 y evidencia 51: referencia line 7380 no tiene fuente primaria recuperada; UID 6100 carece de soporte y queda UNSUPPORTED.
