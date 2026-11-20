@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.57 --- Binder process conditionality and mBakFilesType reconciliation\
+**Versión:** 0.58 --- mBakFilesType v8 provenance and chronology corrections\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -187,7 +187,7 @@ completa de alcanzabilidad antes de afirmar una vía externa.
     `"RestoreThread"`.
 -   `BRService$5.run()` registra inicio, adquiere WakeLock/BMS,
     clasifica `mBakFilesType` e inicia `StorageMonitor`.
--   **MAPEO EN CONFLICTO — NO CERRADO:** un bloque Smali pegado por el usuario el 19-11-2026 (líneas 1391–1418 de BRService$5.run) indica 2 → mIsTransingTask, 3 → mIsFlashDriveTask, 1 → mIsLocalBackupTask. Resúmenes anteriores indicaban 2/3 → mIsTransingTask y 5 → mIsFlashDriveTask. No usar ninguno como mapeo definitivo hasta cotejar el bloque completo y todos los usos de mBakFilesType.
+-   **REGISTRO HISTÓRICO SUPERSEDED:** la primera recuperación de este día resumió el mapping como 2 → `mIsTransingTask`, 3 → `mIsFlashDriveTask`, 1 → local; esa lectura no debe reutilizarse. La salida directa posterior del 19-11 y la reconciliación en evidencias 18/51 ubican tipo 2 en `:cond_1`/ruta `v8`, tipo 3 en `mIsTransingTask`, tipo 5 en `mIsFlashDriveTask` y tipo 1 en `mIsLocalBackupTask`. El valor literal de `v8` sigue sin preservarse; véase sección 17 actual y evidencia 10 §1.
 -   La llamada `startMonitor()` se resume así: resultado `0` continúa;
     resultado `1` produce resultado `2`; otros resultados producen `5` y
     abortan.
@@ -1412,3 +1412,10 @@ Se actualizaron evidencias 18 y 47.
 **mBakFilesType:** la salida directa del 19-11 ubica tipo 2 en la rama `:cond_1`/`v8`, tipo 3 en `mIsTransingTask`, tipo 5 en `mIsFlashDriveTask` y tipo 1 en `mIsLocalBackupTask`. La asignación literal de `v8` no está preservada; `v8=1` sigue no verificada. El reporte antiguo que atribuía tipo 2 al flag de transferencia carece de fuente literal y queda subordinado a esta evidencia directa. No elevar todavía la cadena `v8→v16=8` a confirmación local.
 
 **State 6:** la coordenada física 2351 y `.line 1735` identifican una sola escritura de `BRService$5`; un productor adicional está reportado en `BRService.smali:16787–16791`. El falso conflicto de coordenadas no es un pendiente activo.
+
+
+## 61. Corrección de procedencia v8 y supersesión del mapping histórico — 2026-11-20
+
+Se actualizó evidencia 10 para alinearla con la salida directa preservada en evidencia 51. El bloque de `BRService$5.smali:103–186` confirma las comparaciones y ramas: tipo 2 → `:cond_1`/ruta `v8`; tipo 3 → `:cond_2`/`mIsTransingTask`; tipo 5 → `:cond_3`/`mIsFlashDriveTask`; tipo 1 → `:cond_4`/`mIsLocalBackupTask`. La asignación literal `v8=1` no aparece en el fragmento directo preservado y sigue `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
+
+El mapping antiguo del 17-11 que atribuía tipo 2 al flag de transferencia carece de bloque literal recuperado y queda supersedido por la evidencia directa posterior, sin afirmar más de lo que muestra el branch. La cadena `type 2 → v8 → v16=8` permanece condicional hasta recuperar la instrucción que escribe `v8` y su flujo completo.
