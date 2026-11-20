@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.35 --- app restore dispatch recovery\
+**Versión:** 0.36 --- MiAsist transfer pipeline recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1156,3 +1156,22 @@ Recuperación de fuente pegada el 16-11:
 **Vacío real:** no se recuperaron cuerpos íntegros de `restoreStreamSplitApk`, `prepareRestoringItems`, `PerformAdbRestoreTask`, `BRManager.restorePackage/moveData`, executor ni ZIP/zipStreamReader. La extracción histórica de BRService$5 falló por variable `$F` vacía; no se conservó stdout del despacho de apps. No inventar el contenido faltante.
 
 **Estado:** ruta de activación CMD_RESTORE y descripción de restoreAppData preservadas; flujo de restauración de apps incompleto. Solo lectura estática.
+
+
+## 42. Pipeline de transferencia MiAsist, etapas y errores de comunicación — 2026-11-20
+
+Se incorporó evidencia 51: [`51_MIASIST_TRANSFER_PIPELINE_AND_ERROR_STAGES.md`](evidence/2026-11-20/51_MIASIST_TRANSFER_PIPELINE_AND_ERROR_STAGES.md).
+
+Nuevos detalles recuperados de Smali pegado el 16-11:
+- Anclas MiAsist: `doSendFile(String)` alrededor de 739 (también invocaciones reportadas 809/2127), `sendAllBRItemsDescriptor()` alrededor de 2032, `startRestoreCommand()` 2917, `bindBRService()` 675–708, `bindTransFileService()` 709–738, `startAsClientOrServer()` 2685.
+- `MiAsistService$6`: callback vinculado a `sendAllBRItemsDescriptor`, constructor `(MiAsistService,String)`, usa `mCurrentDate`, `mTotalSize`, `mAllBRItems`, `mDeviceAction/Stage/Error`, sincronización de iconos y `doSendFile(String)`; creado 2036 e iniciado 2043. `ERR_WRITE_DESCRIPTOR` se reporta en $6:241–245 y en MiAsistService alrededor de 2171.
+- `MiAsistService$7`: constructor `(MiAsistService)`, creado 2874–2885 y ejecutado mediante `executeOnExecutor()`; no se recuperó su cuerpo. No atribuirle el trabajo de $8.
+- `MiAsistService$5`: `ERR_CONNECTED_FAILED` 223, `ERR_SEND_FAILED` 507, `ERR_RECEIVE_FAILED` 737; etapas `STAGE_REMOTE_DISCONNECTED` 363–367, `STAGE_START_DESCRIPT_SENDED` 526–528, `STAGE_END_DESCRIPTOR_SENDED` 576–578; conexión etapa 221–225 y éxito 310–314. `$1` incluye `STAGE_AUTH_USER_AGREE` y secuencia carga iconos/BRItems → startRestoreCommand.
+- `BRService.routeBackupData(Context,String,int,ParcelFileDescriptor,OutputStream)`, líneas 5967–5971: cabeceras MIUI/Android, socket→OutputStream, `writeEndFlag`, `flush()`.
+- `BRService.runOnSendingThread(Runnable)`, líneas 5461–5466: HandlerThread `SendingThread`, Handler y `post(Runnable)`.
+
+**Límites de seguridad/protocolo:** no se ha recuperado el cuerpo completo de `doSendFile`, `sendAllBRItemsDescriptor`, $6/$7, `routeBackupData` ni Runnable concreto. No afirmar que el envío de descriptor de MiAsist y routeBackupData son el mismo canal. No inventar framing, checksum o autenticación.
+
+**Binder/UID:** se conserva una referencia a `Binder.clearCallingIdentity()` en `BRService.smali:7380`, pero falta el bloque, token y pareja `restoreCallingIdentity()`; no inferir bypass/privilegios. El valor UID numérico 6100 aparece solo como recuerdo no verificado; el manifest declara `sharedUserId="android.uid.backup"`, que no demuestra UID efectivo. Mantener separados sharedUserId, UID instalado, Binder calling UID y permisos efectivos.
+
+**Pendientes:** cuerpos de transferencia MiAsist, $7, etapas $5, routeBackupData/callers, Runnable de SendingThread, bloque clearCallingIdentity/restoreCallingIdentity. Todo sigue DIRECT-CHAT/RECOVERED-CHAT, no LOCAL-VERIFIED. Solo lectura estática.
