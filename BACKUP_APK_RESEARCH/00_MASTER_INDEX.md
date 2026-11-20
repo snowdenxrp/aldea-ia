@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.37 --- MiAsist command gate and device state map\
+**Versión:** 0.38 --- provenance correction for Binder identity and UID\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1191,3 +1191,14 @@ Anclas adicionales recuperadas:
 - $5 actualiza estado/conexión y archivos recibidos; $6 usa descriptor/items/syncer de iconos/estado; $8 carga app/file BRItems, tamaños y rutas.
 
 **Límites:** el cuerpo de `startAsClientOrServer()`, Intent de `startActivity()`, gate completo `isActionParamsValid()`, mapeo DeviceError→UI y cleanup no están recuperados. La existencia de `ERR_NOT_OWNER_SPACE` no se resuelve con el retorno histórico true de `isOwnerSpace()` sin ver callers/ramas. No inferir peer autenticado ni socket abierto solo por el puerto. Clasificación RECOVERED-CHAT / DIRECT-CHAT; no LOCAL-VERIFIED.
+
+
+## 44. Corrección de procedencia: clearCallingIdentity y UID 6100 — 2026-11-20
+
+Se corrigió la sección 5 de evidencia 51 tras una búsqueda histórica focalizada:
+- La referencia `Binder.clearCallingIdentity()` alrededor de `BRService.smali:7380` aparece en un resumen previo (evidencia 06), pero no se recuperó texto Smali pegado por el usuario ni el bloque circundante. Clasificación correcta: `PRIOR-ASSISTANT-SUMMARY / UNVERIFIED-REFERENCE`, no USER-PASTED-SOURCE.
+- No se recuperó token, caller, llamadas posteriores ni `restoreCallingIdentity()`. No hacer inferencias de bypass/elevación desde esa referencia.
+- UID numérico 6100: la búsqueda no encontró dumpsys, pm list packages, PackageManager, manifest, instalación, salida de comando ni inferencia documentada que lo origine. La distinción previa entre 6100 y `sharedUserId="android.uid.backup"` fue afirmación de asistente sin soporte. Clasificación: `UNKNOWN / UNSUPPORTED`; no citar como dato del paquete.
+- El único dato histórico disponible es la declaración `sharedUserId="android.uid.backup"`, que no determina UID Linux instalado, Binder calling UID ni grants efectivos.
+
+Esta corrección reduce el nivel de certeza respecto de la versión anterior del expediente y prevalece sobre cualquier mención más antigua en evidencia 06/51. No se eliminó la referencia histórica: se conserva con procedencia y límites explícitos.
