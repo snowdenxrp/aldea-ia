@@ -953,3 +953,13 @@ Los cuerpos compartidos de `BRItem(Parcel)` y `writeToParcel(Parcel,int)` presen
 **Límites:** salida local compartida, aún no LOCAL-VERIFIED por relectura/hash. Faltan `BRItem$1.smali`, comparación con todos los campos declarados, resolución de helpers sintéticos boolean y conexión con una transacción Binder concreta. No afirmar copia profunda ni identidad de elementos de `localFileList`.
 
 **Siguiente extracción P0:** `BRItem$1.smali`, todos los `.field` de `BRItem.smali`, helpers Parcel/boolean y ruta Stub/Proxy/caller de `BRItem[]`.
+
+
+## 27. BRItem Creator y campos de instancia no serializados — 2026-11-19
+
+Se incorporó la evidencia 37: [`37_BRITEM_CREATOR_AND_UNSERIALIZED_FIELDS.md`](evidence/2026-11-19/37_BRITEM_CREATOR_AND_UNSERIALIZED_FIELDS.md).
+
+La salida de `BRItem$1.smali` confirma que `createFromParcel(Parcel)` crea un `BRItem` nuevo mediante `BRItem.<init>(Parcel)`; `newArray(int)` crea un array `BRItem[]`. El inventario de campos declara 25 campos de instancia: 23 aparecen en el contrato Parcelable observado y dos, `apkSize` y `dataSize`, no aparecen en la escritura ni lectura. En la reconstrucción nueva no reciben valores desde el Parcel; el constructor compartido tampoco muestra asignación explícita para ellos, por lo que comienzan en cero como campos `long`, hasta cualquier asignación posterior.
+
+**Pendiente:** implementación de los helpers sintéticos boolean, asignaciones/consumidores de `apkSize` y `dataSize`, y conexión con transacción Binder concreta. Evidencia basada en salidas pegadas; no LOCAL-VERIFIED por relectura/hash.
+
