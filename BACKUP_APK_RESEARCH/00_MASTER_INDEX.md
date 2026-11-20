@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.28 --- BRItem helper methods and toString\
+**Versión:** 0.29 --- IBRService Binder getBRItems reference semantics\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1044,3 +1044,16 @@ La evidencia es DIRECT-CHAT, basada en salida pegada por el usuario, no LOCAL-VE
 
 **Siguiente prioridad:** conectar Parcelable con `IBRService.Stub/Proxy`, identificar códigos de transacción y seguir un caller concreto que transporte `BRItem` o `BRItem[]`. No repetir el inventario de las 23 posiciones Parcelable ni afirmar transporte efectivo antes de demostrar la ruta.
 
+
+
+## 35. IBRService Binder: getBRItems y semántica de referencias — 2026-11-20
+
+Se incorporó la evidencia 45: [`45_IBRSERVICE_BINDER_GETBRITEMS_REFERENCE_TRANSFORM.md`](evidence/2026-11-20/45_IBRSERVICE_BINDER_GETBRITEMS_REFERENCE_TRANSFORM.md).
+
+La salida Smali compartida confirma que `IBRService.getBRItems()` usa la transacción Binder 5: el Stub devuelve `BRItem[]` con `writeTypedArray` y el Proxy reconstruye el arreglo con `createTypedArray(BRItem.CREATOR)`. La implementación concreta es `BRService$1`, que hereda de `IBRService$Stub` y delega en `BRService.getBRItems()`.
+
+El getter crea un arreglo exterior nuevo. Para `files_for_backup`, crea un `BRItem` nuevo y copia `type`, `feature`, `packageName`, tamaños, `state`, `error`, `progType` y la referencia `localFileList`; esta última no se clona. Para los elementos ordinarios inserta directamente la referencia original de cada `BRItem` en el arreglo.
+
+**Límite:** DIRECT-CHAT, no LOCAL-VERIFIED por relectura/hash independiente. La ruta Proxy/Parcel reconstruye objetos en el receptor, pero aún no se ha determinado si el caller concreto de `MiAsistService` toma la rama Proxy o la interfaz local de `Stub.asInterface()`. El retorno del getter cuando `mBRItems` es null tampoco se afirma porque el fragmento recibido no contiene la instrucción de retorno posterior al log.
+
+**Siguiente prioridad:** reconstruir el binding de `MiAsistService`, `onServiceConnected()`, `Stub.asInterface(IBinder)` y asignación a `mBRService` para resolver la ruta real del caller. Mantener separada la identidad de referencias in-process de la reconstrucción Parcelable interprocess.
