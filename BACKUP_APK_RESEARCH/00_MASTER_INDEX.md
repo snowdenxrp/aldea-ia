@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.29 --- IBRService Binder getBRItems reference semantics\
+**Versión:** 0.30 --- supplemental memory recovery and coverage\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1057,3 +1057,16 @@ El getter crea un arreglo exterior nuevo. Para `files_for_backup`, crea un `BRIt
 **Límite:** DIRECT-CHAT, no LOCAL-VERIFIED por relectura/hash independiente. La ruta Proxy/Parcel reconstruye objetos en el receptor, pero aún no se ha determinado si el caller concreto de `MiAsistService` toma la rama Proxy o la interfaz local de `Stub.asInterface()`. El retorno del getter cuando `mBRItems` es null tampoco se afirma porque el fragmento recibido no contiene la instrucción de retorno posterior al log.
 
 **Siguiente prioridad:** reconstruir el binding de `MiAsistService`, `onServiceConnected()`, `Stub.asInterface(IBinder)` y asignación a `mBRService` para resolver la ruta real del caller. Mantener separada la identidad de referencias in-process de la reconstrucción Parcelable interprocess.
+
+
+## 36. Recuperación suplementaria de memoria y cobertura histórica — 2026-11-20
+
+Se incorporó la evidencia 46: [`46_SUPPLEMENTAL_MEMORY_RECOVERY_AND_COVERAGE.md`](evidence/2026-11-20/46_SUPPLEMENTAL_MEMORY_RECOVERY_AND_COVERAGE.md).
+
+La recuperación agrega anclas históricas de `MiAsistService` (líneas físicas 698/703, 727/734, 2801–2865 y 2939–2942), las sobrecargas de `BRService.startRestoreCommand` (15199–15215 y 15220–15294), la tabla resumida de 14 transacciones de `IBRService.Stub`, la separación entre activación Intent y transporte Binder, y detalles previos de callbacks/state/error/ProgressItemAdapter.
+
+También conserva la secuencia histórica de `restoreLocalMediaFile()` (ZIP derivado desde `mCurrentBackupRootPath`; estados 3/8/9/1 según las ramas descritas) y anclas de `ArchiveHelper.unzipFiles()`. Se mantienen como RECOVERED-CHAT, no LOCAL-VERIFIED; no sustituyen las evidencias específicas ni los fragmentos Smali.
+
+**Pendientes que siguen abiertos:** completar `MiAsistService → bindBRService → ServiceConnection → onServiceConnected → IBRService.Stub.asInterface(IBinder) → mBRService → getBRItems()`; resolver Proxy frente a interfaz local; investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos; reconciliar el mapeo histórico conflictivo de `mBakFilesType`; no repetir evidencias 35–45.
+
+**Regla:** antes de solicitar nuevos comandos, reconciliar el expediente completo y los hallazgos existentes. Solo lectura estática; no ejecutar servicios ni operaciones de Backup/Restore.
