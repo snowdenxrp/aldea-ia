@@ -197,8 +197,8 @@ El usuario compartió salida directa de Termux para `BRService$5.smali`, líneas
 - `v9` comparado con `v11 = 0x5`, rama hacia `:cond_3` y asignación de `mIsFlashDriveTask`;
 - `v9` comparado con `v7 = 0x1`, rama hacia `:cond_4` y asignación de `mIsLocalBackupTask`.
 
-La lectura histórica de ese mismo bloque resume los efectos como: tipo 2 → `v8=1`; tipo 3 → `mIsTransingTask=true`; tipo 5 → `mIsFlashDriveTask=true`; tipo 1 → `mIsLocalBackupTask=true`. El registro `v8` se conserva como efecto literal reportado, sin atribuirle un significado semántico no demostrado.
+La interpretación de asistente que acompañó esa salida resumió los efectos como: tipo 2 → `v8=1`; tipo 3 → `mIsTransingTask=true`; tipo 5 → `mIsFlashDriveTask=true`; tipo 1 → `mIsLocalBackupTask=true`. De esos cuatro efectos, la salida directa recuperada confirma los branch labels y registros/destinos, pero el valor literal asignado a `v8` no está preservado en el fragmento actual. Por tanto, `v8=1` permanece `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED` hasta recuperar la instrucción exacta.
 
-**Procedencia:** USER-PASTED-SOURCE / DIRECT-CHAT para la salida de comparaciones, registros, constantes y branch labels. La frase resumida de los efectos se mantiene como lectura de ese bloque, no como reemplazo de las instrucciones Smali completas. No confundir estos flags con `BRItem.state`, `BRItem.error`, `DeviceStage` o códigos del listener.
+**Procedencia:** USER-PASTED-SOURCE / DIRECT-CHAT para la salida de comparaciones, registros, constantes y branch labels. Las asignaciones concretas a flags se conservan solo en la medida que la salida directa las muestra; `v8=1` se mantiene como resumen previo no verificado. No confundir estos flags con `BRItem.state`, `BRItem.error`, `DeviceStage` o códigos del listener.
 
 **Corrección de contradicción:** una paráfrasis anterior había atribuido tipo 2 a `mIsTransingTask`; la salida directa ubica `mIsTransingTask` en la comparación con `0x3`. La atribución anterior a tipo 2 queda invalidada. El mapa debe leerse junto con la asignación de `mBakFilesType` en `restoreFiles()` y no como enum universal para todos los contextos.
