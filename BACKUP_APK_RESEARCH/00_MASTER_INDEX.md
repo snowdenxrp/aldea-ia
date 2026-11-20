@@ -1054,9 +1054,9 @@ La salida Smali compartida confirma que `IBRService.getBRItems()` usa la transac
 
 El getter crea un arreglo exterior nuevo. Para `files_for_backup`, crea un `BRItem` nuevo y copia `type`, `feature`, `packageName`, tamaños, `state`, `error`, `progType` y la referencia `localFileList`; esta última no se clona. Para los elementos ordinarios inserta directamente la referencia original de cada `BRItem` en el arreglo.
 
-**Límite:** DIRECT-CHAT, no LOCAL-VERIFIED por relectura/hash independiente. La ruta Proxy/Parcel reconstruye objetos en el receptor, pero aún no se ha determinado si el caller concreto de `MiAsistService` toma la rama Proxy o la interfaz local de `Stub.asInterface()`. El retorno del getter cuando `mBRItems` es null tampoco se afirma porque el fragmento recibido no contiene la instrucción de retorno posterior al log.
+**Límite:** DIRECT-CHAT, no LOCAL-VERIFIED por relectura/hash independiente. La ruta Proxy/Parcel reconstruye objetos en el receptor. El manifest pegado por el usuario sitúa MiAsistService en `:remote`, mientras que BRService no tiene `android:process` explícito en su declaración de servicio; falta la etiqueta `<application>` para resolver la herencia de proceso. Por tanto, no se declara todavía si el caller concreto toma Proxy o interfaz local de `Stub.asInterface()`. El retorno del getter cuando `mBRItems` es null tampoco se afirma porque el fragmento recibido no contiene la instrucción de retorno posterior al log.
 
-**Siguiente prioridad:** reconstruir el binding de `MiAsistService`, `onServiceConnected()`, `Stub.asInterface(IBinder)` y asignación a `mBRService` para resolver la ruta real del caller. Mantener separada la identidad de referencias in-process de la reconstrucción Parcelable interprocess.
+**Siguiente prioridad:** no repetir la localización de `onServiceConnected()` (ya recuperada). Recuperar el cuerpo exacto de `Stub.asInterface(IBinder)` y la etiqueta `<application>` del manifest; resolver el proceso efectivo de BRService y conectarlo con el caller `getBRItems()` de MiAsistService. Mantener separada la identidad de referencias in-process de la reconstrucción Parcelable interprocess.
 
 
 ## 36. Recuperación suplementaria de memoria y cobertura histórica — 2026-11-20
@@ -1085,7 +1085,7 @@ También conserva la superficie del manifest: los tres servicios `MiAsistService
 
 Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIATION.md`](evidence/2026-11-20/47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIATION.md).
 
-**Corrección del pendiente Binder:** evidencia 02 ya documentaba `MiAsistService$2.smali:38–106`: `onServiceConnected()` invoca `IBRService$Stub.asInterface(IBinder)`, asigna `mBRService` y registra listener; desconexión limpia la referencia. Por tanto, no volver a localizar ni extraer desde cero ese método. Pendiente real: recuperar/releer el cuerpo exacto de `Stub.asInterface()`, el bloque `$2` y el atributo `android:process` de `BRService` para resolver interfaz local vs Proxy; luego conectarlo al caller `MiAsistService.smali:1600–1620`.
+**Corrección del pendiente Binder:** evidencia 02 ya documentaba `MiAsistService$2.smali:38–106`: `onServiceConnected()` invoca `IBRService$Stub.asInterface(IBinder)`, asigna `mBRService` y registra listener; desconexión limpia la referencia. Por tanto, no volver a localizar ni extraer desde cero ese método. El fragmento directo de manifest líneas 107–113 muestra MiAsistService en `:remote` y no muestra `android:process` en la declaración de BRService; falta la etiqueta `<application>` para determinar el proceso heredado. Pendiente real: recuperar/releer el cuerpo exacto de `Stub.asInterface()`, la etiqueta `<application>` y conectar el proceso efectivo con el caller `MiAsistService.smali:1600–1620`.
 
 **Corrección de setState:** evidencia 12 resuelve el conflicto de evidencia 11 mediante la instrucción Smali exacta. La llamada final es `setState(4,12,0,v14)`, no `setState(4,0,v2,v14)`. Con errores globales 8/9, el método puede almacenar `mLastError=8/9` y escribir simultáneamente `BRItem.state=3,error=9` por la condición de etapa 12. Son capas distintas.
 
@@ -1097,7 +1097,7 @@ Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIAT
 
 **Otros puntos consolidados en evidencia 47:** causalidad global 8/9 y recursos de notificación; distinción entre activación Intent y canal Binder; límites de manifest/alcanzabilidad externa; auditorías históricas de 134 ramas de `aldea-ia`, 27 commits del G08 del repo D-RB-09 y auditoría de otros dos repositorios. Todo se conserva con su clasificación RECOVERED-CHAT/DIRECT-CHAT, no como verificación local nueva.
 
-**Siguiente orden sin repetición:** (1) Stub.asInterface + proceso BRService + conexión $2; (2) caller getBRItems; (3) reconciliar coordenadas restoreFiles y usos de mBakFilesType; (4) state 6; (5) causalidad 8/9 y handleTaskFinish. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
+**Siguiente orden sin repetición:** (1) Stub.asInterface + etiqueta `<application>`/proceso efectivo BRService; (2) caller getBRItems; (3) reconciliar coordenadas restoreFiles y usos de mBakFilesType; (4) state 6; (5) causalidad 8/9 y handleTaskFinish. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
 
 
 ## 39. Recuperación suplementaria de BRService$5 y ciclo de restauración — 2026-11-20
