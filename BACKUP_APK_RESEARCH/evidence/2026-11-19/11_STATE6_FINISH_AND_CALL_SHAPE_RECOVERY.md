@@ -19,12 +19,12 @@ These are physical file-line locations from the reported grep. The full grep com
 
 The user specifically reported:
 
-- `BRService$5.smali:1735`: assigns `BRItem.state=6` for the item whose package is `files_for_backup`, after `waitingForFilesTransingEnd()`.
+- `BRService$5.smali` physical line 2351, associated with Smali debug/source directive `.line 1735`: assigns `BRItem.state=6` for the item whose package is `files_for_backup`, after `waitingForFilesTransingEnd()`. The surrounding source directives are `.line 1733` (`waitingForFilesTransingEnd()`), `.line 1734` (read state, load 6 and compare), `.line 1735` (write state=6).
 - Lines 1789–1790: preserve states 1, 6 or 3; otherwise assign state 1.
 - Lines 1967–1968: on `error==0`, preserve the `files_for_backup` state; otherwise assign state 1.
 - Line 1983: failure assigns state 3.
 
-This is the first recovered producer context for state 6, improving on document 09's earlier open question. It suggests state 6 is specifically associated with the `files_for_backup` transfer completion path. The exact semantics, UI label/icon, and whether any other producer exists remain unverified.
+This is the recovered producer context for state 6, improving on document 09's earlier open question. The coordinate `1735` is a Smali `.line` directive, not a physical file line; it corresponds to physical line 2351. Do not count it as a second writer. The context associates state 6 with the `files_for_backup` transfer completion path. The exact semantics, UI label/icon, and whether any other producer exists remain unverified.
 
 A prior assistant observation identified `const/4 v8, 0x7` near line 1897, but this was **not** evidence of a write to `BRItem.state=7`. Do not equate the register constant with the item state field.
 
