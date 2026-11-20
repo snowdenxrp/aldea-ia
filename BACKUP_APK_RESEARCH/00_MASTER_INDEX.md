@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.64 --- BRService RestoreThread v8/v16 early-exit codes\
+**Versión:** 0.65 --- BRService RestoreThread: origen literal de v8\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1474,3 +1474,16 @@ El bloque 1025–1090 confirma dos salidas anticipadas:
 La salida grep también muestra que `v16` se prueba después en 3878 y 3997, y puede copiarse a `v14` en 3999. Antes, en 556–558, el mismo par de registros `v16:v17` se usa para el tamaño `long` de `mTransSingleItemMaxSize`; es reutilización de registros, no el mismo dato semántico.
 
 **Reconciliación:** evidencias 10/51/60/61 ya describían ramas `mBakFilesType` y el flujo histórico de `v8/v16`, pero documentaban que la asignación literal de `v8` no estaba preservada. La evidencia 65 cierra esa brecha con el fragmento directo actual. No es un descubrimiento completamente nuevo. El mapping semántico de `v0/v5`, el significado externo de los códigos 8/9 y la propagación completa siguen pendientes.
+
+
+## 18. 20-11-2026 — origen literal de v8 (evidencia 66)
+
+**CONFIRMADO POR EXTRACCIÓN DIRECTA COMPARTIDA EN CHAT:** el fragmento físico `BRService$5.smali:90–124` muestra que `mBakFilesType` se obtiene mediante el getter sintético `-$$Nest$fgetmBakFilesType`, su resultado se mueve a `v0`, y luego `v5` recibe `const/4 v5, 0x2`. La comparación `if-ne v0, v5, :cond_1` conduce a `v8=1` cuando `mBakFilesType == 2`; en `:cond_1`, `v8=0`. Esto cierra la identidad semántica de los operandos que la evidencia 65 había dejado pendiente.
+
+**Cadena consolidada con evidencia 65:** `mBakFilesType == 2` → `v8=1` → en `BRService$5.run()` línea física 1051 la condición `if-eqz v8, :cond_1c` no toma la rama normal; se asigna `v16=0x8` y se salta a `:goto_3f`. La salida temprana está confirmada a nivel de Smali compartido. La semántica externa del código 8 y sus efectos completos no se amplían por esta evidencia.
+
+**Límites:** la evidencia confirma el valor de campo y la comparación; no demuestra por sí sola el origen upstream de `mBakFilesType` en cada tipo de operación, ni que el código 8 tenga una descripción concreta sin cotejar los recursos/consumidores correspondientes. No inferir que cualquier restauración de tipo 2 completa o falla de una forma determinada sin cerrar el resto del flujo.
+
+**Procedencia:** salida de Termux pegada por el usuario, `sed -n '90,124p' "$F"`, sesión 2026-11-20. No se recalculó hash del Smali local en esta sesión. Clasificación `USER-PASTED-LOCAL-SMALI / DIRECT-CHAT`; no runtime.
+
+**Siguiente delta:** seguir la escritura/origen de `mBakFilesType` y cotejar el código 8 con el método de notificación y recursos de error, evitando repetir la extracción ya conservada de la propagación de cierre.
