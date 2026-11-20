@@ -13,6 +13,8 @@ La evidencia 45 dejó como pendiente seguir MiAsistService hasta onServiceConnec
 
 - MiAsistService$2.smali:38–106: onServiceConnected() invoca IBRService$Stub.asInterface(IBinder), guarda el resultado en mBRService y registra el listener.
 - onServiceDisconnected() limpia mBRService.
+- Manifest, líneas 107–113 compartidas directamente por el usuario el 16-11: MiAsistService declara `android:process=":remote"`; BRService y TransFileService no muestran atributo `android:process` en sus declaraciones de servicio. Los tres muestran `exported="false"` y `foregroundServiceType="systemExempted"`.
+- El fragmento recuperado no incluye la etiqueta `<application>` ni permite confirmar un `android:process` a nivel de aplicación. Por ello, la ausencia de atributo en la declaración de BRService no basta para declarar su proceso efectivo sin comprobar la herencia desde `<application>`.
 - MiAsistService.smali:675–707: bindBRService() construye Intent explícito a BRService, agrega extra_is_from_miasist=true, llama startService() y bindService().
 - MiAsistService.smali:1600–1620: caller de IBRService.getBRItems().
 - MiAsistService.smali:2939–2942: ruta reportada de BRService.startRestoreCommand(...,4), seguida de bindBRService().
@@ -22,7 +24,7 @@ La evidencia 45 dejó como pendiente seguir MiAsistService hasta onServiceConnec
 1. recuperar el bloque completo original de MiAsistService$2 y la implementación de IBRService$Stub.asInterface();
 2. establecer si el Binder devuelto es local (rama queryLocalInterface) o remoto (rama Proxy) para la configuración de procesos de esta APK;
 3. conectar ese resultado con el caller getBRItems() en la ruta concreta, sin inferir una ejecución solo por la presencia de Proxy;
-4. comprobar si BRService tiene atributo android:process en el manifest, y relacionarlo con el proceso :remote de MiAsistService. Un proceso diferente haría esperable Proxy, pero no se declara hasta recuperar el manifest completo y la configuración exacta.
+4. recuperar la etiqueta `<application>` del manifest para determinar si fija un proceso por defecto; después resolver el proceso efectivo de BRService (su declaración de servicio no muestra `android:process` en el fragmento disponible) y compararlo con MiAsistService `:remote`. Solo entonces concluir si la conexión cruza procesos y si se espera Proxy.
 
 ## 2. Activación del servicio y canal Binder: dos mecanismos distintos
 
