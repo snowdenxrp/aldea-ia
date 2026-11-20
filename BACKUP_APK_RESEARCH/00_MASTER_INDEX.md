@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.44 --- restore command call graph and Binder callback recovery\
+**Versión:** 0.45 --- partial CMD_RESTORE branch and MiAsist bridge recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1314,3 +1314,25 @@ Estas rutas no se fusionan: la variante MiAsist/restoreTransfering pasa por la a
 - No trasladar tareas atribuidas a $8 a $7; cuerpos completos siguen pendientes.
 
 **Límite:** la descripción de la rama `CMD_RESTORE` de `onStartCommand()` que lee extras proviene de un resumen anterior del asistente, no del Smali literal recuperado. Sigue sin revalidar. La ejecución efectiva y el resultado de la autoinvocación no se probaron dinámicamente.
+
+
+## 51. Recuperación parcial directa de CMD_RESTORE — 2026-11-20
+
+Se incorporó evidencia 56: [`56_BRSERVICE_CMD_RESTORE_ENTRY_BRANCH_RECOVERY.md`](evidence/2026-11-20/56_BRSERVICE_CMD_RESTORE_ENTRY_BRANCH_RECOVERY.md). También se corrigió procedencia en evidencia 55 y se ampliaron 51/52.
+
+**BRService.onStartCommand(CMD_RESTORE):** un mensaje histórico del usuario (16-11-2026 16:50:47Z) describe que:
+- lee `extra_is_from_miasist`, `extra_bakfiles_type` (default 1), `extra_britems` y `extra_zip_file_path`;
+- obtiene descriptor desde `BRServiceDataHolder` o `extra_descriptor_dir`;
+- llama `restoreFiles()` si hay BRItems o en la condición descrita como tipo 3/reinicio;
+- con lista null registra `restoreFiles brItems is null` y llama `setState(mState,0xc,6)`.
+
+**Límite crítico:** el registro termina truncado en “retorna 1 en tipo…”. No se conoce la condición de retorno ni el cuerpo completo. Esta información es USER-FACT / DIRECT-CHAT, pero no es Smali literal reproducido ni LOCAL-VERIFIED.
+
+**MiAsistService bridges y clase $5:**
+- `MiAsistService.smali:416–453` contiene bridges Nest para `doSendFile(String)`, `sendAllBRItemsDescriptor()`, `startRestoreCommand()` y `startBackupCommand()`; solo delegan a métodos privados.
+- $5 también contiene referencias a `STAGE_BRITEMS_LOADING`, `getItemName`, `updateProgressNotification`, `ERR_CONNECTED_FAILED` y `STAGE_REMOTE_CONNECTED`.
+- Sigue sin recuperarse el cuerpo literal completo de doSendFile, sendAllBRItemsDescriptor, startAsClientOrServer, routeBackupData, runOnSendingThread ni $5/$6/$7.
+
+**Manifest:** se recuperó la declaración `foregroundServiceType="systemExempted"` para MiAsistService, junto a proceso `:remote`, action `miui.intent.action.MIASIST_PROXY` y `exported=false` (evidencia 52). Este atributo no demuestra acceso externo ni autorización.
+
+La sección 3 de evidencia 55 fue corregida: la rama CMD_RESTORE ya no se clasifica enteramente como resumen de asistente; los detalles explícitos anteriores se clasifican como USER-FACT / DIRECT-CHAT con truncamiento declarado.
