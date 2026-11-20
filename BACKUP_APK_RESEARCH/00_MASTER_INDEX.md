@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.63 --- BRService Binder Stub initialization and onBind source\
+**Versión:** 0.64 --- BRService RestoreThread v8/v16 early-exit codes\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1459,3 +1459,18 @@ La salida directa compartida muestra que BRService crea `new BRService$1`, invoc
 El cuerpo de `BRService.onBind()` (18672–18679) lee `mBinder` y devuelve esa misma referencia como `IBinder`; no crea un Binder nuevo durante `onBind()`. **Conclusión estática:** el endpoint entregado por BRService es la instancia almacenada de `BRService$1`.
 
 **Límite:** el fragmento grep no incluyó la cabecera del método que contiene la inicialización; no atribuirla a constructor/onCreate sin recuperar esa cabecera. Tampoco hay observación runtime del objeto concreto. La evidencia se clasifica `USER-PASTED-LOCAL-SMALI / DIRECT-CHAT`.
+
+
+## 65. BRService$5.run(): condición v8 y códigos de salida v16 — 2026-11-20
+
+Se incorporó evidencia 65: [`65_BRSERVICE_RESTORETHREAD_V8_V16_EARLY_EXIT_CODES.md`](evidence/2026-11-20/65_BRSERVICE_RESTORETHREAD_V8_V16_EARLY_EXIT_CODES.md).
+
+La salida directa de Termux confirma la asignación de `v8`: `v0 == v5 → v8=1`; en caso contrario `v8=0` (BRService$5.smali:117–124). El significado de `v0` y `v5` no queda resuelto por el fragmento y no se afirma que equivalga a un valor concreto de `mBakFilesType`.
+
+El bloque 1025–1090 confirma dos salidas anticipadas:
+- `v8 != 0` → `v16=0x8` → salto a `:goto_3f`.
+- `mIsFlashDriveTask == true` y `isUsbAvaliable() == false` → `v16=0x9` → salto a `:goto_3f`.
+
+La salida grep también muestra que `v16` se prueba después en 3878 y 3997, y puede copiarse a `v14` en 3999. Antes, en 556–558, el mismo par de registros `v16:v17` se usa para el tamaño `long` de `mTransSingleItemMaxSize`; es reutilización de registros, no el mismo dato semántico.
+
+**Reconciliación:** evidencias 10/51/60/61 ya describían ramas `mBakFilesType` y el flujo histórico de `v8/v16`, pero documentaban que la asignación literal de `v8` no estaba preservada. La evidencia 65 cierra esa brecha con el fragmento directo actual. No es un descubrimiento completamente nuevo. El mapping semántico de `v0/v5`, el significado externo de los códigos 8/9 y la propagación completa siguen pendientes.
