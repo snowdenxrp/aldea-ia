@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.56 --- MiAsist grep coverage and source-boundary reconciliation\
+**Versión:** 0.57 --- Binder process conditionality and mBakFilesType reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -743,8 +743,10 @@ Se recuperó que `getSuccessfulCount` cuenta estados 1 y 6;
 `getFailedCount` equivale a total menos exitosos; `initData` trata
 1/3/6 como estados finalizados y cuenta 1/6 como éxito. El adapter
 normaliza `state=2` a 1 al finalizar y no mostró escrituras literales
-7/8 en los rangos inspeccionados. El significado UI completo de cada
-estado y el origen de state 6 siguen pendientes.
+7/8 en los rangos inspeccionados. El origen de state 6 ya está
+parcialmente localizado: `BRService$5` física 2351 / `.line 1735`
+para `files_for_backup`, más otro writer en `BRService.smali:16787–16791`.
+El significado UI completo y la exhaustividad del inventario siguen abiertos.
 
 Detalle:
 [`evidence/2026-11-19/09_PROGRESS_ADAPTER_UI_RECOVERY.md`](evidence/2026-11-19/09_PROGRESS_ADAPTER_UI_RECOVERY.md).
@@ -756,12 +758,7 @@ La evidencia 10 conserva el **Reporte B** (conversación del 19-11):
 tipo 2 → `v8=1`; tipo 3 → `mIsTransingTask`; tipo 5 →
 `mIsFlashDriveTask`; tipo 1 → `mIsLocalBackupTask`.
 
-**No es una resolución definitiva.** La evidencia 18 conserva un
-**Reporte A** atribuido al 17-11: tipos 2 y 3 → `mIsTransingTask`.
-Además, el bloque del 19-11 contiene directivas Smali `.line 1391–1418`
-dentro de `sed -n '100,320p' "$F"`; no son líneas físicas 1391–1418.
-Ambos informes se conservan con procedencia separada. Estado vigente:
-`UNKNOWN — SOURCE BLOCK RECONCILIATION REQUIRED`. Véase evidencia 23.
+**Reconciliación parcial posterior (evidencias 18 §7 y 51 §9):** la salida Termux directa del 19-11 (BRService$5.smali, físicas 103–186) ubica tipo 2 en `:cond_1`/ruta `v8`, tipo 3 en `:cond_2`/`mIsTransingTask`, tipo 5 en `:cond_3`/`mIsFlashDriveTask` y tipo 1 en `:cond_4`/`mIsLocalBackupTask`. El Reporte A del 17-11 que atribuía tipo 2 y 3 a `mIsTransingTask` carece de bloque literal recuperado y no se conserva como hecho establecido. El valor exacto asignado a `v8` no está preservado: `v8=1` sigue `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`. La distinción de coordenadas también queda corregida: `.line 1391–1418` son directivas fuente dentro de la ventana física `sed -n '100,320p' "$F"`, no líneas físicas.
 
 También se recuperó la relación posterior:
 `v8!=0` → candidato `v16=8`; `mIsFlashDriveTask` con USB no
@@ -776,9 +773,7 @@ como IDENTICAL. No fue recalculado en esta sesión. La declaración
 anterior de hash desconocido era correcta para el corte v0.1 y queda
 actualizada únicamente como dato RECOVERED-CHAT.
 
-**Prioridad siguiente:** cotejo de solo lectura en Termux de
-`BRService$5.smali`, `setState(IIII)` y la cadena de notificación,
-con hashes locales registrados. No ejecutar servicios ni restauraciones.
+**Estado vigente:** ramas principales parcialmente reconciliadas desde salida directa; `v8` exacto y cadena causal `v8→v16=8` aún requieren fuente literal completa y cotejo local/hash. No ejecutar servicios ni restauraciones.
 
 
 ## 18. Productor de state 6 y llamada final setState — 2026-11-19
@@ -1080,7 +1075,7 @@ Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIAT
 
 **Otros puntos consolidados en evidencia 47:** causalidad global 8/9 y recursos de notificación; distinción entre activación Intent y canal Binder; límites de manifest/alcanzabilidad externa; auditorías históricas de 134 ramas de `aldea-ia`, 27 commits del G08 del repo D-RB-09 y auditoría de otros dos repositorios. Todo se conserva con su clasificación RECOVERED-CHAT/DIRECT-CHAT, no como verificación local nueva.
 
-**Siguiente orden sin repetición:** (1) cuerpo Stub.asInterface + etiqueta `<application>`/proceso efectivo BRService; (2) reconciliar coordenadas restoreFiles y usos de mBakFilesType; (3) state 6; (4) causalidad 8/9 y handleTaskFinish. El caller getBRItems() ya está preservado en evidencia 59. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
+**Siguiente orden sin repetición:** (1) cuerpo Stub.asInterface + etiqueta `<application>`/proceso efectivo BRService; (2) recuperar el valor literal asignado a `v8` y completar la cadena causal 8/9; (3) completar causalidad 8/9 y `handleTaskFinish`. La firma/callers de `restoreFiles`, el mapping parcial de `mBakFilesType` y las coordenadas state 6 ya fueron reconciliados documentalmente. El caller `getBRItems()` ya está preservado en evidencia 59. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
 
 
 ## 39. Recuperación suplementaria de BRService$5 y ciclo de restauración — 2026-11-20
@@ -1406,3 +1401,14 @@ Evidencia 12 conserva el invoke final exacto `setState(4,12,0,v14)`; la forma an
 Se amplió evidencia 51 con los rangos físicos de grep compartidos el 16-11: `bindBRService` 675–708; `bindTransFileService` 709–738; `doSendFile` 739–829; `isActionParamsValid` 1639–1734; `sendAllBRItemsDescriptor` 2032–2047; `startAsClientOrServer` 2685–2789; `onStartCommand` desde 3691. La salida adicional contiene referencias a `MiAsistService$5/$6/$7`, pero no cuerpos completos.
 
 El usuario confirmó que la salida era grep de ubicaciones, no bloques literales de los métodos. `BRService.routeBackupData()` y `runOnSendingThread()` no aparecieron en esa salida; tampoco se recuperaron cuerpos completos nuevos de `doSendFile`, `sendAllBRItemsDescriptor` o `$5/$6/$7`. No volver a tratar estas coordenadas como si fueran código inspeccionado.
+
+
+## 60. Reconciliación Binder, proceso y mapping mBakFilesType — 2026-11-20
+
+Se actualizaron evidencias 18 y 47.
+
+**Binder/procesos:** el manifest directo de líneas 99–130 muestra `MiAsistService` con `android:process=":remote"`; `BRService` y `TransFileService` no tienen `android:process` ni permiso propio en sus declaraciones. El fragmento no incluye la apertura `<application>`. Por tanto, proceso efectivo de BRService y rama local/Proxy siguen condicionales: si `<application>` no fija proceso, BRService hereda el proceso predeterminado del paquete y sería distinto de `:remote`; si fija `:remote`, podría compartirlo. No afirmar cuál escenario aplica sin la etiqueta. La declaración de `IBRService$Stub.asInterface(IBinder)` y callback `$2` ya están recuperadas; el cuerpo de `asInterface` sigue pendiente.
+
+**mBakFilesType:** la salida directa del 19-11 ubica tipo 2 en la rama `:cond_1`/`v8`, tipo 3 en `mIsTransingTask`, tipo 5 en `mIsFlashDriveTask` y tipo 1 en `mIsLocalBackupTask`. La asignación literal de `v8` no está preservada; `v8=1` sigue no verificada. El reporte antiguo que atribuía tipo 2 al flag de transferencia carece de fuente literal y queda subordinado a esta evidencia directa. No elevar todavía la cadena `v8→v16=8` a confirmación local.
+
+**State 6:** la coordenada física 2351 y `.line 1735` identifican una sola escritura de `BRService$5`; un productor adicional está reportado en `BRService.smali:16787–16791`. El falso conflicto de coordenadas no es un pendiente activo.
