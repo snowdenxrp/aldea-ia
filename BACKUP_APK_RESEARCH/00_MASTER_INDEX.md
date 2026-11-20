@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.42 --- ProgressItemAdapter UI semantics recovery\
+**Versión:** 0.43 --- ProgressItemAdapter progress and layout correction\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1267,3 +1267,13 @@ Nuevos detalles recuperados:
 - `updateSingleItemUI()` línea 869 (callers 855/2267) lee `BRItem.error` alrededor de 954, pero el efecto visual completo no se conservó.
 
 **Límite:** no se recuperaron recursos/labels/iconos completos ni el mapping visual por error; no inventar. La referencia local Java del adapter no altera las cautelas de identidad tras Binder/Parcelable de evidencia 45.
+
+
+## 49. Corrección del mapping de progreso y recursos de layout — 2026-11-20
+
+Evidencia 54 se amplió con una corrección basada en el dato directo recuperado:
+- `updateProgress()`: state 0/3 → 0%; state 1/6 → 100%; state 2/4/5/7/8 → porcentaje `completedSize/totalSize` limitado a 99%.
+- Layout ProgressItemAdapter: `0x7f0d00df`; vistas title `0x7f0a02ba`, info `0x7f0a02b9`, status/loading `0x7f0a02bb`.
+- IDs restantes y strings/drawables para errores 2/5/6/7/9/11 no sobreviven en el contexto recuperado; no reconstruirlos ni usar un mapping de error de resúmenes anteriores como hecho.
+
+Esta corrección prevalece sobre la paráfrasis anterior más estrecha que asignaba cálculo porcentual solo a state 2.
