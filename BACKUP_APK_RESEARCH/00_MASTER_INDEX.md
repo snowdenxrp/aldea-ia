@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.49 --- restoreFiles signature provenance correction\
+**Versión:** 0.50 --- getBRItems caller and Binder evidence boundary\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1067,7 +1067,7 @@ La recuperación agrega anclas históricas de `MiAsistService` (líneas físicas
 
 También conserva la secuencia histórica de `restoreLocalMediaFile()` (ZIP derivado desde `mCurrentBackupRootPath`; estados 3/8/9/1 según las ramas descritas) y anclas de `ArchiveHelper.unzipFiles()`. Se mantienen como RECOVERED-CHAT, no LOCAL-VERIFIED; no sustituyen las evidencias específicas ni los fragmentos Smali.
 
-**Pendientes que siguen abiertos:** completar `MiAsistService → bindBRService → ServiceConnection → onServiceConnected → IBRService.Stub.asInterface(IBinder) → mBRService → getBRItems()`; resolver Proxy frente a interfaz local; investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos; reconciliar el mapeo histórico conflictivo de `mBakFilesType`; no repetir evidencias 35–45.
+**Pendientes que siguen abiertos:** recuperar el cuerpo de `IBRService.Stub.asInterface(IBinder)` y la etiqueta `<application>` para resolver proceso efectivo de BRService y rama local/Proxy. El callback `$2` y caller `getBRItems()` ya están recuperados (evidencias 47/59); no repetirlos. Investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos; reconciliar el mapeo histórico conflictivo de `mBakFilesType`; no repetir evidencias 35–45.
 
 **Regla:** antes de solicitar nuevos comandos, reconciliar el expediente completo y los hallazgos existentes. Solo lectura estática; no ejecutar servicios ni operaciones de Backup/Restore.
 
