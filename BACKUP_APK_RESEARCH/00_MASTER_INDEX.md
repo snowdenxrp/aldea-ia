@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.52 --- mBakFilesType field-flow and restoreFiles caller reconciliation\
+**Versión:** 0.53 --- state6 coordinate and setState call reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -781,27 +781,15 @@ actualizada únicamente como dato RECOVERED-CHAT.
 con hashes locales registrados. No ejecutar servicios ni restauraciones.
 
 
-## 18. Productor de state 6 y conflicto en la llamada final a setState — 2026-11-19
+## 18. Productor de state 6 y llamada final setState — 2026-11-19
 
-Se conserva un reporte histórico que asocia `BRService$5.smali`
-línea 1735 con `BRItem.state=6` para `files_for_backup` después de
-`waitingForFilesTransingEnd()`, pero su condición de línea física está
-disputada. El inventario grep directo conserva la escritura física 2351.
-No afirmar dos writers físicos confirmados ni descartar el reporte 1735.
-Estado vigente: coordenada 1735 / número de productores UNKNOWN; véase
-evidencia 23. Las ramas de preservación 1/6/3 y los estados 1/3 de
-finalización siguen siendo datos históricos separados.
+**Corrección de coordenadas:** `BRService$5.smali` physical line 2351 es la escritura `BRItem.state=6`; la directiva Smali `.line 1735` corresponde a esa misma instrucción. El contexto `.line 1733` ejecuta `waitingForFilesTransingEnd()`, `.line 1734` lee/compara el estado con 6 y `.line 1735` escribe state=6 para `files_for_backup`. No son dos anclajes físicos ni dos productores distintos. Evidencias 11/15 se corrigieron para reflejar esta distinción.
 
-Se recuperó además el inventario de escritores de `BRItem.state` en
-`BRService$5` y las llamadas a `handleTaskFinish` en líneas 99, 313,
-806 y 4090. El detalle está en
-[`evidence/2026-11-19/11_STATE6_FINISH_AND_CALL_SHAPE_RECOVERY.md`](evidence/2026-11-19/11_STATE6_FINISH_AND_CALL_SHAPE_RECOVERY.md).
+El inventario de `BRService$5` incluye otras escrituras de state; además evidencia 53 reporta un productor distinto en `BRService.smali:16787–16791`. No atribuir exclusividad global al flujo `files_for_backup`.
 
-**Conflicto crítico:** una síntesis anterior dice que la llamada final
-es `setState(4,v2,0,v14)`; el mensaje recuperado del usuario dice
-explícitamente `setState(4,0,v2,v14)`. No elegir una forma. La orden
-`invoke-*` original y el cuerpo de `setState(IIII)` deben cotejarse
-juntos. Estado: UNKNOWN-STOP para el orden de argumentos.
+Se conserva el inventario de escritores de `BRItem.state` en `BRService$5` y llamadas a `handleTaskFinish` en líneas 99, 313, 806 y 4090. Véase [`evidence/2026-11-19/11_STATE6_FINISH_AND_CALL_SHAPE_RECOVERY.md`](evidence/2026-11-19/11_STATE6_FINISH_AND_CALL_SHAPE_RECOVERY.md).
+
+**Corrección de setState:** evidencia 12 conserva el invoke exacto `invoke-static {v0, v4, v2, v5, v14}, ...->setState(IIII)V`, con `v4=4`, `v2=12`, `v5=0`. La llamada final es `setState(4,12,0,v14)`. La antigua forma `setState(4,0,v2,v14)` fue un error de transcripción y queda descartada. Estado: RESOLVED por DIRECT-CHAT; no LOCAL-VERIFIED.
 
 También se conservaron anclajes de sobrecargas de
 `startRestoreCommand` (5 y 7 argumentos), sin dar por probada la
@@ -891,10 +879,7 @@ Hallazgos recuperados:
 - ProgressItemAdapter cuenta state 1 y 6 como éxito; state 1, 3 y 6
   como estados terminales. State 6 es éxito en la UI/conteo.
 
-**Conflicto abierto:** existen dos anclajes históricos para state 6 en
-`BRService$5.smali`: línea física 2351 en el inventario previo y 1735
-en el contexto posterior de `files_for_backup`. No se fusionan sin
-comparar el mismo archivo y hash.
+**Corrección de coordenadas:** physical line 2351 y Smali `.line 1735` en `BRService$5.smali` identifican la misma escritura state=6 para `files_for_backup`; no son dos productores. Un productor distinto está reportado en `BRService.smali:16787–16791` (evidencia 53).
 
 Registro detallado:
 [`evidence/2026-11-19/15_CALLBACK_STATE_SEMANTICS_AND_STATE6_CONFLICT.md`](evidence/2026-11-19/15_CALLBACK_STATE_SEMANTICS_AND_STATE6_CONFLICT.md).
@@ -1404,3 +1389,10 @@ Se incorporó evidencia 60: [`60_MBAKFILESTYPE_FIELD_FLOW_AND_SOURCE_LIMITS.md`]
 El campo `mBakFilesType:I` está declarado en BRService.smali:267. La salida directa del usuario del 19-11 conserva `iput v4` en 3325, `const/4 v4, 0x3` en 3327 y escritura de `mIsFromMiAsist` en 3339; en `restoreFiles`, conserva `iput p3` en 12697, `const/4 p3, 0x3` en 12699 y lectura/comparación del campo con `0x3` en 12716. Las referencias grep adicionales aparecen en `copyFile` 4093, `createFile` 5676, `deleteFile` 5812, `mIsFromMiAsist` 7346, lectura de `mBakFilesType` 7355 y `makeDirs` 8762.
 
 La salida directa de `BRService$5.smali:103–186` confirma branches para 2, 3, 5 y 1; tipo 3 configura `mIsTransingTask`, tipo 5 `mIsFlashDriveTask`, tipo 1 `mIsLocalBackupTask`; tipo 2 dirige a `:cond_1` y `v8`. La atribución previa de tipo 2 a `mIsTransingTask` queda corregida. No atribuir semántica al getter de 7355 ni comparaciones exactas en 4093/5676/5812/8762 sin cuerpos literales. Véase evidencia 60 para procedencia y límites.
+
+
+## 57. Corrección de coordenadas state 6 y cierre del orden setState — 2026-11-20
+
+Se actualizaron evidencias 11 y 15: la escritura `BRItem.state=6` de `BRService$5.smali` está en la línea física 2351 y se asocia a la directiva `.line 1735`. La aparente discrepancia era mezclar coordenadas físicas con líneas fuente Smali; no son dos escritores.
+
+Evidencia 12 también resuelve el orden de argumentos de la llamada final: `setState(4,12,0,v14)`. La forma `setState(4,0,v2,v14)` queda invalidada. Un productor adicional state=6 se reporta en `BRService.smali:16787–16791`, evidencia 53; no inferir exclusividad del productor de `files_for_backup`.
