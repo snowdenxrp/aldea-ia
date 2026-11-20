@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.40 --- expanded BRService writer provenance map\
+**Versión:** 0.41 --- ArchiveHelper and media restore detail recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1241,3 +1241,14 @@ Evidencia 53 se amplió con referencias históricas adicionales:
 - Se reitera relación `showFinishNotification`/extras y `getErrStringRes(8/9)`, ya documentada en evidencia 47.
 
 Estas ampliaciones no elevan la clasificación: lo que no procede de instrucciones pegadas sigue marcado PRIOR-ASSISTANT-SUMMARY; no se conocen encabezados .method/callers para esos bloques.
+
+
+## 47. Ampliación ArchiveHelper y restoreLocalMediaFile — 2026-11-20
+
+Se amplió evidencia 49 con detalles adicionales recuperados:
+- `restoreLocalMediaFile()`: si `mCurrentBackupRootPath` es null, retorna; el resto del flujo conserva la derivación ZIP por `Utils.getZipSuffixType`, error 7/state 3 si falta ZIP e InputStream, state 8 al extraer y state 9/1 al terminar. La continuación completa sigue siendo resumen, no bloque Smali literal.
+- `unzipFiles`: callback reportado `onZipFileSizeChanged(long,BRItem,String)` recibe la misma referencia; entrada desde InputStream o FileInputStream; nombres inválidos pasan por `getRealFileName()/buildValidName()`; fallback `Utils.copyFile()` si falla rename y el destino no existe; ZipException registra error, imprime, cierra ZIP y retorna en la ruta descrita.
+- Sobrecarga de cuatro argumentos delega a la de siete con listener/BRItem nulos y booleano false, según resumen histórico.
+- Única llamada adicional localizada: `BRService.smali:12918`.
+
+La evidencia conserva estos datos como DIRECT-CHAT/RECOVERED-CHAT según procedencia; no se ha recuperado aquí el cuerpo literal completo. No elevar a LOCAL-VERIFIED.
