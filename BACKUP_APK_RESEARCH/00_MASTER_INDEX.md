@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.15 --- IBRService BRItem array to ProgressItemAdapter caller mapping\
+**Versión:** 0.16 --- restoreFiles BRItem array and MiAsistService field separation\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1228,3 +1228,16 @@ El servicio declara `mBRItems:ArrayList`, expone bridges sintéticos y contiene 
 Informe: [evidencia 31 — IBRService.getBRItems() hacia ProgressItemAdapter](evidence/2026-11-19/31_IBRSERVICE_GETBRITEM_TO_PROGRESS_ADAPTER_CALLERS.md).
 
 La actualización es documental y DIRECT-CHAT; no LOCAL-VERIFIED. No se ejecutó Backup/Restore, servicios ni pruebas dinámicas, y no se modificó el APK.
+
+
+## 40. restoreFiles(BRItem[]) y MiAsistService.mBRItems — evidencia 32
+
+La salida DIRECT-CHAT localiza `BRService.restoreFiles(BRItem[], BackupDescriptor, int)` en línea 12672, una instrucción de asignación a `BRService.mBRItems` en 12733 y dos callers en 19483 y 19519. La combinación entre firma, tipo de campo y registro `p3` debe cotejarse leyendo el método completo y sus registros; no se interpreta aún como asignación válida ni conversión.
+
+Se identifica un campo separado en `MiAsistService`: `mBRItems:BRItem[]` (línea 70), que recibe el resultado de `IBRService.getBRItems()` en 1606–1618. No confundirlo con `BRService.mBRItems:ArrayList`.
+
+La salida también localiza las piezas Binder Stub/Proxy de `getBRItems()`. Si existe frontera IPC, no debe presumirse identidad Java de objetos a través de Parcel; falta inspeccionar Parcelable/CREATOR de BRItem y el contexto de la transacción.
+
+Informe: [evidencia 32 — restoreFiles y MiAsistService](evidence/2026-11-19/32_RESTOREFILES_BRITEM_ARRAY_AND_MIASSIST_COPY.md).
+
+Procedencia DIRECT-CHAT; no LOCAL-VERIFIED. No se ejecutaron Backup/Restore, servicios ni pruebas dinámicas.
