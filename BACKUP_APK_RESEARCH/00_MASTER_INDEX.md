@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.50 --- getBRItems caller and Binder evidence boundary\
+**Versión:** 0.51 --- restoreFiles callers and mBakFilesType provenance reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1091,7 +1091,7 @@ Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIAT
 
 **restoreFiles:** evidencia 34 corrige la lectura inicial de evidencia 33: firma de instancia con `p1=BRItem[]`, `p2=BackupDescriptor`, `p3=int`; el entero se guarda en `mBakFilesType` y luego el registro se reutiliza como destino para crear `ArrayList(Arrays.asList(p1))). No interpretar `iput-object p3` aislado como asignación del entero a `mBRItems`.
 
-**mBakFilesType:** el mejor mapeo histórico recuperado de evidencia 02 es 2→v8=1, 3→transfer, 5→Flash Drive, 1→local. La paráfrasis que intercambiaba los valores 2/3/5 es incorrecta y no debe reutilizarse. Sigue sin LOCAL-VERIFIED hasta cotejar el bloque completo.
+**mBakFilesType / BRService$5.run():** salida Termux directa de BRService$5.smali:103–186 (19-11-2026 20:47:46Z) confirma comparación `0x2` (`v0` vs `v5`) → `:cond_1`/`v8`; `0x3` (`v9` vs `v10`) → `:cond_2`/`mIsTransingTask`; `0x5` (`v9` vs `v11`) → `:cond_3`/`mIsFlashDriveTask`; `0x1` (`v9` vs `v7`) → `:cond_4`/`mIsLocalBackupTask` (evidencia 51). La lectura reportada resume tipo 2→`v8=1`, 3→transfer, 5→Flash Drive, 1→local. Una paráfrasis anterior que atribuía tipo 2 a `mIsTransingTask` queda invalidada. No extrapolar estos flags a `BRItem.state/error` ni a un enum global. Sigue pendiente relectura local/hash independiente.
 
 **state 6:** mantener separados línea física y directiva `.line`. La evidencia 43 reporta línea física 2351 con directiva cercana `.line 1735`; evidencia 11 describe el contexto de `files_for_backup` tras `waitingForFilesTransingEnd()`. No asumir dos escrituras distintas hasta cotejar el bloque original.
 
@@ -1352,7 +1352,7 @@ Se incorporó evidencia 57: [`57_RETRANSFER_BRANCHES_AND_RESTORE_THREAD_RECOVERY
 - `startRestore()` crea una `WeakReference`, instancia `BRService$5("RestoreThread")` y llama `start()`.
 - Esto acredita el arranque del hilo descrito, no que el restore finalice correctamente.
 
-**restoreFiles:** el resumen de lifecycle (evidencia 48) describe asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()`. Evidencia 34 conserva fuente Smali directa pegada por el usuario con `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)`. La supuesta alternativa `restoreFiles(BRItem[],com.miui.backup.BackupDescriptor[],int)` no procede de un mensaje del usuario ni de Smali literal: fue introducida por una respuesta anterior del asistente y queda `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`. Se retira el estado de conflicto entre firmas primarias. La firma singular sigue `DIRECT-CHAT / LOCAL-UNVERIFIED` hasta cotejar el archivo/hash exacto.
+**restoreFiles:** el resumen de lifecycle (evidencia 48) describe asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()`. Evidencia 34 conserva la declaración/cuerpo Smali pegados directamente por el usuario con `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)`. La recuperación directa del 20-11 también confirma dos callers en BRService.smali:19483 y 19519, ambos `invoke-direct` con el mismo descriptor singular (evidencias 57/58). La supuesta alternativa `restoreFiles(BRItem[],com.miui.backup.BackupDescriptor[],int)` fue introducida por una respuesta anterior del asistente y queda `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`; no existe conflicto entre fuentes primarias. Firma y callers: `DIRECT-CHAT / LOCAL-UNVERIFIED` hasta cotejo independiente del checkout/hash.
 
 **Conflicto abierto:** el mensaje directo de CMD_RESTORE dice “tipo=3/reinicio” para la condición con lista ausente; un resumen anterior lo reformuló como tipo 3 o `mIsReStartCommand`. La segunda formulación no está revalidada. Mantener el texto directo y el conflicto hasta leer el bloque.
 
@@ -1376,6 +1376,13 @@ Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_S
 
 La secuencia es USER-PASTED-SOURCE / DIRECT-CHAT para los rangos y llamadas reportados; no LOCAL-VERIFIED ni prueba éxito runtime.
 
+
+
+## 41. Reconciliación de callers restoreFiles y mBakFilesType — 2026-11-20
+
+Se actualizaron evidencias 51, 57 y 58 con recuperaciones directas adicionales. Los invokes de BRService.smali:19483 y 19519 usan el descriptor singular `([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`; el segundo está precedido por `const/4 v0, 0x3` y `if-eq v3, v0`. Esto confirma los callers de la firma singular de evidencia 34. La variante descriptor array queda exclusivamente como `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
+
+La salida Termux de BRService$5.smali:103–186 confirma los branches `0x2→:cond_1/v8`, `0x3→:cond_2/mIsTransingTask`, `0x5→:cond_3/mIsFlashDriveTask` y `0x1→:cond_4/mIsLocalBackupTask`. La atribución antigua de tipo 2 a `mIsTransingTask` se descarta. Véanse evidencias 51, 57 y 58 para procedencia y límites.
 
 ## 40. Caller getBRItems y límite del getter — 2026-11-20
 
