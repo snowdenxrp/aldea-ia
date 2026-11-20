@@ -1,8 +1,8 @@
-# Erratum — coordinate systems and unresolved mBakFilesType conflict — 2026-11-19
+# Erratum — coordinate systems and mBakFilesType provenance history — 2026-11-19
 
 **Purpose:** correct overconfident interpretations in earlier recovery notes without deleting or rewriting historical records.  
 **Source basis:** recovered conversation records for 17–19 November plus the currently committed dossier files.  
-**Status:** provenance conflict identified; source-level mapping remains UNKNOWN pending original block comparison.
+**Status at original cutoff:** provenance conflict identified. Subsequent direct-chat recovery (evidence 51, section 9) partially reconciles the mapping; see section 7 below. Local byte-level verification remains open.
 
 ## 1. Critical coordinate distinction
 
@@ -114,3 +114,18 @@ sed -n '2300,2380p' "$F"
 If the 17-November checkout/source copy still exists separately, hash it and run the same commands against that exact path. Do not assume a branch/source version from dates alone. Preserve outputs separately with path and hash.
 
 **Status:** physical-vs-`.line` confusion identified; type mapping NOT RESOLVED; state-6 physical-line claim corrected to UNKNOWN pending local output. No APK, decoded file, device service, backup/restore, or Git source was modified.
+
+## 7. Subsequent source recovery — partial reconciliation (2026-11-20)
+
+Evidence 51 section 9 now preserves a direct user-shared Termux output for `BRService$5.smali`, physical lines 103–186, dated 19-11-2026 20:47:46Z. It records the comparisons and branch destinations:
+
+- `0x2` comparison → `:cond_1` and path using `v8`;
+- `0x3` comparison → `:cond_2` and `mIsTransingTask`;
+- `0x5` comparison → `:cond_3` and `mIsFlashDriveTask`;
+- `0x1` comparison → `:cond_4` and `mIsLocalBackupTask`.
+
+This is stronger than Report A's recovered summary that both types 2 and 3 set `mIsTransingTask`. The direct output associates the `mIsTransingTask` branch with the comparison against `0x3`; Report A has no verbatim Smali block in the recovered history. Therefore Report A's type-2→`mIsTransingTask` attribution is not retained as established fact.
+
+**Precision limit:** the exact instruction assigning a value to `v8` is not preserved in the current evidence. The earlier interpretation `type 2 → v8=1` remains `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`, not a literal confirmed assignment. The current strongest mapping is therefore partial: type 2 reaches `:cond_1`/`v8`; type 3 reaches the transfer-flag branch; type 5 Flash Drive; type 1 local. Whether type 2 also affects `mIsTransingTask` is not supported by the recovered direct block and must not be asserted.
+
+**Updated status:** `PARTIALLY RECONCILED FROM DIRECT-CHAT`; exact `v8` assignment and local file/hash verification remain OPEN. The downstream `v8→v16=8` causal chain remains conditional until the `v8` assignment is recovered literally.
