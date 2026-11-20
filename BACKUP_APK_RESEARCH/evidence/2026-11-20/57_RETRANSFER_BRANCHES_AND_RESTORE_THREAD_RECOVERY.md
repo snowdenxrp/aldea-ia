@@ -26,7 +26,7 @@ El usuario pegó una descripción de `startRestore()`:
 
 Clasificación USER-PASTED-SOURCE / DIRECT-CHAT para esta secuencia. No se recuperó aquí el cuerpo completo, el constructor exacto de la WeakReference ni el callback posterior. La secuencia acredita creación/inicio del hilo descrito, no finalización exitosa del restore.
 
-## 3. restoreFiles(BRItem[],BackupDescriptor[],int): resumen no primario
+## 3. restoreFiles(): resumen de lifecycle no primario
 
 Un resumen anterior del asistente atribuyó al método `restoreFiles(BRItem[],BackupDescriptor,int)` (coordenada reportada alrededor de línea física 12672):
 - guarda `mBakFilesType`;
