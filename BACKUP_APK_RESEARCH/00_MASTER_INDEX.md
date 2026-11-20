@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.31 --- expanded service lifecycle memory recovery\
+**Versión:** 0.32 --- Binder and restore-state reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1079,3 +1079,22 @@ Se amplió la evidencia 46 con una segunda recuperación histórica del 16-11-20
 También conserva la superficie del manifest: los tres servicios `MiAsistService`, `BRService`, `TransFileService` reportados como `exported=false`; acción `miui.intent.action.MIASIST_PROXY`; permisos `BACKUP_PROXY` y `BACKUP_FILE_SERVER` reportados como `signatureOrSystem`; intermediarios exportados identificados sin demostrar que alcancen la ruta protegida. La alcanzabilidad externa, autorización efectiva y restauración de datos privados permanecen UNKNOWN/NOT DEMONSTRATED.
 
 **Procedencia:** RECOVERED-CHAT; no LOCAL-VERIFIED. La conexión concreta del caller sigue abierta en la evidencia 45. No repetir el inventario Binder ni asumir que la acción de Intent anula `exported=false`.
+
+
+## 38. Reconciliación Binder y estados de restauración — 2026-11-20
+
+Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIATION.md`](evidence/2026-11-20/47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIATION.md).
+
+**Corrección del pendiente Binder:** evidencia 02 ya documentaba `MiAsistService$2.smali:38–106`: `onServiceConnected()` invoca `IBRService$Stub.asInterface(IBinder)`, asigna `mBRService` y registra listener; desconexión limpia la referencia. Por tanto, no volver a localizar ni extraer desde cero ese método. Pendiente real: recuperar/releer el cuerpo exacto de `Stub.asInterface()`, el bloque `$2` y el atributo `android:process` de `BRService` para resolver interfaz local vs Proxy; luego conectarlo al caller `MiAsistService.smali:1600–1620`.
+
+**Corrección de setState:** evidencia 12 resuelve el conflicto de evidencia 11 mediante la instrucción Smali exacta. La llamada final es `setState(4,12,0,v14)`, no `setState(4,0,v2,v14)`. Con errores globales 8/9, el método puede almacenar `mLastError=8/9` y escribir simultáneamente `BRItem.state=3,error=9` por la condición de etapa 12. Son capas distintas.
+
+**restoreFiles:** evidencia 34 corrige la lectura inicial de evidencia 33: firma de instancia con `p1=BRItem[]`, `p2=BackupDescriptor`, `p3=int`; el entero se guarda en `mBakFilesType` y luego el registro se reutiliza como destino para crear `ArrayList(Arrays.asList(p1))). No interpretar `iput-object p3` aislado como asignación del entero a `mBRItems`.
+
+**mBakFilesType:** el mejor mapeo histórico recuperado de evidencia 02 es 2→v8=1, 3→transfer, 5→Flash Drive, 1→local. La paráfrasis que intercambiaba los valores 2/3/5 es incorrecta y no debe reutilizarse. Sigue sin LOCAL-VERIFIED hasta cotejar el bloque completo.
+
+**state 6:** mantener separados línea física y directiva `.line`. La evidencia 43 reporta línea física 2351 con directiva cercana `.line 1735`; evidencia 11 describe el contexto de `files_for_backup` tras `waitingForFilesTransingEnd()`. No asumir dos escrituras distintas hasta cotejar el bloque original.
+
+**Otros puntos consolidados en evidencia 47:** causalidad global 8/9 y recursos de notificación; distinción entre activación Intent y canal Binder; límites de manifest/alcanzabilidad externa; auditorías históricas de 134 ramas de `aldea-ia`, 27 commits del G08 del repo D-RB-09 y auditoría de otros dos repositorios. Todo se conserva con su clasificación RECOVERED-CHAT/DIRECT-CHAT, no como verificación local nueva.
+
+**Siguiente orden sin repetición:** (1) Stub.asInterface + proceso BRService + conexión $2; (2) caller getBRItems; (3) reconciliar coordenadas restoreFiles y usos de mBakFilesType; (4) state 6; (5) causalidad 8/9 y handleTaskFinish. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
