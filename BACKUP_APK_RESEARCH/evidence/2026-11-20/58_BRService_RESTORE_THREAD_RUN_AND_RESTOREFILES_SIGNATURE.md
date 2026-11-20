@@ -6,22 +6,29 @@
 - Clasificación: USER-PASTED-SOURCE / DIRECT-CHAT para la firma de restoreFiles, anclas de llamadas y secuencia inicial de run(); RECOVERED-CHAT para el mapa consolidado.
 - No LOCAL-VERIFIED en esta sesión. No ejecución dinámica.
 
-## 1. Firma correcta de BRService.restoreFiles
+## 1. Conflicto de firmas reportadas para BRService.restoreFiles
 
-El usuario pegó la declaración ubicada en `BRService.smali:12672`:
+La evidencia 34 (19-11-2026) preserva una declaración Smali pegada directamente por el usuario:
 
-```smali
-restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V
-```
+    .method private restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V
 
-Por tanto, el segundo parámetro es **BackupDescriptor[]**, no un único `BackupDescriptor`.
+Su descriptor es restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int). El cuerpo asociado usa p2 como descriptor singular y p3 como int/mBakFilesType. Los callers preservados en evidencia 34 pasan v0, v6, v3 y v5, v6, v3 respectivamente.
 
-Invocaciones reportadas:
-- `BRService.smali:19483`
-- `BRService.smali:19519`
+Una recuperación posterior de un mensaje del usuario del 20-11 reporta para BRService.smali:12672 otra declaración:
 
-**Corrección:** las descripciones anteriores que nombraban `restoreFiles(BRItem[],BackupDescriptor,int)` con descriptor singular eran imprecisas. Debe usarse el descriptor exacto `restoreFiles(BRItem[],BackupDescriptor[],int)` hasta que una fuente posterior demuestre otra sobrecarga.
+    restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V
 
+Este segundo descriptor es restoreFiles(BRItem[],com.miui.backup.BackupDescriptor[],int), con un array de BackupDescriptor y además paquete distinto (com.miui.backup frente a com.miui.backup.data).
+
+**Conflicto no resuelto:** ambas referencias se atribuyen a BRService.smali:12672, pero no son el mismo descriptor. No se debe sustituir la evidencia 34 ni declarar que la firma array es la correcta hasta determinar si:
+- proceden de builds/versiones distintas del APK;
+- las rutas/archivos Smali pertenecen a extracciones distintas;
+- una referencia de clase o descriptor se transcribió mal;
+- existe otra definición/overload y una de las coordenadas no es la línea física correcta.
+
+Invocaciones adicionales reportadas en la recuperación posterior: BRService.smali:19483 y 19519. No asociarlas a uno u otro descriptor hasta leer el invoke completo.
+
+**Estado:** SIGNATURE-CONFLICT / UNKNOWN-STOP. La semántica de p1/p2/p3 descrita en evidencia 34 sigue válida solo para el cuerpo/descriptor de esa evidencia; no extrapolarla a la firma alternativa.
 ## 2. BRService$5.run(): entrada al hilo de restore
 
 El usuario pegó literalmente `.method public run()V` desde coordenada 39 de `BRService$5.smali`. Secuencia inicial recuperada:
@@ -89,4 +96,4 @@ La descripción de `startRestore()` que crea `WeakReference`, instancia `BRServi
 6. Mantener `restoreAppData` como método separado de las llamadas reportadas en run().
 7. Solo lectura estática.
 
-**Conclusión:** la firma correcta de restoreFiles recibe arrays de BRItem y BackupDescriptor. BRService$5.run() inicia el restore con wake lock/BMS/StorageMonitor y coordina restauración de APK, paquetes y medios mediante executor y llamadas específicas. El mapa de ejecución está incompleto y no prueba éxito runtime.
+**Conclusión:** el método restoreFiles tiene dos descriptores históricos incompatibles reportados para la misma coordenada 12672; la firma real queda UNKNOWN-STOP hasta reconciliar build/hash/extracción. BRService$5.run() inicia el restore con wake lock/BMS/StorageMonitor y coordina restauración de APK, paquetes y medios mediante executor y llamadas específicas. El mapa de ejecución está incompleto y no prueba éxito runtime.
