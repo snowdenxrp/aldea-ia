@@ -15,7 +15,7 @@ La evidencia 45 dejó como pendiente seguir MiAsistService hasta onServiceConnec
 - onServiceDisconnected() limpia mBRService.
 - El usuario también pegó la declaración `.method public static asInterface(Landroid/os/IBinder;)Lcom/miui/backup/service/IBRService;` (16-11-2026 16:47:53Z). No se recuperó el cuerpo: `queryLocalInterface`, comparación de descriptor, construcción de Proxy y returns siguen sin fuente literal.
 - Manifest, líneas 107–113 compartidas directamente por el usuario el 16-11: MiAsistService declara `android:process=":remote"`; BRService y TransFileService no muestran atributo `android:process` en sus declaraciones de servicio. Los tres muestran `exported="false"` y `foregroundServiceType="systemExempted"`.
-- El fragmento recuperado no incluye la etiqueta `<application>` ni permite confirmar un `android:process` a nivel de aplicación. Por ello, la ausencia de atributo en la declaración de BRService no basta para declarar su proceso efectivo sin comprobar la herencia desde `<application>`.
+- El fragmento recuperado de manifest (líneas 99–130) no incluye la etiqueta de apertura `<application>` ni permite confirmar un `android:process` a nivel de aplicación. Por ello, la ausencia de atributo en la declaración de BRService no basta para declarar su proceso efectivo sin comprobar la herencia desde `<application>`. La conclusión es condicional: si `<application>` no fija proceso, BRService hereda el proceso predeterminado del paquete y queda separado de MiAsistService `:remote`; si `<application>` fija `:remote`, BRService puede heredar ese mismo proceso. El fragmento disponible no distingue ambas configuraciones.
 - MiAsistService.smali:675–707: bindBRService() construye Intent explícito a BRService, agrega extra_is_from_miasist=true, llama startService() y bindService().
 - MiAsistService.smali:1600–1620: caller de IBRService.getBRItems().
 - MiAsistService.smali:2939–2942: ruta reportada de BRService.startRestoreCommand(...,4), seguida de bindBRService().
@@ -89,15 +89,14 @@ La cadena causal sigue INCOMPLETA: falta releer los bloques completos y demostra
 
 ## 5. Reconciliación de BRItem.state=6
 
-La evidencia 11 recuperó una lista de escrituras en BRService$5.smali, incluidas las posiciones físicas 1735 y 2351.
+La aparente discrepancia entre física 2351 y `.line 1735` quedó resuelta documentalmente por la recuperación directa preservada en evidencias 11 y 15:
+- línea física 2351 contiene la escritura `BRItem.state=6`;
+- la misma instrucción corresponde a la directiva Smali `.line 1735`;
+- el contexto `.line 1733–1735` es `waitingForFilesTransingEnd()`, lectura/comparación del estado y escritura de 6 para `files_for_backup`.
 
-La evidencia 43 aclara la coordenada dual para una escritura:
-- línea física 2351;
-- directiva Smali cercana .line 1735.
+No son dos escritores en `BRService$5`. Evidencia 53 reporta además otro writer en `BRService.smali:16787–16791`, clase/contexto distinto. La enumeración global de productores sigue sujeta a cobertura del árbol y cotejo local/hash; no reabrir el falso conflicto de coordenadas.
 
-El contexto funcional recuperado en evidencia 11 describe esa escritura como state=6 para files_for_backup, después de waitingForFilesTransingEnd(). La misma evidencia reporta otra asignación en la línea física 2351. Por tanto, no declarar que 1735 y 2351 son dos escrituras físicas distintas: pueden ser dos sistemas de coordenadas (línea física vs .line) para el mismo bloque. Hace falta verificar el fragmento original para confirmar correspondencia exacta.
-
-El adapter cuenta state=1 y state=6 como éxito y considera 1, 3 y 6 terminales en initData(). La semántica específica de estado 6 fuera de files_for_backup sigue pendiente.
+El adapter cuenta state=1 y state=6 como éxito y considera 1, 3 y 6 terminales en `initData()`. La semántica específica de estado 6 fuera de los contextos documentados sigue pendiente.
 
 ## 6. Reconciliación de restoreFiles y semántica de arrays
 
