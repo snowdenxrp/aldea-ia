@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.55 --- state6 coordinate and producer inventory reconciliation\
+**Versión:** 0.56 --- MiAsist grep coverage and source-boundary reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1400,3 +1400,9 @@ Evidencia 12 también resuelve el orden de argumentos de la llamada final: `setS
 Se corrigieron las evidencias 11 y 15: `BRService$5.smali` physical line 2351 corresponde a la directiva Smali `.line 1735` y a una sola escritura `BRItem.state=6` para `files_for_backup` tras `waitingForFilesTransingEnd()`. No es un conflicto entre dos líneas físicas. Además, evidencia 53 reporta otro productor en `BRService.smali:16787–16791`, por lo que no debe afirmarse exclusividad del productor de `BRService$5`.
 
 Evidencia 12 conserva el invoke final exacto `setState(4,12,0,v14)`; la forma antigua `setState(4,0,v2,v14)` queda descartada. Véanse evidencias 11, 12, 15 y 53.
+
+## 59. Cobertura histórica de grep MiAsist y ausencia de cuerpos literales — 2026-11-20
+
+Se amplió evidencia 51 con los rangos físicos de grep compartidos el 16-11: `bindBRService` 675–708; `bindTransFileService` 709–738; `doSendFile` 739–829; `isActionParamsValid` 1639–1734; `sendAllBRItemsDescriptor` 2032–2047; `startAsClientOrServer` 2685–2789; `onStartCommand` desde 3691. La salida adicional contiene referencias a `MiAsistService$5/$6/$7`, pero no cuerpos completos.
+
+El usuario confirmó que la salida era grep de ubicaciones, no bloques literales de los métodos. `BRService.routeBackupData()` y `runOnSendingThread()` no aparecieron en esa salida; tampoco se recuperaron cuerpos completos nuevos de `doSendFile`, `sendAllBRItemsDescriptor` o `$5/$6/$7`. No volver a tratar estas coordenadas como si fueran código inspeccionado.
