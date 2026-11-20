@@ -24,7 +24,7 @@ The user specifically reported:
 - Lines 1967–1968: on `error==0`, preserve the `files_for_backup` state; otherwise assign state 1.
 - Line 1983: failure assigns state 3.
 
-This is the recovered producer context for state 6, improving on document 09's earlier open question. The coordinate `1735` is a Smali `.line` directive, not a physical file line; it corresponds to physical line 2351. Do not count it as a second writer. The context associates state 6 with the `files_for_backup` transfer completion path. The exact semantics, UI label/icon, and whether any other producer exists remain unverified.
+This is the recovered producer context for state 6, improving on document 09's earlier open question. The coordinate `1735` is a Smali `.line` directive, not a physical file line; it corresponds to physical line 2351. Do not count it as a second writer. The context associates state 6 with the `files_for_backup` transfer completion path. A distinct additional state-6 write is reported in `BRService.smali:16787–16791` (evidence 53); completeness of the global writer inventory remains unverified. The exact semantics and UI label/icon remain open.
 
 A prior assistant observation identified `const/4 v8, 0x7` near line 1897, but this was **not** evidence of a write to `BRItem.state=7`. Do not equate the register constant with the item state field.
 
