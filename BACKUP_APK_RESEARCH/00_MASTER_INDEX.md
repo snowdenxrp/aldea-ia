@@ -1357,16 +1357,15 @@ Se incorporó evidencia 57: [`57_RETRANSFER_BRANCHES_AND_RESTORE_THREAD_RECOVERY
 **Conflicto abierto:** el mensaje directo de CMD_RESTORE dice “tipo=3/reinicio” para la condición con lista ausente; un resumen anterior lo reformuló como tipo 3 o `mIsReStartCommand`. La segunda formulación no está revalidada. Mantener el texto directo y el conflicto hasta leer el bloque.
 
 
-## 53. BRService$5.run() y corrección de procedencia de restoreFiles — 2026-11-20
+## 53. BRService$5.run() y reconciliación de restoreFiles — 2026-11-20
 
-Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md`](evidence/2026-11-20/58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md). Evidencia 57 fue corregida para no presentar una firma como resuelta.
+Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md`](evidence/2026-11-20/58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md). Las evidencias 57/58 se actualizaron con los dos callers directos recuperados el 20-11.
 
 **Corrección de procedencia de restoreFiles:**
 - Evidencia 34 conserva el bloque Smali pegado directamente por el usuario: `restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`.
 - La supuesta variante `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V` no se encontró en un mensaje histórico del usuario ni en Smali literal; fue introducida por una respuesta anterior del asistente.
 - Clasificación: firma singular `USER-PASTED-SOURCE / DIRECT-CHAT`; alternativa array `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
-- No mantener `SIGNATURE-CONFLICT` entre fuentes primarias. La firma singular sigue sin relectura independiente del archivo local y su SHA-256.
-- Las referencias a invocaciones en BRService.smali:19483 y 19519 siguen sin invokes literales recuperados; no usarlas para confirmar la firma.
+- No mantener `SIGNATURE-CONFLICT` entre fuentes primarias. La firma singular y los dos callers tienen soporte `DIRECT-CHAT`; queda pendiente la relectura independiente del archivo local y su SHA-256.
 
 **BRService$5.run():**
 - Inicio reportado: asigna `mBRStartTime`, log `startRestore`, `acquireWakeLock()`, `acquireBMS()`, configura flags por `mBakFilesType`, inicia `StorageMonitor`.
@@ -1376,13 +1375,9 @@ Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_S
 
 La secuencia es USER-PASTED-SOURCE / DIRECT-CHAT para los rangos y llamadas reportados; no LOCAL-VERIFIED ni prueba éxito runtime.
 
+La evidencia 51 incorpora además el detalle de branches `mBakFilesType` de BRService$5.smali:103–186 y corrige la atribución errónea previa de tipo 2 a `mIsTransingTask`.
 
 
-## 41. Reconciliación de callers restoreFiles y mBakFilesType — 2026-11-20
-
-Se actualizaron evidencias 51, 57 y 58 con recuperaciones directas adicionales. Los invokes de BRService.smali:19483 y 19519 usan el descriptor singular `([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`; el segundo está precedido por `const/4 v0, 0x3` y `if-eq v3, v0`. Esto confirma los callers de la firma singular de evidencia 34. La variante descriptor array queda exclusivamente como `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
-
-La salida Termux de BRService$5.smali:103–186 confirma los branches `0x2→:cond_1/v8`, `0x3→:cond_2/mIsTransingTask`, `0x5→:cond_3/mIsFlashDriveTask` y `0x1→:cond_4/mIsLocalBackupTask`. La atribución antigua de tipo 2 a `mIsTransingTask` se descarta. Véanse evidencias 51, 57 y 58 para procedencia y límites.
 
 ## 40. Caller getBRItems y límite del getter — 2026-11-20
 
@@ -1393,3 +1388,10 @@ El usuario pegó `MiAsistService.smali:1606`: `invoke-interface {v0}, Lcom/miui/
 El fragmento directo de `BRService.smali:6750–6815` alcanza creación del arreglo, iteración, comparación `packageName == "files_for_backup"` y termina en `if-eqz v3, :cond_0`. No completar el cuerpo a partir de la paráfrasis ni inventar instrucciones posteriores. La transformación descrita previamente para los elementos especiales/ordinarios permanece en evidencia 45 con su procedencia y límites.
 
 **Estado Binder:** callback `$2`, caller `getBRItems()` y transporte Stub/Proxy están identificados; rama local/Proxy no resuelta porque falta el cuerpo de `Stub.asInterface()` y el proceso efectivo de BRService. No repetir la búsqueda del caller 1606.
+
+
+## 41. Reconciliación de callers restoreFiles y mBakFilesType — 2026-11-20
+
+Se actualizaron evidencias 51, 57 y 58 con recuperaciones directas adicionales. Los invokes de BRService.smali:19483 y 19519 usan el descriptor singular `([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`; el segundo está precedido por `const/4 v0, 0x3` y `if-eq v3, v0`. Esto confirma los callers de la firma singular de evidencia 34. La variante descriptor array queda exclusivamente como `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
+
+La salida Termux de BRService$5.smali:103–186 confirma los branches `0x2→:cond_1/v8`, `0x3→:cond_2/mIsTransingTask`, `0x5→:cond_3/mIsFlashDriveTask` y `0x1→:cond_4/mIsLocalBackupTask`. La atribución antigua de tipo 2 a `mIsTransingTask` se descarta. Véanse evidencias 51, 57 y 58 para procedencia y límites.
