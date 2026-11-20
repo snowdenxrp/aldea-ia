@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.43 --- ProgressItemAdapter progress and layout correction\
+**Versión:** 0.44 --- restore command call graph and Binder callback recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1261,7 +1261,7 @@ Se incorporó evidencia 54: [`54_PROGRESSITEMADAPTER_UI_AND_REFERENCE_SEMANTICS.
 Nuevos detalles recuperados:
 - `initData(BRItem[])` conserva orden del array y cada `ProgressItem.brItem` mantiene la misma referencia BRItem, sin copia reportada.
 - Éxito: state 1/6; terminado no exitoso: state 3; en progreso: state 2. `getFailedCount = total - successful`; initData marca terminales 1/3/6 y no usa `error` para esa clasificación.
-- `updateProgress()`: state 1/6 → 100%; state 2 → `completedSize/totalSize*100`, máximo 99%; otros estados → 0.
+- `updateProgress()`: state 0/3 → 0%; state 1/6 → 100%; state 2/4/5/7/8 → `completedSize/totalSize*100`, máximo 99%.
 - `mSuccessfulSize`: suma `getBRItemSize()`; excepción `com.android.mms`/`com.android.contacts` con `type==9`: multiplica por 1000.
 - Título: `Category.getItemString()` para categorías no-app/no-MMS-Contacts; apps/MMS-Contacts usan `Utils.getFeatureName(context,packageName,feature)`, fallback `getFeatureNameFromBakFileName(bakFilePath)`.
 - `updateSingleItemUI()` línea 869 (callers 855/2267) lee `BRItem.error` alrededor de 954, pero el efecto visual completo no se conservó.
@@ -1277,3 +1277,40 @@ Evidencia 54 se amplió con una corrección basada en el dato directo recuperado
 - IDs restantes y strings/drawables para errores 2/5/6/7/9/11 no sobreviven en el contexto recuperado; no reconstruirlos ni usar un mapping de error de resúmenes anteriores como hecho.
 
 Esta corrección prevalece sobre la paráfrasis anterior más estrecha que asignaba cálculo porcentual solo a state 2.
+
+
+## 50. Grafo CMD_RESTORE y callback Binder MiAsist — 2026-11-20
+
+Se incorporó evidencia 55: [`55_RESTORE_COMMAND_CALL_GRAPH_AND_MIASIST_BINDER_CALLBACK.md`](evidence/2026-11-20/55_RESTORE_COMMAND_CALL_GRAPH_AND_MIASIST_BINDER_CALLBACK.md).
+
+**Hallazgo crítico: overload de cinco argumentos**
+- Firma: `startRestoreCommand(Context,ArrayList<BRItem>,BackupDescriptor,String,int)`.
+- El usuario pegó una instrucción `invoke-static {p0,p1,p2,p3,p4}` dirigida al mismo overload, con los mismos parámetros. La referencia de línea fuente es `.line 1087`; el bloque se describe como incondicional y seguido por return.
+- Clasificación: USER-PASTED-SOURCE / DIRECT-CHAT. Lectura estática: autoinvocación recursiva directa en el bloque descrito. No afirmar StackOverflow observado ni runtime.
+- No mezclar `.line 1087` con líneas físicas 15199/15220 de otra extracción.
+
+**Overload de siete argumentos**
+- Guarda p6 en `mIsReStartCommand`.
+- Construye Intent explícito CMD_RESTORE con descriptor/directorio, BRItems condicionales, ZIP path y bakfiles type.
+- Si p5==4, incluye `extra_is_from_miasist=true` y convierte el tipo a 3.
+- Invoca `startService()`.
+
+**Grafo de callers recuperado**
+1. `MiAsistService.startRestoreCommand()` llama overload 5 args con lista/descriptor/string null y tipo 4; la secuencia exterior llama después `bindBRService()`.
+2. `BRService.restoreTransfering()` llama overload 5 args cuando `brState==4`.
+3. `RetransferUtils.smali:154` llama `restoreTransfering()`.
+4. `ProgressPageFragmentBase$6` llama overload 7 args con descriptor, directorio, ZIP path, tipo y flag.
+
+Estas rutas no se fusionan: la variante MiAsist/restoreTransfering pasa por la autoinvocación; la ruta de ProgressPageFragmentBase usa el overload que construye el Intent.
+
+**IBRService Binder callback**
+- `MiAsistService$2.onServiceConnected()`: recibe IBinder, usa `IBRService$Stub.asInterface()`, asigna `mBRService` y registra listener.
+- `onServiceDisconnected()` limpia la referencia; logs reportados “BRService onServiceConnected” / “BRService onServiceDisconnected”.
+- Esto acredita conversión/almacenamiento de interfaz; no determina si asInterface devuelve Stub local o Proxy.
+
+**$6/$7**
+- $6 annotation `sendAllBRItemsDescriptor()V`, constructor (MiAsistService,String), invoca `doSendFile(...)`, creado alrededor de 2036 e iniciado alrededor de 2043.
+- $7 annotation `startLoadAppIconsTask(Context)`, también se reportó llamada a `doSendFile(...)`; creado 2874–2885 y ejecutado con `executeOnExecutor()`.
+- No trasladar tareas atribuidas a $8 a $7; cuerpos completos siguen pendientes.
+
+**Límite:** la descripción de la rama `CMD_RESTORE` de `onStartCommand()` que lee extras proviene de un resumen anterior del asistente, no del Smali literal recuperado. Sigue sin revalidar. La ejecución efectiva y el resultado de la autoinvocación no se probaron dinámicamente.
