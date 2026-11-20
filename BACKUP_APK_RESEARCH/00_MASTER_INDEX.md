@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.33 --- BRService restore lifecycle supplemental recovery\
+**Versión:** 0.34 --- ArchiveHelper and MiAsist transfer recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1113,3 +1113,30 @@ Se reafirma como mapping mejor soportado de `mBakFilesType` el de evidencia 02: 
 El cierre reportado incluye `mReconnector.quit()`, `ITransFileService.stopAll(0)`, unbind, `StorageMonitor.stopMonitor()`, `setState(4,v2,0,v14)`, limpieza de temp root, `setDescriptor(null)`, `updatePkgStae(v14)`, `handleTaskFinish(...)`, liberación de WakeLock y métricas `backup_local_restore_num`/`backup_local_restore_success_num`.
 
 **Pendientes:** cuerpo completo de `BRService$5.run()/startRestore()), implementación de `StorageMonitor.startMonitor()`, ruta completa ZIP/zipStreamReader → executor → PerformAdbRestoreTask → BRManager.restorePackage(), y verificación de todos los usos de `mBakFilesType`. Todo lo nuevo sigue RECOVERED-CHAT, no LOCAL-VERIFIED.
+
+
+## 40. ArchiveHelper, restoreLocalMediaFile y tareas MiAsist/transferencia — 2026-11-20
+
+Se incorporó evidencia 49: [`49_ARCHIVEHELPER_AND_MIASIST_TRANSFER_RECOVERY.md`](evidence/2026-11-20/49_ARCHIVEHELPER_AND_MIASIST_TRANSFER_RECOVERY.md).
+
+Recuperación del 19-11:
+- `ArchiveHelper.unzipFiles(File,String,IFileZipSizeChangedListener,BRItem,boolean,InputStream,List<String>)`, siete argumentos, inicio reportado en línea física 1244.
+- Sobrecarga de cuatro argumentos alrededor de 1959, que delega a la de siete argumentos alrededor de 1994.
+- Callers: `BRService.smali:12918` y `BRService$UnpackThread.smali:81`.
+- La extracción recibe BRItem directamente, actualiza progreso/callback con la misma referencia, asigna `error=1` en la rama de archivo restaurado ausente y continúa el ciclo ZIP; procesa .tmp, rename/fallback copy, registra errores y agrega rutas absolutas a la lista de salida. No se recuperó el cuerpo literal completo en este addendum; no elevar a LOCAL-VERIFIED.
+- `BRService$UnpackThread` captura Exception, registra `UnpackThread delete file` y llama `File.delete()`; el éxito de borrado no está demostrado.
+
+Se amplía `restoreLocalMediaFile(BRItem,boolean,InputStream)`, inicio reportado `BRService.smali:12772`: deriva `backup_<suffix>.zip`, usa `Utils.getZipSuffixType(packageName,type)`, estados reportados 3/error7 cuando falta ZIP e InputStream, 8 antes de unzip, 9 si abortado y 1 al finalizar normalmente.
+
+Se preserva la cadena de inner classes de MiAsistService:
+- `$1`: tras autorización, `startLoadAppIconsTask → startLoadBRItemsTask → startRestoreCommand`.
+- `$2`: conexión IBRService; ya detallada en evidencia 02/47.
+- `$4`: recibe ITransFileService, asigna `mTransService`, marca `STAGE_TRANS_SERVICE_BINDED/ERR_NONE` y registra listener.
+- `$5`: etapas de carga BRItems.
+- `$8`: `loadAppBRItems`, `loadFileBRItems`, `updateAppBRItemSize`, `updateItemTotalSize`, `updateBakFilePath`; accede a ITransFileService, syncers, fecha/raíz/tamaño y callbacks AsyncTask.
+
+Se recuperan firmas de `startRestoreCommand` de cinco y siete argumentos. La sobrecarga de siete construye Intent `CMD_RESTORE`, añade descriptor/dir, items opcionales, ZIP, origen MiAsist y tipo; el caso `p5==4` añade `extra_is_from_miasist=true` y tipo 3. La aparente autorrecursión de la sobrecarga de cinco argumentos sigue sin cerrarse. Las coordenadas 1087/1091 y 15199/15220 no se fusionan hasta identificar archivo/descriptor exacto.
+
+También se conserva `RetransferUtils.smali:154 → restoreTransfering(...)` como ruta histórica candidata, sin cuerpo completo.
+
+**Pendientes:** cuerpo íntegro de unzipFiles y restoreLocalMediaFile; resultado de File.delete(); descriptor exacto y coordenadas de overloads startRestoreCommand; ruta RetransferUtils/restoreTransfering. No repetir trabajo ya documentado. Solo lectura estática.
