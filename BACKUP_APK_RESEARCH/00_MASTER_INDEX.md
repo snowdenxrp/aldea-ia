@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.19 --- BRItem Parcelable entrypoint inventory\
+**Versión:** 0.20 --- BRItem Parcelable read/write comparison\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
