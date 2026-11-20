@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.22 --- inconclusive helper and field-reference searches\
+**Versión:** 0.23 --- helper located; BRItem field search refined\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -972,3 +972,14 @@ Se incorporó la evidencia 38: [`38_HELPER_AND_FIELD_REFERENCE_SEARCH_NOT_DETERM
 Las búsquedas iniciales no produjeron resultados visibles, pero no permiten concluir ausencia: la expresión de búsqueda del helper no estaba ajustada a la directiva Smali; los patrones `->apkSize:` y `->dataSize:` comienzan con guion y se usaron sin `--`, además de suprimir stderr; la búsqueda se limitó a un subdirectorio. Los tres objetivos quedan **NO DETERMINADOS**.
 
 Siguiente paso: localizar el helper con `find` en todo el árbol decodificado y buscar referencias de campos con patrones fijos protegidos por `--` en todos los árboles `smali*`.
+
+
+## 29. Helper localizado y referencias de campos refinadas — 2026-11-19
+
+Se incorporó la evidencia 39: [`39_HELPER_LOCATED_AND_FIELD_SEARCH_REFINED.md`](evidence/2026-11-19/39_HELPER_LOCATED_AND_FIELD_SEARCH_REFINED.md).
+
+La búsqueda sobre todo el árbol decodificado localizó `smali/com/miui/backup/Utils$$ExternalSyntheticApiModelOutline0.smali`, candidato para resolver los helpers sintéticos usados por `BRItem.encrypt`; su contenido aún no se ha inspeccionado.
+
+La búsqueda literal de `->apkSize:` no produjo coincidencias visibles en el árbol completo. La búsqueda de `->dataSize:` sí encontró referencias, pero sus descriptores pertenecen a `PackageStats.dataSize` y `AESExtraDataRecord.dataSize`, no a `BRItem.dataSize`. Por ello, los resultados no demuestran uso del campo de BRItem.
+
+**Siguiente paso:** inspeccionar el helper, buscar el descriptor exacto `Lcom/miui/backup/service/BRItem;->dataSize:J` y rastrear asignaciones/consumidores de ambos campos. No inferir ausencia absoluta ni consecuencias funcionales.
