@@ -50,7 +50,7 @@ La formulación con `mIsReStartCommand` es PRIOR-ASSISTANT-OUTPUT y no debe sust
 
 1. Recuperar cuerpo completo de `restoreTransfering(Context,BackupDescriptor)`, incluyendo todos los valores de brState y argumentos.
 2. Recuperar `startRestore()` y `BRService$5.run()` para reconstruir el hilo RestoreThread sin asumir éxito.
-3. Recuperar `restoreFiles()` en el rango físico reportado alrededor de 12672 y resolver el conflicto de descriptor singular vs array y paquete antes de verificar asignaciones/condiciones.
+3. Verificar la firma y cuerpo de `restoreFiles()` en el archivo local exacto alrededor de 12672; conservar SHA-256, ruta y procedencia de la extracción.
 4. Resolver la condición de lista null en CMD_RESTORE y la posible relación con tipo 3/`mIsReStartCommand`.
 5. Solo lectura estática.
 
@@ -59,5 +59,5 @@ La formulación con `mIsReStartCommand` es PRIOR-ASSISTANT-OUTPUT y no debe sust
 
 ## 6. Conflicto de firmas de restoreFiles
 
-La evidencia 34 conserva una firma directa con descriptor singular de paquete `com.miui.backup.data`; la recuperación posterior del 20-11 reporta un descriptor array de paquete `com.miui.backup`, ambos atribuidos a BRService.smali:12672. Son incompatibles y quedan UNKNOWN-STOP. No tratar la recuperación posterior como corrección definitiva ni descartar evidencia 34. Evidencia 58 conserva ambos descriptores, callers reportados y las hipótesis de reconciliación.
+La evidencia 34 conserva la única firma con fuente Smali directa recuperada: descriptor singular `com.miui.backup.data.BackupDescriptor`. La supuesta variante array `com.miui.backup.BackupDescriptor[]` no aparece en un mensaje del usuario ni en Smali literal recuperado; fue introducida por una respuesta anterior del asistente y queda `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`. No existe base para mantener un conflicto entre dos fuentes primarias. La firma singular sigue pendiente de verificación local contra el archivo/hash de extracción. Las referencias a callers 19483/19519 requieren recuperar sus invokes literales.
 
