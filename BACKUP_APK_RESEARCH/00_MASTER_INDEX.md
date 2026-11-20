@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.17 --- initData callers and Binder path inventory\
+**Versión:** 0.18 --- restoreFiles and getBRItems reference semantics\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -908,3 +908,13 @@ La extracción recibida localiza los callers de `ProgressItemAdapter.initData`, 
 **Nuevo orden P0:** leer el cuerpo y registros de `restoreFiles` (especialmente la escritura reportada en línea 12733), sus dos callers, el getter, el Parcelable de `BRItem` y el bloque de asignación en `MiAsistService`. Después cerrar la procedencia del array en los callers de `initData` y la lógica visual de `updateSingleItemUI`.
 
 **Límite:** DIRECT-CHAT; la salida grep cubre el árbol `smali` apuntado por `$D`, no acredita cobertura de `smali_classes2/3`. No se ha demostrado continuidad de identidad desde `ArchiveHelper` hasta el adapter ni reconstrucción Parcelable efectiva en una llamada concreta.
+
+## 24. restoreFiles y getBRItems: semántica de referencias — 2026-11-19
+
+Se incorporó la evidencia 34: [`34_RESTOREFILES_GETBRITEMS_REFERENCE_SEMANTICS.md`](evidence/2026-11-19/34_RESTOREFILES_GETBRITEMS_REFERENCE_SEMANTICS.md).
+
+**Corrección de la lectura previa:** en `restoreFiles(BRItem[], BackupDescriptor, int)`, `p3` es el entero de tipo y se almacena mediante `iput p3,...->mBakFilesType:I`. Luego el mismo registro se reutiliza para crear un `ArrayList` a partir de `Arrays.asList(p1)`, que se asigna a `mBRItems`. La interpretación anterior de una asignación directa de `p3` objeto a `mBRItems` queda corregida.
+
+El caller de `v4.toArray(new BRItem[])` crea un array nuevo, pero conserva las referencias de los elementos. `restoreFiles` crea otro contenedor `ArrayList`, también sin clonar los elementos. El getter `getBRItems()` crea un array nuevo y devuelve referencias originales para los elementos ordinarios; para `files_for_backup` crea un BRItem nuevo y copia campos seleccionados, incluidos `state` y `error`, compartiendo la referencia `localFileList`.
+
+**Límite:** conclusiones confirmadas en los fragmentos pegados por el usuario, no LOCAL-VERIFIED por relectura/hash independiente. La semántica in-process no demuestra identidad a través de Binder/Parcel. Siguiente prioridad: Parcelable de `BRItem`, asignación en `MiAsistService`, origen del segundo argumento array `v5` y callers locales/remotos de `initData`.
