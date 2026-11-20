@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.36 --- MiAsist transfer pipeline recovery\
+**Versión:** 0.37 --- MiAsist command gate and device state map\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1175,3 +1175,19 @@ Nuevos detalles recuperados de Smali pegado el 16-11:
 **Binder/UID:** se conserva una referencia a `Binder.clearCallingIdentity()` en `BRService.smali:7380`, pero falta el bloque, token y pareja `restoreCallingIdentity()`; no inferir bypass/privilegios. El valor UID numérico 6100 aparece solo como recuerdo no verificado; el manifest declara `sharedUserId="android.uid.backup"`, que no demuestra UID efectivo. Mantener separados sharedUserId, UID instalado, Binder calling UID y permisos efectivos.
 
 **Pendientes:** cuerpos de transferencia MiAsist, $7, etapas $5, routeBackupData/callers, Runnable de SendingThread, bloque clearCallingIdentity/restoreCallingIdentity. Todo sigue DIRECT-CHAT/RECOVERED-CHAT, no LOCAL-VERIFIED. Solo lectura estática.
+
+
+## 43. Gate de comandos MiAsist y mapa de estados del dispositivo — 2026-11-20
+
+Se incorporó evidencia 52: [`52_MIASIST_COMMAND_GATE_AND_DEVICE_STATE_MAP.md`](evidence/2026-11-20/52_MIASIST_COMMAND_GATE_AND_DEVICE_STATE_MAP.md).
+
+Anclas adicionales recuperadas:
+- `MiAsistService.onStartCommand()` alrededor de 3691 llama `isActionParamsValid()`; parámetros `mimover_action`/`client_port`, acciones `mi_backup`/`mi_restore`, puertos 57447–57449.
+- `startAsClientOrServer()` alrededor de 2685; `mDevicePort` alrededor de 2706. No se recuperó el cuerpo de socket/handshake.
+- Secuencia reportada: `STAGE_USER_AUTHORIZING` 2622 → `startActivity()` 2680 → `STAGE_REMOTE_CONNECTING` 2689 → uso `mDevicePort` 2706 → `STAGE_BRSERVICE_BR_START` 2801 → `bindBRService()` 2865 → `STAGE_BRITEMS_LOADING` 2894 y `STAGE_BRSERVICE_TRANS_BINDING` en el rango 2801–2932.
+- `setState(DeviceStage,DeviceError)` alrededor de 2185.
+- Errores: `ERR_PARSE_SELECT_DESCRIPTOR` 1857, `ERR_PARSE_SELECT_BRITEMS` 2024, `ERR_WRITE_DESCRIPTOR` 2171, `ERR_NOT_OWNER_SPACE` 2528, `ERR_BRSERVICE_BUSY` 2556, `ERR_CONNECTED_FAILED` 2782; envío/recepción en evidencia 51.
+- Campos recuperados: `mConnectionState`, `mDeviceStage`, `mDeviceError`, `mDevicePort`, `mReceivedItemFiles`, `mTransService`, `mTransListener`, `mServiceSyncer`, `mSizePredictSyncer`, `mIsLoadAppIconsDone`, `mIsPredictSizeDone`.
+- $5 actualiza estado/conexión y archivos recibidos; $6 usa descriptor/items/syncer de iconos/estado; $8 carga app/file BRItems, tamaños y rutas.
+
+**Límites:** el cuerpo de `startAsClientOrServer()`, Intent de `startActivity()`, gate completo `isActionParamsValid()`, mapeo DeviceError→UI y cleanup no están recuperados. La existencia de `ERR_NOT_OWNER_SPACE` no se resuelve con el retorno histórico true de `isOwnerSpace()` sin ver callers/ramas. No inferir peer autenticado ni socket abierto solo por el puerto. Clasificación RECOVERED-CHAT / DIRECT-CHAT; no LOCAL-VERIFIED.
