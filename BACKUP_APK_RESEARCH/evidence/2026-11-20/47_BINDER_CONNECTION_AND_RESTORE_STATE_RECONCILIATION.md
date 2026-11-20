@@ -13,6 +13,7 @@ La evidencia 45 dejó como pendiente seguir MiAsistService hasta onServiceConnec
 
 - MiAsistService$2.smali:38–106: onServiceConnected() invoca IBRService$Stub.asInterface(IBinder), guarda el resultado en mBRService y registra el listener.
 - onServiceDisconnected() limpia mBRService.
+- El usuario también pegó la declaración `.method public static asInterface(Landroid/os/IBinder;)Lcom/miui/backup/service/IBRService;` (16-11-2026 16:47:53Z). No se recuperó el cuerpo: `queryLocalInterface`, comparación de descriptor, construcción de Proxy y returns siguen sin fuente literal.
 - Manifest, líneas 107–113 compartidas directamente por el usuario el 16-11: MiAsistService declara `android:process=":remote"`; BRService y TransFileService no muestran atributo `android:process` en sus declaraciones de servicio. Los tres muestran `exported="false"` y `foregroundServiceType="systemExempted"`.
 - El fragmento recuperado no incluye la etiqueta `<application>` ni permite confirmar un `android:process` a nivel de aplicación. Por ello, la ausencia de atributo en la declaración de BRService no basta para declarar su proceso efectivo sin comprobar la herencia desde `<application>`.
 - MiAsistService.smali:675–707: bindBRService() construye Intent explícito a BRService, agrega extra_is_from_miasist=true, llama startService() y bindService().
