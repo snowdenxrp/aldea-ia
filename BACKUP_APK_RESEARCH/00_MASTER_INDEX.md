@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.41 --- ArchiveHelper and media restore detail recovery\
+**Versión:** 0.42 --- ProgressItemAdapter UI semantics recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1252,3 +1252,18 @@ Se amplió evidencia 49 con detalles adicionales recuperados:
 - Única llamada adicional localizada: `BRService.smali:12918`.
 
 La evidencia conserva estos datos como DIRECT-CHAT/RECOVERED-CHAT según procedencia; no se ha recuperado aquí el cuerpo literal completo. No elevar a LOCAL-VERIFIED.
+
+
+## 48. ProgressItemAdapter: UI, progreso y referencias BRItem — 2026-11-20
+
+Se incorporó evidencia 54: [`54_PROGRESSITEMADAPTER_UI_AND_REFERENCE_SEMANTICS.md`](evidence/2026-11-20/54_PROGRESSITEMADAPTER_UI_AND_REFERENCE_SEMANTICS.md).
+
+Nuevos detalles recuperados:
+- `initData(BRItem[])` conserva orden del array y cada `ProgressItem.brItem` mantiene la misma referencia BRItem, sin copia reportada.
+- Éxito: state 1/6; terminado no exitoso: state 3; en progreso: state 2. `getFailedCount = total - successful`; initData marca terminales 1/3/6 y no usa `error` para esa clasificación.
+- `updateProgress()`: state 1/6 → 100%; state 2 → `completedSize/totalSize*100`, máximo 99%; otros estados → 0.
+- `mSuccessfulSize`: suma `getBRItemSize()`; excepción `com.android.mms`/`com.android.contacts` con `type==9`: multiplica por 1000.
+- Título: `Category.getItemString()` para categorías no-app/no-MMS-Contacts; apps/MMS-Contacts usan `Utils.getFeatureName(context,packageName,feature)`, fallback `getFeatureNameFromBakFileName(bakFilePath)`.
+- `updateSingleItemUI()` línea 869 (callers 855/2267) lee `BRItem.error` alrededor de 954, pero el efecto visual completo no se conservó.
+
+**Límite:** no se recuperaron recursos/labels/iconos completos ni el mapping visual por error; no inventar. La referencia local Java del adapter no altera las cautelas de identidad tras Binder/Parcelable de evidencia 45.
