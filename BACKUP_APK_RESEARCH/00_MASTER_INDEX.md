@@ -1032,3 +1032,15 @@ Se incorporó la evidencia 43:
 La recuperación adicional fija el SHA-256 reportado del APK, el HEAD histórico de la rama durante el 19-11-2026 (distinto del HEAD actual), los tamaños y hashes Smali truncados (sin completarlos), y resume anclas ya conservadas de `BRService$5`, `BRService$11`, `ProgressItemAdapter` y `restoreLocalMediaFile()`. Se cotejó contra evidencias 08, 09, 25 y 29 para no duplicar ni alterar sus conclusiones.
 
 **No se recuperó:** transcript completo del chat anterior, hashes Smali completos ni salida íntegra de grep. No elevar RECOVERED-CHAT a LOCAL-VERIFIED. Permanecen vigentes las reglas de separar `state`, `error`, `progType`, códigos de listener y `mWorkingStage`, así como línea física frente a `.line` Smali.
+
+## 34. BRItem: addItem, clasificadores y representación toString — 2026-11-20
+
+Se incorporó la evidencia 44:
+[`44_BRITEM_ADD_ITEM_CLASSIFIERS_TOSTRING.md`](evidence/2026-11-20/44_BRITEM_ADD_ITEM_CLASSIFIERS_TOSTRING.md).
+
+La salida Smali compartida confirma que `addItem(String)` añade a `localFileList` bajo el monitor de `this`; `isInternalFeature()` reconoce exactamente feature 100, 101 y 102; `isMedia()` reconoce exactamente type 5, 6, 7 y 8. `toString()` compone 22 campos e incluye state/error/progType, rutas, lista de archivos, tamaños, retryCount y encrypt. `skipData` se representa como booleano true solo para el entero 1; la cadena termina en CRLF.
+
+La evidencia es DIRECT-CHAT, basada en salida pegada por el usuario, no LOCAL-VERIFIED en este entorno. `toString()` no demuestra por sí mismo logging, persistencia ni transmisión Binder.
+
+**Siguiente prioridad:** conectar Parcelable con `IBRService.Stub/Proxy`, identificar códigos de transacción y seguir un caller concreto que transporte `BRItem` o `BRItem[]`. No repetir el inventario de las 23 posiciones Parcelable ni afirmar transporte efectivo antes de demostrar la ruta.
+
