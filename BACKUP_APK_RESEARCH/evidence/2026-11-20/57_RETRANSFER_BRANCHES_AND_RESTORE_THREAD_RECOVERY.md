@@ -26,7 +26,7 @@ El usuario pegó una descripción de `startRestore()`:
 
 Clasificación USER-PASTED-SOURCE / DIRECT-CHAT para esta secuencia. No se recuperó aquí el cuerpo completo, el constructor exacto de la WeakReference ni el callback posterior. La secuencia acredita creación/inicio del hilo descrito, no finalización exitosa del restore.
 
-## 3. restoreFiles(BRItem[],BackupDescriptor,int): resumen no primario
+## 3. restoreFiles(BRItem[],BackupDescriptor[],int): resumen no primario
 
 Un resumen anterior del asistente atribuyó al método `restoreFiles(BRItem[],BackupDescriptor,int)` (coordenada reportada alrededor de línea física 12672):
 - guarda `mBakFilesType`;
@@ -55,3 +55,8 @@ La formulación con `mIsReStartCommand` es PRIOR-ASSISTANT-OUTPUT y no debe sust
 5. Solo lectura estática.
 
 **Conclusión:** `restoreTransfering()` no es exclusivamente una ruta de restore: el resumen directo recuperado describe `brState==3 → CMD_BACKUP + extra_is_retransfering=true` y `brState==4 → startRestoreCommand(5 args)`. `startRestore()` crea e inicia `BRService$5("RestoreThread")`. El cuerpo de restoreFiles y la condición exacta para lista ausente permanecen incompletos.
+
+
+## 6. Corrección de firma
+
+La declaración exacta recuperada posteriormente del usuario en `BRService.smali:12672` es `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V`: ambos primeros parámetros son arrays. La firma abreviada anterior con descriptor singular queda corregida. Evidencia 58 conserva la declaración y las invocaciones reportadas en 19483/19519.
