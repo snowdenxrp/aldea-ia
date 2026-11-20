@@ -791,9 +791,7 @@ Se conserva el inventario de escritores de `BRItem.state` en `BRService$5` y lla
 
 **Corrección de setState:** evidencia 12 conserva el invoke exacto `invoke-static {v0, v4, v2, v5, v14}, ...->setState(IIII)V`, con `v4=4`, `v2=12`, `v5=0`. La llamada final es `setState(4,12,0,v14)`. La antigua forma `setState(4,0,v2,v14)` fue un error de transcripción y queda descartada. Estado: RESOLVED por DIRECT-CHAT; no LOCAL-VERIFIED.
 
-También se conservaron anclajes de sobrecargas de
-`startRestoreCommand` (5 y 7 argumentos), sin dar por probada la
-supuesta recursión del overload de 5 argumentos.
+También se conservaron ambas sobrecargas de `startRestoreCommand`. Evidencia 55 documenta el invoke directo del overload de cinco argumentos hacia el mismo overload con los mismos parámetros, seguido de return en el bloque compartido: anomalía de autoinvocación recursiva confirmada a nivel de fuente directa histórica. No se ha observado ejecución ni StackOverflow; mantener esa conclusión limitada al bloque pegado y a su procedencia.
 
 
 ## 19. setState(IIII) y llamada final — orden de argumentos resuelto
@@ -1078,7 +1076,7 @@ Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIAT
 
 **mBakFilesType / BRService$5.run():** salida Termux directa de BRService$5.smali:103–186 (19-11-2026 20:47:46Z) confirma comparación `0x2` (`v0` vs `v5`) → `:cond_1`/`v8`; `0x3` (`v9` vs `v10`) → `:cond_2`/`mIsTransingTask`; `0x5` (`v9` vs `v11`) → `:cond_3`/`mIsFlashDriveTask`; `0x1` (`v9` vs `v7`) → `:cond_4`/`mIsLocalBackupTask` (evidencia 51). La lectura reportada resume tipo 2→`v8=1`, 3→transfer, 5→Flash Drive, 1→local. Una paráfrasis anterior que atribuía tipo 2 a `mIsTransingTask` queda invalidada. No extrapolar estos flags a `BRItem.state/error` ni a un enum global. Sigue pendiente relectura local/hash independiente.
 
-**state 6:** mantener separados línea física y directiva `.line`. La evidencia 43 reporta línea física 2351 con directiva cercana `.line 1735`; evidencia 11 describe el contexto de `files_for_backup` tras `waitingForFilesTransingEnd()`. No asumir dos escrituras distintas hasta cotejar el bloque original.
+**state 6:** physical line 2351 y Smali `.line 1735` son la misma escritura en `BRService$5.smali`, tras `waitingForFilesTransingEnd()` para `files_for_backup`; no contarlas como dos writers. Evidencia 53 documenta otro writer en `BRService.smali:16787–16791`, en una clase/contexto distinto.
 
 **Otros puntos consolidados en evidencia 47:** causalidad global 8/9 y recursos de notificación; distinción entre activación Intent y canal Binder; límites de manifest/alcanzabilidad externa; auditorías históricas de 134 ramas de `aldea-ia`, 27 commits del G08 del repo D-RB-09 y auditoría de otros dos repositorios. Todo se conserva con su clasificación RECOVERED-CHAT/DIRECT-CHAT, no como verificación local nueva.
 
