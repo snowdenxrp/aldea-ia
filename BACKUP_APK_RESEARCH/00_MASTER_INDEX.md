@@ -1056,7 +1056,7 @@ El getter crea un arreglo exterior nuevo. Para `files_for_backup`, crea un `BRIt
 
 **Límite:** DIRECT-CHAT, no LOCAL-VERIFIED por relectura/hash independiente. La ruta Proxy/Parcel reconstruye objetos en el receptor. El manifest pegado por el usuario sitúa MiAsistService en `:remote`, mientras que BRService no tiene `android:process` explícito en su declaración de servicio; falta la etiqueta `<application>` para resolver la herencia de proceso. Por tanto, no se declara todavía si el caller concreto toma Proxy o interfaz local de `Stub.asInterface()`. El retorno del getter cuando `mBRItems` es null tampoco se afirma porque el fragmento recibido no contiene la instrucción de retorno posterior al log.
 
-**Siguiente prioridad:** no repetir la localización de `onServiceConnected()` (ya recuperada). Recuperar el cuerpo exacto de `Stub.asInterface(IBinder)` y la etiqueta `<application>` del manifest; resolver el proceso efectivo de BRService y conectarlo con el caller `getBRItems()` de MiAsistService. Mantener separada la identidad de referencias in-process de la reconstrucción Parcelable interprocess.
+**Corrección de cobertura:** el caller concreto de `getBRItems()` ya fue pegado por el usuario en `MiAsistService.smali:1606`: `invoke-interface {v0}, IBRService->getBRItems()[LBRItem;` (evidencia 59). No volver a solicitar/localizar ese invoke. Pendiente real: recuperar el cuerpo de `Stub.asInterface(IBinder)` y la etiqueta `<application>` del manifest para resolver el proceso efectivo de BRService y la selección local/Proxy. Mantener separada la identidad de referencias in-process de la reconstrucción Parcelable interprocess.
 
 
 ## 36. Recuperación suplementaria de memoria y cobertura histórica — 2026-11-20
@@ -1097,7 +1097,7 @@ Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIAT
 
 **Otros puntos consolidados en evidencia 47:** causalidad global 8/9 y recursos de notificación; distinción entre activación Intent y canal Binder; límites de manifest/alcanzabilidad externa; auditorías históricas de 134 ramas de `aldea-ia`, 27 commits del G08 del repo D-RB-09 y auditoría de otros dos repositorios. Todo se conserva con su clasificación RECOVERED-CHAT/DIRECT-CHAT, no como verificación local nueva.
 
-**Siguiente orden sin repetición:** (1) Stub.asInterface + etiqueta `<application>`/proceso efectivo BRService; (2) caller getBRItems; (3) reconciliar coordenadas restoreFiles y usos de mBakFilesType; (4) state 6; (5) causalidad 8/9 y handleTaskFinish. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
+**Siguiente orden sin repetición:** (1) cuerpo Stub.asInterface + etiqueta `<application>`/proceso efectivo BRService; (2) reconciliar coordenadas restoreFiles y usos de mBakFilesType; (3) state 6; (4) causalidad 8/9 y handleTaskFinish. El caller getBRItems() ya está preservado en evidencia 59. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
 
 
 ## 39. Recuperación suplementaria de BRService$5 y ciclo de restauración — 2026-11-20
@@ -1376,3 +1376,13 @@ Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_S
 
 La secuencia es USER-PASTED-SOURCE / DIRECT-CHAT para los rangos y llamadas reportados; no LOCAL-VERIFIED ni prueba éxito runtime.
 
+
+## 40. Caller getBRItems y límite del getter — 2026-11-20
+
+Se incorporó evidencia 59: [`59_GETBRITEMS_CALLER_AND_PARTIAL_GETTER_SOURCE_BOUNDARY.md`](evidence/2026-11-20/59_GETBRITEMS_CALLER_AND_PARTIAL_GETTER_SOURCE_BOUNDARY.md).
+
+El usuario pegó `MiAsistService.smali:1606`: `invoke-interface {v0}, Lcom/miui/backup/service/IBRService;->getBRItems()[Lcom/miui/backup/service/BRItem;`. También identificó `BRService$1.smali:131` como implementación y `BRService.smali:6770` como getter interno. La clase `IBRService$Default` devuelve null en `getBRItems()` y `asBinder()`; es respaldo vacío, no la implementación operativa.
+
+El fragmento directo de `BRService.smali:6750–6815` alcanza creación del arreglo, iteración, comparación `packageName == "files_for_backup"` y termina en `if-eqz v3, :cond_0`. No completar el cuerpo a partir de la paráfrasis ni inventar instrucciones posteriores. La transformación descrita previamente para los elementos especiales/ordinarios permanece en evidencia 45 con su procedencia y límites.
+
+**Estado Binder:** callback `$2`, caller `getBRItems()` y transporte Stub/Proxy están identificados; rama local/Proxy no resuelta porque falta el cuerpo de `Stub.asInterface()` y el proceso efectivo de BRService. No repetir la búsqueda del caller 1606.
