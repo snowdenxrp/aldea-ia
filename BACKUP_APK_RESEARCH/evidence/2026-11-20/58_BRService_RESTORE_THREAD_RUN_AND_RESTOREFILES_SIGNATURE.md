@@ -21,7 +21,12 @@ El cuerpo asociado, también preservado en evidencia 34, usa p1 como array BRIte
 
 no aparece en un mensaje del usuario recuperado ni en un bloque Smali pegado. Esa variante fue introducida por una respuesta anterior del asistente y luego propagada como si fuera una recuperación directa. Por tanto, debe clasificarse **PRIOR-ASSISTANT-OUTPUT / UNVERIFIED**, no USER-FACT ni DIRECT-CHAT. No constituye evidencia primaria de una segunda firma ni de un conflicto real entre dos builds.
 
-Las referencias a BRService.smali:19483 y 19519 también fueron repetidas en resúmenes anteriores, pero los invokes literales completos no se han recuperado en el contexto actual. No usarlas para confirmar descriptor ni aridad hasta leerlas.
+**Recuperación directa posterior de los callers (20-11-2026 00:10:09Z):** el usuario compartió los dos invokes de BRService.smali en las coordenadas físicas 19483 y 19519, ambos con descriptor singular `restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`:
+
+- línea 19483: `invoke-direct {v14, v0, v6, v3}, ...->restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`;
+- línea 19519: `invoke-direct {v14, v5, v6, v3}, ...->restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`.
+
+El bloque que precede a la segunda llamada incluye `const/4 v0, 0x3` y `if-eq v3, v0`. Esta recuperación es USER-FACT / DIRECT-CHAT, no una relectura local nueva. Las dos llamadas confirman el descriptor singular y contradicen la supuesta variante array, que solo procedía de PRIOR-ASSISTANT-OUTPUT.
 
 **Estado corregido:** `DIRECT-CHAT / PRIMARY-SOURCE-PRESERVED; LOCAL-UNVERIFIED` para la firma singular de evidencia 34. La alternativa array queda `UNSUPPORTED-PRIOR-ASSISTANT-OUTPUT`. No hay base documental suficiente para mantener `SIGNATURE-CONFLICT`; sigue pendiente verificar la firma contra el archivo local exacto, su hash y la extracción/build correspondiente.
 
@@ -94,4 +99,4 @@ La descripción de `startRestore()` que crea `WeakReference`, instancia `BRServi
 6. Mantener `restoreAppData` como método separado de las llamadas reportadas en run().
 7. Solo lectura estática.
 
-**Conclusión:** la única firma con soporte primario recuperado es `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)` en evidencia 34. La supuesta variante array provino de una respuesta anterior del asistente y queda descartada como evidencia primaria. La firma singular sigue pendiente de verificación LOCAL-VERIFIED contra el archivo/hash de extracción. BRService$5.run() inicia el restore con wake lock/BMS/StorageMonitor y coordina restauración de APK, paquetes y medios mediante executor y llamadas específicas. El mapa de ejecución está incompleto y no prueba éxito runtime.
+**Conclusión:** la firma `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)` tiene soporte primario directo tanto en su declaración/cuerpo (evidencia 34) como en los dos invokes de BRService.smali:19483/19519. La variante array provino de una respuesta anterior del asistente y queda descartada como evidencia primaria. Aún no es LOCAL-VERIFIED en esta sesión porque no se releyó el checkout Termux ni se calculó de nuevo el hash. BRService$5.run() inicia el restore con wake lock/BMS/StorageMonitor y coordina restauración de APK, paquetes y medios mediante executor y llamadas específicas. El mapa de ejecución está incompleto y no prueba éxito runtime.
