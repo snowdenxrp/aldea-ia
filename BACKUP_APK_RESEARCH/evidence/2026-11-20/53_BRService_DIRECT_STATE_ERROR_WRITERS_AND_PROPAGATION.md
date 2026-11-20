@@ -24,7 +24,7 @@ El usuario reportó un grep global con escrituras de campo en:
 
 También se reportó lectura de state en 6855.
 
-Otros reportes recuperados mencionan escrituras en 7004/7009 y 17431–17436 propagando desde PkgInfo. No se conservaron firmas/nombres de método para los bloques de estas coordenadas. No asignarles método por conjetura.
+Otros reportes recuperados mencionan escrituras en 7004/7009 y 17431–17436 propagando desde PkgInfo. El resumen histórico de 7004/7009 describe iget de PkgInfo.state/error e iput hacia BRItem.state/error; no se identificaron clase concreta, método ni caller. No asignarles método por conjetura.
 
 ## 2. Bloque físico 12849–12956 — restoreLocalMediaFile
 
@@ -52,7 +52,7 @@ Los nombres/descriptores completos del método no estaban visibles en el fragmen
 - 17158: iput de valor 9 a BRItem.error.
 - 17431–17436: copia de PkgInfo.state a BRItem.state y de PkgInfo.error a BRItem.error.
 
-Los nombres/firmas de métodos no estaban visibles en la recuperación. No asumir que estas asignaciones pertenecen a un único método o a la misma ruta funcional.
+Los nombres/firmas de métodos no estaban visibles en la recuperación. No asumir que estas asignaciones pertenecen a un único método o a la misma ruta funcional. También se reportaron lecturas de state/error alrededor de 16821, 16843–16845 y 16870–16872; no se conservó el bloque completo ni el método.
 
 **Importancia:** 16787–16791 es otro productor histórico de BRItem.state=6 fuera de la coordenada 2351/.line 1735 de BRService$5.smali. El valor 6, por tanto, no debe describirse como exclusivo de files_for_backup o de una sola clase sin completar el inventario global.
 
@@ -96,3 +96,11 @@ La interpretación disponible es copia de estado/tamaños entre instancias BRIte
 7. No pedir nueva extracción hasta reconciliar el material ya preservado; solo lectura estática.
 
 **Conclusión:** el bloque de restoreLocalMediaFile contiene state=3/error=7/state=8/final state=9 o 1. Otros bloques BRService contienen escrituras/copia de state 6 y propagación PkgInfo→BRItem. La hipótesis de state=7 en línea 5363 queda en cuarentena por procedencia incompleta. Estado general: INCOMPLETE.
+
+
+## 7. Otros resúmenes históricos relacionados
+
+- Se reportó un método `clearLocalFiles(ArrayList)` que recorre BRItem y, para `packageName == "files_for_backup"`, limpia `localFileList` sin modificar `state` ni `error`. Procedencia: PRIOR-ASSISTANT-SUMMARY; no se recuperó fuente literal en esta búsqueda.
+- `showFinishNotification(IIILjava/util/ArrayList;)` recibe estado global, etapa, error y lista de BRItems y los envía como extras `extra_last_task_state`, `extra_last_workingstage`, `extra_last_errcode`, `extra_last_britems`; caller reportado `handleTaskFinish(...)`. Ya está desarrollado en evidencia 47; se registra aquí solo como relación.
+- `getErrStringRes(II)`: resumen histórico reporta error 8 → recurso `0x7f12014b` y error 9 → `0x7f120166`; también preservado en evidencia 47.
+- No se conservó encabezado .method ni caller para los bloques 16787–17436 ni 7004/7009. Esta ausencia de contexto debe seguir explícita.
