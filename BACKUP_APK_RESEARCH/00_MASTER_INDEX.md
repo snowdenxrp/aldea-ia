@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.32 --- Binder and restore-state reconciliation\
+**Versión:** 0.33 --- BRService restore lifecycle supplemental recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1098,3 +1098,18 @@ Se incorporó evidencia 47: [`47_BINDER_CONNECTION_AND_RESTORE_STATE_RECONCILIAT
 **Otros puntos consolidados en evidencia 47:** causalidad global 8/9 y recursos de notificación; distinción entre activación Intent y canal Binder; límites de manifest/alcanzabilidad externa; auditorías históricas de 134 ramas de `aldea-ia`, 27 commits del G08 del repo D-RB-09 y auditoría de otros dos repositorios. Todo se conserva con su clasificación RECOVERED-CHAT/DIRECT-CHAT, no como verificación local nueva.
 
 **Siguiente orden sin repetición:** (1) Stub.asInterface + proceso BRService + conexión $2; (2) caller getBRItems; (3) reconciliar coordenadas restoreFiles y usos de mBakFilesType; (4) state 6; (5) causalidad 8/9 y handleTaskFinish. No solicitar comandos hasta acabar el cotejo documental existente. Solo lectura estática.
+
+
+## 39. Recuperación suplementaria de BRService$5 y ciclo de restauración — 2026-11-20
+
+Se incorporó evidencia 48: [`48_BRService_RESTORE_LIFECYCLE_SUPPLEMENTAL_RECOVERY.md`](evidence/2026-11-20/48_BRService_RESTORE_LIFECYCLE_SUPPLEMENTAL_RECOVERY.md).
+
+Se recuperan detalles adicionales del 17–19 de noviembre: `restoreFiles()` como entrada (comprobación de idle/restart, asignación de tipo/estado/descriptor/items, `mIsAborted=false`, notificación e inicio de restauración); arquitectura general de `BRService$5.run()`; despacho histórico de aplicaciones con `mRestoreTaskExecutor`, `PerformAdbRestoreTask` y `BRManager.restorePackage()`; monitorización y códigos de `StorageMonitor`; conexión `ITransFileService`/latch; preparación de password/capacidad; limpieza final y métricas locales.
+
+**Punto de integridad:** la extracción histórica del bloque de despacho de aplicaciones falló porque `$F` estaba vacío; el único error recuperado fue `sed: can't read : No such file or directory`. No se conservó raw output de ese bloque. No presentar el resumen como extracción completa.
+
+Se reafirma como mapping mejor soportado de `mBakFilesType` el de evidencia 02: 2→v8=1, 3→`mIsTransingTask`, 5→`mIsFlashDriveTask`, 1→`mIsLocalBackupTask`. Resúmenes antiguos que asignaban 2 y 3 a transferencia son contradictorios y no deben reutilizarse.
+
+El cierre reportado incluye `mReconnector.quit()`, `ITransFileService.stopAll(0)`, unbind, `StorageMonitor.stopMonitor()`, `setState(4,v2,0,v14)`, limpieza de temp root, `setDescriptor(null)`, `updatePkgStae(v14)`, `handleTaskFinish(...)`, liberación de WakeLock y métricas `backup_local_restore_num`/`backup_local_restore_success_num`.
+
+**Pendientes:** cuerpo completo de `BRService$5.run()/startRestore()), implementación de `StorageMonitor.startMonitor()`, ruta completa ZIP/zipStreamReader → executor → PerformAdbRestoreTask → BRManager.restorePackage(), y verificación de todos los usos de `mBakFilesType`. Todo lo nuevo sigue RECOVERED-CHAT, no LOCAL-VERIFIED.
