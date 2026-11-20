@@ -4,18 +4,20 @@
 **Source basis:** recovery of the user's 19-November conversation messages, including the literal line-level description returned by conversation-history retrieval. The original complete Smali file was not reread in this session.  
 **Classification:** RECOVERED-CHAT / HIGH-CONFIDENCE HISTORICAL; NOT LOCAL-VERIFIED.
 
-## 1. Resolved interpretation of the task-type block
+## 1. Recovered interpretation of the task-type block — partial, not fully literal
 
-The user's pasted block at physical lines 1391–1394 was described precisely as follows:
+The recovered 19-November conversation initially summarized the type block as:
 
-- Test `mBakFilesType == 2` assigns `v8 = 1`.
-- A **separate** test `mBakFilesType == 3` assigns `mIsTransingTask`.
-- Test `mBakFilesType == 5` assigns `mIsFlashDriveTask`.
-- Test `mBakFilesType == 1` assigns `mIsLocalBackupTask`.
+- `mBakFilesType == 2` → `v8 = 1`;
+- a separate `mBakFilesType == 3` branch → `mIsTransingTask`;
+- `mBakFilesType == 5` → `mIsFlashDriveTask`;
+- `mBakFilesType == 1` → `mIsLocalBackupTask`.
 
-Therefore the previously recorded shorthand “types 2 and 3 activate `mIsTransingTask`” is wrong. Type 2 is associated with `v8=1`; type 3 is the transfer flag. Type 5 is Flash Drive; type 1 is local backup.
+Subsequent evidence 51 section 9 recovered the user's direct Termux output for physical lines 103–186. It confirms the comparisons and destinations: type 2 → `:cond_1`/path using `v8`; type 3 → `:cond_2`/`mIsTransingTask`; type 5 → `:cond_3`/`mIsFlashDriveTask`; type 1 → `:cond_4`/`mIsLocalBackupTask`.
 
-This is the correction to apply to the interpretation of the historical pasted block. It does **not** mean that the complete type-handling logic or every use of `v8` has been audited.
+**Correction of provenance:** the direct output currently preserved does not include the literal instruction assigning a value to `v8`. Therefore the exact claim `v8=1` is not yet confirmed from the raw instruction; it remains a recovered interpretation (`PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`) until the assignment itself is available. The direct branch evidence does not support Report A's old claim that type 2 sets `mIsTransingTask`; Report A has no verbatim Smali block recovered. Type 3 is the branch directly associated with `mIsTransingTask` in the later output.
+
+This partially reconciles the historical reports, but does not audit the complete type-handling logic or every use of `v8`.
 
 ## 2. Recovered downstream meaning of v8 and v16
 
@@ -47,14 +49,14 @@ Older records remain immutable for historical traceability, but their claims mus
 
 - The v0.1 Library index's statement that both type 2 and type 3 activate `mIsTransingTask` is superseded by this reconciliation.
 - The prior Recovery Audit's “UNKNOWN / RECONCILIATION REQUIRED” is now narrowed: the conversation-recovered mapping is resolved, while local byte-level verification remains pending.
-- The 02_CHAT_RECOVERY_DELTA record's mapping (2→v8=1, 3→transing, 5→flash, 1→local) is consistent with the recovered user-pasted block.
-- Do not describe type 2 as the transfer flag. Its recovered role in this block is `v8=1`; its downstream semantic role is the Themes/error-8 branch described above, pending complete local register tracing.
+- The direct branch evidence in evidence 51 confirms type 2 reaches the `v8` path and type 3 reaches `mIsTransingTask`; the literal assignment `v8=1` is not present in the preserved excerpt.
+- Do not describe type 2 as the transfer flag on the basis of Report A. Its downstream role in the Themes/error-8 path remains conditional on recovering the exact `v8` assignment and complete register flow.
 
 ## 5. Updated causal hypothesis for global errors 8/9
 
 The combined recovered chain is now:
 
-- `mBakFilesType==2` → `v8=1` → downstream `v8!=0` → candidate global error `v16=8`.
+- `mBakFilesType==2` → branch using `v8` (direct branch output) → downstream `v8!=0` → candidate global error `v16=8`; the intermediate assignment/value of `v8` is not yet source-literal confirmed.
 - `mBakFilesType==5` → `mIsFlashDriveTask=true`; if USB unavailable → candidate global error `v16=9`.
 - Both nonzero values flow to final stage 12: `v14=v16`, `v2=12`, then `setState(4,12,0,v14)`, followed by `handleTaskFinish(4,12,v14,mBRItems)`.
 
@@ -76,4 +78,4 @@ The reported provenance is a conversation dated 16-November-2026 and a reported 
 4. Re-read `setState(IIII)`, `updatePkgStae`, `handleTaskFinish` and notification extras as one caller/callee chain.
 5. Recalculate the APK SHA-256 only if the exact original/copy bytes are available and the user authorizes the read-only check.
 
-**Status:** task-type mapping reconciled from recovered conversation; global 8/9 causal chain materially strengthened; local source verification still OPEN.
+**Status:** task-type branches partially reconciled from direct-chat output; literal `v8` assignment and global 8/9 causal chain remain conditional; local source verification still OPEN.
