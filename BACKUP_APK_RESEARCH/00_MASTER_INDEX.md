@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.23 --- helper located; BRItem field search refined\
+**Versión:** 0.24 --- BRItem boolean Parcel helper resolved\
 **Fecha de corte:** 2026-11-19\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -983,3 +983,14 @@ La búsqueda sobre todo el árbol decodificado localizó `smali/com/miui/backup/
 La búsqueda literal de `->apkSize:` no produjo coincidencias visibles en el árbol completo. La búsqueda de `->dataSize:` sí encontró referencias, pero sus descriptores pertenecen a `PackageStats.dataSize` y `AESExtraDataRecord.dataSize`, no a `BRItem.dataSize`. Por ello, los resultados no demuestran uso del campo de BRItem.
 
 **Siguiente paso:** inspeccionar el helper, buscar el descriptor exacto `Lcom/miui/backup/service/BRItem;->dataSize:J` y rastrear asignaciones/consumidores de ambos campos. No inferir ausencia absoluta ni consecuencias funcionales.
+
+
+## 30. BRItem.encrypt: helper boolean y búsquedas exactas de campos — 2026-11-19
+
+Se incorporó la evidencia 40: [`40_BRITEM_ENCRYPT_BOOLEAN_HELPER_AND_EXACT_FIELD_SEARCH.md`](evidence/2026-11-19/40_BRITEM_ENCRYPT_BOOLEAN_HELPER_AND_EXACT_FIELD_SEARCH.md).
+
+El helper `Utils$$ExternalSyntheticApiModelOutline0` contiene wrappers que delegan directamente a `Parcel.readBoolean()` y `Parcel.writeBoolean(Z)`. Las referencias de `BRItem.smali` en líneas físicas 471 y 1113 invocan esos wrappers; en el contrato Parcelable corresponden al campo `encrypt`. Queda confirmado que este campo se lee/escribe como booleano, no como entero manual.
+
+Las búsquedas de descriptores exactos `Lcom/miui/backup/service/BRItem;->apkSize:J` y `...;->dataSize:J` en todo el árbol decodificado no produjeron coincidencias visibles. No se observaron accesos directos con esos descriptores; reflexión, JNI u otros mecanismos quedan NO DETERMINADOS.
+
+**Siguiente prioridad:** inspeccionar constructor ordinario y métodos restantes de BRItem para determinar si los campos declarados pero no parcelados tienen asignaciones/consumidores indirectos; después conectar Parcelable con Stub/Proxy y un caller concreto de `BRItem[]`. No afirmar que se haya demostrado transporte Binder efectivo.
