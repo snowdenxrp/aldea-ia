@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.34 --- ArchiveHelper and MiAsist transfer recovery\
+**Versión:** 0.35 --- app restore dispatch recovery\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1140,3 +1140,19 @@ Se recuperan firmas de `startRestoreCommand` de cinco y siete argumentos. La sob
 También se conserva `RetransferUtils.smali:154 → restoreTransfering(...)` como ruta histórica candidata, sin cuerpo completo.
 
 **Pendientes:** cuerpo íntegro de unzipFiles y restoreLocalMediaFile; resultado de File.delete(); descriptor exacto y coordenadas de overloads startRestoreCommand; ruta RetransferUtils/restoreTransfering. No repetir trabajo ya documentado. Solo lectura estática.
+
+
+## 41. Despacho de restauración de aplicaciones y métodos BRService — 2026-11-20
+
+Se incorporó evidencia 50: [`50_APP_RESTORE_DISPATCH_AND_RESTORE_METHODS_RECOVERY.md`](evidence/2026-11-20/50_APP_RESTORE_DISPATCH_AND_RESTORE_METHODS_RECOVERY.md).
+
+Recuperación de fuente pegada el 16-11:
+- `restoreAppData(String,int,int)`, definición reportada `BRService.smali:12550`, bloque fuente alrededor de 2188–2207: deshabilita paquete, deriva rutas FullBackup, llama `BRManager.moveData` y `moveAndFixData`, establece estado mediante `AppUtils.setAppState(...,1,p3)`; excepción log `move data error`; movimiento fallido llama `onError(p1,p2,1)`.
+- `BRService.onBind` 18672, `onCreate` 18681, `onStartCommand` 19067; despacho `CMD_RESTORE` 19362–19379 lee `extra_is_from_miasist` y asigna `BackupApp.mIsBackupTask/mIsFromMiAsist`.
+- Sobrecarga de siete argumentos de `startRestoreCommand` pegada en 15220–15267: Intent CMD_RESTORE, descriptor/dir, BRItems opcionales, ZIP path, bandera de origen y tipo; `p5==4` marca MiAsist y tipo 3.
+- Referencias de grep: `restoreStreamSplitApk` definición 13035, caller BRService$5:1899, llamada a startRestoreCommand 13409; `prepareRestoringItems` callers BRService$5:395/447; `restoreAppData` caller BRService$11:1337; llamadas de medios BRService$5:2419/3006/3561.
+- `PerformAdbRestoreTask` referencia RestorePolicy en rango 1435–2050; enum: IGNORE, ACCEPT, ACCEPT_IF_APK. Solo grep recuperado, sin cuerpo de policy.
+
+**Vacío real:** no se recuperaron cuerpos íntegros de `restoreStreamSplitApk`, `prepareRestoringItems`, `PerformAdbRestoreTask`, `BRManager.restorePackage/moveData`, executor ni ZIP/zipStreamReader. La extracción histórica de BRService$5 falló por variable `$F` vacía; no se conservó stdout del despacho de apps. No inventar el contenido faltante.
+
+**Estado:** ruta de activación CMD_RESTORE y descripción de restoreAppData preservadas; flujo de restauración de apps incompleto. Solo lectura estática.
