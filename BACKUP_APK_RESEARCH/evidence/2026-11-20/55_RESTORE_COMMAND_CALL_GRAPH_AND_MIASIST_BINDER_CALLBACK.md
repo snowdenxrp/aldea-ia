@@ -54,10 +54,11 @@ Referencia adicional de MiAsistService.smali: llamada a startRestoreCommand alre
 
 ### 2.2 BRService.restoreTransfering()
 
-El usuario pegó literalmente el método `restoreTransfering()` con una llamada al overload de cinco argumentos cuando `brState == 4`. Por tanto:
-- `brState==4` es condición reportada para esa invocación;
-- la llamada pasa por el overload de cinco argumentos;
-- el cuerpo completo y el resto de condiciones de restoreTransfering no se reproducen aquí.
+El usuario describió directamente dos ramas de `restoreTransfering()` (ampliadas en evidencia 57):
+- si `brState==3`, inicia `CMD_BACKUP` y añade `extra_is_retransfering=true`;
+- si `brState==4`, llama al overload de cinco argumentos.
+
+El cuerpo completo y los demás valores de brState no se recuperaron. No describir 3/4 como conjunto exhaustivo.
 
 ### 2.3 ProgressPageFragmentBase$6
 
