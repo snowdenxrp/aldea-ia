@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.58 --- mBakFilesType v8 provenance and chronology corrections\
+**Versión:** 0.59 --- mBakFilesType historical conflict cleanup\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -271,7 +271,7 @@ completa de alcanzabilidad antes de afirmar una vía externa.
 
 **CONSERVADO de conversación:**
 
--   **Conflicto pendiente:** el bloque directo de BRService$5.run líneas 1391–1418 recuperado el 19-11 indica 2 → mIsTransingTask, 3 → mIsFlashDriveTask, 1 → mIsLocalBackupTask; el resumen anterior afirmaba 2/3 → mIsTransingTask y 5 → mIsFlashDriveTask. Este expediente marca el mapeo como UNKNOWN / RECONCILIATION REQUIRED hasta releer la extracción local.
+-   **Registro histórico supersedido:** una recuperación inicial atribuyó tipo 2 a `mIsTransingTask` y tipo 3 a `mIsFlashDriveTask`; esa lectura no debe reutilizarse. La salida directa posterior de `BRService$5.smali:103–186` ubica tipo 2 en `:cond_1`/ruta `v8`, tipo 3 en `:cond_2`/`mIsTransingTask`, tipo 5 en `:cond_3`/`mIsFlashDriveTask` y tipo 1 en `:cond_4`/`mIsLocalBackupTask`. La asignación literal de `v8` no está preservada. Véanse secciones 17/61 y evidencias 10, 18 y 51.
 -   Se reinicia `StatSpeedHelper`.
 -   Se crea `StorageMonitor(context,type)` y se llama `startMonitor()`.
 -   Resultado `0`: continúa.
@@ -1086,7 +1086,7 @@ Se recuperan detalles adicionales del 17–19 de noviembre: `restoreFiles()` com
 
 **Punto de integridad:** la extracción histórica del bloque de despacho de aplicaciones falló porque `$F` estaba vacío; el único error recuperado fue `sed: can't read : No such file or directory`. No se conservó raw output de ese bloque. No presentar el resumen como extracción completa.
 
-Se reafirma como mapping mejor soportado de `mBakFilesType` el de evidencia 02: 2→v8=1, 3→`mIsTransingTask`, 5→`mIsFlashDriveTask`, 1→`mIsLocalBackupTask`. Resúmenes antiguos que asignaban 2 y 3 a transferencia son contradictorios y no deben reutilizarse.
+La salida directa posterior de evidencia 51 §9 confirma las ramas: 2→`:cond_1`/ruta `v8`, 3→`:cond_2`/`mIsTransingTask`, 5→`:cond_3`/`mIsFlashDriveTask`, 1→`:cond_4`/`mIsLocalBackupTask`. La interpretación antigua `v8=1` (evidencia 02/10) no aparece como instrucción literal en el fragmento directo preservado y queda `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`; por ello, la cadena `type 2→v8→v16=8` sigue condicional.
 
 El cierre reportado incluye `mReconnector.quit()`, `ITransFileService.stopAll(0)`, unbind, `StorageMonitor.stopMonitor()`, `setState(4,v2,0,v14)`, limpieza de temp root, `setDescriptor(null)`, `updatePkgStae(v14)`, `handleTaskFinish(...)`, liberación de WakeLock y métricas `backup_local_restore_num`/`backup_local_restore_success_num`.
 
