@@ -80,14 +80,15 @@ Recovered inspected physical ranges include 863–883, 909–960 and 445–495, 
 
 **Strong conclusion from the recovered adapter logic:** state 6 is a success state for UI/counting purposes, distinct from ordinary state 1 at least at the data level. Its semantic distinction remains to be established from all producers and render branches.
 
-## 6. Reconciliation issue — state 6 line anchor
+## 6. Reconciliation issue — state 6 coordinate systems
 
-Two historical physical-line anchors for a state-6 write in `BRService$5.smali` now exist:
+The apparent conflict between physical line 2351 and line 1735 is a coordinate-system mix-up, not two physical-line anchors:
 
-- Earlier recovered inventory: physical line 2351 → `state=6`.
-- Later recovered method context: physical line 1735 → `state=6` for `files_for_backup`, after `waitingForFilesTransingEnd()`.
+- Physical file line **2351** in `BRService$5.smali` is the write `iput v3, ..., BRItem;->state:I` with `v3=0x6`.
+- The same instruction is associated with Smali debug/source directive **`.line 1735`**.
+- The surrounding source context is `.line 1733` `waitingForFilesTransingEnd()`, `.line 1734` reads `BRItem.state`, loads `const/4 v3, 0x6`, and branches `if-eq v0, v3, :cond_39`; `.line 1735` performs the write when the existing state is not already 6.
 
-Do not silently merge these. They may represent two producers, a shifted extraction/version, or a prior line-attribution error. The exact local file and its hash are required to settle it. Both anchors remain preserved as RECOVERED-CHAT, conflict unresolved.
+Therefore physical line 2351 and `.line 1735` refer to the same state-6 write in the same reported `BRService$5.smali` extraction. Do not treat 1735 as a physical line or as a second producer. The evidence is direct-chat recovered, not a fresh local read/hash in this session.
 
 ## 7. Consolidated state/error distinction
 
@@ -107,7 +108,7 @@ Do not infer state 7 or 8 from error/retry inputs 7/8. The recovered direct-writ
 2. Resolve the truncated `p3=2` branch in the state-3 callback.
 3. Re-read `BRService$11` callback bodies and confirm the retry gate and mapping.
 4. Re-read `ProgressItemAdapter` render/bind methods to map state 1/2/3/6 to exact labels/icons.
-5. Compare physical line 1735 and 2351 state-6 anchors against the same hashed `BRService$5.smali`.
+5. Preserve the distinction physical line 2351 vs Smali `.line 1735`; they identify the same reported write. A fresh local/hash check remains a separate verification step.
 6. Search every Smali dex directory for writes to `BRItem.state`, including indirect writes through reflection/parcel/copy paths, while preserving the exact search scope.
 
-**Status:** callback semantics partially recovered; state 6 is successful in adapter counts; state-6 producer line conflict unresolved; full UI mapping and complete raw callback blocks pending. No runtime operation performed.
+**Status:** callback semantics partially recovered; state 6 is successful in adapter counts; the apparent coordinate conflict is resolved as physical line 2351 / `.line 1735` for the same producer. Full UI mapping and complete raw callback blocks remain pending. No runtime operation performed.
