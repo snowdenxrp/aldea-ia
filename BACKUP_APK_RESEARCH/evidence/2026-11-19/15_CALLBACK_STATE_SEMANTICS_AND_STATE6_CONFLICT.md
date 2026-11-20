@@ -1,4 +1,4 @@
-# Callback state semantics — FakeBackupListenerImp / BRService$11 / ProgressItemAdapter — 2026-11-19
+# Callback state semantics — FakeBackupListenerImp / BRService$11 / ProgressItemAdapter; state6 coordinate reconciliation — 2026-11-19
 
 **Source basis:** exact ranges reported as pasted by the user on 19-November, plus recovered line-level conversation facts.  
 **Classification:** DIRECT-CHAT / RECOVERED-HISTORICAL. The local Termux files were not accessible to this assistant session; no fresh file read or hash was performed.
