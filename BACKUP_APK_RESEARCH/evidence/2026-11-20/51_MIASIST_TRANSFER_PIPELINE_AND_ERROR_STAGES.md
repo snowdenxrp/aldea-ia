@@ -187,3 +187,18 @@ Más detalle de MiAsistService$5 recuperado:
 - rama `BRService.onStartCommand()` CMD_RESTORE.
 
 Sí se conservan coordenadas/referencias y anotaciones de métodos, pero no equivalen al cuerpo Smali. No seguir citando estas funciones como si sus implementaciones hubieran sido leídas íntegramente.
+
+## 9. BRService$5.run(): ramas de mBakFilesType preservadas desde salida Termux
+
+El usuario compartió salida directa de Termux para `BRService$5.smali`, líneas físicas 103–186, el 19-11-2026 20:47:46Z. La salida incluye comparaciones y ramas con estas constantes/registros:
+
+- `v0` comparado con `v5 = 0x2`, rama hacia `:cond_1` y asignación/uso de `v8`;
+- `v9` comparado con `v10 = 0x3`, rama hacia `:cond_2` y asignación de `mIsTransingTask`;
+- `v9` comparado con `v11 = 0x5`, rama hacia `:cond_3` y asignación de `mIsFlashDriveTask`;
+- `v9` comparado con `v7 = 0x1`, rama hacia `:cond_4` y asignación de `mIsLocalBackupTask`.
+
+La lectura histórica de ese mismo bloque resume los efectos como: tipo 2 → `v8=1`; tipo 3 → `mIsTransingTask=true`; tipo 5 → `mIsFlashDriveTask=true`; tipo 1 → `mIsLocalBackupTask=true`. El registro `v8` se conserva como efecto literal reportado, sin atribuirle un significado semántico no demostrado.
+
+**Procedencia:** USER-PASTED-SOURCE / DIRECT-CHAT para la salida de comparaciones, registros, constantes y branch labels. La frase resumida de los efectos se mantiene como lectura de ese bloque, no como reemplazo de las instrucciones Smali completas. No confundir estos flags con `BRItem.state`, `BRItem.error`, `DeviceStage` o códigos del listener.
+
+**Corrección de contradicción:** una paráfrasis anterior había atribuido tipo 2 a `mIsTransingTask`; la salida directa ubica `mIsTransingTask` en la comparación con `0x3`. La atribución anterior a tipo 2 queda invalidada. El mapa debe leerse junto con la asignación de `mBakFilesType` en `restoreFiles()` y no como enum universal para todos los contextos.
