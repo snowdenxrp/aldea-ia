@@ -963,3 +963,12 @@ La salida de `BRItem$1.smali` confirma que `createFromParcel(Parcel)` crea un `B
 
 **Pendiente:** implementación de los helpers sintéticos boolean, asignaciones/consumidores de `apkSize` y `dataSize`, y conexión con transacción Binder concreta. Evidencia basada en salidas pegadas; no LOCAL-VERIFIED por relectura/hash.
 
+
+
+## 28. Búsquedas de helper boolean y referencias apkSize/dataSize — 2026-11-19
+
+Se incorporó la evidencia 38: [`38_HELPER_AND_FIELD_REFERENCE_SEARCH_NOT_DETERMINED.md`](evidence/2026-11-19/38_HELPER_AND_FIELD_REFERENCE_SEARCH_NOT_DETERMINED.md).
+
+Las búsquedas iniciales no produjeron resultados visibles, pero no permiten concluir ausencia: la expresión de búsqueda del helper no estaba ajustada a la directiva Smali; los patrones `->apkSize:` y `->dataSize:` comienzan con guion y se usaron sin `--`, además de suprimir stderr; la búsqueda se limitó a un subdirectorio. Los tres objetivos quedan **NO DETERMINADOS**.
+
+Siguiente paso: localizar el helper con `find` en todo el árbol decodificado y buscar referencias de campos con patrones fijos protegidos por `--` en todos los árboles `smali*`.
