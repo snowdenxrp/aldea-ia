@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.47 --- BRService restore thread map and signature correction\
+**Versión:** 0.48 --- restoreFiles signature conflict and evidence reconciliation\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1352,25 +1352,27 @@ Se incorporó evidencia 57: [`57_RETRANSFER_BRANCHES_AND_RESTORE_THREAD_RECOVERY
 - `startRestore()` crea una `WeakReference`, instancia `BRService$5("RestoreThread")` y llama `start()`.
 - Esto acredita el arranque del hilo descrito, no que el restore finalice correctamente.
 
-**restoreFiles:** el resumen que ubica `restoreFiles(BRItem[],BackupDescriptor,int)` alrededor de línea física 12672 y le atribuye asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()` es PRIOR-ASSISTANT-OUTPUT / NEEDS SOURCE REVALIDATION, no fuente directa recuperada. No elevar a hecho cerrado.
+**restoreFiles:** el resumen de lifecycle (evidencia 48) describe asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()`, pero su firma exacta está en conflicto. Evidencia 34 conserva fuente directa con `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)`; evidencia 58 recupera otra declaración atribuida a la misma línea física con `restoreFiles(BRItem[],com.miui.backup.BackupDescriptor[],int)`. Estado `SIGNATURE-CONFLICT / UNKNOWN-STOP`; no elegir una sin cotejar build/hash/archivo.
 
 **Conflicto abierto:** el mensaje directo de CMD_RESTORE dice “tipo=3/reinicio” para la condición con lista ausente; un resumen anterior lo reformuló como tipo 3 o `mIsReStartCommand`. La segunda formulación no está revalidada. Mantener el texto directo y el conflicto hasta leer el bloque.
 
 
-## 53. BRService$5.run() y firma exacta de restoreFiles — 2026-11-20
+## 53. BRService$5.run() y conflicto de firma restoreFiles — 2026-11-20
 
-Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md`](evidence/2026-11-20/58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md). Se corrigió también evidencia 57.
+Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md`](evidence/2026-11-20/58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md). Evidencia 57 fue corregida para no presentar una firma como resuelta.
 
-**Corrección de firma importante:**
-- `BRService.smali:12672` declara `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V`.
-- La firma es `restoreFiles(BRItem[],BackupDescriptor[],int)`, no `restoreFiles(BRItem[],BackupDescriptor,int)`.
-- Invocaciones reportadas: BRService.smali:19483 y 19519.
+**Conflicto de firma crítico:**
+- Evidencia 34, fuente Smali pegada por el usuario el 19-11: `restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V` — descriptor singular `com.miui.backup.data.BackupDescriptor`.
+- Recuperación de mensaje del usuario del 20-11: `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V` — array `com.miui.backup.BackupDescriptor[]`.
+- Ambas se atribuyen a BRService.smali:12672. También se reportaron invocaciones en 19483/19519, sin recuperar el invoke literal en este contexto.
+- No son descriptores equivalentes. Pueden proceder de builds/extracciones distintas, de una transcripción de paquete/descriptor errónea o de coordenadas distintas. No se descarta evidencia 34 ni se eleva la firma array como corrección definitiva.
+- Estado: `SIGNATURE-CONFLICT / UNKNOWN-STOP`. La semántica p1/p2/p3 y construcción de ArrayList de evidencia 34 solo aplica al bloque/descriptor de esa evidencia.
 
 **BRService$5.run():**
-- Inicio: asigna `mBRStartTime`, log `startRestore`, `acquireWakeLock()`, `acquireBMS()`, configura flags según `mBakFilesType`, inicia `StorageMonitor`.
+- Inicio reportado: asigna `mBRStartTime`, log `startRestore`, `acquireWakeLock()`, `acquireBMS()`, configura flags por `mBakFilesType`, inicia `StorageMonitor`.
 - Anclas: `restoreStreamSplitApk` 1899; executor 1951/1964; creación `PerformAdbRestoreTask` 1996; `BRManager.restorePackage()` 2079; `restoreLocalMediaFile` 2419/3006/3561.
-- `restoreAppData` no aparece en el mapa de este run(); no inferir ausencia global del método.
+- `restoreAppData` no aparece en ese mapa de `run()`; el método separado existe alrededor de 12550.
+- Lecturas `mBRItems` reportadas: 12050, 12733, 13610, 14140–14151, 16635, 16891, 17001–17010, 17114, 17170, 17183, 17345–17354, 19002, 19016, 19025.
 
-**Lecturas mBRItems** reportadas en BRService.smali: 12050, 12733, 13610, 14140–14151, 16635, 16891, 17001–17010, 17114, 17170, 17183, 17345–17354, 19002, 19016, 19025. Sin contexto completo, no asignarles semántica.
+La secuencia es USER-PASTED-SOURCE / DIRECT-CHAT para los rangos y llamadas reportados; no LOCAL-VERIFIED ni prueba éxito runtime.
 
-La secuencia se clasifica USER-PASTED-SOURCE / DIRECT-CHAT para los rangos y llamadas reportados; no LOCAL-VERIFIED y no prueba éxito runtime.
