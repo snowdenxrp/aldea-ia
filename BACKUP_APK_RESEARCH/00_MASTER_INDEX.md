@@ -1,7 +1,7 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.25 --- BRItem constructor and copy semantics\
-**Fecha de corte:** 2026-11-19\
+**Versión:** 0.26 --- BRItem Parcelable chat continuity recovery\
+**Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
 implica ejecución de restauraciones, modificación del APK ni pruebas
@@ -1008,3 +1008,17 @@ El constructor `BRItem(BRItem)` copia explícitamente la mayoría de los campos 
 Esto coincide con la omisión de `apkSize` y `dataSize` en Parcelable, pero no permite afirmar que ambos campos sean globalmente inútiles ni que nunca se asignen fuera de `BRItem`.
 
 **Siguiente prioridad:** inspeccionar los métodos restantes de `BRItem` y enlazar Parcelable con la transacción Stub/Proxy y un caller concreto. La evidencia sigue siendo DIRECT-CHAT, no LOCAL-VERIFIED.
+
+
+## 32. Recuperación de continuidad Parcelable y chat anterior — 2026-11-20
+
+Se incorporó la evidencia 42:
+[`42_CHAT_CONTINUITY_BRITEM_PARCELABLE.md`](evidence/2026-11-20/42_CHAT_CONTINUITY_BRITEM_PARCELABLE.md).
+
+Se recuperó el HEAD previo de la rama (`cf802ea24ca98dd30ffb6a1282e4a9f4827224c1`) y el estado del índice v0.25. El chat inmediatamente anterior contiene el inicio de una nueva extracción del constructor vacío (`BRItem.smali`, líneas 163–218), pero el fragmento disponible termina después de `const-string`. La evidencia 42 conserva literalmente el comando y el fragmento recuperable, y marca explícitamente lo que no pudo recuperarse; no inventa el resto de la salida.
+
+Las evidencias 35–41 permanecen como registro acumulado del contrato Parcelable, 23 posiciones de lectura/escritura, Creator, campos no serializados, helper boolean y semántica de constructores/copia. No se repite su análisis como trabajo nuevo.
+
+**Estado:** continuidad documental RECUPERADA PARCIALMENTE. El detalle completo del constructor vacío ya figura en evidencia 41 como CONFIRMADO EN CHAT, pero el nuevo fragmento del chat actual está truncado y no constituye una segunda verificación independiente.
+
+**Siguiente prioridad:** conservar la salida íntegra del constructor vacío si se vuelve a compartir; inspeccionar `addItem`, `isInternalFeature`, `isMedia` y `toString`; después enlazar Parcelable con una transacción Binder Stub/Proxy y un caller efectivo. No afirmar transporte Binder concreto antes de esa conexión.
