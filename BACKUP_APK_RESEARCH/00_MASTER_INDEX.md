@@ -1352,21 +1352,21 @@ Se incorporó evidencia 57: [`57_RETRANSFER_BRANCHES_AND_RESTORE_THREAD_RECOVERY
 - `startRestore()` crea una `WeakReference`, instancia `BRService$5("RestoreThread")` y llama `start()`.
 - Esto acredita el arranque del hilo descrito, no que el restore finalice correctamente.
 
-**restoreFiles:** el resumen de lifecycle (evidencia 48) describe asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()`, pero su firma exacta está en conflicto. Evidencia 34 conserva fuente directa con `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)`; evidencia 58 recupera otra declaración atribuida a la misma línea física con `restoreFiles(BRItem[],com.miui.backup.BackupDescriptor[],int)`. Estado `SIGNATURE-CONFLICT / UNKNOWN-STOP`; no elegir una sin cotejar build/hash/archivo.
+**restoreFiles:** el resumen de lifecycle (evidencia 48) describe asignación de `mBakFilesType`, `mBRItems` (salvo tipo 3), descriptor, limpieza de abort y llamada a `startRestore()`. Evidencia 34 conserva fuente Smali directa pegada por el usuario con `restoreFiles(BRItem[],com.miui.backup.data.BackupDescriptor,int)`. La supuesta alternativa `restoreFiles(BRItem[],com.miui.backup.BackupDescriptor[],int)` no procede de un mensaje del usuario ni de Smali literal: fue introducida por una respuesta anterior del asistente y queda `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`. Se retira el estado de conflicto entre firmas primarias. La firma singular sigue `DIRECT-CHAT / LOCAL-UNVERIFIED` hasta cotejar el archivo/hash exacto.
 
 **Conflicto abierto:** el mensaje directo de CMD_RESTORE dice “tipo=3/reinicio” para la condición con lista ausente; un resumen anterior lo reformuló como tipo 3 o `mIsReStartCommand`. La segunda formulación no está revalidada. Mantener el texto directo y el conflicto hasta leer el bloque.
 
 
-## 53. BRService$5.run() y conflicto de firma restoreFiles — 2026-11-20
+## 53. BRService$5.run() y corrección de procedencia de restoreFiles — 2026-11-20
 
 Se incorporó evidencia 58: [`58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md`](evidence/2026-11-20/58_BRService_RESTORE_THREAD_RUN_AND_RESTOREFILES_SIGNATURE.md). Evidencia 57 fue corregida para no presentar una firma como resuelta.
 
-**Conflicto de firma crítico:**
-- Evidencia 34, fuente Smali pegada por el usuario el 19-11: `restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V` — descriptor singular `com.miui.backup.data.BackupDescriptor`.
-- Recuperación de mensaje del usuario del 20-11: `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V` — array `com.miui.backup.BackupDescriptor[]`.
-- Ambas se atribuyen a BRService.smali:12672. También se reportaron invocaciones en 19483/19519, sin recuperar el invoke literal en este contexto.
-- No son descriptores equivalentes. Pueden proceder de builds/extracciones distintas, de una transcripción de paquete/descriptor errónea o de coordenadas distintas. No se descarta evidencia 34 ni se eleva la firma array como corrección definitiva.
-- Estado: `SIGNATURE-CONFLICT / UNKNOWN-STOP`. La semántica p1/p2/p3 y construcción de ArrayList de evidencia 34 solo aplica al bloque/descriptor de esa evidencia.
+**Corrección de procedencia de restoreFiles:**
+- Evidencia 34 conserva el bloque Smali pegado directamente por el usuario: `restoreFiles([Lcom/miui/backup/service/BRItem;Lcom/miui/backup/data/BackupDescriptor;I)V`.
+- La supuesta variante `restoreFiles([Lcom/miui/backup/service/BRItem;[Lcom/miui/backup/BackupDescriptor;I)V` no se encontró en un mensaje histórico del usuario ni en Smali literal; fue introducida por una respuesta anterior del asistente.
+- Clasificación: firma singular `USER-PASTED-SOURCE / DIRECT-CHAT`; alternativa array `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
+- No mantener `SIGNATURE-CONFLICT` entre fuentes primarias. La firma singular sigue sin relectura independiente del archivo local y su SHA-256.
+- Las referencias a invocaciones en BRService.smali:19483 y 19519 siguen sin invokes literales recuperados; no usarlas para confirmar la firma.
 
 **BRService$5.run():**
 - Inicio reportado: asigna `mBRStartTime`, log `startRestore`, `acquireWakeLock()`, `acquireBMS()`, configura flags por `mBakFilesType`, inicia `StorageMonitor`.
