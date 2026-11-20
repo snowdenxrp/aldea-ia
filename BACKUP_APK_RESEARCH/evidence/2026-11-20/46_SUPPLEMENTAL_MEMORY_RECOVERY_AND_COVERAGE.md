@@ -120,3 +120,57 @@ Estos son hallazgos RECOVERED-CHAT; para precisión de ramas y condiciones se de
 La recuperación añade anclas de líneas para activación/binding y overloads, la tabla histórica de 14 transacciones, los límites entre activación y Binder, datos adicionales de estados/UI y la secuencia de restauración de medios. No cierra la conexión real del caller de `MiAsistService`, la anomalía de la sobrecarga de cinco argumentos, la causalidad completa de estados/errores ni la verificación local de los fragmentos.
 
 **Punto exacto de continuación:** evidencia 45, sección 8. No solicitar nuevas extracciones hasta terminar la reconciliación documental de las evidencias y los métodos ya preservados.
+
+
+## 10. Recuperación adicional: lifecycle, conexiones internas y superficie de acceso
+
+Una búsqueda histórica adicional del 16-11-2026 recuperó estos detalles:
+
+### 10.1 MiAsistService y conexiones
+
+- `MiAsistService.onStartCommand()` fue descrito como manejador de las acciones `mi_backup` y `mi_restore`.
+- Se reportó validación de `client_port` dentro del rango 57447–57449.
+- `isOwnerSpace()` fue inspeccionado y reportado como implementación que devuelve `true`; esto no constituye autenticación ni prueba de autoridad efectiva.
+- `MiAsistService.onBind()` devuelve null.
+- `MiAsistService$2` es la conexión de BRService y recibe `IBRService`, asignándolo a `mBRService`; también registra listener. En desconexión limpia la referencia.
+- `MiAsistService$4` recibe `ITransFileService`, lo asigna a `mTransService`, registra listener y establece `STAGE_TRANS_SERVICE_BINDED`.
+- `MiAsistService$5` contiene etapas reportadas: `STAGE_REMOTE_CONNECTING`, `STAGE_REMOTE_CONNECTED`, `STAGE_SELECT_DESCRIPT_RECEIVED`, `STAGE_BRSERVICE_BR_START` y `STAGE_END_DESCRIPTOR_SENDED`.
+- También aparecen `STAGE_USER_AUTHORIZING` y `STAGE_BRITEMS_LOADING`; su presencia no demuestra por sí sola que exista una barrera de autorización efectiva.
+- Referencias adicionales a métodos de `MiAsistService` fueron localizadas históricamente en líneas físicas 1639, 2685, 3523, 3538 y 3691. Los cuerpos y la relación exacta de cada referencia no están íntegramente recuperados aquí.
+
+### 10.2 Manifest, permisos y alcance externo
+
+- `MiAsistService`, `BRService` y `TransFileService` fueron reportados como `android:exported="false"`.
+- Filtro de acción de MiAsistService: `miui.intent.action.MIASIST_PROXY`.
+- Se reportaron permisos `miui.permission.BACKUP_PROXY` y `miui.permission.BACKUP_FILE_SERVER` con protección `signatureOrSystem`.
+- No se reportó permiso específico declarado en esos tres componentes del manifest.
+- Se identificaron intermediarios exportados como `ApkInstallReceiver`, `PCBackupActivity` y `AiActionProvider`; su mera exportación no demuestra que puedan alcanzar la ruta protegida ni satisfacer sus controles.
+- La acción `MIASIST_PROXY` no anula `exported=false`.
+- `UsbHomeActivity` contiene llamadas históricamente ubicadas en líneas 463/470 a `isServiceWorkingFromPreference()` y `isHost()`; el iniciador externo efectivo y su relación con MiAsistService siguen sin determinarse.
+- Conclusión conservada: la conexión interna MiAsistService→BRService está descrita, pero la alcanzabilidad externa, autenticación efectiva y restauración de datos privados no están demostradas.
+
+**Clasificación:** RECOVERED-CHAT. No sustituye la lectura directa del manifest o de los métodos; tampoco autoriza concluir que la superficie externa sea imposible o viable.
+
+### 10.3 Catálogo histórico de IBRService.Stub
+
+Nombres recuperados para las 14 transacciones:
+1. `getBakFilesType`
+2. `getState`
+3. `getWorkingStage`
+4. `getLastErrCode`
+5. `getBRItems`
+6. `abortBackupAndRestore`
+7. `registerBRListener`
+8. `unregisterBRListener`
+9. `getTransinRemainingTime`
+10. `getTransingUsedTime`
+11. `getTransingTotalSize`
+12. `forceClose`
+13. `pause`
+14. `getZipPath`
+
+La lista es una recuperación del catálogo previo. La evidencia 45 contiene la reconstrucción detallada de la transacción 5. No se afirma que la interfaz carezca de otros métodos fuera del contrato examinado ni que las transacciones concedan acceso externo.
+
+### 10.4 Restricción reforzada
+
+No solicitar comandos nuevos hasta contrastar las evidencias y el master. En particular, antes de extraer de nuevo `onServiceConnected()`, revisar la conexión ya resumida en `MiAsistService$2` y localizar únicamente las instrucciones que falten para determinar `Stub.asInterface()`, la asignación y la rama local/Proxy.
