@@ -1045,7 +1045,7 @@ La recuperación agrega anclas históricas de `MiAsistService` (líneas físicas
 
 También conserva la secuencia histórica de `restoreLocalMediaFile()` (ZIP derivado desde `mCurrentBackupRootPath`; estados 3/8/9/1 según las ramas descritas) y anclas de `ArchiveHelper.unzipFiles()`. Se mantienen como RECOVERED-CHAT, no LOCAL-VERIFIED; no sustituyen las evidencias específicas ni los fragmentos Smali.
 
-**Pendientes que siguen abiertos:** recuperar el cuerpo de `IBRService.Stub.asInterface(IBinder)` y la etiqueta `<application>` para resolver proceso efectivo de BRService y rama local/Proxy. El callback `$2` y caller `getBRItems()` ya están recuperados (evidencias 47/59); no repetirlos. Investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos. El mapping `mBakFilesType` ya fue parcialmente reconciliado: tipo 2→ruta `v8`, tipo 3→`mIsTransingTask`, tipo 5→Flash Drive, tipo 1→local; queda pendiente el valor literal de `v8` y su cadena causal. No repetir evidencias 35–45.
+**Pendientes que siguen abiertos:** recuperar la apertura y atributos de `<application>` del manifest para resolver el proceso predeterminado y el proceso efectivo de BRService. El cuerpo de `IBRService.Stub.asInterface(IBinder)` ya está recuperado y demuestra selección local mediante `queryLocalInterface()` o fallback a Proxy (evidencia 62); no repetirlo. El callback `$2`, caller `getBRItems()` y contrato Parcelable están recuperados (evidencias 47/55/59/45); no repetirlos. Investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos. El mapping `mBakFilesType` ya fue parcialmente reconciliado: tipo 2→ruta `v8`, tipo 3→`mIsTransingTask`, tipo 5→Flash Drive, tipo 1→local; queda pendiente el valor literal de `v8` y su cadena causal. No repetir evidencias 35–45.
 
 **Regla:** antes de solicitar nuevos comandos, reconciliar el expediente completo y los hallazgos existentes. Solo lectura estática; no ejecutar servicios ni operaciones de Backup/Restore.
 
@@ -1419,3 +1419,14 @@ Se actualizaron evidencias 18 y 47.
 Se actualizó evidencia 10 para alinearla con la salida directa preservada en evidencia 51. El bloque de `BRService$5.smali:103–186` confirma las comparaciones y ramas: tipo 2 → `:cond_1`/ruta `v8`; tipo 3 → `:cond_2`/`mIsTransingTask`; tipo 5 → `:cond_3`/`mIsFlashDriveTask`; tipo 1 → `:cond_4`/`mIsLocalBackupTask`. La asignación literal `v8=1` no aparece en el fragmento directo preservado y sigue `PRIOR-ASSISTANT-OUTPUT / UNVERIFIED`.
 
 El mapping antiguo del 17-11 que atribuía tipo 2 al flag de transferencia carece de bloque literal recuperado y queda supersedido por la evidencia directa posterior, sin afirmar más de lo que muestra el branch. La cadena `type 2 → v8 → v16=8` permanece condicional hasta recuperar la instrucción que escribe `v8` y su flujo completo.
+
+
+## 62. IBRService.Stub.asInterface: selección local vs Proxy — 2026-11-20
+
+Se incorporó la evidencia 62: [`62_IBRSERVICE_STUB_ASINTERFACE_LOCAL_VS_PROXY.md`](evidence/2026-11-20/62_IBRSERVICE_STUB_ASINTERFACE_LOCAL_VS_PROXY.md).
+
+El cuerpo completo de `IBRService$Stub.asInterface(IBinder)`, líneas físicas 71–107, fue compartido desde la extracción Smali local de Termux. Si el Binder es null, devuelve null. En caso contrario consulta `queryLocalInterface()` con el descriptor `com.miui.backup.service.IBRService`; si obtiene una interfaz no nula del tipo correcto, la devuelve directamente. En cualquier otro caso construye `IBRService$Stub$Proxy(p0)`.
+
+**Conclusión:** la lógica de selección local/Proxy queda CONFIRMADA EN SMALI LOCAL COMPARTIDO. La rama efectiva para el Binder recibido por `MiAsistService$2.onServiceConnected()` continúa NO DETERMINADA. El recorrido Parcelable de `getBRItems()` aplica a la rama Proxy; no afirmar que toda llamada concreta cruza Parcel.
+
+**Siguiente delta:** recuperar únicamente la apertura y atributos de `<application>` del manifest, sin repetir las declaraciones de servicios ya conservadas. Esto permitirá resolver el proceso predeterminado del paquete y evaluar la separación de `BRService` respecto de `MiAsistService` (declarado `:remote`). Mantener como UNKNOWN cualquier conclusión sobre la instancia Binder concreta que no se desprenda de la evidencia.
