@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.61 --- IBRService asInterface local-vs-Proxy source closure\
+**Versión:** 0.62 --- application default process and Binder route inference\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -27,9 +27,13 @@ dinámicas.
                                                               16-11-2026; hash no
                                                               recalculado aquí
 
-  Manifiesto y componentes            CONSERVADO              `MiAsistService` y
-                                                              `BRService` reportados
-                                                              como `exported=false`
+  Manifiesto y componentes            CONFIRMADO EN CHAT      `<application>` sin
+                                                              `android:process`;
+                                                              `MiAsistService` en
+                                                              `:remote`; `BRService`
+                                                              y `TransFileService`
+                                                              heredan el proceso
+                                                              predeterminado
 
   `MiAsistService`                    CONSERVADO              Cadena hacia
                                                               `BRService` y
@@ -1430,3 +1434,14 @@ El cuerpo completo de `IBRService$Stub.asInterface(IBinder)`, líneas físicas 7
 **Conclusión:** la lógica de selección local/Proxy queda CONFIRMADA EN SMALI LOCAL COMPARTIDO. La rama efectiva para el Binder recibido por `MiAsistService$2.onServiceConnected()` continúa NO DETERMINADA. El recorrido Parcelable de `getBRItems()` aplica a la rama Proxy; no afirmar que toda llamada concreta cruza Parcel.
 
 **Siguiente delta:** recuperar únicamente la apertura y atributos de `<application>` del manifest, sin repetir las declaraciones de servicios ya conservadas. Esto permitirá resolver el proceso predeterminado del paquete y evaluar la separación de `BRService` respecto de `MiAsistService` (declarado `:remote`). Mantener como UNKNOWN cualquier conclusión sobre la instancia Binder concreta que no se desprenda de la evidencia.
+
+
+## 63. Proceso predeterminado de la aplicación y ruta Binder esperable — 2026-11-20
+
+Se incorporó evidencia 63: [`63_MANIFEST_APPLICATION_PROCESS_AND_BINDER_ROUTE_INFERENCE.md`](evidence/2026-11-20/63_MANIFEST_APPLICATION_PROCESS_AND_BINDER_ROUTE_INFERENCE.md).
+
+El usuario compartió la salida de Termux del bloque de `AndroidManifest.xml:82–117`. La apertura completa de `<application>` (línea 87) no contiene `android:process`. Por ello, las declaraciones de `BRService` (línea 112) y `TransFileService` (línea 113), que tampoco declaran proceso, heredan el proceso predeterminado del paquete. `MiAsistService` (línea 107) declara explícitamente `:remote`.
+
+**Inferencia Android:** bajo la semántica estándar de procesos de componentes Android, `BRService` se ejecuta en el proceso predeterminado de la aplicación, mientras `MiAsistService` se ejecuta en el proceso separado `:remote`. Por tanto, para el enlace entre ambos, la ruta esperable de `IBRService$Stub.asInterface()` es fallback a `IBRService$Stub$Proxy`, no interfaz local. La conclusión combina el Manifest compartido con el cuerpo `asInterface()` de evidencia 62.
+
+**Límite probatorio:** es una inferencia estática fuerte sobre la configuración declarada; no es observación runtime del Binder recibido ni excluye mecanismos no mostrados que alteren el contexto real. La instancia concreta devuelta y el transporte efectivo siguen sin confirmación dinámica. No presentar como prueba de ejecución.
