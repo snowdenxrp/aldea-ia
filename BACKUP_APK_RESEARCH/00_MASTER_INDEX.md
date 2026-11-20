@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.59 --- mBakFilesType historical conflict cleanup\
+**Versión:** 0.60 --- stale pending-state cleanup and current research priorities\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1045,7 +1045,7 @@ La recuperación agrega anclas históricas de `MiAsistService` (líneas físicas
 
 También conserva la secuencia histórica de `restoreLocalMediaFile()` (ZIP derivado desde `mCurrentBackupRootPath`; estados 3/8/9/1 según las ramas descritas) y anclas de `ArchiveHelper.unzipFiles()`. Se mantienen como RECOVERED-CHAT, no LOCAL-VERIFIED; no sustituyen las evidencias específicas ni los fragmentos Smali.
 
-**Pendientes que siguen abiertos:** recuperar el cuerpo de `IBRService.Stub.asInterface(IBinder)` y la etiqueta `<application>` para resolver proceso efectivo de BRService y rama local/Proxy. El callback `$2` y caller `getBRItems()` ya están recuperados (evidencias 47/59); no repetirlos. Investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos; reconciliar el mapeo histórico conflictivo de `mBakFilesType`; no repetir evidencias 35–45.
+**Pendientes que siguen abiertos:** recuperar el cuerpo de `IBRService.Stub.asInterface(IBinder)` y la etiqueta `<application>` para resolver proceso efectivo de BRService y rama local/Proxy. El callback `$2` y caller `getBRItems()` ya están recuperados (evidencias 47/59); no repetirlos. Investigar sin asumir la aparente autorrecursión de la sobrecarga de cinco argumentos. El mapping `mBakFilesType` ya fue parcialmente reconciliado: tipo 2→ruta `v8`, tipo 3→`mIsTransingTask`, tipo 5→Flash Drive, tipo 1→local; queda pendiente el valor literal de `v8` y su cadena causal. No repetir evidencias 35–45.
 
 **Regla:** antes de solicitar nuevos comandos, reconciliar el expediente completo y los hallazgos existentes. Solo lectura estática; no ejecutar servicios ni operaciones de Backup/Restore.
 
@@ -1090,7 +1090,7 @@ La salida directa posterior de evidencia 51 §9 confirma las ramas: 2→`:cond_1
 
 El cierre reportado incluye `mReconnector.quit()`, `ITransFileService.stopAll(0)`, unbind, `StorageMonitor.stopMonitor()`, `setState(4,v2,0,v14)`, limpieza de temp root, `setDescriptor(null)`, `updatePkgStae(v14)`, `handleTaskFinish(...)`, liberación de WakeLock y métricas `backup_local_restore_num`/`backup_local_restore_success_num`.
 
-**Pendientes:** cuerpo completo de `BRService$5.run()/startRestore()), implementación de `StorageMonitor.startMonitor()`, ruta completa ZIP/zipStreamReader → executor → PerformAdbRestoreTask → BRManager.restorePackage(), y verificación de todos los usos de `mBakFilesType`. Todo lo nuevo sigue RECOVERED-CHAT, no LOCAL-VERIFIED.
+**Pendientes:** cuerpo completo de `BRService$5.run()/startRestore()`, implementación de `StorageMonitor.startMonitor()`, ruta completa ZIP/zipStreamReader → executor → PerformAdbRestoreTask → BRManager.restorePackage(), y verificación de los usos restantes de `mBakFilesType`, en particular la asignación literal de `v8`. Todo lo nuevo sigue RECOVERED-CHAT/DIRECT-CHAT, no LOCAL-VERIFIED.
 
 
 ## 40. ArchiveHelper, restoreLocalMediaFile y tareas MiAsist/transferencia — 2026-11-20
