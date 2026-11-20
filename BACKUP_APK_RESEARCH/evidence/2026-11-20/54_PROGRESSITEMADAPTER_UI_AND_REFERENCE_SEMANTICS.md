@@ -30,8 +30,8 @@ Evidencia directa recuperada:
 
 updateProgress() recuperado:
 - state 1 o 6 → progreso 100.
-- state 2 → completedSize / totalSize * 100, con límite máximo 99.
-- otros estados → progreso 0.
+- state 2, 4, 5, 7 u 8 → completedSize / totalSize * 100, con límite máximo 99.
+- state 0 o 3 → progreso 0.
 
 La lógica de porcentaje no consulta BRItem.error en la descripción recuperada. Un state=6 cuenta como 100% aunque su representación visual exacta pueda diferir de state=1.
 
@@ -53,6 +53,13 @@ Constructor de ProgressItem recuperado:
 - Si el resultado está vacío, usa Utils.getFeatureNameFromBakFileName(bakFilePath).
 
 No se recuperó aquí el catálogo completo de categorías ni los recursos de strings asociados.
+
+Recursos de layout recuperados por el usuario:
+- layout: 0x7f0d00df.
+- vista title: 0x7f0a02ba.
+- vista info: 0x7f0a02b9.
+- vista status/loading: 0x7f0a02bb.
+Los demás IDs de vistas/drawables y los strings exactos asociados a BRItem.error 2/5/6/7/9/11 no sobrevivieron en la recuperación; no completar ni inferirlos.
 
 ## 6. Mutaciones y actualización de filas
 
@@ -90,4 +97,4 @@ Estas relaciones son referencias históricas de callers, no reconstrucción comp
 6. No inferir label/icono de error a partir de resúmenes truncados.
 7. Solo lectura estática.
 
-**Conclusión:** el adapter considera state 1/6 exitosos, state 3 terminado no exitoso y state 2 en progreso; state 1/6 muestran 100%, state 2 calcula hasta 99%, otros 0. Conserva la referencia BRItem y calcula tamaños con una excepción ×1000 para MMS/Contacts type 9. La UI exacta de errores permanece incompleta.
+**Conclusión:** el adapter considera state 1/6 exitosos, state 3 terminado no exitoso y state 2 en progreso; state 1/6 muestran 100%, state 2/4/5/7/8 calcula hasta 99%, state 0/3 muestra 0. Conserva la referencia BRItem y calcula tamaños con una excepción ×1000 para MMS/Contacts type 9. La UI exacta de errores permanece incompleta.
