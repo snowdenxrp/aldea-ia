@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.78 --- procedencia v8 separada entre BRService$5 y BRService$6\
+**Versión:** 0.79 --- deduplicación ArchiveHelper y procedencia v8\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1532,7 +1532,7 @@ Se incorporó evidencia 70: [`70_SUPPLEMENTAL_BRITEM_STATE_ERROR_WRITER_LOCATION
 
 Se recuperaron ubicaciones de escritura no descritas en las evidencias 49/53 ni en los apartados del índice hasta evidencia 69:
 
-- `ArchiveHelper.smali:1741` — escritura reportada de `BRItem.error`.
+- `ArchiveHelper.smali:1741` — grep reportado de `BRItem.error`, reconciliado con el writer `error=1` ya descrito en evidencia 27; no contar como writer adicional (evidencia 79).
 - `CompatibilityActivity$1.smali:144/152` — escrituras reportadas de `BRItem.state/error`.
 - `ProgressPageFragmentBase.smali:625` — escritura reportada de `BRItem.state`.
 - `BRService$6.smali:1557/2128/2495` — escrituras reportadas de `BRItem.state`; línea 2101 de `BRItem.error`.
@@ -1553,7 +1553,7 @@ Se preservan tres ubicaciones físicas adicionales reportadas en `BRService.smal
 
 **Clasificación:** ubicaciones de grep recuperadas de conversación; no se conserva aquí el cuerpo literal de esas instrucciones. No asignar campo, valor, condición o método concreto sin cotejar cada instrucción.
 
-**No duplicación:** evidencia 71 remite a evidencias 08/09/27/47/53/54/67/70 y no vuelve a documentar los métodos funcionales. La coordenada `ArchiveHelper.smali:1741` de evidencia 70 puede ser la misma escritura `error=1` ya descrita en evidencia 27; no contarla como un segundo writer hasta comparar el bloque exacto.
+**No duplicación:** evidencia 71 remite a evidencias 08/09/27/47/53/54/67/70 y no vuelve a documentar los métodos funcionales. La coordenada `ArchiveHelper.smali:1741` se reconcilió mediante recuperación histórica con la escritura `error=1` ya descrita en evidencia 27; no contarla como un segundo writer. Véase evidencia 79.
 
 
 ------------------------------------------------------------------------
@@ -1608,7 +1608,7 @@ Se recuperó contexto parcial adicional de dos bloques literales compartidos por
 - `BRService.smali` físico 14155–14178: recorrido de `Iterator`, cast de `p4` a `BRItem`, y escrituras `state=3` (14173) / `error=9` (14178) sobre ese objeto.
 - `BRService.smali` físico 16679–16715: `v10` es un `BRItem` del bloque de totales; una rama depende de `p6`; 16697 escribe `state` usando `v7=6`; después hay acumulación de tamaño y otra escritura `state` en 16710 desde `v7`, sin conservar el valor vigente en esa segunda escritura.
 
-No se recuperaron encabezados `.method` ni cuerpos completos. La búsqueda dirigida tampoco encontró el contexto de `ArchiveHelper.smali:1741` ni el fragmento de evidencia 27 con el que compararlo; esa posible duplicación permanece `UNKNOWN`. No contar 1741 como writer distinto.
+No se recuperaron encabezados `.method` ni cuerpos completos para los dos bloques BRService. La recuperación posterior sí reconcilió `ArchiveHelper.smali:1741` con el writer `error=1` de evidencia 27; no es un writer adicional. Véase evidencia 79. Esta conclusión es `RECOVERED-CHAT`, no `LOCAL-VERIFIED`.
 
 
 ------------------------------------------------------------------------
@@ -1650,3 +1650,14 @@ Se incorporó evidencia 78: [`78_BRSERVICE5_V8_CLUE_SEPARATION_FROM_BRSERVICE6.m
 La recuperación de conversaciones encontró un bloque literal previo de `BRService$5` donde `v8=1` si `mBakFilesType==2` y `v8=0` en caso contrario; en ese método se usa después como condición de ruta. Esta información no resuelve el writer distinto reportado en `BRService$6.smali:2101`, que escribe el registro local `v8` en `BRItem.error`. La coincidencia de nombre de registro entre clases internas no prueba continuidad de valor ni equivalencia semántica.
 
 **Erratum preventivo:** no transferir `v8=1/0` ni la condición `mBakFilesType==2` desde `BRService$5` a `BRService$6`. El valor efectivo de `BRService$6:2101` permanece desconocido; evidencia 76 sigue siendo la referencia de su estado pendiente. Evidencia 78 no añade writers ni convierte la pista histórica en verificación local.
+
+
+------------------------------------------------------------------------
+
+## 79. Reconciliación ArchiveHelper:1741 con el writer error=1 de evidencia 27 — 2026-11-21
+
+Se incorporó evidencia 79: [`79_ARCHIVEHELPER_1741_DUPLICATE_OF_EVIDENCE27.md`](evidence/2026-11-21/79_ARCHIVEHELPER_1741_DUPLICATE_OF_EVIDENCE27.md).
+
+La recuperación histórica aporta el encabezado del overload de siete argumentos de `ArchiveHelper.unzipFiles()` (línea física 1244), el alias `v1 <- p3` y el bloque `const/4 v0, 0x1` seguido de `iput v0, v1, ...BRItem;->error:I`, ya descrito en evidencia 27. El grep reportado en `ArchiveHelper.smali:1741` coincide con esa instrucción. La directiva fuente `.line 369` no debe confundirse con la coordenada física 1741.
+
+**Corrección del inventario:** `ArchiveHelper:1741` no es un writer adicional; es el writer `error=1` del overload de siete argumentos ya documentado. Evidencias 70 y 75 fueron actualizadas para retirar la duplicación y reemplazar su estado previo `UNKNOWN`. La reconciliación procede de historial de conversación, no de verificación local actual.
