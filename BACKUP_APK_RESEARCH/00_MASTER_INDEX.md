@@ -1704,3 +1704,15 @@ La recuperación del mensaje original del usuario del 2026-11-19T22:37:03Z prese
 El inventario también incluye 1508, 1529, 1549, 1557, 1997, 2101, 2105, 2120, 2128 y 2495, ya documentadas en distintas evidencias. No demuestra que las instrucciones pertenezcan a una misma rama ni que las lecturas de error alimenten el writer 2101. La definición y el valor efectivo de `v8` siguen abiertos.
 
 **Clasificación:** `USER-REPORTED-GREP / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+------------------------------------------------------------------------
+
+## 84. Pista de inicialización previa de v7 en ProgressPageFragmentBase — 2026-11-20
+
+Se incorporó evidencia 84: [`84_PROGRESSPAGE_INITUI_V7_PREINITIALIZATION_CLUE.md`](evidence/2026-11-20/84_PROGRESSPAGE_INITUI_V7_PREINITIALIZATION_CLUE.md).
+
+La recuperación de dos solicitudes del usuario del 2026-11-18 conserva que el rango físico 430–515 de `ProgressPageFragmentBase.smali`, identificado como `initUI()`, contiene `const/4 v7, 0x1`. Un rango posterior solicitado (580–700) contiene una lectura de `BRItem.state` y una escritura de state desde `v7`, con etiquetas y directivas `.line 324–343`. Evidencia 81 ya conservaba que en ese contexto se compara state con 6.
+
+Esto estrecha el valor candidato de `v7` a 1, pero no demuestra que no exista una redefinición de `v7` entre ambos rangos ni que el writer sea inequívocamente el grep físico 625. No declarar cerrada la transición `6→1`; falta recuperar el bloque continuo y cotejar encabezado, etiquetas y coordenadas.
+
+**Clasificación:** `RECOVERED-CHAT / USER-REPORTED-SOURCE-CONTEXT`; no `LOCAL-VERIFIED`.
