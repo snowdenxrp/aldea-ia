@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.69 --- inventario complementario de escritores BRItem\
+**Versión:** 0.70 --- coordenadas complementarias y corrección de duplicación\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1520,18 +1520,11 @@ El call site reportado en `BRService.smali` mueve `p1` a `v5` (`move-object v5, 
 
 ------------------------------------------------------------------------
 
-## 69. BRService.setState(IIII): normalización global de BRItem — 2026-11-21
+## 69. Erratum — BRService.setState(IIII) ya documentado — 2026-11-21
 
-Se incorporó evidencia 69: [`69_BRSERVICE_SETSTATE_GLOBAL_ITEM_NORMALIZATION.md`](evidence/2026-11-21/69_BRSERVICE_SETSTATE_GLOBAL_ITEM_NORMALIZATION.md).
+Se corrigió la atribución de evidencia 69: el resumen de `BRService.setState(IIII)V` **ya estaba preservado** en evidencia 47, §3.1, y evidencia 26, §§1 y 3. La primera versión de evidencia 69 lo presentó incorrectamente como un hallazgo nuevo. El archivo de evidencia 69 fue reemplazado por un erratum explícito que marca esa duplicación.
 
-La recuperación histórica del método privado `BRService.setState(IIII)V` (directivas `.line 3404–3427`) conserva el mapeo reportado `p1→mState`, `p2→mWorkingStage`, `p3→mUserInterruptAction` y `p4→mLastError` solo si el valor previo era 0. Bajo `mWorkingStage==10/12` o `mUserInterruptAction==2`, el método recorre `mBRItems` y asigna `BRItem.state=3,error=9`; con `mWorkingStage==7`, llama a `releaseWakeLock()`.
-
-**Clasificación probatoria:** resumen de extracción recuperado y confirmado contextualmente por el usuario; el cuerpo Smali literal íntegro no está preservado en esta consolidación. No elevar a `USER-PASTED-SOURCE` ni `LOCAL-VERIFIED`. Pendiente recuperar el cuerpo literal, wrapper `setState(III)`, callers y condiciones exactas del loop.
-
-**No duplicación:** este método no figuraba en la evidencia 53 ni en los apartados del índice hasta evidencia 68; aporta una ruta global distinta de las escrituras locales ya inventariadas.
-
-
-------------------------------------------------------------------------
+No contar `setState(IIII)`, su normalización `state=3,error=9`, la liberación de WakeLock en stage 7 ni su mapeo de parámetros como nuevos hallazgos de esta ronda. El pendiente real, si se requiere para una pregunta causal, es recuperar/cotejar el cuerpo Smali literal, wrapper `setState(III)` y callers; el resumen semántico ya existe.
 
 ## 70. Ubicaciones escritoras adicionales BRItem.state/error — 2026-11-21
 
@@ -1548,3 +1541,16 @@ Se recuperaron ubicaciones de escritura no descritas en las evidencias 49/53 ni 
 **Clasificación:** ubicaciones recuperadas de resúmenes grep/conversación, sin bloques Smali literales conservados aquí. Valores, condiciones, encabezados de método y causalidad permanecen pendientes. No se duplican FakeBackupListenerImp, ProgressItemAdapter ni MiAsistService, ya descritos en otras evidencias.
 
 La siguiente recuperación debe limitarse a los bloques de esas coordenadas, con encabezado/descriptor y ramas dominantes; no repetir búsquedas globales ni inferir valores a partir de otros escritores.
+
+
+------------------------------------------------------------------------
+
+## 71. Coordenadas complementarias BRItem.state/error — 2026-11-21
+
+Se incorporó evidencia 71: [`71_SUPPLEMENTAL_BRITEM_STATE_ERROR_COORDINATES.md`](evidence/2026-11-21/71_SUPPLEMENTAL_BRITEM_STATE_ERROR_COORDINATES.md).
+
+Se preservan tres ubicaciones físicas adicionales reportadas en `BRService.smali` (14173, 14178, 16697) que no aparecen en las evidencias 47/53; y siete referencias `iput/iget` de `BRItem.state/error` en `ProgressPageFragmentBase$ProgressItemAdapter.smali` (477, 582, 589, 1379, 1384, 1492, 1544). Estas últimas caen dentro de rangos ya inspeccionados y registrados en evidencia 09; no se debe repetir su extracción completa.
+
+**Clasificación:** ubicaciones de grep recuperadas de conversación; no se conserva aquí el cuerpo literal de esas instrucciones. No asignar campo, valor, condición o método concreto sin cotejar cada instrucción.
+
+**No duplicación:** evidencia 71 remite a evidencias 08/09/27/47/53/54/67/70 y no vuelve a documentar los métodos funcionales. La coordenada `ArchiveHelper.smali:1741` de evidencia 70 puede ser la misma escritura `error=1` ya descrita en evidencia 27; no contarla como un segundo writer hasta comparar el bloque exacto.
