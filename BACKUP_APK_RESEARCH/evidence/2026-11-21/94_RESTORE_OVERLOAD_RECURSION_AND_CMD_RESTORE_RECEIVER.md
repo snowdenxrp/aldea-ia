@@ -56,7 +56,7 @@ Se reporta que `BRService.onStartCommand()` reconoce `CMD_RESTORE` y, en esa ram
 - consulta `BRServiceDataHolder.getDescriptor()`;
 - determina `mDescriptorPath` a partir del descriptor o de `extra_descriptor_dir`.
 
-El fragmento compartido se interrumpe al comenzar la lectura de `extra_zip_file_path`. Por ello quedan sin recuperar el resto de la rama, el despacho hacia la ejecución de restauración, validaciones, tratamiento de errores y resultado final.
+La primera recuperación del fragmento se interrumpía al comenzar la lectura de `extra_zip_file_path`, pero un mensaje histórico posterior del usuario (2026-11-17T05:16:53Z) conserva una continuación hasta el despacho a `restoreFiles(...)`: lista no vacía → conversión `toArray()` y llamada con `BRItem[]`; lista vacía → llamada con null solo bajo condiciones específicas; en otro caso, log `restoreFiles brItems is null` y `setState(...)`. La lectura de `extra_zip_file_path` se ancla en físicas 19417–19426; las llamadas se ubican por directivas `.line 913` y `.line 915`, no por coordenadas físicas.
 
 ## Estado y límites
 
@@ -79,3 +79,15 @@ El fragmento compartido se interrumpe al comenzar la lectura de `extra_zip_file_
 No repetir el análisis de los hallazgos anteriores. El delta pendiente es recuperar el resto de `BRService.onStartCommand()` después de la lectura de `extra_zip_file_path`, identificar el método de ejecución alcanzado por `CMD_RESTORE`, y cotejar con Smali literal la sobrecarga de siete argumentos y los llamadores de cinco argumentos. Mantener separadas las dos rutas y no declarar vulnerabilidad ni restauración funcional sin demostrar la cadena completa.
 
 No se ejecutaron servicios, restauraciones ni pruebas dinámicas como parte de esta evidencia.
+
+
+## Addendum de corrección — continuación parcial de CMD_RESTORE (2026-11-21)
+
+La recuperación focalizada del mensaje del usuario del **2026-11-17T05:16:53Z** corrige el límite descrito arriba: el material histórico no terminaba al comenzar `extra_zip_file_path`. El bloque compartido continuaba hasta los despachos `restoreFiles(...)`:
+
+- La lista `extra_britems` no vacía se convierte a `BRItem[]` mediante `toArray` y se pasa a `restoreFiles(BRItem[], BackupDescriptor, int)`, con los registros reportados `v6` (descriptor) y `v3` (tipo).
+- Si la lista está vacía, se llama a `restoreFiles(null, v6, v3)` solo cuando `v3 == 3` o `mIsReStartCommand` es verdadero.
+- En el otro caso se registra literalmente `restoreFiles brItems is null` y se llama a `setState(...)`; los argumentos exactos de esa llamada no están recuperados.
+- La lectura de `extra_zip_file_path` se ancla en líneas físicas 19417–19426. Las llamadas a `restoreFiles` se reportaron bajo directivas Smali `.line 913` y `.line 915`; el log/error se reportó en `.line 915–918`. Estas directivas fuente no son coordenadas físicas.
+
+**Límites:** no se recuperó en esta ronda el texto Smali consecutivo íntegro, el comando exacto de extracción ni el rango físico completo posterior a 19426. No asignar números físicos a las directivas `.line`, no inventar argumentos de `setState`, y no confundir este despacho dentro de `onStartCommand` con el cuerpo independiente de `restoreFiles` (reportado alrededor de la física 12672). Clasificación `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
