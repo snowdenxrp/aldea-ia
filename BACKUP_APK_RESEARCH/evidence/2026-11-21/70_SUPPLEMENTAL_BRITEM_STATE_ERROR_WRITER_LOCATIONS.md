@@ -11,7 +11,7 @@
 
 | Archivo/clase | Coordenadas físicas reportadas | Campo | Qué se puede afirmar |
 |---|---:|---|---|
-| `ArchiveHelper.smali` | 1741 | `BRItem.error` | Se reportó una escritura del campo error. Valor, condición y método exacto pendientes de recuperar. |
+| `ArchiveHelper.smali` | 1741 | `BRItem.error` | Writer `error=1` del overload de siete argumentos ya descrito en evidencia 27; duplicado, no contar como writer adicional. Véase evidencia 79. |
 | `CompatibilityActivity$1.smali` | 144 | `BRItem.state` | Se reportó una escritura del campo state. Valor, condición y método exacto pendientes. |
 | `CompatibilityActivity$1.smali` | 152 | `BRItem.error` | Se reportó una escritura del campo error. Valor, condición y método exacto pendientes. |
 | `ProgressPageFragmentBase.smali` | 625 (coordenada ambigua) | `BRItem.state` | Grep reportado de `iput v7, v10`; conflicto con `.line 625` de un bloque UI. No tratar como línea física confirmada; véase evidencia 77. |
@@ -37,7 +37,7 @@ Estas coordenadas amplían el mapa de productores potenciales; no constituyen po
 4. Para `ProgressPageFragmentBase:625`, determinar si el objeto es un `BRItem` del modelo, una copia, o un objeto de presentación antes de integrarlo en el grafo causal.
 5. Mantener separados grep de ubicaciones, fuente literal, resumen histórico y observación runtime.
 
-**Resultado:** el inventario recupera ocho ubicaciones/clases adicionales de escritura de `BRItem.state/error` que no estaban descritas en las evidencias 49/53 ni en el índice v0.68. Se preservan como pistas de cobertura, no como semántica confirmada.
+**Resultado corregido por evidencia 79:** el inventario conserva ocho filas/coordenadas reportadas, pero `ArchiveHelper:1741` duplica el writer `error=1` ya descrito en evidencia 27. Por tanto, esta tabla no representa ocho writers adicionales únicos. Las demás filas conservan sus límites probatorios originales.
 
 ## 4. Actualización semántica — evidencia 76
 
