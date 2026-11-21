@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.98 --- bootstrap de listener Binder BRService\
+**Versión:** 0.99 --- alcance de autorización en IBRService Binder\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1916,3 +1916,17 @@ Se amplió la evidencia 96 con un delta histórico del lado servidor:
 **Delta real:** el registro de listener no solo conserva la referencia en `mRemoteCallbackList`; el contexto histórico reporta una notificación inmediata de estado al listener recién registrado. Los detalles generales de `MiAsistService$2` ya estaban preservados y no se duplican.
 
 **Procedencia:** `USER-FACT / RECOVERED-CHAT` del 16-11-2026; no bloque Smali literal recuperado en esta ronda ni `LOCAL-VERIFIED`. No se recuperaron los cuatro valores concretos enviados a `onServiceStateChange(IIII)`, ni semántica de sincronización o manejo de fallos. Véase evidencia 96, addendum “BRService Binder listener bootstrap”.
+
+------------------------------------------------------------------------
+
+## 98. Alcance de autorización visible en IBRService.Stub.onTransact — 2026-11-21
+
+La evidencia 96 incorpora una observación acotada del bloque `IBRService.Stub.onTransact` compartido directamente por el usuario el 16-11-2026:
+
+- El fragmento muestra `enforceInterface("com.miui.backup.service.IBRService")` y el despacho de las transacciones 1–14.
+- En las ramas visibles no se identificó una comprobación explícita adicional de UID o permisos del caller (`getCallingUid`, `checkCallingPermission`, `enforceCallingPermission` u otra equivalente).
+- `enforceInterface` valida el descriptor Binder; por sí solo no demuestra autorización por UID/permiso.
+
+**Límite de seguridad:** no equivale a demostrar acceso irrestricto ni una vulnerabilidad. La alcanzabilidad continúa condicionada por `exported`, obtención real del Binder, permisos, identidad de proceso, controles en métodos llamados y capas externas. La observación se limita al bloque compartido, no a todo el APK/framework.
+
+**Procedencia:** `USER-PASTED-SOURCE / DIRECT-CHAT`, no `LOCAL-VERIFIED` en esta ronda. Véase evidencia 96, addendum “alcance de la comprobación de identidad en IBRService.Stub.onTransact”.
