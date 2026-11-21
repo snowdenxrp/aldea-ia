@@ -1674,6 +1674,17 @@ La recuperación histórica reporta `iget BRItem.error` en 1997 y 2105, además 
 
 ------------------------------------------------------------------------
 
+## 82. Bloque literal parcial de la rama state en BRService$6 — 2026-11-20
+
+Se incorporó evidencia 82: [`82_BRSERVICE6_STATE_WRITER_LITERAL_BRANCH_CONTEXT.md`](evidence/2026-11-20/82_BRSERVICE6_STATE_WRITER_LITERAL_BRANCH_CONTEXT.md).
+
+La recuperación del mensaje literal del usuario del 2026-11-19T21:22:58Z añadió el bloque atribuido a líneas físicas 2110–2128: compara una cadena en `v0` con `BRItem.packageName` de `v11`; si `equals()` es verdadero, lee y conserva `BRItem.state`; si es falso, carga `1`; finalmente escribe el resultado en `BRItem.state`. Esto contextualiza las ramas del writer 2128, previamente resumidas en evidencia 76.
+
+**Límite:** no se recuperó el encabezado `.method` ni la definición previa de `v0`; no identificar todavía la cadena comparada como `files_for_backup`. El bloque no define `v8` ni resuelve el writer `BRItem.error` de 2101. Evidencia 80 mantiene abiertas las lecturas/escrituras vecinas y la causalidad entre error y state. Clasificación `USER-PASTED-SMALI / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+
+------------------------------------------------------------------------
+
 ## 81. Contexto histórico adicional ProgressPageFragmentBase — 2026-11-20
 
 Se incorporó evidencia 81: [`81_PROGRESSPAGEFRAGMENTBASE_RECOVERED_TRANSITION_CONTEXT.md`](evidence/2026-11-20/81_PROGRESSPAGEFRAGMENTBASE_RECOVERED_TRANSITION_CONTEXT.md).
