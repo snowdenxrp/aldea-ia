@@ -1901,3 +1901,18 @@ La recuperación dirigida por títulos de chats no devolvió cuerpos Smali origi
 La recuperación sí devolvió detalles de `IBRService.getBRItems()` (transacción 5) y `IBRService$Stub.asInterface()`; ambos se cotejaron como duplicados de evidencias 45 y 62 y no se registran como hallazgos nuevos.
 
 **Clasificación:** `RECOVERED-CHAT / CONTINUITY-ONLY`; no `LOCAL-VERIFIED`. Se mantienen abiertos los cinco objetivos y se registra esta ronda para evitar repetir búsquedas históricas idénticas. El addendum de evidencia 96 registra además contexto USER-FACT del 2026-11-16 sobre `IBRService.Stub.onTransact()` (descriptor, `enforceInterface`, IDs 1–14 y tipos Parcel) y el orden reportado del gate `MiAsistService.onStartCommand()`; no se recuperó código literal ni se atribuyó ese transporte a `TransFileService`. El mismo expediente añade el ciclo de vida caller-side de `TransFileService` desde `MiAsistService`: Intent explícito, `startService` + `bindService`, `connectToHost`/`acceptDevice`, unregister/unbind y cleanup en `onDestroy`; añade también preservación de `lastModified` durante unzip. Estos datos son USER-FACT/RECOVERED-CHAT, no el cuerpo ni el contrato Binder interno de `ITransFileService`.
+
+------------------------------------------------------------------------
+
+## 97. Bootstrap de listener Binder en BRService — 2026-11-21
+
+Se amplió la evidencia 96 con un delta histórico del lado servidor:
+
+- `BRService$1` extiende `IBRService$Stub`; su constructor conserva `this$0` e invoca el constructor del Stub.
+- `registerBRListener(IBRServiceListener)` agrega el listener a `mRemoteCallbackList` y, según el dato histórico recuperado, le envía inmediatamente `onServiceStateChange(IIII)` con el estado actual.
+- `BRService` conserva el Binder en `mBinder`, creado como `new BRService$1(this)`; `onBind()` devuelve esa referencia.
+- `MiAsistService` declara `mBRService`, `mBRServiceConnection` y `mBRServiceListener`; instancia la conexión como `new MiAsistService$2(this)`.
+
+**Delta real:** el registro de listener no solo conserva la referencia en `mRemoteCallbackList`; el contexto histórico reporta una notificación inmediata de estado al listener recién registrado. Los detalles generales de `MiAsistService$2` ya estaban preservados y no se duplican.
+
+**Procedencia:** `USER-FACT / RECOVERED-CHAT` del 16-11-2026; no bloque Smali literal recuperado en esta ronda ni `LOCAL-VERIFIED`. No se recuperaron los cuatro valores concretos enviados a `onServiceStateChange(IIII)`, ni semántica de sincronización o manejo de fallos. Véase evidencia 96, addendum “BRService Binder listener bootstrap”.
