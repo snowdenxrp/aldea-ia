@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.76 --- reconciliación de alias y procedencia de restore\
+**Versión:** 0.77 --- reconciliación de alias y procedencia de restore\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1626,3 +1626,16 @@ La recuperación dirigida de conversaciones anteriores añadió semántica a las
 - `BRService$7`, método `onZipFileSizeChanged(J,BRItem,String)`: en la rama verdadera de `mIsAborted`, líneas físicas 53/58 escriben state 3 y error 9 sobre el objeto `p3`.
 
 Evidencia 70 fue ampliada con una remisión a evidencia 76. Son semánticas recuperadas de conversación/grep del usuario; no `LOCAL-VERIFIED`. No se añadieron ubicaciones nuevas ni se infirió el valor de error en 2101.
+
+
+------------------------------------------------------------------------
+
+## 77. Procedencia CompatibilityActivity y ProgressPageFragmentBase — 2026-11-21
+
+Se incorporó evidencia 77: [`77_COMPATIBILITY_AND_PROGRESS_STATE_WRITER_PROVENANCE.md`](evidence/2026-11-21/77_COMPATIBILITY_AND_PROGRESS_STATE_WRITER_PROVENANCE.md).
+
+- `CompatibilityActivity$1.smali:144/152`: grep literal reportado de `iput p1, v1` a `BRItem.state/error`; el origen y valor de `p1` siguen desconocidos.
+- `ProgressPageFragmentBase.smali:625`: el grep reporta `iput v7, v10, BRItem.state`, pero un bloque literal conserva directiva `.line 625` para `getSuccessfulCount()` y composición de UI. El número puede ser línea física o directiva fuente; no equipararlos.
+- Se conserva por separado el resumen de `initUI()` donde un `BRItem.state==6` puede cambiar a 1. No se confirma que sea la misma instrucción física que el grep 625.
+
+Evidencia 70 fue corregida para marcar la coordenada ambigua. No se añaden writers ni se atribuye valor al `iput` sin cotejo.
