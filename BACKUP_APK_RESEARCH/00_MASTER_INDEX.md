@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.73 --- reconciliación de alias y procedencia de restore\
+**Versión:** 0.74 --- reconciliación de alias y procedencia de restore\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1584,3 +1584,14 @@ Una recuperación de mensajes literales del usuario permitió elevar tres coorde
 Las dos primeras instrucciones forman una pareja de escrituras en el fragmento recuperado; no se atribuye causa ni condición sin el método completo. La tercera no se afirma que opere sobre el mismo objeto. Clasificación: `USER-PASTED-SOURCE / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
 
 **Corrección de procedencia, no nuevas ubicaciones:** las coordenadas ya estaban en evidencia 71; evidencia 73 conserva el contenido literal parcial y corrige su clasificación. El índice v0.73 no cuenta estas ubicaciones por segunda vez.
+
+
+------------------------------------------------------------------------
+
+## 74. Erratum de coordenadas restoreStreamSplitApk en BRService$5 — 2026-11-21
+
+Se incorporó evidencia 74: [`74_RESTORESTREAMSPLITAPK_COORDINATE_PROVENANCE_ERRATUM.md`](evidence/2026-11-21/74_RESTORESTREAMSPLITAPK_COORDINATE_PROVENANCE_ERRATUM.md).
+
+La recuperación dirigida del historial no encontró el supuesto bloque literal físico 1653–1738 ni el `invoke` atribuido a 1683; esa referencia queda como síntesis histórica no verificada. Para 1899, evidencias 50/58 conservan una referencia de grep, pero no un invoke literal ni una coordenada física inequívoca. El usuario sí había compartido un fragmento físico 3445–3468 con directivas `.line 1898` y `.line 1899` asociadas a escrituras de estado y `progType`; esto no prueba un call site en esa posición.
+
+**Corrección:** no afirmar dos call sites, dos builds distintos ni que 1683/1899 sean coordenadas físicas comparables. Evidencia 72 fue corregida y enlaza a evidencia 74. Los cuerpos de `restoreStreamSplitApk` y métodos relacionados siguen pendientes.
