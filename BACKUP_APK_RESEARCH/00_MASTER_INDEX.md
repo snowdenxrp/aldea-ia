@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.03 --- coordenadas grep de writers BRService$11\
+**Versión:** 1.04 --- coordenadas recuperadas de MiAsistService$8\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1981,3 +1981,21 @@ La recuperación de la búsqueda literal del 2026-11-19T04:37:50Z conserva cinco
 **Delta frente a sección 22:** el tipo general de comportamiento (inicio con state 2 y manejo de error con state 3) ya estaba documentado; el inventario de sección 100 recogía referencias a `mBRItems`, no las coordenadas concretas de estas escrituras. Se añade solo la lista de coordenadas.
 
 **Procedencia y límites:** `USER-FACT / USER-REPORTED-GREP / RECOVERED-CHAT`, mensaje del usuario 2026-11-19T04:37:50Z. No se recuperó stdout original ni contexto Smali. No asignar método, valor, rama, elemento ni orden a las posiciones individuales; no afirmar exhaustividad ni `LOCAL-VERIFIED`. La línea 1589 corresponde aquí a `BRService$11.smali`, no a otros archivos. Véase evidencia 96, addendum “coordenadas grep de escrituras BRItem.state en BRService$11”.
+
+
+------------------------------------------------------------------------
+
+## 103. MiAsistService$8: coordenadas recuperadas de métodos y campos — 2026-11-21
+
+Se incorporó evidencia 103: [103_MIASSISTSERVICE8_COORDINATE_RECOVERY.md](evidence/2026-11-21/103_MIASSISTSERVICE8_COORDINATE_RECOVERY.md).
+
+La recuperación del chat “Reconstrucción de MiAsistService” (mensajes del usuario del 2026-11-16T21:06:49Z y continuación 21:07:00Z) conserva 18 anclas físicas reportadas en `MiAsistService$8.smali`:
+
+- 297: `updateAppBRItemSize`; 541: `loadFileBRItemByType`; 671: `updateItemTotalSize`.
+- 796/799/811/813: referencias a `mCurrentDate`; 827/867/869: referencias a `mCurrentRootPath`.
+- 959: `mTotalSize`; 1059/1061/1064: `loadAppBRItems` / `loadFileBRItems`.
+- 1132: `updateBakFilePath`; 1191: `mAllBRItems`; 1220–1347: progreso/notificación; la continuación en 1347 menciona `-$$Nest$fputmLastUpdateTime`.
+
+**Delta frente a sección 40:** la responsabilidad general y los nombres de métodos de `$8` ya estaban resumidos; no estaban preservadas estas coordenadas físicas concretas. Se añade únicamente el inventario de anclas.
+
+**Procedencia y límites:** `USER-PASTED-SMALI / RECOVERED-CHAT`, pero el contexto recuperado contiene líneas/anclas sueltas y referencias, no cuerpos completos ni encabezados `.method`. No atribuir ramas, valores, orden, efectos ni semántica de sincronización no conservados. No `LOCAL-VERIFIED`; no afirmar exhaustividad. Véase evidencia 103.
