@@ -11,7 +11,7 @@
 |---|---|---|
 | `RetransferUtils.restoreTransfering()` | No se recuperó el cuerpo completo. Se conserva únicamente la llamada reportada en `RetransferUtils.smali:154` a `BRService.restoreTransfering(Context, BackupDescriptor)`. | `UNKNOWN / NOT RECOVERABLE FROM AVAILABLE CONTEXT` |
 | `BRService.restoreTransfering(Context, BackupDescriptor)` | No se recuperó el cuerpo completo. Las ramas `brState==3` → `CMD_BACKUP` + `extra_is_retransfering=true` y `brState==4` → overload de cinco argumentos ya están en evidencias 57 y 94. | `PARTIAL / ALREADY PRESERVED` |
-| Continuación de `BRService.onStartCommand()` tras `extra_zip_file_path` | No se recuperaron instrucciones posteriores. El fragmento histórico sigue truncado al comenzar esa lectura. La descripción previa de extras, descriptor, `restoreFiles()` y caso de lista null ya está en evidencia 56 / sección 51. | `UNKNOWN / NOT RECOVERABLE FROM AVAILABLE CONTEXT` |
+| Continuación de `BRService.onStartCommand()` tras `extra_zip_file_path` | Se recuperó una continuación parcial del mensaje del usuario del 2026-11-17T05:16:53Z: lista no vacía → `toArray()` y `restoreFiles(BRItem[], v6, v3)`; lista vacía → `restoreFiles(null, v6, v3)` solo si `v3==3` o `mIsReStartCommand`; de otro modo log `restoreFiles brItems is null` y `setState(...)`. Física 19417–19426 para `extra_zip_file_path`; llamadas ancladas por `.line 913/915`. Falta el bloque consecutivo completo y el rango físico posterior. | `PARTIAL / RECOVERED-CHAT; NOT LOCAL-VERIFIED` |
 | `TransFileService` / `ITransFileService` Binder | No se recuperaron declaración de interfaz, Stub/Proxy, transaction IDs, `onTransact`, parcel marshalling ni cuerpos de transferencia. Se mantienen únicamente las anclas previas: manifest/proceso, `bindTransFileService` grep 709–738 y recepción de `ITransFileService` por `MiAsistService$4`; véanse evidencias 43/51 y 59. | `PARTIAL / BODY AND TRANSACTIONS UNKNOWN` |
 | `CompatibilityActivity$1` / `ProgressPageFragmentBase` | No apareció bloque literal adicional. Permanecen los greps reportados de `iput p1` a `BRItem.state/error` en CompatibilityActivity$1 y el writer reportado en ProgressPageFragmentBase, con ambigüedad de coordenadas físicas frente a `.line`. Evidencias 70, 77, 81 y 84 ya contienen el contexto disponible. | `UNKNOWN / NO NEW SOURCE BLOCK` |
 
@@ -28,7 +28,7 @@ Estos detalles pertenecen a `IBRService`, no prueban la estructura Binder de `Tr
 ## Procedencia y límites
 
 - Esta actualización registra el resultado de una recuperación de contexto histórico, no una nueva extracción del APK.
-- No se recuperó texto Smali literal nuevo para los cinco objetivos.
+- No se recuperó ningún bloque Smali íntegro nuevo para los cinco objetivos; sí se recuperaron anclas/instrucciones descritas de forma parcial para la continuación de `CMD_RESTORE`, sin transcripción consecutiva completa.
 - Los resúmenes de conversaciones anteriores no se elevan a `USER-PASTED-SOURCE` ni a `LOCAL-VERIFIED`.
 - Las coordenadas grep no se reinterpretan como bloques fuente; las directivas `.line` no se confunden con líneas físicas.
 - No se afirma que el historial completo haya sido inspeccionado: la recuperación disponible es parcial y no equivale a transcript íntegro.
@@ -39,7 +39,7 @@ Estos detalles pertenecen a `IBRService`, no prueban la estructura Binder de `Tr
 No repetir como tareas de recuperación ya ejecutadas en esta ronda:
 
 1. Buscar los cuerpos completos de ambos `restoreTransfering()` en los resúmenes históricos disponibles.
-2. Buscar la continuación de `CMD_RESTORE` después de `extra_zip_file_path` en los resúmenes históricos disponibles.
+2. La búsqueda histórica de la continuación de `CMD_RESTORE` después de `extra_zip_file_path` ya se ejecutó y produjo el resultado parcial registrado en evidencia 105; no repetirla. Falta cotejo local o recuperación del bloque fuente íntegro.
 3. Buscar la interfaz/Stub/Proxy de `TransFileService` en los resúmenes históricos disponibles.
 4. Buscar bloques literales de CompatibilityActivity$1 y ProgressPageFragmentBase en los resúmenes históricos disponibles.
 5. Volver a registrar los detalles de `IBRService.getBRItems()` y `Stub.asInterface()`, ya preservados en evidencias 45 y 62.
@@ -196,3 +196,18 @@ La recuperación de la búsqueda literal del 2026-11-19T04:37:50Z conserva cinco
 **Deduplicación:** ya se conocía que BRService$11 inicia items con `state=2` y maneja errores con `state=3` (índice sección 22). El inventario previo de sección 100/evidencia 96 enumeró referencias a `mBRItems`, no las cinco coordenadas de escrituras `state`. El delta aquí es únicamente la lista de coordenadas físicas asociadas al grep.
 
 **Procedencia y límites:** `USER-FACT / USER-REPORTED-GREP / RECOVERED-CHAT`, mensaje del usuario 2026-11-19T04:37:50Z. No se recuperó en esta ronda el stdout original ni los bloques Smali circundantes. Por ello, no se atribuye a cada coordenada un método, valor de estado, rama, elemento concreto ni orden de ejecución; tampoco se afirma que el grep sea exhaustivo. No `LOCAL-VERIFIED`. La coordenada 1589 se refiere aquí exclusivamente a `BRService$11.smali` y no debe confundirse con coordenadas de otros archivos/clases.
+
+
+## Addendum — continuación parcial de CMD_RESTORE recuperada (2026-11-21)
+
+**USER-FACT / RECOVERED-CHAT (mensaje del usuario 2026-11-17T05:16:53Z):** el bloque compartido de `BRService.onStartCommand()` continuaba después de la lectura de `extra_zip_file_path` hasta las llamadas a `restoreFiles(...)`. El usuario había compartido:
+
+- Lectura de `extra_zip_file_path` en físicas 19417–19426.
+- Si `extra_britems` no está vacío: conversión `ArrayList.toArray()` a `BRItem[]` y llamada `restoreFiles(BRItem[], v6, v3)`.
+- Si está vacío: llamada `restoreFiles(null, v6, v3)` únicamente cuando `v3==3` o `mIsReStartCommand`.
+- En otro caso: log literal `restoreFiles brItems is null` y llamada a `setState(...)`.
+- Directivas Smali asociadas a las llamadas: `.line 913` y `.line 915`; el tramo del log/error se reportó en `.line 915–918`.
+
+**Corrección:** queda reemplazada la afirmación previa de que el fragmento histórico se interrumpía al comenzar la lectura de `extra_zip_file_path`. Esa afirmación provenía de una recuperación incompleta y no debe repetirse.
+
+**Límites:** no se recuperó el texto Smali consecutivo completo ni el comando exacto de extracción; 19417–19426 solo ancla la lectura de `extra_zip_file_path`, no la extensión física de toda la continuación. Las directivas `.line` no son líneas físicas. No se conocen los argumentos exactos de `setState`. No confundir el despacho en `onStartCommand` con el cuerpo de `restoreFiles` reportado alrededor de física 12672. No `LOCAL-VERIFIED`.
