@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.85 --- ampliación de usos de v8 en BRService$5\
+**Versión:** 0.86 --- inventario ampliado de referencias v8 en BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1729,3 +1729,18 @@ La recuperación del mensaje original del usuario del 2026-11-20T23:28:05Z conse
 No se recuperó el bloque literal alrededor de 1235 ni de 1728. No se atribuye significado a `v35`, no se infiere el efecto de `:cond_2d` y no se afirma que esos usos estén controlados por las definiciones 119/124 sin cotejar el flujo completo.
 
 **Clasificación:** `USER-REPORTED-GREP / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+
+------------------------------------------------------------------------
+
+## 86. Inventario ampliado de referencias v8 en BRService$5 — 2026-11-21
+
+Se incorporó evidencia 86: [`86_BRSERVICE5_V8_ADDITIONAL_REFERENCE_INVENTORY.md`](evidence/2026-11-21/86_BRSERVICE5_V8_ADDITIONAL_REFERENCE_INVENTORY.md).
+
+La recuperación del mensaje del usuario del 2026-11-20T23:28:05Z amplía el grep de `BRService$5.smali` con referencias físicas reportadas en 2297, 2364, 2391 y 3807, además de 1235/1728 ya registradas en evidencia 85.
+
+La referencia 2364 se coteja con un bloque Smali literal previo (físico 2338–2364): después de leer `BRItem.feature` y `BRItem.error`, aparece `move/from16 v35, v8`, en el mismo fragmento que incluye una escritura `BRItem.state=6`. No fusionar esta coordenada con la copia reportada en 1235: son sitios distintos. El significado de `v35` y su consumidor posterior no están establecidos.
+
+Las referencias 2297, 2391 y 3807 permanecen como grep sin instrucción literal recuperada. Tampoco se recuperó el bloque alrededor de 1728 ni los efectos de `:cond_2d`. No se atribuye semántica a `v8/v35`, ni se demuestra que todas las referencias dependan de las definiciones 119/124.
+
+**Clasificación:** `USER-REPORTED-GREP / USER-PASTED-SMALI / RECOVERED-CHAT`; no `LOCAL-VERIFIED`. No se ejecutaron comandos locales.
