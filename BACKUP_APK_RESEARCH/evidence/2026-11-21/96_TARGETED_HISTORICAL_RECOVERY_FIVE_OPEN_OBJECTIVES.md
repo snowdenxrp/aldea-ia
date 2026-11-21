@@ -160,3 +160,17 @@ El inventario histórico posterior ubica callbacks/notificaciones de progreso en
 **No duplicación:** las etapas/error ya preservadas en el índice (incluidos `ERR_CONNECTED_FAILED`, `ERR_SEND_FAILED`, `ERR_RECEIVE_FAILED`, `STAGE_REMOTE_DISCONNECTED`, `STAGE_START_DESCRIPT_SENDED` y `STAGE_END_DESCRIPTOR_SENDED`) no se re-clasifican como hallazgos nuevos. Este addendum añade únicamente la asociación de $5 con recepción/selección del descriptor y la descripción resumida del callback $6.
 
 **Clasificación:** `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`. Timestamps de origen: 2026-11-16T16:46:59Z y 2026-11-16T18:06:58Z.
+
+
+## Addendum — inventario de referencias BRItems en callbacks y carga de UI (2026-11-21)
+
+**USER-FACT / RECOVERED-CHAT (2026-11-20T00:04:42Z):** una salida grep histórica reportó las siguientes referencias a `mBRItems`:
+
+- `BRService$11`: líneas físicas reportadas 69, 527, 594, 844, 916, 1122, 1296, 1666 y 1735.
+- `BRService$6`: líneas físicas reportadas 106, 259, 306, 569, 944, 952, 973, 1226, 1235, 1343, 1351, 1372, 3417, 3528, 3557 y 3746.
+
+La misma recuperación reportó que `ProgressPageFragmentBase$7$1` a `$7$7` llaman `IBRService.getBRItems()` y luego `ProgressItemAdapter.initData(BRItem[])` (rango Smali reportado 97–180); el bloque de `ProgressPageFragmentBase` contiene referencias de carga en 676–719. El índice ya conserva el contrato de `getBRItems()`, el caller de `MiAsistService` y la semántica de `initData()`; el delta aquí es el inventario nominal de siete callbacks UI y las coordenadas de referencias a `mBRItems` en las dos clases internas.
+
+**Límites:** grep reportado, no bloques Smali íntegros. Las coordenadas no permiten asignar por sí solas semántica de lectura/escritura, método, rama ni orden de ejecución. No inferir que cada callback de UI haga una llamada remota distinta, que se ejecuten los siete en una misma sesión, ni que las referencias `mBRItems` sean todas mutaciones. No duplicar las conclusiones de state/error ya documentadas para `BRService$6/$11`.
+
+**Clasificación:** `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
