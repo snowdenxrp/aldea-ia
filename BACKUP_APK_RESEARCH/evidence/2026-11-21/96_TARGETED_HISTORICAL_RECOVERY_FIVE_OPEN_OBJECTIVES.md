@@ -187,3 +187,12 @@ Una recuperación histórica focalizada del chat del 2026-11-19T04:43:51Z recupe
 **Deduplicación:** el índice sección 22 y las evidencias 08/15 ya conservaban que BRService$11 inicia items con `state=2`, gestiona errores con `state=3` y traduce códigos `p3` a `BRItem.error`. El inventario de referencias `mBRItems` en sección 100/evidencia 96 también ya estaba preservado. El delta de este addendum es la comprobación explícita de `checkRunningTaskIndex()`, el acceso mediante `mRunningItemIndex` y la notificación de progreso en `onRestoreProgress()`; no se vuelven a registrar los estados ni el mapping.
 
 **Procedencia y límites:** `USER-PASTED-SOURCE / RECOVERED-CHAT`, mensaje histórico del usuario fechado 2026-11-19T04:43:51Z. La recuperación disponible describe el contenido del bloque compartido, pero no adjunta aquí el Smali literal ni permite verificar las ramas completas, los argumentos de las notificaciones o el comportamiento cuando `checkRunningTaskIndex()` falla. No es `LOCAL-VERIFIED`; no inferir sincronización, exclusión mutua ni validez del índice fuera del guard reportado.
+
+
+## Addendum — coordenadas grep de escrituras BRItem.state en BRService$11 (2026-11-21)
+
+La recuperación de la búsqueda literal del 2026-11-19T04:37:50Z conserva cinco coordenadas físicas reportadas para escrituras de `BRItem.state` dentro de `BRService$11.smali`: **766, 863, 1141, 1589 y 1754**.
+
+**Deduplicación:** ya se conocía que BRService$11 inicia items con `state=2` y maneja errores con `state=3` (índice sección 22). El inventario previo de sección 100/evidencia 96 enumeró referencias a `mBRItems`, no las cinco coordenadas de escrituras `state`. El delta aquí es únicamente la lista de coordenadas físicas asociadas al grep.
+
+**Procedencia y límites:** `USER-FACT / USER-REPORTED-GREP / RECOVERED-CHAT`, mensaje del usuario 2026-11-19T04:37:50Z. No se recuperó en esta ronda el stdout original ni los bloques Smali circundantes. Por ello, no se atribuye a cada coordenada un método, valor de estado, rama, elemento concreto ni orden de ejecución; tampoco se afirma que el grep sea exhaustivo. No `LOCAL-VERIFIED`. La coordenada 1589 se refiere aquí exclusivamente a `BRService$11.smali` y no debe confundirse con coordenadas de otros archivos/clases.
