@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.80 --- vecindad BRService$6.error y reconciliación ArchiveHelper\
+**Versión:** 0.81 --- lectura BRItem.state en BRService$6:2120\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1669,4 +1669,4 @@ La recuperación histórica aporta el encabezado del overload de siete argumento
 
 Se incorporó evidencia 80: [`80_BRSERVICE6_ERROR_READ_WRITE_NEIGHBORHOOD.md`](evidence/2026-11-21/80_BRSERVICE6_ERROR_READ_WRITE_NEIGHBORHOOD.md).
 
-La recuperación histórica reporta `iget BRItem.error` en 1997 y 2105, entre el writer `iput v8, v11, ...BRItem.error` en 2101 y el writer de `BRItem.state` en 2128. Este delta conserva las coordenadas vecinas; no demuestra flujo de control ni que la lectura posterior consuma el valor escrito. El valor efectivo de `v8`, el método/descriptor y las ramas permanecen desconocidos. No transferir el significado de `v8` de `BRService$5` a `BRService$6` (evidencia 78).
+La recuperación histórica reporta `iget BRItem.error` en 1997 y 2105, además de `iget BRItem.state` en 2120, alrededor del writer `iput v8, v11, ...BRItem.error` en 2101 y el writer de `BRItem.state` en 2128. Este delta conserva las coordenadas vecinas; no demuestra flujo de control ni que la lectura posterior consuma el valor escrito. La lectura de state en 2120 tampoco prueba por sí sola la condición de la escritura de state en 2128. El valor efectivo de `v8`, el método/descriptor y las ramas permanecen desconocidos. No transferir el significado de `v8` de `BRService$5` a `BRService$6` (evidencia 78).
