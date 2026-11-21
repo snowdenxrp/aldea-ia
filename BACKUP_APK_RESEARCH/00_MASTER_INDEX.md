@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.67 --- alias de BRItem entre restoreLocalMediaFile y ArchiveHelper\
+**Versión:** 0.68 --- BRService.setState: normalización global de BRItem\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1516,3 +1516,16 @@ El call site reportado en `BRService.smali` mueve `p1` a `v5` (`move-object v5, 
 **Consecuencia estática limitada:** el helper puede mutar `error` en el mismo objeto sobre el que `restoreLocalMediaFile()` realiza las transiciones de `state`. En la rama descrita, `state=1,error=1` es una combinación posible si el helper asigna error 1 y el contenedor termina con state 1 sin limpiar el error. No se afirma que la combinación se haya observado en runtime ni que ocurra en todos los casos.
 
 **No duplicación:** las escrituras de `state/error` y el comportamiento del helper permanecen en evidencias 49 y 53; evidencia 68 conserva solo el alias explícito del call site y la consecuencia de propagación entre ambos métodos. Procedencia `USER-PASTED-SOURCE / DIRECT-CHAT`; no `LOCAL-VERIFIED`.
+
+
+------------------------------------------------------------------------
+
+## 69. BRService.setState(IIII): normalización global de BRItem — 2026-11-21
+
+Se incorporó evidencia 69: [`69_BRSERVICE_SETSTATE_GLOBAL_ITEM_NORMALIZATION.md`](evidence/2026-11-21/69_BRSERVICE_SETSTATE_GLOBAL_ITEM_NORMALIZATION.md).
+
+La recuperación histórica del método privado `BRService.setState(IIII)V` (directivas `.line 3404–3427`) conserva el mapeo reportado `p1→mState`, `p2→mWorkingStage`, `p3→mUserInterruptAction` y `p4→mLastError` solo si el valor previo era 0. Bajo `mWorkingStage==10/12` o `mUserInterruptAction==2`, el método recorre `mBRItems` y asigna `BRItem.state=3,error=9`; con `mWorkingStage==7`, llama a `releaseWakeLock()`.
+
+**Clasificación probatoria:** resumen de extracción recuperado y confirmado contextualmente por el usuario; el cuerpo Smali literal íntegro no está preservado en esta consolidación. No elevar a `USER-PASTED-SOURCE` ni `LOCAL-VERIFIED`. Pendiente recuperar el cuerpo literal, wrapper `setState(III)`, callers y condiciones exactas del loop.
+
+**No duplicación:** este método no figuraba en la evidencia 53 ni en los apartados del índice hasta evidencia 68; aporta una ruta global distinta de las escrituras locales ya inventariadas.
