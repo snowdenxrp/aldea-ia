@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.96 --- contexto adicional de Binder y gate MiAsist\
+**Versión:** 0.97 --- ciclo de vida TransFileService y ZIP metadata\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1900,4 +1900,4 @@ La recuperación dirigida por títulos de chats no devolvió cuerpos Smali origi
 
 La recuperación sí devolvió detalles de `IBRService.getBRItems()` (transacción 5) y `IBRService$Stub.asInterface()`; ambos se cotejaron como duplicados de evidencias 45 y 62 y no se registran como hallazgos nuevos.
 
-**Clasificación:** `RECOVERED-CHAT / CONTINUITY-ONLY`; no `LOCAL-VERIFIED`. Se mantienen abiertos los cinco objetivos y se registra esta ronda para evitar repetir búsquedas históricas idénticas. El addendum de evidencia 96 registra además contexto USER-FACT del 2026-11-16 sobre `IBRService.Stub.onTransact()` (descriptor, `enforceInterface`, IDs 1–14 y tipos Parcel) y el orden reportado del gate `MiAsistService.onStartCommand()`; no se recuperó código literal ni se atribuyó ese transporte a `TransFileService`.
+**Clasificación:** `RECOVERED-CHAT / CONTINUITY-ONLY`; no `LOCAL-VERIFIED`. Se mantienen abiertos los cinco objetivos y se registra esta ronda para evitar repetir búsquedas históricas idénticas. El addendum de evidencia 96 registra además contexto USER-FACT del 2026-11-16 sobre `IBRService.Stub.onTransact()` (descriptor, `enforceInterface`, IDs 1–14 y tipos Parcel) y el orden reportado del gate `MiAsistService.onStartCommand()`; no se recuperó código literal ni se atribuyó ese transporte a `TransFileService`. El mismo expediente añade el ciclo de vida caller-side de `TransFileService` desde `MiAsistService`: Intent explícito, `startService` + `bindService`, `connectToHost`/`acceptDevice`, unregister/unbind y cleanup en `onDestroy`; añade también preservación de `lastModified` durante unzip. Estos datos son USER-FACT/RECOVERED-CHAT, no el cuerpo ni el contrato Binder interno de `ITransFileService`.
