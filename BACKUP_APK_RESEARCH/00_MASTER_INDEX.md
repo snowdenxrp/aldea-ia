@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.90 --- contexto parcial de writers v10 en BRService$5\
+**Versión:** 0.91 --- referencias v10 y contexto de ramas BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1808,5 +1808,23 @@ La recuperación de mensajes del usuario del 2026-11-19 añade contexto parcial 
 Las escrituras de `state=v10` ya estaban en el inventario previo; no se cuentan como hallazgo nuevo. El delta es la relación local con las guardias y los writers de error. La procedencia/valor de `v10` permanece desconocida en ambos sitios.
 
 **Límites:** no se recuperó definición dominante de `v10`, método completo ni todas las condiciones. No se infiere un estado numérico. Clasificación `USER-REPORTED-GREP / USER-PASTED-SMALI / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 91. Referencias v10 y contexto de ramas BRService$5 — 2026-11-21
+
+Se incorporó evidencia 91: [`91_BRSERVICE5_V10_REFERENCE_AND_BRANCH_CONTEXT.md`](evidence/2026-11-21/91_BRSERVICE5_V10_REFERENCE_AND_BRANCH_CONTEXT.md).
+
+La recuperación de mensajes originales del usuario del 2026-11-19 amplía el inventario de `v10`:
+
+- Física 134: `const/4 v10, 0x3` (definición reportada; método y alcance no recuperados).
+- Física 1283: writer `state=v10` en rama `:cond_22`, descrita como aplicación Pad deshabilitada; contexto parcial incluye `:goto_12`, `if-eqz v0, :cond_22`, `.line 1560` y constantes previas `v4=0xa`, `v16=8/9`.
+- Física 1336: writer `state=v10` en rama `:cond_23`, descrita como paquete de sistema inexistente; guardia reportada `if-nez v14, :cond_23`; a continuación `error=v3`.
+- Física 1441: writer `state=v10` después de comprobaciones `isGMSAPP), descrita como GMS no instalado; a continuación `error=0xd`.
+- Físicas 1641/1675: `const/4 v10, 0x7`; física 1701: `if-nez v10, :cond_2c`; física 1781: `move-object v10, v4`.
+
+**Límites:** las escrituras 1283/1336/1441 ya estaban inventariadas; no son writers nuevos. No se recuperaron límites de método ni flujo continuo. No se demuestra que `v10=3` en 134 o `v10=7` en 1641/1675 alcance cualquiera de esas escrituras. El valor efectivo de `state` sigue sin resolverse. Clasificación `RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
 
 ------------------------------------------------------------------------
