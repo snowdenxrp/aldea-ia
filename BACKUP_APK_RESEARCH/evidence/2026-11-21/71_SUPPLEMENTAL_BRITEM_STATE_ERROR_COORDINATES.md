@@ -8,15 +8,15 @@
 
 ## 1. BRService.smali: coordenadas adicionales
 
-El usuario reportó las siguientes ubicaciones físicas dentro de `BRService.smali` como resultados del inventario de instrucciones `iput` relacionadas con `BRItem.state/error`:
+Las coordenadas físicas 14173, 14178 y 16697 fueron inicialmente recuperadas como grep. Una búsqueda posterior en conversaciones anteriores recuperó instrucciones Smali literales compartidas por el usuario:
 
-- 14173
-- 14178
-- 16697
+- 14173: `const/4 v0, 0x3` seguido de `iput v0, p4, ...BRItem;->state:I`.
+- 14178: `const/16 v0, 0x9` seguido de `iput v0, p4, ...BRItem;->error:I`.
+- 16697: `const/4 v7, 0x6` seguido de `iput v7, v10, ...BRItem;->state:I`.
 
-El expediente existente evidencia 53 ya documenta otros bloques de `BRService.smali`, entre ellos 12849–12956, 16787–16791, 16914–16917, 17153–17158, 17431–17436, y las propagaciones 6855–6862 y 7004–7009. Las coordenadas 14173, 14178 y 16697 no aparecen en la evidencia 53 ni en la evidencia 47, por lo que se preservan aquí como referencias adicionales del inventario.
+Por tanto, estas tres coordenadas se reclasifican como `USER-PASTED-SOURCE / RECOVERED-CHAT`, no meramente `USER-REPORTED-GREP`. Las dos primeras escriben `state=3` y `error=9` sobre el mismo registro objeto `p4` en el fragmento recuperado; la tercera escribe `state=6` sobre el objeto `v10`. No se conserva aquí el encabezado completo del método ni todas las ramas dominantes. Véase evidencia 73 para el registro literal y sus límites.
 
-**No asignar todavía** a cada coordenada un campo concreto (`state` o `error`), valor, método, registro fuente ni condición: el resumen recuperado no conserva las instrucciones literales que permitirían distinguirlos. No contar cada coordenada como un productor semántico distinto hasta cotejar el `iput` y el contexto del método.
+El expediente existente evidencia 53 ya documenta otros bloques de `BRService.smali`, entre ellos 12849–12956, 16787–16791, 16914–16917, 17153–17158, 17431–17436, y las propagaciones 6855–6862 y 7004–7009. No volver a contar 14173/14178/16697 como ubicaciones nuevas: evidencia 73 mejora su calidad probatoria.
 
 ## 2. ProgressItemAdapter: referencias adicionales dentro de rangos ya inspeccionados
 
