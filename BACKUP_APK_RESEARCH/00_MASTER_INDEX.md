@@ -1772,7 +1772,7 @@ La recuperación dirigida de mensajes originales del usuario del 2026-11-17T23:2
 
 - En el rango físico aproximado 3190–3345 (`.line 1861–1881`), `v8` fue descrito como índice de un bucle `ArrayList`; `v5` participa en `ZipFile.getEntry/getInputStream`, y el stream se asigna a `v7` antes de `copyFileFromStream`. Se reportaron handlers `:catch_b`/`:catch_c` y el log `"copyFileFromStream error"`.
 - En la región física aproximada 3578–3615 (`.line 1952–1953`), se recupera la rama de restauración fallida: `onError(...,6)` / `notifyItemTaskError(...,6)`, `onRestoreEnd()`, logs `"Restore failed, for : "` y `"bakFile = "`; con `v5 == null`, `BRItem.error=1` si `bakFile` existe y `10` si es null/no existe.
-- El resumen general de `error=1/10` y notificaciones ya constaba en la sección histórica del 18-11 y evidencia relacionada; no se cuenta como writer nuevo. La aportación específica es preservar timestamps/coordenadas y separar de forma explícita el uso de `v8) como índice local en la región ZIP.
+- El resumen general de `error=1/10` y notificaciones ya constaba en la sección histórica del 18-11 y evidencia relacionada; no se cuenta como writer nuevo. La aportación específica es preservar timestamps/coordenadas y separar de forma explícita el uso de `v8` como índice local en la región ZIP.
 
 **Límites:** esta recuperación no dispone del bloque Smali literal íntegro ni del método continuo. No demuestra que el `v5` descrito en la región ZIP conserve el valor hasta la región de error, ni permite transferir el significado de `v8` a otros offsets de `BRService$5`. Clasificación `RECOVERED-CHAT / USER-PASTED-SMALI`; no `LOCAL-VERIFIED`.
 
