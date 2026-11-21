@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.92 --- flujo ZIP, aborto y cierre BRService$5\
+**Versión:** 0.93 --- flujo ZIP, aborto y cierre BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1842,5 +1842,19 @@ La recuperación de mensajes originales del usuario del 2026-11-17T23:26:16Z y 2
 - El código 7 de notificación no se equipara a una escritura `BRItem.error=7` o `BRItem.state=7`. El aborto `error=9` es distinto de la rama posterior `v5==null` con `error=1/10` ya documentada en evidencia 88.
 
 **Límites:** son fragmentos/contextos recuperados del chat, no transcripción completa; no se recuperaron condiciones ni coordenadas físicas completas. El `v10=9` de esta rama no se conecta con los writers state `v10` 1283/1336/1441. Clasificación `USER-PASTED-SMALI / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 93. Recuperación cronológica parcial y límites de cobertura — 2026-11-21
+
+Se incorporó evidencia 93: [`93_CHRONOLOGICAL_RECOVERY_COVERAGE_LIMITS.md`](evidence/2026-11-21/93_CHRONOLOGICAL_RECOVERY_COVERAGE_LIMITS.md).
+
+La recuperación de memoria confirma el punto de continuidad `ProgressItemAdapter.updateInfoView()` y los ocho recursos pendientes (un plural `0x7f10000c` y siete strings `0x7f120...`). La semántica funcional ya estaba resumida; no se repitió el análisis ni se registró una nueva conclusión técnica.
+
+Se conserva la pauta de recuperación por intervalos consecutivos de 30 minutos desde `2026-11-19 18:56:55 UTC`. La recuperación disponible no contiene transcripciones completas ni demuestra cobertura íntegra de esos intervalos; por ello ninguno se marca como revisado. La ausencia en memoria resumida no prueba ausencia en el historial.
+
+**Clasificación:** `RECOVERED-CHAT / CONTINUITY-ONLY`; no `LOCAL-VERIFIED`. Continuar con mensajes originales y cotejo contra evidencias existentes, sin repetir extracciones de `updateInfoView()`.
 
 ------------------------------------------------------------------------
