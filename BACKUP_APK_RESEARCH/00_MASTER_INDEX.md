@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.65 --- BRService RestoreThread: origen literal de v8\
+**Versión:** 0.66 --- BRService RestoreThread: origen literal de v8\
 **Fecha de corte:** 2026-11-20\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1487,3 +1487,19 @@ La salida grep también muestra que `v16` se prueba después en 3878 y 3997, y p
 **Procedencia:** salida de Termux pegada por el usuario, `sed -n '90,124p' "$F"`, sesión 2026-11-20. No se recalculó hash del Smali local en esta sesión. Clasificación `USER-PASTED-LOCAL-SMALI / DIRECT-CHAT`; no runtime.
 
 **Siguiente delta:** seguir la escritura/origen de `mBakFilesType` y cotejar el código 8 con el método de notificación y recursos de error, evitando repetir la extracción ya conservada de la propagación de cierre.
+
+
+## 67. ProgressItemAdapter: initData(), getView() y updateInfoView() — 2026-11-20
+
+Se incorporó evidencia 67: [`67_PROGRESSITEMADAPTER_INITDATA_GETVIEW_UPDATEINFOVIEW.md`](evidence/2026-11-20/67_PROGRESSITEMADAPTER_INITDATA_GETVIEW_UPDATEINFOVIEW.md).
+
+Se preservó el resumen recibido de la extracción de `ProgressItemAdapter`:
+
+- `initData()`: reconstruye `mItems` conservando referencias a `BRItem`; estados 1/3/6 cuentan como finalizados y 1/6 como éxitos; para 1/6 puede recalcular `bakFileSize` y `completedSize`; SMS/contactos con `type==9` aportan `bakFileSize * 1000` a `mSuccessfulSize`; termina con `notifyDataSetChanged()`.
+- `getView()`: infla `0x7f0d00df`, configura vistas y `ViewHolder`, copia `pkg/feature`, usa `ProgressItem.title`, delega estado/error a `updateSingleItemUI()` e instala `AccessibilityDelegate`.
+- `updateInfoView()`: SMS/contactos para feature 1/2 muestran plural `0x7f10000c` usando `completedSize`; la regla general presenta porcentaje y, desde API 26, tamaño formateado de `BRItem.completedSize`, con tratamiento RTL/Bidi; la actualización requiere `ProgressPageFragmentBase.isAdded()`.
+- Matriz de representación reportada: state 0 carga; 1/6 éxito; 2/4/5/7/8 progreso; 3 error según `BRItem.error`.
+
+**Procedencia:** resumen de extracción directa trasladado por el usuario a chat, sin bloque Smali literal ni coordenadas físicas en el mensaje. Clasificación `USER-REPORTED-EXTRACTION-SUMMARY / DIRECT-CHAT`; no elevar a cotejo local independiente ni runtime.
+
+**Pendiente inmediato:** resolver plural `0x7f10000c` y strings `0x7f120142`, `0x7f12014d`, `0x7f120149`, `0x7f120150`, `0x7f12014f`, `0x7f120143`, `0x7f1203de`. No repetir extracción de `getView()`, `initData()` ni `updateSingleItemUI()`. Véase evidencia 67.
