@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.86 --- inventario ampliado de referencias v8 en BRService$5\
+**Versión:** 0.87 --- recuperación histórica de contexto literal BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1730,6 +1730,21 @@ No se recuperó el bloque literal alrededor de 1235 ni de 1728. No se atribuye s
 
 **Clasificación:** `USER-REPORTED-GREP / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
 
+
+------------------------------------------------------------------------
+
+## 87. Recuperación histórica de contexto literal BRService$5 — 2026-11-21
+
+Se incorporó evidencia 87: [`87_BRSERVICE5_HISTORICAL_LITERAL_CONTEXT_RECOVERY.md`](evidence/2026-11-21/87_BRSERVICE5_HISTORICAL_LITERAL_CONTEXT_RECOVERY.md).
+
+La recuperación de mensajes originales del usuario del 2026-11-17T23:20:47Z añade contexto literal parcial para dos referencias ya inventariadas en evidencia 85:
+
+- En torno a `BRService$5:1728`, `if-eqz v8, :cond_2d` aparece después de `:cond_2c` y del log `"Restore One, checked bak"`. El camino de caída comienza a construir un `File` usando `getTransTempBackupRootPath()` y el nombre `.tmp_bak_file`. El cuerpo de `:cond_2d` no se recuperó.
+- En torno a `BRService$5:1235`, se recupera el contexto parcial `:cond_1f` / `:goto_10` / `move/from16 v35, v8` / `goto/16 :goto_2f`; el contexto previo fue descrito como comparación de `packageName`, sin recuperar sus instrucciones completas.
+
+Mensajes separados del 2026-11-17T23:35:19Z–23:36:25Z también describen `:goto_21` con escritura `BRItem.error`, `:cond_39`/`:goto_22`, otra copia `v35 <- v8` en 1738 bajo `:cond_3c`, y notificaciones `notifyItemTaskError(...,7)` / `notifyItemTaskEnd()` cerca de 1753–1755. Debido a solapamientos y discrepancias de coordenadas/etiquetas, no se ensamblan con el extracto 1690–1750 como un único bloque continuo.
+
+**Límites:** no se recuperó el cuerpo de `:cond_2d`, no se demuestra que las definiciones 119/124 dominen el uso 1728, no se identifica el consumidor de `v35`, ni se resuelve definitivamente el significado de `v8`. Clasificación `USER-PASTED-SMALI / RECOVERED-CHAT`; no `LOCAL-VERIFIED`. Evidencias 85/86 no se duplican.
 
 ------------------------------------------------------------------------
 
