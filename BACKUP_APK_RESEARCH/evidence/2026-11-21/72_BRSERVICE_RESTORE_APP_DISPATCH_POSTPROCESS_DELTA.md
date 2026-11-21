@@ -4,20 +4,20 @@
 - Rama: `backup-apk-static-research-2026-11-19`
 - Alcance: preservar detalles adicionales recuperados sobre el bloque de despacho de aplicaciones y sus efectos posteriores.
 - Procedencia: conversación del usuario del 17-11-2026 y resúmenes de análisis recuperados de esa conversación.
-- Clasificación: `USER-REPORTED-EXTRACTION-ANCHOR` para el rango aproximado 1653–1738 y el call site reportado en 1683; `RECOVERED-CHAT / PRIOR-ASSISTANT-SUMMARY` para los efectos post-despacho cuyo bloque literal no se ha recuperado aquí.
+- Clasificación corregida por evidencia 74: el rango 1653–1738 y el invoke en 1683 son referencias de síntesis histórica no recuperadas como bloque literal en la búsqueda dirigida; no elevar a `USER-PASTED-SOURCE`. La referencia 1899 procede de grep/resumen y su sistema de coordenadas no está resuelto. Los efectos post-despacho siguen como `RECOVERED-CHAT / PRIOR-ASSISTANT-SUMMARY`.
 - No LOCAL-VERIFIED; no ejecución dinámica.
 
 ## 1. Ancla de extracción y coordenada discrepante
 
-El usuario había compartido salida Smali concreta de `BRService$5.smali` alrededor de las líneas físicas 1653–1738. La recuperación de conversación asocia dentro de ese rango una llamada a:
+La síntesis histórica consultada asocia el rango físico 1653–1738 con una llamada a:
 
 ```
 restoreStreamSplitApk(BRItem, ZipFile, InputStream)
 ```
 
-con call site reportado alrededor de la línea física 1683.
+con call site atribuido alrededor de 1683. Sin embargo, la búsqueda dirigida del historial no recuperó el bloque literal 1653–1738 ni el `invoke` correspondiente. Mantener 1683 como referencia histórica no verificada, no como call site confirmado.
 
-Las evidencias 50 y 58 conservan otra referencia de caller de `restoreStreamSplitApk` en `BRService$5.smali:1899`. No asumir que 1683 y 1899 son la misma instrucción ni que una referencia sustituye a la otra: pueden corresponder a call sites distintos o a coordenadas de extracciones/builds diferentes. La resolución requiere comparar descriptor, contexto del método y hash de archivo de cada extracción. No volver a pedir el bloque completo 1653–1738 si ya está en el historial; recuperar primero ese mensaje exacto.
+Las evidencias 50 y 58 conservan una referencia histórica de grep a `BRService$5.smali:1899`, pero no un `invoke` literal que confirme esa coordenada como línea física. El historial sí conserva otro fragmento literal en líneas físicas 3445–3468 donde `.line 1898` y `.line 1899` acompañan escrituras de estado y `progType`; esas directivas no son una llamada a `restoreStreamSplitApk`. No afirmar dos call sites, dos builds ni una discrepancia resuelta. Véase evidencia 74 para la separación de coordenadas físicas y directivas `.line`.
 
 ## 2. Efectos post-despacho recuperados
 
@@ -47,3 +47,6 @@ El resumen histórico de análisis atribuye al flujo posterior a la restauració
 5. Mantener la investigación estática y no ejecutar restore, tareas ADB, servicios ni operaciones sobre paquetes destino.
 
 **Resultado:** se preserva un delta histórico de los efectos posteriores al despacho de aplicaciones y una discrepancia de coordenadas 1683/1899 que debe resolverse con procedencia/hash. Los detalles de efectos permanecen como resumen de conversación, no fuente primaria literal.
+
+
+**Erratum de procedencia:** la evidencia 74 corrige la fuerza probatoria de las referencias 1683/1899. No se recuperó el supuesto bloque literal 1653–1738; 1683 permanece como atribución de síntesis histórica y 1899 como referencia grep con coordenada no resuelta.
