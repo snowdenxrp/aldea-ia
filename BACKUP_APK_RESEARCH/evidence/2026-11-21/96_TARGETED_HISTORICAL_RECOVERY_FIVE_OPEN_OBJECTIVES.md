@@ -141,3 +141,22 @@ La parte del callback `$2` y la descripción del constructor/`BRService$1` proce
 **No concluir:** no demuestra que las operaciones sean invocables por cualquier aplicación ni que exista una vulnerabilidad explotable. La accesibilidad sigue condicionada por la declaración `android:exported`, el mecanismo real de obtención del Binder, permisos de paquete/servicio, identidad de proceso y otras capas del sistema. Tampoco se afirma que no existan controles en los métodos llamados, en el servicio, en el framework o fuera del fragmento revisado.
 
 **Clasificación:** `USER-PASTED-SOURCE / DIRECT-CHAT` para el bloque compartido; observación limitada al fragmento. No `LOCAL-VERIFIED` en esta ronda.
+
+
+## Addendum — callbacks de transferencia y descriptor en MiAsistService$5/$6 (2026-11-21)
+
+### MiAsistService$5 — conexión y descriptor
+
+**USER-FACT / RECOVERED-CHAT (16-11-2026 16:46:59Z; referencias ampliadas 18:06:58Z):** la recuperación histórica atribuye a este callback que, después de establecerse la conexión, actualiza `mConnectionState`; participa en el envío del descriptor y en la transición a `STAGE_BRSERVICE_BR_START`; también procesa el descriptor seleccionado recibido en `STAGE_SELECT_DESCRIPT_RECEIVED`, usando `mBackupDescriptor`, `mReceivedItemFiles` y `mHandler`.
+
+El inventario histórico posterior ubica callbacks/notificaciones de progreso en líneas 155 y 181–195; llamadas a `setState` en 225, 314, 367, 528, 555, 578 y 745; recepción del descriptor en 675; rama de acción backup en 683–687; y archivos recibidos/uso de Handler en 769–778. Las etapas/error de conexión 221–225 y 310–314, las referencias 363–367, 526–528 y otros códigos ya están resumidos en el índice; aquí se preserva la relación descriptor/estado y el inventario de callbacks, no se vuelven a presentar como nuevos los códigos ya indexados.
+
+### MiAsistService$6 — callback de envío de descriptor
+
+**USER-FACT / RECOVERED-CHAT (16-11-2026 16:46:59Z; inventario ampliado 18:06:58Z):** el callback asociado a `sendAllBRItemsDescriptor()` consulta datos de fecha, tamaño, items, acción, etapa y error; espera/sincroniza con `mAppIconsLoadSyncer` y `mIsLoadAppIconsDone`; y participa en la invocación de `doSendFile(String)`. Ante un fallo, el resumen histórico reporta `STAGE_START_DESCRIPT_SENDING` junto con `ERR_WRITE_DESCRIPTOR`. Se reportan referencias a `sendAllBRItemsDescriptor()` y `doSendFile()` en líneas 8 y 185, y una llamada a `setState` en 245.
+
+**Límites:** la recuperación no conserva aquí el cuerpo Smali literal íntegro ni permite reconstruir el orden exacto de todas las lecturas, condiciones de espera, ramas de error o argumentos. No inferir que la espera sea bloqueo indefinido, que el descriptor se envíe íntegro en una sola operación, ni el protocolo de transporte. Las coordenadas se conservan como referencias históricas reportadas, no como verificación local actual.
+
+**No duplicación:** las etapas/error ya preservadas en el índice (incluidos `ERR_CONNECTED_FAILED`, `ERR_SEND_FAILED`, `ERR_RECEIVE_FAILED`, `STAGE_REMOTE_DISCONNECTED`, `STAGE_START_DESCRIPT_SENDED` y `STAGE_END_DESCRIPTOR_SENDED`) no se re-clasifican como hallazgos nuevos. Este addendum añade únicamente la asociación de $5 con recepción/selección del descriptor y la descripción resumida del callback $6.
+
+**Clasificación:** `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`. Timestamps de origen: 2026-11-16T16:46:59Z y 2026-11-16T18:06:58Z.
