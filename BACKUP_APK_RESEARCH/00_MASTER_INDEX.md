@@ -1858,3 +1858,22 @@ Se conserva la pauta de recuperación por intervalos consecutivos de 30 minutos 
 **Clasificación:** `RECOVERED-CHAT / CONTINUITY-ONLY`; no `LOCAL-VERIFIED`. Continuar con mensajes originales y cotejo contra evidencias existentes, sin repetir extracciones de `updateInfoView()`.
 
 ------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 94. Rutas de restauración de cinco y siete argumentos; recepción CMD_RESTORE — 2026-11-21
+
+Se incorporó evidencia 94: [`94_RESTORE_OVERLOAD_RECURSION_AND_CMD_RESTORE_RECEIVER.md`](evidence/2026-11-21/94_RESTORE_OVERLOAD_RECURSION_AND_CMD_RESTORE_RECEIVER.md).
+
+El resumen compartido por el usuario distingue dos rutas que no deben mezclarse:
+
+- La sobrecarga de cinco argumentos `startRestoreCommand(Context, ArrayList, BackupDescriptor, String, int)` se reporta como autorrecursiva: invoca la misma firma con los mismos argumentos y retorna solo después de esa llamada, sin condición de salida ni delegación a siete argumentos. Se reportan como llamadores `MiAsistService.startRestoreCommand()` y `BRService.restoreTransfering()` cuando `brState == 4`.
+- Se recupera un llamador adicional: `RetransferUtils.smali:154` → `BRService.restoreTransfering(Context, BackupDescriptor)`. Esto amplía la cadena de posibles entradas a la sobrecarga recursiva.
+- Existe una ruta independiente desde `ProgressPageFragmentBase$6.smali:275` que invoca directamente la sobrecarga de siete argumentos con datos recuperados de un Bundle y contexto de restauración.
+- La sobrecarga de siete argumentos prepara `CMD_RESTORE`, extras de descriptor/directorio/ZIP/tipo/lista y llama a `Context.startService(Intent)`; se reporta una condición adicional de inicio en primer plano en determinadas circunstancias de Android API 26+.
+- `BRService.onStartCommand()` reconoce `CMD_RESTORE` y recupera parte de sus extras y descriptor, pero el fragmento compartido termina al comenzar a leer `extra_zip_file_path`.
+
+**Límites y clasificación:** `USER-PASTED-SUMMARY / RECOVERED-CHAT`, no `LOCAL-VERIFIED`. No se recibió aquí el Smali literal completo para cotejo independiente. La ejecución efectiva, la equivalencia de ambas rutas, la accesibilidad externa y la autorización siguen sin demostrarse. No clasificar como vulnerabilidad.
+
+La evidencia 94 amplía la continuidad; no sustituye ni reanaliza los hallazgos previos de Binder, servicios o el flujo ZIP de `BRService$5`. La siguiente pieza útil es el resto de la rama `CMD_RESTORE` en `onStartCommand()` y el método de ejecución al que despacha.
+
