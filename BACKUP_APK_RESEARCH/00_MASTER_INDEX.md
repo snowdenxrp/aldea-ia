@@ -1692,3 +1692,15 @@ Se incorporó evidencia 81: [`81_PROGRESSPAGEFRAGMENTBASE_RECOVERED_TRANSITION_C
 La recuperación dirigida del historial añadió que una extracción literal descrita como líneas físicas 580–700 contenía, bajo directivas `.line 328–329`, una transición condicionada por `BRItem.state == 6` que escribe `state = v7`. El valor de `v7` no quedó identificado. No equiparar las directivas `.line 328–329` con las coordenadas físicas 618/625 ni concluir que ese writer sea el grep 625. Evidencias 70/77/80 mantienen abierto el cotejo físico y la relación entre la lectura de 618 y el writer 625.
 
 **Clasificación:** `RECOVERED-CHAT / USER-REPORTED-SOURCE-CONTEXT`; no `LOCAL-VERIFIED`. El vacío de `ProgressPageFragmentBase` permanece abierto.
+
+------------------------------------------------------------------------
+
+## 83. Ampliación del inventario BRService$6.error — 2026-11-20
+
+Se incorporó evidencia 83: [`83_BRSERVICE6_ERROR_READ_INVENTORY_EXPANSION.md`](evidence/2026-11-20/83_BRSERVICE6_ERROR_READ_INVENTORY_EXPANSION.md).
+
+La recuperación del mensaje original del usuario del 2026-11-19T22:37:03Z preserva el inventario de doce coordenadas de `BRService$6.smali`. Añade la lectura de `BRItem.error` reportada en la línea física 2518 y respalda directamente la lectura de la línea 1877, que antes se había recuperado solo mediante un resumen posterior.
+
+El inventario también incluye 1508, 1529, 1549, 1557, 1997, 2101, 2105, 2120, 2128 y 2495, ya documentadas en distintas evidencias. No demuestra que las instrucciones pertenezcan a una misma rama ni que las lecturas de error alimenten el writer 2101. La definición y el valor efectivo de `v8` siguen abiertos.
+
+**Clasificación:** `USER-REPORTED-GREP / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
