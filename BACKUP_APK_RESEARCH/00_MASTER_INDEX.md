@@ -1877,3 +1877,14 @@ El resumen compartido por el usuario distingue dos rutas que no deben mezclarse:
 
 La evidencia 94 amplía la continuidad; no sustituye ni reanaliza los hallazgos previos de Binder, servicios o el flujo ZIP de `BRService$5`. La siguiente pieza útil es el resto de la rama `CMD_RESTORE` en `onStartCommand()` y el método de ejecución al que despacha.
 
+
+
+------------------------------------------------------------------------
+
+## 95. Índice visual de títulos de chats recuperados — 2026-11-21
+
+Se incorporó evidencia 95: [95_CHAT_TITLE_INDEX_SCREENSHOT.md](evidence/2026-11-21/95_CHAT_TITLE_INDEX_SCREENSHOT.md).
+
+La captura compartida por el usuario aporta 14 títulos visibles relacionados con Binder/procesos, MiAsistService, Parcelable, BRService, unzipFiles, inventarios Smali, historial y códigos. Dos rótulos aparecen truncados o podrían ser texto del chat abierto: “Continuar investigación pendie…” y “Referencias v8”.
+
+**Límite:** los títulos son pistas de navegación, no evidencia técnica ni prueba de cobertura. No se atribuyen hallazgos a un chat por su nombre ni se infiere que la lista sea completa. Clasificación USER-PROVIDED-SCREENSHOT / CHAT-TITLE-INDEX; no LOCAL-VERIFIED.
