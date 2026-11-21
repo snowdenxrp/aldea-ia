@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.82 --- contexto histórico adicional ProgressPageFragmentBase\
+**Versión:** 0.84 --- inventario BRService$6 y pista v7 de ProgressPageFragmentBase\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
