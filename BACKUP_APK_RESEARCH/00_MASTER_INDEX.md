@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.02 --- guard y notificación de callbacks BRService$11\
+**Versión:** 1.03 --- coordenadas grep de writers BRService$11\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1972,3 +1972,12 @@ La recuperación histórica del chat del 2026-11-19T04:43:51Z añade precisión 
 **Qué no es nuevo:** la escritura de `state=2`, la gestión de `state=3`/errores y la traducción `p3→BRItem.error` ya estaban en sección 22/evidencias 08 y 15. Las referencias grep a `mBRItems` ya están en sección 100/evidencia 96. El delta aquí es el guard `checkRunningTaskIndex()`, el acceso indexado mediante `mRunningItemIndex` y la notificación de progreso.
 
 **Procedencia y límites:** `USER-PASTED-SOURCE / RECOVERED-CHAT`, mensaje histórico del usuario del 2026-11-19T04:43:51Z. No se recupera en esta ronda el bloque Smali literal ni se verifican las ramas completas, argumentos de notificación o conducta cuando el guard falla. No `LOCAL-VERIFIED`; no inferir sincronización ni exclusión mutua. Véase evidencia 96, addendum “BRService$11 start/progress callbacks”.
+
+
+## 102. BRService$11: coordenadas de escrituras state reportadas por grep — 2026-11-21
+
+La recuperación de la búsqueda literal del 2026-11-19T04:37:50Z conserva cinco coordenadas físicas reportadas para escrituras de `BRItem.state` en `BRService$11.smali`: **766, 863, 1141, 1589 y 1754**.
+
+**Delta frente a sección 22:** el tipo general de comportamiento (inicio con state 2 y manejo de error con state 3) ya estaba documentado; el inventario de sección 100 recogía referencias a `mBRItems`, no las coordenadas concretas de estas escrituras. Se añade solo la lista de coordenadas.
+
+**Procedencia y límites:** `USER-FACT / USER-REPORTED-GREP / RECOVERED-CHAT`, mensaje del usuario 2026-11-19T04:37:50Z. No se recuperó stdout original ni contexto Smali. No asignar método, valor, rama, elemento ni orden a las posiciones individuales; no afirmar exhaustividad ni `LOCAL-VERIFIED`. La línea 1589 corresponde aquí a `BRService$11.smali`, no a otros archivos. Véase evidencia 96, addendum “coordenadas grep de escrituras BRItem.state en BRService$11”.
