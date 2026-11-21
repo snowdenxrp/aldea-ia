@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.68 --- BRService.setState: normalización global de BRItem\
+**Versión:** 0.69 --- inventario complementario de escritores BRItem\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1529,3 +1529,22 @@ La recuperación histórica del método privado `BRService.setState(IIII)V` (dir
 **Clasificación probatoria:** resumen de extracción recuperado y confirmado contextualmente por el usuario; el cuerpo Smali literal íntegro no está preservado en esta consolidación. No elevar a `USER-PASTED-SOURCE` ni `LOCAL-VERIFIED`. Pendiente recuperar el cuerpo literal, wrapper `setState(III)`, callers y condiciones exactas del loop.
 
 **No duplicación:** este método no figuraba en la evidencia 53 ni en los apartados del índice hasta evidencia 68; aporta una ruta global distinta de las escrituras locales ya inventariadas.
+
+
+------------------------------------------------------------------------
+
+## 70. Ubicaciones escritoras adicionales BRItem.state/error — 2026-11-21
+
+Se incorporó evidencia 70: [`70_SUPPLEMENTAL_BRITEM_STATE_ERROR_WRITER_LOCATIONS.md`](evidence/2026-11-21/70_SUPPLEMENTAL_BRITEM_STATE_ERROR_WRITER_LOCATIONS.md).
+
+Se recuperaron ubicaciones de escritura no descritas en las evidencias 49/53 ni en los apartados del índice hasta evidencia 69:
+
+- `ArchiveHelper.smali:1741` — escritura reportada de `BRItem.error`.
+- `CompatibilityActivity$1.smali:144/152` — escrituras reportadas de `BRItem.state/error`.
+- `ProgressPageFragmentBase.smali:625` — escritura reportada de `BRItem.state`.
+- `BRService$6.smali:1557/2128/2495` — escrituras reportadas de `BRItem.state`; línea 2101 de `BRItem.error`.
+- `BRService$7.smali:53/58` — escrituras reportadas de `BRItem.state/error`.
+
+**Clasificación:** ubicaciones recuperadas de resúmenes grep/conversación, sin bloques Smali literales conservados aquí. Valores, condiciones, encabezados de método y causalidad permanecen pendientes. No se duplican FakeBackupListenerImp, ProgressItemAdapter ni MiAsistService, ya descritos en otras evidencias.
+
+La siguiente recuperación debe limitarse a los bloques de esas coordenadas, con encabezado/descriptor y ramas dominantes; no repetir búsquedas globales ni inferir valores a partir de otros escritores.
