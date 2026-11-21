@@ -131,3 +131,13 @@ El callback `MiAsistService$2.onServiceConnected()` ya está preservado en las s
 ### Límites probatorios
 
 La parte del callback `$2` y la descripción del constructor/`BRService$1` proceden de recuperación histórica y resúmenes; el dato de registro en `mRemoteCallbackList` y notificación inmediata se clasifica como `USER-FACT / RECOVERED-CHAT`, no como bloque Smali literal adjunto en esta ronda ni `LOCAL-VERIFIED`. No se infieren los cuatro argumentos concretos de `onServiceStateChange(IIII)`, la sincronización/orden interno del callback, el comportamiento ante excepción ni la política de eliminación de listeners muertos.
+
+## Addendum — alcance de la comprobación de identidad en IBRService.Stub.onTransact (2026-11-21)
+
+**USER-PASTED-SOURCE / DIRECT-CHAT (16-11-2026 17:03:00Z):** el usuario compartió el bloque de `IBRService.Stub.onTransact`. El fragmento recuperado muestra `enforceInterface("com.miui.backup.service.IBRService")` y el despacho de las transacciones 1–14. En las ramas visibles no se identificó una comprobación explícita adicional mediante `Binder.getCallingUid()`, `checkCallingPermission()`, `enforceCallingPermission()` u otra validación de UID/permiso del caller.
+
+**Alcance exacto:** esto registra únicamente la ausencia de esas comprobaciones explícitas en el bloque `onTransact` que el usuario compartió. `enforceInterface` valida el descriptor de interfaz; no equivale a una autorización por UID o permiso.
+
+**No concluir:** no demuestra que las operaciones sean invocables por cualquier aplicación ni que exista una vulnerabilidad explotable. La accesibilidad sigue condicionada por la declaración `android:exported`, el mecanismo real de obtención del Binder, permisos de paquete/servicio, identidad de proceso y otras capas del sistema. Tampoco se afirma que no existan controles en los métodos llamados, en el servicio, en el framework o fuera del fragmento revisado.
+
+**Clasificación:** `USER-PASTED-SOURCE / DIRECT-CHAT` para el bloque compartido; observación limitada al fragmento. No `LOCAL-VERIFIED` en esta ronda.
