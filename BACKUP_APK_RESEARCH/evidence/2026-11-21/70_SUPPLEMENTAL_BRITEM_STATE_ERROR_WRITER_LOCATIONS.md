@@ -50,3 +50,10 @@ La recuperación dirigida de conversaciones posteriores permitió añadir semán
 - `BRService$7:53/58`: en `onZipFileSizeChanged(J,BRItem,String)`, rama verdadera de `mIsAborted`, asigna state 3 y error 9 al objeto `p3`.
 
 Véase evidencia 76 para los límites probatorios y pendientes. La actualización no añade coordenadas ni convierte el resumen histórico en `LOCAL-VERIFIED`.
+
+
+## 5. Erratum de coordenada ProgressPageFragmentBase y CompatibilityActivity — evidencia 77
+
+La recuperación histórica encontró que `CompatibilityActivity$1:144/152` son grep reportados de `iput p1, v1` a `BRItem.state/error`, sin valor de `p1` ni contexto del método.
+
+Para `ProgressPageFragmentBase:625`, hay una ambigüedad de numeración: el grep reporta `iput v7, v10, BRItem.state`, mientras que un bloque Smali literal con directiva `.line 625` corresponde a `getSuccessfulCount()` y composición del resumen UI. No asumir que ambos números son coordenadas físicas comparables. Además, se conserva un resumen de `initUI()` donde un `BRItem.state==6` puede cambiar a `1`, pero no se confirma que sea el mismo iput reportado en la coordenada 625. Véase evidencia 77.
