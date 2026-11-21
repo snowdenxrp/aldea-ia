@@ -69,3 +69,38 @@ El usuario describió que `MiAsistService.onStartCommand()` valida, en ese orden
 El índice ya conservaba las anclas de `isActionParamsValid()`, `bindTransFileService()`, `isOwnerSpace()` y la delegación a BRService en evidencias 37, 51, 52 y 59; el delta aquí es la secuencia explícita del gate y la mención de `isBRServiceAvailable()`. No se recuperó el cuerpo de esos validadores ni el bloque continuo de `onStartCommand()`.
 
 **Clasificación:** `USER-FACT / RECOVERED-CHAT`; no `USER-PASTED-SOURCE` ni `LOCAL-VERIFIED`. Este addendum pertenece a `IBRService` y al gate de `MiAsistService`; no aporta interfaz, Stub/Proxy ni transaction IDs de `TransFileService/ITransFileService`.
+
+
+
+## Addendum — MiAsistService TransFileService lifecycle and ZIP metadata (2026-11-21)
+
+Una recuperación histórica adicional de mensajes del usuario del 16-11-2026 añadió contexto de ciclo de vida que no estaba explícito en el índice maestro:
+
+### Vinculación de TransFileService desde MiAsistService
+
+**USER-FACT / RECOVERED-CHAT (16-11-2026 17:59:27Z):**
+- `bindTransFileService()` construye un Intent explícito a `com.miui.backup.service.TransFileService`.
+- Ejecuta `startService()` y después `bindService(..., mTransServiceConnection, 1)`.
+- `unbindTransFileService()` llama `unregisterTransFileServiceListener(mTransListener)`, después `unbindService(...)`, y anula `mTransService`.
+- `startAsClientOrServer()` llama `ITransFileService.connectToHost(TransDeviceInfo)` para backup y `acceptDevice(TransDeviceInfo)` para restore. En la ruta de backup, después llama `prepareTransItemsSize()`. El método requiere `mTransService` enlazado.
+
+**USER-FACT / RECOVERED-CHAT (16-11-2026 18:12:12Z):**
+- `MiAsistService.onDestroy()` llama `ITransFileService.cancelSizeGetter()` y `stopAll(I)`.
+- `MiAsistService.onBind(Intent)` devuelve null; `onStartCommand()` valida el Intent, comprueba disponibilidad de BRService y llama a `bindTransFileService()`.
+
+**USER-FACT / RECOVERED-CHAT (16-11-2026 21:03:47Z):**
+- Campo `mTransService:ITransFileService`.
+- Campo `mTransListener:ITransFileServiceListener$Stub`.
+- El grep reportó bridges sintéticos `-$$Nest$mstartRestoreCommand()` y `startBackupCommand()` delegando a métodos privados; no son entradas externas independientes.
+
+**Manifest reportado (16-11-2026 18:00:50Z):** `TransFileService` aparece `android:exported="false"` y sin proceso explícito; `MiAsistService` aparece en proceso `:remote`. El índice ya conservaba la restricción exported=false para los tres servicios en sección 37; este addendum precisa el proceso reportado y la ausencia de atributo process en TransFileService. No deducir el proceso efectivo heredado sin el bloque `<application>` completo.
+
+### Límite Binder
+
+Estos datos describen cómo `MiAsistService` solicita y administra el servicio; **no** recuperan el cuerpo de `TransFileService`, la interfaz completa `ITransFileService`, Stub/Proxy, transaction IDs, `onTransact`, `readStrongBinder` ni el marshalling Parcel. No extrapolar las 14 transacciones de `IBRService` a `ITransFileService`.
+
+### ZIP: metadata de modificación
+
+**USER-FACT / RECOVERED-CHAT (19-11-2026 22:45:57Z):** el tramo final reportado de `ArchiveHelper.unzipFiles()` conserva `fileLastModifyTime` mediante `Utils.getModifyTimeByReceiveFileMap` / `setLastModified`, agrega `getAbsolutePath()` a la lista de salida `p6`, y ante `IOException` registra `"IOException continue next"` y continúa con la siguiente entrada. La evidencia 49 ya conservaba la lista de rutas absolutas y la continuación ante IOException; este addendum añade la restauración explícita de la fecha de modificación. No se recuperó aquí el bloque literal completo ni la condición exacta de obtención del timestamp.
+
+**Clasificación general:** `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`. No se han obtenido transaction IDs ni código fuente interno de TransFileService.
