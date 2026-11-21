@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.99 --- alcance de autorización en IBRService Binder\
+**Versión:** 1.00 --- callbacks de descriptor MiAsistService\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1930,3 +1930,17 @@ La evidencia 96 incorpora una observación acotada del bloque `IBRService.Stub.o
 **Límite de seguridad:** no equivale a demostrar acceso irrestricto ni una vulnerabilidad. La alcanzabilidad continúa condicionada por `exported`, obtención real del Binder, permisos, identidad de proceso, controles en métodos llamados y capas externas. La observación se limita al bloque compartido, no a todo el APK/framework.
 
 **Procedencia:** `USER-PASTED-SOURCE / DIRECT-CHAT`, no `LOCAL-VERIFIED` en esta ronda. Véase evidencia 96, addendum “alcance de la comprobación de identidad en IBRService.Stub.onTransact”.
+
+
+------------------------------------------------------------------------
+
+## 99. Callbacks de descriptor y transferencia en MiAsistService$5/$6 — 2026-11-21
+
+Se amplió la evidencia 96 con recuperación histórica de los callbacks:
+
+- **$5:** después de la conexión actualiza `mConnectionState`; participa en el envío del descriptor y transición a `STAGE_BRSERVICE_BR_START`; procesa el descriptor seleccionado recibido en `STAGE_SELECT_DESCRIPT_RECEIVED`, con referencias a `mBackupDescriptor`, `mReceivedItemFiles` y `mHandler`. Inventario de callbacks reportado: progreso/notificación 155 y 181–195; recepción de descriptor 675; acción backup 683–687; archivos recibidos/Handler 769–778; llamadas a `setState` en 225, 314, 367, 528, 555, 578 y 745.
+- **$6:** callback de `sendAllBRItemsDescriptor()`; consulta fecha, tamaño, items, acción, etapa y error; sincroniza/espera `mAppIconsLoadSyncer` y `mIsLoadAppIconsDone`; participa en `doSendFile(String)`. Ante fallo se reporta `STAGE_START_DESCRIPT_SENDING` + `ERR_WRITE_DESCRIPTOR`. Referencias reportadas a `sendAllBRItemsDescriptor()`/`doSendFile()` en 8/185 y `setState` en 245.
+
+**Delta:** se conserva la relación entre el callback $5 y la recepción/selección del descriptor, y el resumen funcional de $6 como callback de envío, sin duplicar códigos/etapas ya indexados.
+
+**Procedencia y límites:** `USER-FACT / RECOVERED-CHAT`, mensajes del 2026-11-16T16:46:59Z y 2026-11-16T18:06:58Z. No se recuperó en esta ronda el cuerpo Smali íntegro; coordenadas históricas reportadas, no `LOCAL-VERIFIED`. No se infiere el protocolo de transporte, la semántica exacta de la espera ni la atomicidad del envío. Véase evidencia 96, addendum “callbacks de transferencia y descriptor en MiAsistService$5/$6”.
