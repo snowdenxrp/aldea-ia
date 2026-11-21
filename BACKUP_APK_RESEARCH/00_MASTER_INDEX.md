@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.05 --- lecturas Bundle de ProgressPageFragmentBase$6\
+**Versión:** 1.06 --- continuación parcial de CMD_RESTORE recuperada\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1871,11 +1871,11 @@ El resumen compartido por el usuario distingue dos rutas que no deben mezclarse:
 - Se recupera un llamador adicional: `RetransferUtils.smali:154` → `BRService.restoreTransfering(Context, BackupDescriptor)`. Esto amplía la cadena de posibles entradas a la sobrecarga recursiva.
 - Existe una ruta independiente desde `ProgressPageFragmentBase$6.smali:275` que invoca directamente la sobrecarga de siete argumentos con datos recuperados de un Bundle y contexto de restauración.
 - La sobrecarga de siete argumentos prepara `CMD_RESTORE`, extras de descriptor/directorio/ZIP/tipo/lista y llama a `Context.startService(Intent)`; se reporta una condición adicional de inicio en primer plano en determinadas circunstancias de Android API 26+.
-- `BRService.onStartCommand()` reconoce `CMD_RESTORE` y recupera parte de sus extras y descriptor, pero el fragmento compartido termina al comenzar a leer `extra_zip_file_path`.
+- `BRService.onStartCommand()` reconoce `CMD_RESTORE` y recupera parte de sus extras y descriptor, pero la recuperación inicial se interrumpía al comenzar a leer `extra_zip_file_path`, pero el mensaje histórico del usuario del 2026-11-17T05:16:53Z conserva continuación hasta `restoreFiles(...)`: lista no vacía → `toArray()` y `restoreFiles(BRItem[], v6, v3)`; lista vacía → `restoreFiles(null, v6, v3)` solo si `v3==3` o `mIsReStartCommand`; de otro modo log `restoreFiles brItems is null` y `setState(...)`. Física 19417–19426 ancla la lectura de ZIP; `.line 913/915` ancla las llamadas, no líneas físicas.
 
 **Límites y clasificación:** `USER-PASTED-SUMMARY / RECOVERED-CHAT`, no `LOCAL-VERIFIED`. No se recibió aquí el Smali literal completo para cotejo independiente. La ejecución efectiva, la equivalencia de ambas rutas, la accesibilidad externa y la autorización siguen sin demostrarse. No clasificar como vulnerabilidad.
 
-La evidencia 94 amplía la continuidad; no sustituye ni reanaliza los hallazgos previos de Binder, servicios o el flujo ZIP de `BRService$5`. La siguiente pieza útil es el resto de la rama `CMD_RESTORE` en `onStartCommand()` y el método de ejecución al que despacha.
+La evidencia 94 amplía la continuidad; no sustituye ni reanaliza los hallazgos previos de Binder, servicios o el flujo ZIP de `BRService$5`. La continuación parcial de `CMD_RESTORE` se corrigió en evidencia 105; no repetir la búsqueda histórica del mismo bloque. Falta el cotejo local y la recuperación del texto fuente íntegro.
 
 
 
@@ -1896,7 +1896,7 @@ La captura compartida por el usuario aporta 14 títulos visibles relacionados co
 
 Se incorporó evidencia 96: [96_TARGETED_HISTORICAL_RECOVERY_FIVE_OPEN_OBJECTIVES.md](evidence/2026-11-21/96_TARGETED_HISTORICAL_RECOVERY_FIVE_OPEN_OBJECTIVES.md).
 
-La recuperación dirigida por títulos de chats no devolvió cuerpos Smali originales nuevos para `RetransferUtils.restoreTransfering()`, `BRService.restoreTransfering(Context, BackupDescriptor)`, la continuación de `BRService.onStartCommand()` tras `extra_zip_file_path`, la interfaz/Stub/Proxy de `TransFileService`, ni los bloques de `CompatibilityActivity$1` y `ProgressPageFragmentBase`.
+La recuperación dirigida no devolvió cuerpos completos para `RetransferUtils.restoreTransfering()`, `BRService.restoreTransfering(Context, BackupDescriptor)`, `TransFileService/ITransFileService`, `CompatibilityActivity$1` ni `ProgressPageFragmentBase`. Para `BRService.onStartCommand()` sí se recuperó una continuación parcial de `CMD_RESTORE` posterior a `extra_zip_file_path` (evidencia 105); no se recuperó el bloque consecutivo íntegro.
 
 La recuperación sí devolvió detalles de `IBRService.getBRItems()` (transacción 5) y `IBRService$Stub.asInterface()`; ambos se cotejaron como duplicados de evidencias 45 y 62 y no se registran como hallazgos nuevos.
 
@@ -2012,3 +2012,22 @@ La recuperación del mensaje del usuario del 2026-11-17T03:27:35Z añade detalle
 **Delta frente a sección 94:** se precisan claves, métodos de lectura, ventana física y registros; no se vuelve a registrar la llamada de siete argumentos como hallazgo nuevo.
 
 **Límites:** no se recuperó el bloque íntegro ni el encabezado `.method`; faltan valores completos, orden de instrucciones y condiciones. No confundir física 275 con `.line 1187`, ni reconstruir la invocación o inferir semántica de registros. Clasificación `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`. El estado de ejecución efectiva sigue PENDIENTE.
+
+
+------------------------------------------------------------------------
+
+## 105. BRService.onStartCommand: continuación parcial de CMD_RESTORE — 2026-11-21
+
+Se incorporó evidencia 105: [105_CMD_RESTORE_CONTINUATION_PARTIAL_RECOVERY.md](evidence/2026-11-21/105_CMD_RESTORE_CONTINUATION_PARTIAL_RECOVERY.md).
+
+La recuperación del mensaje del usuario del 2026-11-17T05:16:53Z corrige el límite previo de evidencia 94/96: el bloque histórico de `BRService.onStartCommand()` continuaba después de leer `extra_zip_file_path` hasta los despachos a `restoreFiles(...)`:
+
+- `extra_zip_file_path`: ancla física reportada 19417–19426.
+- `extra_britems` no vacío: `ArrayList.toArray()` produce `BRItem[]` y se llama `restoreFiles(BRItem[], v6, v3)`.
+- Lista vacía: `restoreFiles(null, v6, v3)` solo si `v3==3` o `mIsReStartCommand`.
+- Lista vacía sin esas condiciones: log literal `restoreFiles brItems is null` y llamada a `setState(...)`.
+- Las llamadas se asocian a directivas `.line 913` y `.line 915`; el log/error a `.line 915–918`. No son coordenadas físicas.
+
+**Corrección de estado:** ya no es correcto afirmar que la continuación se corta al comenzar `extra_zip_file_path`. La continuación está recuperada parcialmente, no íntegramente.
+
+**Límites:** no se recuperó el bloque Smali consecutivo completo, el comando de extracción ni el rango físico posterior a 19426; tampoco los argumentos exactos de `setState`. No confundir con el cuerpo independiente `restoreFiles(...)` reportado alrededor de física 12672. Clasificación `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
