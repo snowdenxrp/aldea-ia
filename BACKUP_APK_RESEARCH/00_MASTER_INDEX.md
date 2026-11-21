@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.84 --- inventario BRService$6 y pista v7 de ProgressPageFragmentBase\
+**Versión:** 0.85 --- ampliación de usos de v8 en BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1716,3 +1716,16 @@ La recuperación de dos solicitudes del usuario del 2026-11-18 conserva que el r
 Esto estrecha el valor candidato de `v7` a 1, pero no demuestra que no exista una redefinición de `v7` entre ambos rangos ni que el writer sea inequívocamente el grep físico 625. No declarar cerrada la transición `6→1`; falta recuperar el bloque continuo y cotejar encabezado, etiquetas y coordenadas.
 
 **Clasificación:** `RECOVERED-CHAT / USER-REPORTED-SOURCE-CONTEXT`; no `LOCAL-VERIFIED`.
+
+
+------------------------------------------------------------------------
+
+## 85. Sitios adicionales de uso de v8 en BRService$5.run() — 2026-11-21
+
+Se incorporó evidencia 85: [`85_BRSERVICE5_V8_ADDITIONAL_USE_SITES.md`](evidence/2026-11-20/85_BRSERVICE5_V8_ADDITIONAL_USE_SITES.md).
+
+La recuperación del mensaje original del usuario del 2026-11-20T23:28:05Z conserva el grep de referencias a `v8` en `BRService$5.smali`: definiciones en 119/124 y usos en 1051, 1235 (`move/from16 v35, v8`) y 1728 (`if-eqz v8, :cond_2d`). Las definiciones 119/124 y el uso 1051 ya estaban documentados en evidencias 65/66; el delta nuevo son las coordenadas 1235 y 1728.
+
+No se recuperó el bloque literal alrededor de 1235 ni de 1728. No se atribuye significado a `v35`, no se infiere el efecto de `:cond_2d` y no se afirma que esos usos estén controlados por las definiciones 119/124 sin cotejar el flujo completo.
+
+**Clasificación:** `USER-REPORTED-GREP / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
