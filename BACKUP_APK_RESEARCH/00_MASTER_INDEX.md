@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.79 --- deduplicación ArchiveHelper y procedencia v8\
+**Versión:** 0.80 --- vecindad BRService$6.error y reconciliación ArchiveHelper\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1661,3 +1661,12 @@ Se incorporó evidencia 79: [`79_ARCHIVEHELPER_1741_DUPLICATE_OF_EVIDENCE27.md`]
 La recuperación histórica aporta el encabezado del overload de siete argumentos de `ArchiveHelper.unzipFiles()` (línea física 1244), el alias `v1 <- p3` y el bloque `const/4 v0, 0x1` seguido de `iput v0, v1, ...BRItem;->error:I`, ya descrito en evidencia 27. El grep reportado en `ArchiveHelper.smali:1741` coincide con esa instrucción. La directiva fuente `.line 369` no debe confundirse con la coordenada física 1741.
 
 **Corrección del inventario:** `ArchiveHelper:1741` no es un writer adicional; es el writer `error=1` del overload de siete argumentos ya documentado. Evidencias 70 y 75 fueron actualizadas para retirar la duplicación y reemplazar su estado previo `UNKNOWN`. La reconciliación procede de historial de conversación, no de verificación local actual.
+
+
+------------------------------------------------------------------------
+
+## 80. Vecindad BRService$6.error: lecturas 1997/2105 y writers 2101/2128 — 2026-11-21
+
+Se incorporó evidencia 80: [`80_BRSERVICE6_ERROR_READ_WRITE_NEIGHBORHOOD.md`](evidence/2026-11-21/80_BRSERVICE6_ERROR_READ_WRITE_NEIGHBORHOOD.md).
+
+La recuperación histórica reporta `iget BRItem.error` en 1997 y 2105, entre el writer `iput v8, v11, ...BRItem.error` en 2101 y el writer de `BRItem.state` en 2128. Este delta conserva las coordenadas vecinas; no demuestra flujo de control ni que la lectura posterior consuma el valor escrito. El valor efectivo de `v8`, el método/descriptor y las ramas permanecen desconocidos. No transferir el significado de `v8` de `BRService$5` a `BRService$6` (evidencia 78).
