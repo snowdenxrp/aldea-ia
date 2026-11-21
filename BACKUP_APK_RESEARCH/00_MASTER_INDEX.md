@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.91 --- referencias v10 y contexto de ramas BRService$5\
+**Versión:** 0.92 --- flujo ZIP, aborto y cierre BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1826,5 +1826,21 @@ La recuperación de mensajes originales del usuario del 2026-11-19 amplía el in
 - Físicas 1641/1675: `const/4 v10, 0x7`; física 1701: `if-nez v10, :cond_2c`; física 1781: `move-object v10, v4`.
 
 **Límites:** las escrituras 1283/1336/1441 ya estaban inventariadas; no son writers nuevos. No se recuperaron límites de método ni flujo continuo. No se demuestra que `v10=3` en 134 o `v10=7` en 1641/1675 alcance cualquiera de esas escrituras. El valor efectivo de `state` sigue sin resolverse. Clasificación `RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 92. Flujo ZIP, aborto y cierre BRService$5 — 2026-11-21
+
+Se incorporó evidencia 92: [`92_BRSERVICE5_ZIP_LOOP_ABORT_AND_CLOSE_CONTEXT.md`](evidence/2026-11-21/92_BRSERVICE5_ZIP_LOOP_ABORT_AND_CLOSE_CONTEXT.md).
+
+La recuperación de mensajes originales del usuario del 2026-11-17T23:26:16Z y 23:26:48Z amplía el flujo descrito en evidencia 88:
+
+- En las directivas fuente `.line 1861–1873` se reportan `const/4 v7, 0x0`, `const/4 v8, 0x0`, etiqueta `:goto_32`, iteración con `v8`, y una ruta de aborto que carga `v10=9` y escribe `BRItem.error=9`.
+- En `.line 1881–1900` se reportan `:goto_33`, log `"copyFileFromStream error"`, incremento de `v8` y retorno a `:goto_32`; el cierre fallido y la lista restaurada vacía conducen a notificaciones con código 7. En el contexto de cierre se reportan `BRItem.state=1` y `progType=0`.
+- El código 7 de notificación no se equipara a una escritura `BRItem.error=7` o `BRItem.state=7`. El aborto `error=9` es distinto de la rama posterior `v5==null` con `error=1/10` ya documentada en evidencia 88.
+
+**Límites:** son fragmentos/contextos recuperados del chat, no transcripción completa; no se recuperaron condiciones ni coordenadas físicas completas. El `v10=9` de esta rama no se conecta con los writers state `v10` 1283/1336/1441. Clasificación `USER-PASTED-SMALI / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
 
 ------------------------------------------------------------------------
