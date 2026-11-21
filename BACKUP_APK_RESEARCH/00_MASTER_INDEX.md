@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.81 --- lectura BRItem.state en BRService$6:2120\
+**Versión:** 0.82 --- contexto histórico adicional ProgressPageFragmentBase\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1670,3 +1670,14 @@ La recuperación histórica aporta el encabezado del overload de siete argumento
 Se incorporó evidencia 80: [`80_BRSERVICE6_ERROR_READ_WRITE_NEIGHBORHOOD.md`](evidence/2026-11-21/80_BRSERVICE6_ERROR_READ_WRITE_NEIGHBORHOOD.md).
 
 La recuperación histórica reporta `iget BRItem.error` en 1997 y 2105, además de `iget BRItem.state` en 2120, alrededor del writer `iput v8, v11, ...BRItem.error` en 2101 y el writer de `BRItem.state` en 2128. Este delta conserva las coordenadas vecinas; no demuestra flujo de control ni que la lectura posterior consuma el valor escrito. La lectura de state en 2120 tampoco prueba por sí sola la condición de la escritura de state en 2128. El valor efectivo de `v8`, el método/descriptor y las ramas permanecen desconocidos. No transferir el significado de `v8` de `BRService$5` a `BRService$6` (evidencia 78).
+
+
+------------------------------------------------------------------------
+
+## 81. Contexto histórico adicional ProgressPageFragmentBase — 2026-11-20
+
+Se incorporó evidencia 81: [`81_PROGRESSPAGEFRAGMENTBASE_RECOVERED_TRANSITION_CONTEXT.md`](evidence/2026-11-20/81_PROGRESSPAGEFRAGMENTBASE_RECOVERED_TRANSITION_CONTEXT.md).
+
+La recuperación dirigida del historial añadió que una extracción literal descrita como líneas físicas 580–700 contenía, bajo directivas `.line 328–329`, una transición condicionada por `BRItem.state == 6` que escribe `state = v7`. El valor de `v7` no quedó identificado. No equiparar las directivas `.line 328–329` con las coordenadas físicas 618/625 ni concluir que ese writer sea el grep 625. Evidencias 70/77/80 mantienen abierto el cotejo físico y la relación entre la lectura de 618 y el writer 625.
+
+**Clasificación:** `RECOVERED-CHAT / USER-REPORTED-SOURCE-CONTEXT`; no `LOCAL-VERIFIED`. El vacío de `ProgressPageFragmentBase` permanece abierto.
