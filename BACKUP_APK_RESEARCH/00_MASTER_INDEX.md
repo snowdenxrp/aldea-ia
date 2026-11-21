@@ -1888,3 +1888,16 @@ Se incorporó evidencia 95: [95_CHAT_TITLE_INDEX_SCREENSHOT.md](evidence/2026-11
 La captura compartida por el usuario aporta 14 títulos visibles relacionados con Binder/procesos, MiAsistService, Parcelable, BRService, unzipFiles, inventarios Smali, historial y códigos. Dos rótulos aparecen truncados o podrían ser texto del chat abierto: “Continuar investigación pendie…” y “Referencias v8”.
 
 **Límite:** los títulos son pistas de navegación, no evidencia técnica ni prueba de cobertura. No se atribuyen hallazgos a un chat por su nombre ni se infiere que la lista sea completa. Clasificación USER-PROVIDED-SCREENSHOT / CHAT-TITLE-INDEX; no LOCAL-VERIFIED.
+
+
+------------------------------------------------------------------------
+
+## 96. Recuperación histórica dirigida de cinco objetivos pendientes — 2026-11-21
+
+Se incorporó evidencia 96: [96_TARGETED_HISTORICAL_RECOVERY_FIVE_OPEN_OBJECTIVES.md](evidence/2026-11-21/96_TARGETED_HISTORICAL_RECOVERY_FIVE_OPEN_OBJECTIVES.md).
+
+La recuperación dirigida por títulos de chats no devolvió cuerpos Smali originales nuevos para `RetransferUtils.restoreTransfering()`, `BRService.restoreTransfering(Context, BackupDescriptor)`, la continuación de `BRService.onStartCommand()` tras `extra_zip_file_path`, la interfaz/Stub/Proxy de `TransFileService`, ni los bloques de `CompatibilityActivity$1` y `ProgressPageFragmentBase`.
+
+La recuperación sí devolvió detalles de `IBRService.getBRItems()` (transacción 5) y `IBRService$Stub.asInterface()`; ambos se cotejaron como duplicados de evidencias 45 y 62 y no se registran como hallazgos nuevos.
+
+**Clasificación:** `RECOVERED-CHAT / CONTINUITY-ONLY`; no `LOCAL-VERIFIED`. Se mantienen abiertos los cinco objetivos y se registra esta ronda para evitar repetir búsquedas históricas idénticas.
