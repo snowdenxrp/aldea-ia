@@ -38,3 +38,15 @@ Estas coordenadas amplían el mapa de productores potenciales; no constituyen po
 5. Mantener separados grep de ubicaciones, fuente literal, resumen histórico y observación runtime.
 
 **Resultado:** el inventario recupera ocho ubicaciones/clases adicionales de escritura de `BRItem.state/error` que no estaban descritas en las evidencias 49/53 ni en el índice v0.68. Se preservan como pistas de cobertura, no como semántica confirmada.
+
+## 4. Actualización semántica — evidencia 76
+
+La recuperación dirigida de conversaciones posteriores permitió añadir semántica a las seis coordenadas de `BRService$6/$7` ya inventariadas:
+
+- `BRService$6:1557`: en el caso `files_for_backup`, conserva state si coincide `packageName`; en caso contrario asigna 4.
+- `BRService$6:2128`: conserva state para `files_for_backup`; en otra rama asigna 1.
+- `BRService$6:2101`: escribe `error` desde `v8`; valor aún desconocido.
+- `BRService$6:2495`: asigna state 3 en `:cond_42`, con mensaje próximo `Backup One, result failed`.
+- `BRService$7:53/58`: en `onZipFileSizeChanged(J,BRItem,String)`, rama verdadera de `mIsAborted`, asigna state 3 y error 9 al objeto `p3`.
+
+Véase evidencia 76 para los límites probatorios y pendientes. La actualización no añade coordenadas ni convierte el resumen histórico en `LOCAL-VERIFIED`.
