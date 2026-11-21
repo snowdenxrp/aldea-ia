@@ -104,3 +104,30 @@ Estos datos describen cómo `MiAsistService` solicita y administra el servicio; 
 **USER-FACT / RECOVERED-CHAT (19-11-2026 22:45:57Z):** el tramo final reportado de `ArchiveHelper.unzipFiles()` conserva `fileLastModifyTime` mediante `Utils.getModifyTimeByReceiveFileMap` / `setLastModified`, agrega `getAbsolutePath()` a la lista de salida `p6`, y ante `IOException` registra `"IOException continue next"` y continúa con la siguiente entrada. La evidencia 49 ya conservaba la lista de rutas absolutas y la continuación ante IOException; este addendum añade la restauración explícita de la fecha de modificación. No se recuperó aquí el bloque literal completo ni la condición exacta de obtención del timestamp.
 
 **Clasificación general:** `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`. No se han obtenido transaction IDs ni código fuente interno de TransFileService.
+
+## Addendum — BRService Binder listener bootstrap (2026-11-21)
+
+Una recuperación histórica focalizada de mensajes del usuario del 16-11-2026 añadió un detalle del lado servidor que no aparece explícito en el índice maestro v0.97. Se conserva como contexto histórico; no se recuperó en esta ronda el bloque Smali completo.
+
+### BRService$1 / IBRService.Stub
+
+**USER-FACT / RECOVERED-CHAT (16-11-2026 13:24:18Z):**
+- `BRService$1` extiende `IBRService$Stub`.
+- Su constructor almacena la referencia `this$0` y llama al constructor de `IBRService$Stub`.
+- Los métodos reportados incluyen `registerBRListener(IBRServiceListener)` y `unregisterBRListener(IBRServiceListener)`.
+- En `registerBRListener`, la referencia histórica indica que agrega el listener a `mRemoteCallbackList` y acto seguido envía a ese listener `onServiceStateChange(IIII)` con el estado actual.
+- El servicio conserva el Binder en `mBinder`; el resumen histórico atribuye su creación a `new BRService$1(this)` y que `BRService.onBind()` devuelve `mBinder`.
+
+El envío inmediato de estado al registrar listener es el delta de esta recuperación. El catálogo general de métodos/transacciones Binder y `getBRItems()` ya estaba preservado en evidencias previas; no se vuelve a enumerar aquí.
+
+### Campos y conexión caller-side
+
+**USER-FACT / RECOVERED-CHAT (16-11-2026 13:28:19Z):**
+- `MiAsistService` declara `mBRService: IBRService`, `mBRServiceConnection: ServiceConnection` y `mBRServiceListener: IBRServiceListener`.
+- La conexión se instancia mediante `new MiAsistService$2(this)`.
+
+El callback `MiAsistService$2.onServiceConnected()` ya está preservado en las secciones 38/47 y evidencia 02: recibe Binder, convierte con `IBRService$Stub.asInterface()`, asigna `mBRService` y registra `mBRServiceListener`; `onServiceDisconnected()` limpia la referencia. No se repite como hallazgo nuevo.
+
+### Límites probatorios
+
+La parte del callback `$2` y la descripción del constructor/`BRService$1` proceden de recuperación histórica y resúmenes; el dato de registro en `mRemoteCallbackList` y notificación inmediata se clasifica como `USER-FACT / RECOVERED-CHAT`, no como bloque Smali literal adjunto en esta ronda ni `LOCAL-VERIFIED`. No se infieren los cuatro argumentos concretos de `onServiceStateChange(IIII)`, la sincronización/orden interno del callback, el comportamiento ante excepción ni la política de eliminación de listeners muertos.
