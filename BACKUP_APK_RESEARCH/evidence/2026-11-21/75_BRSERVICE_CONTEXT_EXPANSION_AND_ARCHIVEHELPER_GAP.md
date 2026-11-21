@@ -1,10 +1,10 @@
-# Evidencia 75 — Contexto ampliado BRService y límite ArchiveHelper:1741
+# Evidencia 75 — Contexto ampliado BRService y estado histórico ArchiveHelper:1741
 
 - Fecha de consolidación: 2026-11-21
 - Rama: `backup-apk-static-research-2026-11-19`
 - Procedencia: recuperación dirigida de mensajes literales del usuario del 2026-11-19.
 - Clasificación: `USER-PASTED-SOURCE / RECOVERED-CHAT` para los rangos parciales descritos; no `LOCAL-VERIFIED`.
-- Alcance: ampliar el contexto disponible para evidencia 73 y resolver si existe más material histórico para ArchiveHelper:1741.
+- Alcance: ampliar el contexto disponible para evidencia 73; la reconciliación posterior de ArchiveHelper:1741 se registra en evidencia 79.
 
 ## 1. BRService.smali — contexto físico 14155–14178
 
@@ -29,23 +29,17 @@ El usuario compartió un segundo bloque físico. La recuperación conserva:
 
 No se recuperó el encabezado `.method` ni todas las instrucciones/ramas. No inferir que la segunda escritura en 16710 también vale 6: el resumen conservado identifica el registro fuente `v7`, pero no preserva el valor vigente en ese punto ni las instrucciones intermedias completas. Tampoco se debe inferir el significado funcional de la rama `p6`.
 
-## 3. ArchiveHelper.smali:1741 — comparación aún imposible
+## 3. ArchiveHelper.smali:1741 — actualización por evidencia 79
 
-La recuperación dirigida no encontró un fragmento literal que rodee `ArchiveHelper.smali:1741`, ni el bloque exacto de evidencia 27 donde se había documentado `BRItem.error=1`.
+En la recuperación inicial que produjo esta evidencia no se había encontrado el contexto necesario y la comparación quedó `UNKNOWN`. Una búsqueda histórica posterior recuperó el encabezado del overload de siete argumentos (línea física 1244), el alias `v1 <- p3` y el bloque `const/4 v0, 0x1` seguido de `iput v0, v1, ...BRItem;->error:I`, ya descrito en evidencia 27. El grep reportado para 1741 identifica esa misma instrucción en ArchiveHelper.
 
-Lo único conservado para 1741 es el resumen de grep/inventario: `iput v0, v1, ...BRItem;->error:I`. No se conserva el valor de `v0`, el método, las ramas ni la procedencia del objeto `v1`.
-
-Por tanto:
-- no se puede confirmar que 1741 sea exactamente la escritura `error=1` de evidencia 27;
-- no se puede contar como writer semánticamente distinto;
-- no se puede atribuirle un valor ni una condición;
-- la comparación física queda `UNKNOWN` hasta disponer de ambos fragmentos.
+**Estado actualizado:** evidencia 79 reconcilia 1741 con el writer `error=1` de evidencia 27. No es un writer adicional. La conclusión es `RECOVERED-CHAT`, no `LOCAL-VERIFIED`; la directiva `.line 369` no debe confundirse con la coordenada física 1741.
 
 ## 4. Reconciliación y no duplicación
 
 - Evidencia 73 conserva los valores explícitos de las escrituras 14173/14178/16697.
 - Evidencia 53 ya conserva coordenadas próximas de `BRService.smali`; esta evidencia añade solo el contexto de bucle/totales recuperado para los rangos 14155–14178 y 16679–16715.
-- Evidencia 70 conserva la ubicación de `ArchiveHelper.smali:1741`; evidencia 27 conserva el resumen del writer `error=1`. No declarar dos writers hasta cotejar los cuerpos.
+- Evidencia 70 conserva la coordenada reportada `ArchiveHelper.smali:1741`; evidencia 27 conserva el writer `error=1`. La recuperación posterior y evidencia 79 los reconcilian como el mismo writer; no contarlos dos veces.
 - No se realizó nueva extracción local ni búsqueda global.
 
-**Resultado:** se amplía el contexto de dos bloques BRService sin inventar método/condición, y se confirma que el historial recuperado no contiene el fragmento necesario para reconciliar ArchiveHelper:1741 con evidencia 27.
+**Resultado actualizado por evidencia 79:** se amplía el contexto de dos bloques BRService sin inventar método/condición. La posible duplicación ArchiveHelper:1741/evidencia 27, que aquí se dejó inicialmente `UNKNOWN`, fue resuelta mediante recuperación histórica posterior: misma escritura `error=1`, no un writer nuevo; no `LOCAL-VERIFIED`.
