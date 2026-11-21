@@ -14,7 +14,7 @@
 | `ArchiveHelper.smali` | 1741 | `BRItem.error` | Se reportó una escritura del campo error. Valor, condición y método exacto pendientes de recuperar. |
 | `CompatibilityActivity$1.smali` | 144 | `BRItem.state` | Se reportó una escritura del campo state. Valor, condición y método exacto pendientes. |
 | `CompatibilityActivity$1.smali` | 152 | `BRItem.error` | Se reportó una escritura del campo error. Valor, condición y método exacto pendientes. |
-| `ProgressPageFragmentBase.smali` | 625 | `BRItem.state` | Se reportó una escritura del campo state. Valor, condición y método exacto pendientes. |
+| `ProgressPageFragmentBase.smali` | 625 (coordenada ambigua) | `BRItem.state` | Grep reportado de `iput v7, v10`; conflicto con `.line 625` de un bloque UI. No tratar como línea física confirmada; véase evidencia 77. |
 | `BRService$6.smali` | 1557, 2128, 2495 | `BRItem.state` | Tres ubicaciones de escritura reportadas. No asociar valores/condiciones sin recuperar los bloques. |
 | `BRService$6.smali` | 2101 | `BRItem.error` | Una ubicación de escritura reportada. Valor y condición pendientes. |
 | `BRService$7.smali` | 53 | `BRItem.state` | Una ubicación de escritura reportada. Valor y condición pendientes. |
