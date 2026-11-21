@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.70 --- coordenadas complementarias y corrección de duplicación\
+**Versión:** 0.71 --- despacho de restore de apps y postprocesamiento\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1554,3 +1554,16 @@ Se preservan tres ubicaciones físicas adicionales reportadas en `BRService.smal
 **Clasificación:** ubicaciones de grep recuperadas de conversación; no se conserva aquí el cuerpo literal de esas instrucciones. No asignar campo, valor, condición o método concreto sin cotejar cada instrucción.
 
 **No duplicación:** evidencia 71 remite a evidencias 08/09/27/47/53/54/67/70 y no vuelve a documentar los métodos funcionales. La coordenada `ArchiveHelper.smali:1741` de evidencia 70 puede ser la misma escritura `error=1` ya descrita en evidencia 27; no contarla como un segundo writer hasta comparar el bloque exacto.
+
+
+------------------------------------------------------------------------
+
+## 72. BRService$5: delta de despacho de apps y postprocesamiento — 2026-11-21
+
+Se incorporó evidencia 72: [`72_BRSERVICE_RESTORE_APP_DISPATCH_POSTPROCESS_DELTA.md`](evidence/2026-11-21/72_BRSERVICE_RESTORE_APP_DISPATCH_POSTPROCESS_DELTA.md).
+
+Se recuperó una referencia histórica a `restoreStreamSplitApk(BRItem,ZipFile,InputStream)` alrededor de `BRService$5.smali:1683`, dentro de una extracción reportada de las líneas físicas 1653–1738. Evidencias 50/58 ya registran otro caller en la coordenada 1899. No fusionar 1683 y 1899: queda pendiente determinar si son dos invokes o distintas extracciones/builds.
+
+Un resumen previo de la misma ruta reportó: reactivación del paquete cuando `getApplicationEnabledSetting(packageName)==2` mediante `setApplicationEnabledSetting(packageName,0,0)`; asignación `BRItem.error=1` en una ruta `IOException`; limpieza de temporales/sincronización de transferencias; y uso de `unpackBakSdDatas()` para WeChat/QQ. Estos efectos se clasifican como `RECOVERED-CHAT / PRIOR-ASSISTANT-SUMMARY`, no como fuente Smali literal en este registro.
+
+**No duplicación:** evidencia 50/58 ya preserva las anclas de `restoreStreamSplitApk`, `prepareRestoringItems`, executor, `PerformAdbRestoreTask` y `BRManager.restorePackage`. Los cuerpos completos de estos métodos siguen pendientes; evidencia 72 añade solo la coordenada 1683, la discrepancia con 1899 y el resumen post-despacho.
