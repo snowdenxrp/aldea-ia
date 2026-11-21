@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.00 --- callbacks de descriptor MiAsistService\
+**Versión:** 1.01 --- inventario de callbacks BRItem\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1944,3 +1944,18 @@ Se amplió la evidencia 96 con recuperación histórica de los callbacks:
 **Delta:** se conserva la relación entre el callback $5 y la recepción/selección del descriptor, y el resumen funcional de $6 como callback de envío, sin duplicar códigos/etapas ya indexados.
 
 **Procedencia y límites:** `USER-FACT / RECOVERED-CHAT`, mensajes del 2026-11-16T16:46:59Z y 2026-11-16T18:06:58Z. No se recuperó en esta ronda el cuerpo Smali íntegro; coordenadas históricas reportadas, no `LOCAL-VERIFIED`. No se infiere el protocolo de transporte, la semántica exacta de la espera ni la atomicidad del envío. Véase evidencia 96, addendum “callbacks de transferencia y descriptor en MiAsistService$5/$6”.
+
+
+------------------------------------------------------------------------
+
+## 100. Inventario de referencias BRItem en callbacks y carga UI — 2026-11-21
+
+Se amplió la evidencia 96 con un inventario grep histórico del 2026-11-20T00:04:42Z:
+
+- `BRService$11` contiene referencias a `mBRItems` en las coordenadas físicas reportadas 69, 527, 594, 844, 916, 1122, 1296, 1666 y 1735.
+- `BRService$6` contiene referencias reportadas en 106, 259, 306, 569, 944, 952, 973, 1226, 1235, 1343, 1351, 1372, 3417, 3528, 3557 y 3746.
+- `ProgressPageFragmentBase$7$1` a `$7$7` llaman `IBRService.getBRItems()` y luego `ProgressItemAdapter.initData(BRItem[])` (rango reportado 97–180); el bloque base presenta referencias de carga en 676–719.
+
+**Delta:** se identifican los siete callbacks UI concretos y se preservan las coordenadas de referencias a `mBRItems` en `BRService$6/$11`. El contrato Binder `getBRItems()`, el caller de `MiAsistService` y la semántica general de `ProgressItemAdapter.initData()` ya estaban documentados y no se repiten como hallazgos nuevos.
+
+**Procedencia y límites:** `USER-FACT / RECOVERED-CHAT`, salida grep reportada el 2026-11-20T00:04:42Z; no bloques Smali completos ni `LOCAL-VERIFIED`. Las referencias no prueban si cada acceso lee o escribe, ni su método/condición/orden. No inferir una llamada Binder distinta por cada callback ni mutación de cada referencia. Véase evidencia 96, addendum “inventario de referencias BRItems en callbacks y carga de UI”.
