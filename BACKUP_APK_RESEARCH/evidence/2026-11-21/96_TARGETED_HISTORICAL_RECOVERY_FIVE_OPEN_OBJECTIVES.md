@@ -45,3 +45,27 @@ No repetir como tareas de recuperación ya ejecutadas en esta ronda:
 5. Volver a registrar los detalles de `IBRService.getBRItems()` y `Stub.asInterface()`, ya preservados en evidencias 45 y 62.
 
 **Siguiente fuente necesaria para cerrar los pendientes:** bloques fuente originales recuperables de los chats o cotejo futuro contra los archivos Smali locales. Hasta entonces, mantener los estados abiertos y no reconstruir código por inferencia.
+
+
+## Addendum — contexto histórico adicional de IBRService y gate MiAsist (2026-11-21)
+
+Una segunda búsqueda histórica focalizada recuperó referencias USER-FACT del 2026-11-16 17:03–17:04 UTC. No recuperó el bloque Smali literal.
+
+### IBRService.Stub.onTransact
+
+El usuario había descrito que `IBRService.Stub.onTransact(int, Parcel, Parcel, int)`:
+- usa el descriptor `com.miui.backup.service.IBRService`;
+- aplica `enforceInterface`;
+- maneja IDs de transacción 1–14;
+- lee listeners mediante `Parcel.readStrongBinder()`;
+- transporta valores de retorno de tipos int, long, String y typed array.
+
+Esto complementa el catálogo de 14 transacciones ya mencionado en evidencia 37 y el transporte de `getBRItems()`/transacción 5 ya preservado en evidencia 45. No se recuperó aquí la tabla completa método↔ID ni los bloques por transacción; no inferirla.
+
+### Gate de MiAsistService
+
+El usuario describió que `MiAsistService.onStartCommand()` valida, en ese orden, `isActionParamsValid()`, `isOwnerSpace()` e `isBRServiceAvailable()`, antes de llamar a `bindTransFileService()`. También describió que `startRestoreCommand()` delega a `BRService.startRestoreCommand(Context, ArrayList, BackupDescriptor, String, int)`.
+
+El índice ya conservaba las anclas de `isActionParamsValid()`, `bindTransFileService()`, `isOwnerSpace()` y la delegación a BRService en evidencias 37, 51, 52 y 59; el delta aquí es la secuencia explícita del gate y la mención de `isBRServiceAvailable()`. No se recuperó el cuerpo de esos validadores ni el bloque continuo de `onStartCommand()`.
+
+**Clasificación:** `USER-FACT / RECOVERED-CHAT`; no `USER-PASTED-SOURCE` ni `LOCAL-VERIFIED`. Este addendum pertenece a `IBRService` y al gate de `MiAsistService`; no aporta interfaz, Stub/Proxy ni transaction IDs de `TransFileService/ITransFileService`.
