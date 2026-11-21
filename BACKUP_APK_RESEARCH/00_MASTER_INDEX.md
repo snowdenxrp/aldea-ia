@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.74 --- reconciliación de alias y procedencia de restore\
+**Versión:** 0.75 --- reconciliación de alias y procedencia de restore\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1595,3 +1595,17 @@ Se incorporó evidencia 74: [`74_RESTORESTREAMSPLITAPK_COORDINATE_PROVENANCE_ERR
 La recuperación dirigida del historial no encontró el supuesto bloque literal físico 1653–1738 ni el `invoke` atribuido a 1683; esa referencia queda como síntesis histórica no verificada. Para 1899, evidencias 50/58 conservan una referencia de grep, pero no un invoke literal ni una coordenada física inequívoca. El usuario sí había compartido un fragmento físico 3445–3468 con directivas `.line 1898` y `.line 1899` asociadas a escrituras de estado y `progType`; esto no prueba un call site en esa posición.
 
 **Corrección:** no afirmar dos call sites, dos builds distintos ni que 1683/1899 sean coordenadas físicas comparables. Evidencia 72 fue corregida y enlaza a evidencia 74. Los cuerpos de `restoreStreamSplitApk` y métodos relacionados siguen pendientes.
+
+
+------------------------------------------------------------------------
+
+## 75. Contexto ampliado BRService y límite ArchiveHelper:1741 — 2026-11-21
+
+Se incorporó evidencia 75: [`75_BRSERVICE_CONTEXT_EXPANSION_AND_ARCHIVEHELPER_GAP.md`](evidence/2026-11-21/75_BRSERVICE_CONTEXT_EXPANSION_AND_ARCHIVEHELPER_GAP.md).
+
+Se recuperó contexto parcial adicional de dos bloques literales compartidos por el usuario:
+
+- `BRService.smali` físico 14155–14178: recorrido de `Iterator`, cast de `p4` a `BRItem`, y escrituras `state=3` (14173) / `error=9` (14178) sobre ese objeto.
+- `BRService.smali` físico 16679–16715: `v10` es un `BRItem` del bloque de totales; una rama depende de `p6`; 16697 escribe `state` usando `v7=6`; después hay acumulación de tamaño y otra escritura `state` en 16710 desde `v7`, sin conservar el valor vigente en esa segunda escritura.
+
+No se recuperaron encabezados `.method` ni cuerpos completos. La búsqueda dirigida tampoco encontró el contexto de `ArchiveHelper.smali:1741` ni el fragmento de evidencia 27 con el que compararlo; esa posible duplicación permanece `UNKNOWN`. No contar 1741 como writer distinto.
