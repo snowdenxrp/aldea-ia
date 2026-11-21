@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.72 --- reconciliación de alias y procedencia de restore\
+**Versión:** 0.73 --- reconciliación de alias y procedencia de restore\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1567,3 +1567,20 @@ Se recuperó una referencia histórica a `restoreStreamSplitApk(BRItem,ZipFile,I
 Un resumen previo de la misma ruta reportó: reactivación del paquete cuando `getApplicationEnabledSetting(packageName)==2` mediante `setApplicationEnabledSetting(packageName,0,0)`; asignación `BRItem.error=1` en una ruta `IOException`; limpieza de temporales/sincronización de transferencias; y uso de `unpackBakSdDatas()` para WeChat/QQ. Estos efectos se clasifican como `RECOVERED-CHAT / PRIOR-ASSISTANT-SUMMARY`, no como fuente Smali literal en este registro.
 
 **No duplicación:** evidencia 50/58 ya preserva las anclas de `restoreStreamSplitApk`, `prepareRestoringItems`, executor, `PerformAdbRestoreTask` y `BRManager.restorePackage`. Los cuerpos completos de estos métodos siguen pendientes; evidencia 72 añade solo la coordenada 1683, la discrepancia con 1899 y el resumen post-despacho.
+
+
+------------------------------------------------------------------------
+
+## 73. Reclasificación de escrituras literales BRService.state/error — 2026-11-21
+
+Se incorporó evidencia 73: [`73_BRSERVICE_LITERAL_WRITES_RECLASSIFICATION.md`](evidence/2026-11-21/73_BRSERVICE_LITERAL_WRITES_RECLASSIFICATION.md).
+
+Una recuperación de mensajes literales del usuario permitió elevar tres coordenadas previamente conservadas como grep en evidencia 71:
+
+- `BRService.smali:14173`: `const/4 v0, 0x3` → `BRItem.state=3` en el objeto `p4`.
+- `BRService.smali:14178`: `const/16 v0, 0x9` → `BRItem.error=9` en el mismo objeto `p4`.
+- `BRService.smali:16697`: `const/4 v7, 0x6` → `BRItem.state=6` en el objeto `v10`.
+
+Las dos primeras instrucciones forman una pareja de escrituras en el fragmento recuperado; no se atribuye causa ni condición sin el método completo. La tercera no se afirma que opere sobre el mismo objeto. Clasificación: `USER-PASTED-SOURCE / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+**Corrección de procedencia, no nuevas ubicaciones:** las coordenadas ya estaban en evidencia 71; evidencia 73 conserva el contenido literal parcial y corrige su clasificación. El índice v0.73 no cuenta estas ubicaciones por segunda vez.
