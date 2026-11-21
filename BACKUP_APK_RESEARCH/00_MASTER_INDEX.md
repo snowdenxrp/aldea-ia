@@ -1,7 +1,7 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.66 --- BRService RestoreThread: origen literal de v8\
-**Fecha de corte:** 2026-11-20\
+**Versión:** 0.67 --- alias de BRItem entre restoreLocalMediaFile y ArchiveHelper\
+**Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
 implica ejecución de restauraciones, modificación del APK ni pruebas
@@ -1503,3 +1503,16 @@ Se preservó el resumen recibido de la extracción de `ProgressItemAdapter`:
 **Procedencia:** resumen de extracción directa trasladado por el usuario a chat, sin bloque Smali literal ni coordenadas físicas en el mensaje. Clasificación `USER-REPORTED-EXTRACTION-SUMMARY / DIRECT-CHAT`; no elevar a cotejo local independiente ni runtime.
 
 **Pendiente inmediato:** resolver plural `0x7f10000c` y strings `0x7f120142`, `0x7f12014d`, `0x7f120149`, `0x7f120150`, `0x7f12014f`, `0x7f120143`, `0x7f1203de`. No repetir extracción de `getView()`, `initData()` ni `updateSingleItemUI()`. Véase evidencia 67.
+
+
+------------------------------------------------------------------------
+
+## 68. Alias de BRItem entre restoreLocalMediaFile() y ArchiveHelper — 2026-11-21
+
+Se incorporó evidencia 68: [`68_RESTORELOCALMEDIAFILE_BRITEM_ALIAS_AND_ERROR_PROPAGATION.md`](evidence/2026-11-21/68_RESTORELOCALMEDIAFILE_BRITEM_ALIAS_AND_ERROR_PROPAGATION.md).
+
+El call site reportado en `BRService.smali` mueve `p1` a `v5` (`move-object v5, p1`) y pasa esa misma referencia `BRItem` a la sobrecarga de siete argumentos de `ArchiveHelper.unzipFiles()`. Esto precisa la relación de identidad que la evidencia 49 no había registrado explícitamente desde el método contenedor.
+
+**Consecuencia estática limitada:** el helper puede mutar `error` en el mismo objeto sobre el que `restoreLocalMediaFile()` realiza las transiciones de `state`. En la rama descrita, `state=1,error=1` es una combinación posible si el helper asigna error 1 y el contenedor termina con state 1 sin limpiar el error. No se afirma que la combinación se haya observado en runtime ni que ocurra en todos los casos.
+
+**No duplicación:** las escrituras de `state/error` y el comportamiento del helper permanecen en evidencias 49 y 53; evidencia 68 conserva solo el alias explícito del call site y la consecuencia de propagación entre ambos métodos. Procedencia `USER-PASTED-SOURCE / DIRECT-CHAT`; no `LOCAL-VERIFIED`.
