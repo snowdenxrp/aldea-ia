@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.88 --- recuperación histórica del bucle ZIP y fallo de restauración BRService$5\
+**Versión:** 0.89 --- reconciliación de usos disjuntos de v8 en BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1775,5 +1775,21 @@ La recuperación dirigida de mensajes originales del usuario del 2026-11-17T23:2
 - El resumen general de `error=1/10` y notificaciones ya constaba en la sección histórica del 18-11 y evidencia relacionada; no se cuenta como writer nuevo. La aportación específica es preservar timestamps/coordenadas y separar de forma explícita el uso de `v8` como índice local en la región ZIP.
 
 **Límites:** esta recuperación no dispone del bloque Smali literal íntegro ni del método continuo. No demuestra que el `v5` descrito en la región ZIP conserve el valor hasta la región de error, ni permite transferir el significado de `v8` a otros offsets de `BRService$5`. Clasificación `RECOVERED-CHAT / USER-PASTED-SMALI`; no `LOCAL-VERIFIED`.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 89. Separación de usos disjuntos de v8 en BRService$5 — 2026-11-21
+
+Se incorporó evidencia 89: [`89_BRSERVICE5_V8_DISJOINT_REGISTER_USE_RECONCILIATION.md`](evidence/2026-11-21/89_BRSERVICE5_V8_DISJOINT_REGISTER_USE_RECONCILIATION.md).
+
+La recuperación de análisis históricos distingue tres ubicaciones:
+
+- Físico 2787–2790: un resumen del 2026-11-19T22:13:43Z describe `v8` como valor 3 en una ruta asociada a `mIsAborted`, con escritura `BRItem.state=3` en 2790.
+- Físico 3211, dentro del rango ZIP 3190–3345: un resumen del 2026-11-19T21:22:13Z conserva `if-ge v8, v0`; el mensaje del usuario del 2026-11-17T23:26:16Z ya describía `v8` como índice del bucle `ArrayList`.
+- Directivas fuente `.line 1897–1898`: un resumen del 2026-11-19T04:40:43Z conserva `const/4 v8, 0x7`, seguido de una escritura de `v4` (no `v8`) a `BRItem.state`. Por tanto, ese fragmento no demuestra `state=7`.
+
+**Límites:** las ubicaciones proceden de resúmenes históricos del asistente salvo la descripción del usuario del bucle ZIP. No se recupera un bloque literal continuo ni se demuestra continuidad/dominancia de `v8` entre regiones. Clasificación mixta `RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
 
 ------------------------------------------------------------------------
