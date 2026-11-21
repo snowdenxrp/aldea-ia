@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.89 --- reconciliación de usos disjuntos de v8 en BRService$5\
+**Versión:** 0.90 --- contexto parcial de writers v10 en BRService$5\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1791,5 +1791,22 @@ La recuperación de análisis históricos distingue tres ubicaciones:
 - Directivas fuente `.line 1897–1898`: un resumen del 2026-11-19T04:40:43Z conserva `const/4 v8, 0x7`, seguido de una escritura de `v4` (no `v8`) a `BRItem.state`. Por tanto, ese fragmento no demuestra `state=7`.
 
 **Límites:** las ubicaciones proceden de resúmenes históricos del asistente salvo la descripción del usuario del bucle ZIP. No se recupera un bloque literal continuo ni se demuestra continuidad/dominancia de `v8` entre regiones. Clasificación mixta `RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 90. Contexto parcial de writers v10 en BRService$5 — 2026-11-21
+
+Se incorporó evidencia 90: [`90_BRSERVICE5_V10_STATE_WRITER_CONTEXT.md`](evidence/2026-11-21/90_BRSERVICE5_V10_STATE_WRITER_CONTEXT.md).
+
+La recuperación de mensajes del usuario del 2026-11-19 añade contexto parcial a dos escrituras ya inventariadas:
+
+- Físico 1336 (`.line 1569`): tras `if-nez v14, :cond_23`, `iput v10, v6, ...BRItem.state:I`; inmediatamente después, `iput v3, v6, ...BRItem.error:I`.
+- Físico 1441 (`.line 1589`): tras comprobaciones relacionadas con `isGMSAPP`, `iput v10, v6, ...BRItem.state:I`; después, `const/16 v0, 0xd` y `iput v0, v6, ...BRItem.error:I`.
+
+Las escrituras de `state=v10` ya estaban en el inventario previo; no se cuentan como hallazgo nuevo. El delta es la relación local con las guardias y los writers de error. La procedencia/valor de `v10` permanece desconocida en ambos sitios.
+
+**Límites:** no se recuperó definición dominante de `v10`, método completo ni todas las condiciones. No se infiere un estado numérico. Clasificación `USER-REPORTED-GREP / USER-PASTED-SMALI / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
 
 ------------------------------------------------------------------------
