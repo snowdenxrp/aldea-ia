@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.01 --- inventario de callbacks BRItem\
+**Versión:** 1.02 --- guard y notificación de callbacks BRService$11\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1959,3 +1959,16 @@ Se amplió la evidencia 96 con un inventario grep histórico del 2026-11-20T00:0
 **Delta:** se identifican los siete callbacks UI concretos y se preservan las coordenadas de referencias a `mBRItems` en `BRService$6/$11`. El contrato Binder `getBRItems()`, el caller de `MiAsistService` y la semántica general de `ProgressItemAdapter.initData()` ya estaban documentados y no se repiten como hallazgos nuevos.
 
 **Procedencia y límites:** `USER-FACT / RECOVERED-CHAT`, salida grep reportada el 2026-11-20T00:04:42Z; no bloques Smali completos ni `LOCAL-VERIFIED`. Las referencias no prueban si cada acceso lee o escribe, ni su método/condición/orden. No inferir una llamada Binder distinta por cada callback ni mutación de cada referencia. Véase evidencia 96, addendum “inventario de referencias BRItems en callbacks y carga de UI”.
+
+
+## 101. BRService$11: guard de índice activo y progreso de restauración — 2026-11-21
+
+La recuperación histórica del chat del 2026-11-19T04:43:51Z añade precisión al comportamiento de los callbacks de inicio:
+
+- `onBackupStart()` y `onRestoreStart()` comprueban `checkRunningTaskIndex()` antes de operar con el elemento activo.
+- La ruta reportada accede a `mBRItems[mRunningItemIndex]`, asigna `state=2` y notifica el inicio correspondiente.
+- `onRestoreProgress()` notifica el progreso de restauración.
+
+**Qué no es nuevo:** la escritura de `state=2`, la gestión de `state=3`/errores y la traducción `p3→BRItem.error` ya estaban en sección 22/evidencias 08 y 15. Las referencias grep a `mBRItems` ya están en sección 100/evidencia 96. El delta aquí es el guard `checkRunningTaskIndex()`, el acceso indexado mediante `mRunningItemIndex` y la notificación de progreso.
+
+**Procedencia y límites:** `USER-PASTED-SOURCE / RECOVERED-CHAT`, mensaje histórico del usuario del 2026-11-19T04:43:51Z. No se recupera en esta ronda el bloque Smali literal ni se verifican las ramas completas, argumentos de notificación o conducta cuando el guard falla. No `LOCAL-VERIFIED`; no inferir sincronización ni exclusión mutua. Véase evidencia 96, addendum “BRService$11 start/progress callbacks”.
