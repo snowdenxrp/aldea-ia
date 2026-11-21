@@ -197,7 +197,8 @@ completa de alcanzabilidad antes de afirmar una vía externa.
 -   **REGISTRO HISTÓRICO SUPERSEDED:** la primera recuperación de este día resumió el mapping como 2 → `mIsTransingTask`, 3 → `mIsFlashDriveTask`, 1 → local; esa lectura no debe reutilizarse. La salida directa posterior del 19-11 y la reconciliación en evidencias 18/51 ubican tipo 2 en `:cond_1`/ruta `v8`, tipo 3 en `mIsTransingTask`, tipo 5 en `mIsFlashDriveTask` y tipo 1 en `mIsLocalBackupTask`. El valor literal de `v8` sigue sin preservarse; véase sección 17 actual y evidencia 10 §1.
 -   La llamada `startMonitor()` se resume así: resultado `0` continúa;
     resultado `1` produce resultado `2`; otros resultados producen `5` y
-    abortan.-   Si falla BMS, el flujo termina con error; un fallo de almacenamiento
+    abortan.
+-   Si falla BMS, el flujo termina con error; un fallo de almacenamiento
     puede marcar `mIsAborted`.
 -   En el cierre de `startRestore()` se conservó la forma
     `setState(4,v2,0,v14)`:
@@ -396,7 +397,8 @@ mensaje de error se calculan por separado.
 `v8/Themes`, o `v16=9` en Flash Drive/USB no disponible, llega a
 `setState(4,12,0,v16)`. Se indicó que conserva `mLastError=8/9` si
 estaba en cero. En la misma conversación se resumió que con
-`mWorkingStage=12`, `setState` escribe `BRItem.state=3` y `error=9`;este detalle debe cotejarse con el cuerpo exacto de `setState(IIII)`
+`mWorkingStage=12`, `setState` escribe `BRItem.state=3` y `error=9`;
+este detalle debe cotejarse con el cuerpo exacto de `setState(IIII)`
 para no confundir argumentos ni capas de estado.
 
 Después se reportó: - `updatePkgStae(v14)`. -
@@ -595,7 +597,8 @@ Se recuperaron detalles adicionales de conversaciones anteriores y se
 preservaron en
 [`evidence/2026-11-19/02_CHAT_RECOVERY_DELTA.md`](evidence/2026-11-19/02_CHAT_RECOVERY_DELTA.md).
 
-**Corrección importante de §2 y §19.1:** la paráfrasis anterior delbloque `BRService$5.run()` líneas 1391–1418 era incorrecta. Los datos
+**Corrección importante de §2 y §19.1:** la paráfrasis anterior del
+bloque `BRService$5.run()` líneas 1391–1418 era incorrecta. Los datos
 recuperados del mensaje del usuario indican:
 
 - `mBakFilesType==2` → `v8=1`.
@@ -794,6 +797,7 @@ También se conservaron ambas sobrecargas de `startRestoreCommand`. Evidencia 55
 
 
 ## 19. setState(IIII) y llamada final — orden de argumentos resuelto
+
 Se recuperó el bloque Smali pegado por el usuario para
 `BRService.smali:14072–14220` y el invoke final literal de
 `BRService$5.run()`. La llamada final usa los registros
@@ -993,7 +997,8 @@ Esto coincide con la omisión de `apkSize` y `dataSize` en Parcelable, pero no p
 
 ## 32. Recuperación de continuidad Parcelable y chat anterior — 2026-11-20
 
-Se incorporó la evidencia 42:[`42_CHAT_CONTINUITY_BRITEM_PARCELABLE.md`](evidence/2026-11-20/42_CHAT_CONTINUITY_BRITEM_PARCELABLE.md).
+Se incorporó la evidencia 42:
+[`42_CHAT_CONTINUITY_BRITEM_PARCELABLE.md`](evidence/2026-11-20/42_CHAT_CONTINUITY_BRITEM_PARCELABLE.md).
 
 Se recuperó el HEAD previo de la rama (`cf802ea24ca98dd30ffb6a1282e4a9f4827224c1`) y el estado del índice v0.25. El chat inmediatamente anterior contiene el inicio de una nueva extracción del constructor vacío (`BRItem.smali`, líneas 163–218), pero el fragmento disponible termina después de `const-string`. La evidencia 42 conserva literalmente el comando y el fragmento recuperable, y marca explícitamente lo que no pudo recuperarse; no inventa el resto de la salida.
 
@@ -1192,7 +1197,8 @@ Se incorporó evidencia 53: [`53_BRService_DIRECT_STATE_ERROR_WRITERS_AND_PROPAG
 - 12851: `BRItem.state=3`.
 - 12856 carga 0x7; 12859 escribe ese valor en `BRItem.error`, no en state.
 - 12903: `BRItem.state=8`.
-- 12948/12953 preparan final según `mIsAborted`; 12956 escribe state=9 si abortado o state=1 si no.- No se recuperó encabezado/descriptor del método en el mismo fragmento; mantener atribución como ancla histórica contextual.
+- 12948/12953 preparan final según `mIsAborted`; 12956 escribe state=9 si abortado o state=1 si no.
+- No se recuperó encabezado/descriptor del método en el mismo fragmento; mantener atribución como ancla histórica contextual.
 
 **Bloque 16787–17436:**
 - 16787/16791: constante 6 → escritura directa `BRItem.state=6`.
@@ -1392,6 +1398,7 @@ Se actualizaron evidencias 11 y 15: la escritura `BRItem.state=6` de `BRService$
 Evidencia 12 también resuelve el orden de argumentos de la llamada final: `setState(4,12,0,v14)`. La forma `setState(4,0,v2,v14)` queda invalidada. Un productor adicional state=6 se reporta en `BRService.smali:16787–16791`, evidencia 53; no inferir exclusividad del productor de `files_for_backup`.
 
 ## 58. Cierre de coordenadas y productores state 6 — 2026-11-20
+
 Se corrigieron las evidencias 11 y 15: `BRService$5.smali` physical line 2351 corresponde a la directiva Smali `.line 1735` y a una sola escritura `BRItem.state=6` para `files_for_backup` tras `waitingForFilesTransingEnd()`. No es un conflicto entre dos líneas físicas. Además, evidencia 53 reporta otro productor en `BRService.smali:16787–16791`, por lo que no debe afirmarse exclusividad del productor de `BRService$5`.
 
 Evidencia 12 conserva el invoke final exacto `setState(4,12,0,v14)`; la forma antigua `setState(4,0,v2,v14)` queda descartada. Véanse evidencias 11, 12, 15 y 53.
@@ -1591,6 +1598,7 @@ La recuperación dirigida del historial no encontró el supuesto bloque literal 
 
 
 ------------------------------------------------------------------------
+
 ## 75. Contexto ampliado BRService y límite ArchiveHelper:1741 — 2026-11-21
 
 Se incorporó evidencia 75: [`75_BRSERVICE_CONTEXT_EXPANSION_AND_ARCHIVEHELPER_GAP.md`](evidence/2026-11-21/75_BRSERVICE_CONTEXT_EXPANSION_AND_ARCHIVEHELPER_GAP.md).
@@ -1789,6 +1797,7 @@ La recuperación de análisis históricos distingue tres ubicaciones:
 ------------------------------------------------------------------------
 
 ## 90. Contexto parcial de writers v10 en BRService$5 — 2026-11-21
+
 Se incorporó evidencia 90: [`90_BRSERVICE5_V10_STATE_WRITER_CONTEXT.md`](evidence/2026-11-21/90_BRSERVICE5_V10_STATE_WRITER_CONTEXT.md).
 
 La recuperación de mensajes del usuario del 2026-11-19 añade contexto parcial a dos escrituras ya inventariadas:
@@ -1988,6 +1997,8 @@ La recuperación del chat “Reconstrucción de MiAsistService” (mensajes del 
 - 1132: `updateBakFilePath`; 1191: `mAllBRItems`; 1220–1347: progreso/notificación; la continuación en 1347 menciona `-$$Nest$fputmLastUpdateTime`.
 
 **Delta frente a sección 40:** la responsabilidad general y los nombres de métodos de `$8` ya estaban resumidos; no estaban preservadas estas coordenadas físicas concretas. Se añade únicamente el inventario de anclas.
+
+**Procedencia y límites:** `USER-PASTED-SMALI / RECOVERED-CHAT`, pero el contexto recuperado contiene líneas/anclas sueltas y referencias, no cuerpos completos ni encabezados `.method`. No atribuir ramas, valores, orden, efectos ni semántica de sincronización no conservados. No `LOCAL-VERIFIED`; no afirmar exhaustividad. Véase evidencia 103.
 
 
 ------------------------------------------------------------------------
