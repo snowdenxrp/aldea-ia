@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.77 --- reconciliación de alias y procedencia de restore\
+**Versión:** 0.78 --- procedencia v8 separada entre BRService$5 y BRService$6\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1639,3 +1639,14 @@ Se incorporó evidencia 77: [`77_COMPATIBILITY_AND_PROGRESS_STATE_WRITER_PROVENA
 - Se conserva por separado el resumen de `initUI()` donde un `BRItem.state==6` puede cambiar a 1. No se confirma que sea la misma instrucción física que el grep 625.
 
 Evidencia 70 fue corregida para marcar la coordenada ambigua. No se añaden writers ni se atribuye valor al `iput` sin cotejo.
+
+
+------------------------------------------------------------------------
+
+## 78. Separación de procedencia del registro v8 entre BRService$5 y BRService$6 — 2026-11-21
+
+Se incorporó evidencia 78: [`78_BRSERVICE5_V8_CLUE_SEPARATION_FROM_BRSERVICE6.md`](evidence/2026-11-21/78_BRSERVICE5_V8_CLUE_SEPARATION_FROM_BRSERVICE6.md).
+
+La recuperación de conversaciones encontró un bloque literal previo de `BRService$5` donde `v8=1` si `mBakFilesType==2` y `v8=0` en caso contrario; en ese método se usa después como condición de ruta. Esta información no resuelve el writer distinto reportado en `BRService$6.smali:2101`, que escribe el registro local `v8` en `BRItem.error`. La coincidencia de nombre de registro entre clases internas no prueba continuidad de valor ni equivalencia semántica.
+
+**Erratum preventivo:** no transferir `v8=1/0` ni la condición `mBakFilesType==2` desde `BRService$5` a `BRService$6`. El valor efectivo de `BRService$6:2101` permanece desconocido; evidencia 76 sigue siendo la referencia de su estado pendiente. Evidencia 78 no añade writers ni convierte la pista histórica en verificación local.
