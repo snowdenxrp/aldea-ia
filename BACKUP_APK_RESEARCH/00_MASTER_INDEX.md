@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 0.75 --- reconciliación de alias y procedencia de restore\
+**Versión:** 0.76 --- reconciliación de alias y procedencia de restore\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1609,3 +1609,20 @@ Se recuperó contexto parcial adicional de dos bloques literales compartidos por
 - `BRService.smali` físico 16679–16715: `v10` es un `BRItem` del bloque de totales; una rama depende de `p6`; 16697 escribe `state` usando `v7=6`; después hay acumulación de tamaño y otra escritura `state` en 16710 desde `v7`, sin conservar el valor vigente en esa segunda escritura.
 
 No se recuperaron encabezados `.method` ni cuerpos completos. La búsqueda dirigida tampoco encontró el contexto de `ArchiveHelper.smali:1741` ni el fragmento de evidencia 27 con el que compararlo; esa posible duplicación permanece `UNKNOWN`. No contar 1741 como writer distinto.
+
+
+------------------------------------------------------------------------
+
+## 76. Semántica recuperada de escritores BRService$6/$7 — 2026-11-21
+
+Se incorporó evidencia 76: [`76_BRSERVICE_6_7_STATE_ERROR_WRITER_SEMANTICS.md`](evidence/2026-11-21/76_BRSERVICE_6_7_STATE_ERROR_WRITER_SEMANTICS.md).
+
+La recuperación dirigida de conversaciones anteriores añadió semántica a las coordenadas ya inventariadas en evidencia 70:
+
+- `BRService$6:1557`: conserva state para el caso `files_for_backup` cuando coincide `packageName`; de lo contrario asigna 4.
+- `BRService$6:2128`: conserva state para `files_for_backup`; en la otra rama asigna 1.
+- `BRService$6:2101`: escribe `BRItem.error` desde `v8`; el valor efectivo no se recuperó.
+- `BRService$6:2495`: asigna state 3 en `:cond_42`, con el mensaje cercano `Backup One, result failed`.
+- `BRService$7`, método `onZipFileSizeChanged(J,BRItem,String)`: en la rama verdadera de `mIsAborted`, líneas físicas 53/58 escriben state 3 y error 9 sobre el objeto `p3`.
+
+Evidencia 70 fue ampliada con una remisión a evidencia 76. Son semánticas recuperadas de conversación/grep del usuario; no `LOCAL-VERIFIED`. No se añadieron ubicaciones nuevas ni se infirió el valor de error en 2101.
