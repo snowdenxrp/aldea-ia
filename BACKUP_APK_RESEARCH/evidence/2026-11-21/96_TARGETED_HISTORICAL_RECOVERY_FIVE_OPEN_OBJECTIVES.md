@@ -174,3 +174,16 @@ La misma recuperación reportó que `ProgressPageFragmentBase$7$1` a `$7$7` llam
 **Límites:** grep reportado, no bloques Smali íntegros. Las coordenadas no permiten asignar por sí solas semántica de lectura/escritura, método, rama ni orden de ejecución. No inferir que cada callback de UI haga una llamada remota distinta, que se ejecuten los siete en una misma sesión, ni que las referencias `mBRItems` sean todas mutaciones. No duplicar las conclusiones de state/error ya documentadas para `BRService$6/$11`.
 
 **Clasificación:** `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+
+
+## Addendum — BRService$11 start/progress callbacks (2026-11-21)
+
+Una recuperación histórica focalizada del chat del 2026-11-19T04:43:51Z recuperó un detalle de los callbacks de inicio que no estaba explicitado en el expediente:
+
+- `onBackupStart()` y `onRestoreStart()` comprueban `checkRunningTaskIndex()` antes de operar sobre el elemento activo.
+- En la ruta reportada, acceden a `mBRItems[mRunningItemIndex]`, asignan `state=2` y notifican el inicio de la tarea correspondiente.
+- `onRestoreProgress()` notifica el progreso de restauración.
+
+**Deduplicación:** el índice sección 22 y las evidencias 08/15 ya conservaban que BRService$11 inicia items con `state=2`, gestiona errores con `state=3` y traduce códigos `p3` a `BRItem.error`. El inventario de referencias `mBRItems` en sección 100/evidencia 96 también ya estaba preservado. El delta de este addendum es la comprobación explícita de `checkRunningTaskIndex()`, el acceso mediante `mRunningItemIndex` y la notificación de progreso en `onRestoreProgress()`; no se vuelven a registrar los estados ni el mapping.
+
+**Procedencia y límites:** `USER-PASTED-SOURCE / RECOVERED-CHAT`, mensaje histórico del usuario fechado 2026-11-19T04:43:51Z. La recuperación disponible describe el contenido del bloque compartido, pero no adjunta aquí el Smali literal ni permite verificar las ramas completas, los argumentos de las notificaciones o el comportamiento cuando `checkRunningTaskIndex()` falla. No es `LOCAL-VERIFIED`; no inferir sincronización, exclusión mutua ni validez del índice fuera del guard reportado.
