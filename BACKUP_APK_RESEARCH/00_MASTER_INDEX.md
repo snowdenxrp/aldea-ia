@@ -2084,3 +2084,16 @@ Se incorporó evidencia 109: [109_CHAT_TITLE_INDEX_EXPANSION.md](evidence/2026-1
 Se conserva la lista consolidada de 40 títulos transcritos por el usuario a partir de tres capturas, ampliando la evidencia 95. Los rótulos truncados se mantienen tal como fueron aportados.
 
 **Uso:** índice de navegación para localizar conversaciones previas antes de pedir al usuario que repita material o ejecutar comandos. Los títulos no prueban contenido técnico ni cobertura.
+
+
+------------------------------------------------------------------------
+
+## 110. Handoff durable para siguientes chats — 2026-11-22
+
+Se creó [NEXT_CHAT_HANDOFF_2026-11-22.md](NEXT_CHAT_HANDOFF_2026-11-22.md) como punto de entrada obligatorio para continuar la investigación sin depender de memoria conversacional.
+
+El handoff consolida: repositorio/rama, fuente de verdad, protocolo de verificación, reglas anti-repetición, clasificación de procedencia, estado de evidencias 106–109, análisis conservador de `mLastError`, lista de 40 títulos de chats y próximo punto de continuación.
+
+**Regla:** al abrir un chat nuevo, leer primero este handoff y después el índice maestro y las evidencias pertinentes. Verificar el HEAD real; los SHA históricos no se presumen actuales.
+
+**Clasificación:** documento de continuidad operativa; no añade evidencia técnica primaria ni autoriza nuevas extracciones o pruebas.
