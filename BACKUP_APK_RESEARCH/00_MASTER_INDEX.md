@@ -132,8 +132,10 @@ correcta observada fue `"$D/../res/values/public.xml"`.
 - SHA-256 reportado: 36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae.
 
 **AÚN NO RECUPERADO:** versión exacta/build del APK, comando exacto de
-apktool usado para decodificar, hashes de los archivos Smali y una
-recomputación independiente del SHA-256. No inventar estos datos.
+apktool usado para decodificar, stdout íntegro de cálculo de hashes y una
+recomputación independiente de los hashes del APK/Smali. Los cuatro
+hashes y tamaños Smali reportados el 19-11 se registran en evidencia 111;
+no presentarlos como recalculados en esta sesión.
 
 
 ### 1.3 Alcance probatorio de los metadatos de origen
@@ -488,9 +490,11 @@ error por elemento 9 no implica que sean el mismo código semántico.
 
 ### P2 --- completar expediente de origen
 
-1.  Recuperar hash y metadatos exactos de `Backup.apk`.
-2.  Guardar hashes de archivos Smali relevantes.
-3.  Añadir bloques originales y comandos con sus salidas, con
+1.  Cotejar localmente el hash/metadatos reportados de `Backup.apk` solo
+    si se necesita confirmar la adquisición actual.
+2.  Cotejar localmente los cuatro hashes/tamaños Smali de evidencia 111;
+    los valores ya están recuperados documentalmente, pero no recalculados.
+3.  Recuperar bloques originales y comandos/salidas íntegros, con
     referencias de línea.
 4.  Registrar cada método inspeccionado, incluso cuando una búsqueda no
     encontró escritores.
@@ -2097,3 +2101,24 @@ El handoff consolida: repositorio/rama, fuente de verdad, protocolo de verificac
 **Regla:** al abrir un chat nuevo, leer primero este handoff y después el índice maestro y las evidencias pertinentes. Verificar el HEAD real; los SHA históricos no se presumen actuales.
 
 **Clasificación:** documento de continuidad operativa; no añade evidencia técnica primaria ni autoriza nuevas extracciones o pruebas.
+
+
+------------------------------------------------------------------------
+
+## 111. Hashes y tamaños reportados de cuatro archivos Smali — 2026-11-22
+
+Se incorporó [evidencia 111](evidence/2026-11-22/111_SMALI_FILE_HASHES_AND_SIZES_RECOVERED.md).
+
+La recuperación del mensaje del usuario del 2026-11-19T20:47:46Z (14:47 CST) aporta los SHA-256 y tamaños reportados para:
+
+- `BRService$5.smali`: 128,021 bytes.
+- `BRService.smali`: 522,862 bytes.
+- `BRService$FakeBackupListenerImp.smali`: 56,451 bytes.
+- `MiAsistService.smali`: 111,571 bytes.
+
+Los cuatro hashes completos están en evidencia 111. **Procedencia:** `USER-FACT / RECOVERED-CHAT`; el usuario reportó cálculo local desde Termux el 19-11-2026. No se recuperó el comando/stdout íntegro y no se recalcularon en esta sesión. Por ello, el delta corrige la afirmación de que los hashes no se habían recuperado, pero no equivale a verificación criptográfica actual.
+
+**No es nuevo:** los mappings `mBakFilesType`, los hallazgos de `ProgressItemAdapter`, `BRItem` y Binder/`MiAsistService` ya estaban documentados en secciones y evidencias anteriores; no se duplican.
+
+------------------------------------------------------------------------
+
