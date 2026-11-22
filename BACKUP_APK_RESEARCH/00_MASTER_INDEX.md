@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.11 --- recuperación de hashes Smali y corrección del handoff\\
+**Versión:** 1.12 --- coordenadas BRService$5 y hashes Smali recuperados\\
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2096,7 +2096,7 @@ Se conserva la lista consolidada de 40 títulos transcritos por el usuario a par
 
 Se creó [NEXT_CHAT_HANDOFF_2026-11-22.md](NEXT_CHAT_HANDOFF_2026-11-22.md) como punto de entrada obligatorio para continuar la investigación sin depender de memoria conversacional.
 
-El handoff consolida: repositorio/rama, fuente de verdad, protocolo de verificación, reglas anti-repetición, clasificación de procedencia, estado de evidencias 106–111, análisis conservador de `mLastError`, lista de 40 títulos de chats y próximo punto de continuación.
+El handoff consolida: repositorio/rama, fuente de verdad, protocolo de verificación, reglas anti-repetición, clasificación de procedencia, estado de evidencias 106–112, análisis conservador de `mLastError`, lista de 40 títulos de chats y próximo punto de continuación.
 
 **Regla:** al abrir un chat nuevo, leer primero este handoff y después el índice maestro y las evidencias pertinentes. Verificar el HEAD real; los SHA históricos no se presumen actuales.
 
@@ -2119,6 +2119,20 @@ La recuperación del mensaje del usuario del 2026-11-19T20:47:46Z (14:47 CST) ap
 Los cuatro hashes completos están en evidencia 111. **Procedencia:** `USER-FACT / RECOVERED-CHAT`; el usuario reportó cálculo local desde Termux el 19-11-2026. No se recuperó el comando/stdout íntegro y no se recalcularon en esta sesión. Por ello, el delta corrige la afirmación de que los hashes no se habían recuperado, pero no equivale a verificación criptográfica actual.
 
 **No es nuevo:** los mappings `mBakFilesType`, los hallazgos de `ProgressItemAdapter`, `BRItem` y Binder/`MiAsistService` ya estaban documentados en secciones y evidencias anteriores; no se duplican.
+
+------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------
+
+## 112. Coordenadas históricas adicionales de BRService$5 — 2026-11-22
+
+Se incorporó [evidencia 112](evidence/2026-11-22/112_BRSERVICE5_ADDITIONAL_WRITE_COORDINATES_RECOVERED.md).
+
+Un mensaje del usuario del 2026-11-19T04:38:21Z conserva la lista de coordenadas físicas de `BRService$5.smali`: 1151, 1259, 1283, 1336, 1441, 2351, 2547, 2707, 2790, 3225, 3463, 3691 y 3801. Las primeras siete ya tenían cobertura y no se duplican. Se añaden solo seis anclas no encontradas en el índice/evidencias 87–92: **2547, 2707, 3225, 3463, 3691 y 3801**.
+
+**Procedencia y límites:** `USER-FACT / USER-REPORTED-COORDINATE-LIST / RECOVERED-CHAT`; no se recuperó stdout Smali íntegro. No atribuir método, campo, valor, condición ni semántica. La coordenada 3691 es específica de `BRService$5.smali`, no la referencia independiente 3691 de `MiAsistService.smali`. Mantener 3801 separada de 3807 (evidencia 86).
 
 ------------------------------------------------------------------------
 
