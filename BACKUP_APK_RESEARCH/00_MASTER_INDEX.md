@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.12 --- coordenadas BRService$5 y hashes Smali recuperados\\
+**Versión:** 1.13 --- coordenadas del constructor de copia BRItem recuperadas\\
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2096,7 +2096,7 @@ Se conserva la lista consolidada de 40 títulos transcritos por el usuario a par
 
 Se creó [NEXT_CHAT_HANDOFF_2026-11-22.md](NEXT_CHAT_HANDOFF_2026-11-22.md) como punto de entrada obligatorio para continuar la investigación sin depender de memoria conversacional.
 
-El handoff consolida: repositorio/rama, fuente de verdad, protocolo de verificación, reglas anti-repetición, clasificación de procedencia, estado de evidencias 106–112, análisis conservador de `mLastError`, lista de 40 títulos de chats y próximo punto de continuación.
+El handoff consolida: repositorio/rama, fuente de verdad, protocolo de verificación, reglas anti-repetición, clasificación de procedencia, estado de evidencias 106–113, análisis conservador de `mLastError`, lista de 40 títulos de chats y próximo punto de continuación.
 
 **Regla:** al abrir un chat nuevo, leer primero este handoff y después el índice maestro y las evidencias pertinentes. Verificar el HEAD real; los SHA históricos no se presumen actuales.
 
@@ -2133,6 +2133,20 @@ Se incorporó [evidencia 112](evidence/2026-11-22/112_BRSERVICE5_ADDITIONAL_WRIT
 Un mensaje del usuario del 2026-11-19T04:38:21Z conserva la lista de coordenadas físicas de `BRService$5.smali`: 1151, 1259, 1283, 1336, 1441, 2351, 2547, 2707, 2790, 3225, 3463, 3691 y 3801. Las primeras siete ya tenían cobertura y no se duplican. Se añaden solo seis anclas no encontradas en el índice/evidencias 87–92: **2547, 2707, 3225, 3463, 3691 y 3801**.
 
 **Procedencia y límites:** `USER-FACT / USER-REPORTED-COORDINATE-LIST / RECOVERED-CHAT`; no se recuperó stdout Smali íntegro. No atribuir método, campo, valor, condición ni semántica. La coordenada 3691 es específica de `BRService$5.smali`, no la referencia independiente 3691 de `MiAsistService.smali`. Mantener 3801 separada de 3807 (evidencia 86).
+
+------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------
+
+## 113. Coordenadas de copia de state/error en BRItem(BRItem) — 2026-11-22
+
+Se incorporó [evidencia 113](evidence/2026-11-22/113_BRITEM_COPY_CONSTRUCTOR_STATE_ERROR_COORDINATES.md).
+
+La recuperación del mensaje histórico del usuario del 2026-11-20T04:41:25Z añade coordenadas físicas exactas al constructor de copia ya documentado en evidencia 41: línea **121** copia `state` mediante `iget/iput`; línea **123** copia `error` mediante `iget/iput`. También se reiteró que `localFileList` se copia a una lista nueva mediante `addAll`, y que `apkSize/dataSize` no aparecen como referencias internas, solo como declaraciones.
+
+**Delta estrictamente limitado:** las semánticas generales ya constaban en evidencia 41; evidencia 113 solo agrega las coordenadas físicas 121/123. No contarlas como nuevos writers funcionales de Backup ni como mutaciones de un objeto preexistente. Procedencia `USER-FACT / RECOVERED-CHAT`; no se recuperó stdout íntegro ni se verificó el Smali local en esta sesión.
 
 ------------------------------------------------------------------------
 
