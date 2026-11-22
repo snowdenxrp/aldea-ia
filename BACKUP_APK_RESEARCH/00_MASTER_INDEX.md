@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.07 --- cotejo local de CMD_RESTORE\
+**Versión:** 1.09 --- índice de chats y ruta abortBackupAndRestore recuperados\
 **Fecha de corte:** 2026-11-21\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2061,3 +2061,26 @@ Las salidas locales compartidas por el usuario cubren `BRService.smali`, física
 **Delta frente a evidencia 106:** queda cotejado el receptor que evidencia 106 dejó explícitamente pendiente. No se repite el análisis de `onStartCommand`. Los significados semánticos de los códigos 6 y 9 y de la etapa 12 siguen sin identificarse; no se infiere ejecución dinámica ni vulnerabilidad.
 
 **Clasificación:** `LOCAL-VERIFIED` según las salidas `nl -ba` aportadas el 2026-11-22.
+
+
+------------------------------------------------------------------------
+
+## 108. BRService: primera escritura de mLastError mediante abortBackupAndRestore — 2026-11-22
+
+Se incorporó evidencia 108: [108_BRSERVICE_ABORTBACKUPANDRESTORE_MLASTERROR_RECOVERY.md](evidence/2026-11-22/108_BRSERVICE_ABORTBACKUPANDRESTORE_MLASTERROR_RECOVERY.md).
+
+La transcripción recuperada del chat anterior informa que el constructor inicializa `mLastError=0`; `abortBackupAndRestore(I)V` conserva `p1` solo si el campo sigue en cero; la ruta descrita asigna `BRItem.state=3`, `BRItem.error=9` y `mUserInterruptAction=2`. La sobrecarga sin argumentos aporta 3; las rutas de transferencia y espera de conexión aportan 7 según el resumen histórico.
+
+**Relación con evidencias 106–107:** esta ruta es otro posible origen previo de `mLastError`; no demuestra que el 6 de `setState(mState,0xC,0x6)` se almacene. No se repite el análisis de `setState(IIII)`.
+
+**Procedencia y límites:** `RECOVERED-CHAT / USER-PASTED-SUMMARY`; no se recuperó stdout Smali literal en esta conversación. No `LOCAL-VERIFIED`. No repetir las ventanas físicas salvo necesidad concreta de cotejo.
+
+------------------------------------------------------------------------
+
+## 109. Ampliación del índice de títulos de chats — 2026-11-22
+
+Se incorporó evidencia 109: [109_CHAT_TITLE_INDEX_EXPANSION.md](evidence/2026-11-22/109_CHAT_TITLE_INDEX_EXPANSION.md).
+
+Se conserva la lista consolidada de 40 títulos transcritos por el usuario a partir de tres capturas, ampliando la evidencia 95. Los rótulos truncados se mantienen tal como fueron aportados.
+
+**Uso:** índice de navegación para localizar conversaciones previas antes de pedir al usuario que repita material o ejecutar comandos. Los títulos no prueban contenido técnico ni cobertura.
