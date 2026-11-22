@@ -2044,3 +2044,20 @@ El usuario compartió salida local `nl -ba` de `BRService.smali`, físicas 19480
 **Delta frente a evidencia 105:** se verifican los argumentos de `setState`, la continuación de recuperación/retransferencia, el cierre idle y las condiciones del retorno. No se duplican las instrucciones ya registradas en evidencia 105.
 
 **Clasificación:** `LOCAL-VERIFIED` para las físicas 19480–19611, basándose en la salida local aportada el 2026-11-22. Los significados de `0xC`, `0x6`, `v1` y los códigos de retorno siguen sin resolverse semánticamente; no se infiere ejecución efectiva ni éxito de retransmisión.
+
+------------------------------------------------------------------------
+
+## 107. BRService.setState: receptor y propagación a BRItem — 2026-11-22
+
+Se incorporó evidencia 107: [107_BRSERVICE_SETSTATE_RECEIVER_AND_BRITEM_PROPAGATION.md](evidence/2026-11-22/107_BRSERVICE_SETSTATE_RECEIVER_AND_BRITEM_PROPAGATION.md).
+
+Las salidas locales compartidas por el usuario cubren `BRService.smali`, físicas 14061–14204, e incluyen las sobrecargas `setState(III)V` y `setState(IIII)V`:
+
+- La sobrecarga de tres argumentos inserta el valor actual de `mUserInterruptAction` como tercer argumento.
+- En la llamada de evidencia 106, `setState(mState, 0xC, 0x6)`, el valor 12 (`0xC`) llega como `p2` y se asigna a `mWorkingStage`; el valor 6 llega como `p4` y solo inicializa `mLastError` si este todavía es cero.
+- La propagación a `mBRItems` está dentro de la rama de actualización (alguno de `mState`, `mWorkingStage` o `mUserInterruptAction` difiere). Allí se activa si `p2==10`, `p2==12` o `p3==2`; con lista no nula/no vacía, todos los elementos reciben `BRItem.state=3` y `BRItem.error=9`.
+- Después llama a `notifyServiceStateChange()` y `setWorkingPreference(Context, III)` con `p1`, `p2` y `mBakFilesType`.
+
+**Delta frente a evidencia 106:** queda cotejado el receptor que evidencia 106 dejó explícitamente pendiente. No se repite el análisis de `onStartCommand`. Los significados semánticos de los códigos 6 y 9 y de la etapa 12 siguen sin identificarse; no se infiere ejecución dinámica ni vulnerabilidad.
+
+**Clasificación:** `LOCAL-VERIFIED` según las salidas `nl -ba` aportadas el 2026-11-22.
