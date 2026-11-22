@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.16 --- estado de recuperación de fragmentos A–D documentado\\
+**Versión:** 1.17 --- estado de recuperación de fragmentos A–D documentado\\
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2177,3 +2177,15 @@ Las líneas físicas 14394–14574 corresponden al bloque principal compartido. 
 **Procedencia y límites:** `USER-PASTED-SMALI / RECOVERED-CHAT); no se recuperó el bloque completo ni se cotejó localmente. La evidencia 115 complementa y actualiza la limitación original de evidencia 114 sobre los nombres literales de los extras. No inferir la definición de `v0`, argumentos completos del PendingIntent/notificación ni ejecución en todas las ramas.
 
 ------------------------------------------------------------------------
+
+
+## 116. Implementación de clearLocalFiles y consumidor de resultados — 2026-11-22
+
+Se incorporó [evidencia 116](evidence/2026-11-22/116_CLEAR_LOCAL_FILES_AND_RESULT_CONSUMER_RECOVERED.md), recuperada de mensajes del usuario del 2026-11-18 y 2026-11-19.
+
+La implementación histórica reportada de `BRService.clearLocalFiles(ArrayList<BRItem>)` retorna si la lista es null; itera los BRItem y, para el elemento cuyo `packageName.equals("files_for_backup")`, vacía `localFileList` si contiene elementos. Coordenadas físicas reportadas: 3977–4040; directivas `.line` 4975–4977. El reporte especifica que no modifica `BRItem.state`, `BRItem.error`, `packageName`, la lista principal ni elimina el elemento.
+
+En `showFinishNotification`, se reportó la llamada a `clearLocalFiles(p4)` seguida de `putParcelableArrayListExtra("extra_last_britems", p4)` cuando `p4 != null`; coordenadas físicas 14592–14600 (inserción 14595–14597), `.line` 4962–4963. También se recuperó `extra_title=v1` y `PendingIntent.getActivity(..., flags=0xc000000)`; argumentos completos no disponibles. En el consumidor `ProgressPageFragmentBase.smali` se reportaron línea física 541 para recuperación de `extra_last_britems` y línea 2397 para la acción `ACTION_VIEW_BRRESULT`; no se recuperó el cuerpo completo del receptor.
+
+**Procedencia y límites:** `USER-PASTED-SMALI / RECOVERED-CHAT`; fragmentos descritos por el usuario en mensajes históricos, no cotejados localmente en esta sesión. No confundir la limpieza de `localFileList` con modificación de estado ni con eliminación del BRItem.
+
