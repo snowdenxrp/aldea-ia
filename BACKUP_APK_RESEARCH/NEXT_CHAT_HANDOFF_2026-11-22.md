@@ -129,3 +129,23 @@ Se realizó una búsqueda dirigida de recuerdos y resúmenes históricos posteri
 La auditoría amplió la recuperación de `showFinishNotification()` con evidencia 115 y actualizó la evidencia 94 para dejar constancia de que los fragmentos A–D literales fueron pegados históricamente pero no pudieron recuperarse en esta búsqueda. El índice queda en v1.16. El stdout completo del barrido global `BRItem.state/error` tampoco está disponible en memoria. Próximo avance: recuperar el mensaje original A–D o el bloque Smali completo de `showFinishNotification()`; no reconstruir lo ausente.
 
 **Procedencia de esta auditoría:** búsqueda de memoria persistente y resúmenes de asistente; cotejo documental contra el índice v1.13 y evidencias 27, 70, 76, 77, 82, 83 y 94. No es evidencia Smali primaria ni verificación local del APK.
+
+## Auditoría adversarial adicional de memoria — 2026-11-22 (segunda pasada)
+
+Se cruzaron nuevos resultados de búsqueda de memoria persistente con las secciones pertinentes del índice v1.16 y las evidencias 45, 52, 94, 96 y las secciones 101–102. No se crea una nueva evidencia técnica porque los candidatos ya estaban cubiertos o carecen de fuente literal recuperable.
+
+### Candidatos y resultado del cotejo
+
+- **MiAsistService / gate de comando:** la evidencia 52 ya conserva onStartCommand(), isActionParamsValid(), mimover_action, client_port, acciones mi_backup/mi_restore, puertos 57447–57449 y anclas de isOwnerSpace()/conexión/bindBRService()/bindTransFileService(). Un resumen de memoria mencionó además isBRServiceAvailable(), pero esa llamada no aparece en evidencia 52 ni en el índice v1.16 recuperado; no incorporarla ni tratarla como confirmada sin el mensaje fuente.
+- **IBRService / getBRItems():** evidencia 45 ya contiene la transacción 5, Stub/Proxy, arreglo nuevo, copia selectiva de files_for_backup, referencia compartida de localFileList dentro del proceso y referencias originales para los demás elementos. La búsqueda no recuperó un delta literal adicional. La pregunta local-vs-Proxy permanece pendiente según evidencia 45/62.
+- **BRService$11 callbacks:** el índice ya conserva el guard checkRunningTaskIndex(), acceso mBRItems[mRunningItemIndex] y notificación de progreso en onRestoreProgress() (sección 101), con procedencia USER-PASTED-SOURCE / RECOVERED-CHAT. No se recuperó Smali literal adicional.
+- **BRService$11 escrituras de state:** sección 102/evidencia 96 ya conserva las cinco coordenadas físicas 766, 863, 1141, 1589 y 1754; no asignar método/valor/condición sin contexto.
+- **CMD_RESTORE en BRService.onStartCommand():** evidencia 96 ya corrige la antigua interrupción aparente después de extra_zip_file_path. La continuación recuperada describe extra_britems no vacío → toArray() y restoreFiles(BRItem[],v6,v3); lista vacía → restoreFiles(null,v6,v3) solo si v3==3 o mIsReStartCommand; en otro caso log restoreFiles brItems is null y setState(...). Física 19417–19426 ancla la lectura ZIP; .line 913/915 son directivas, no coordenadas físicas. No repetir la descripción antigua truncada ni confundirla con el cuerpo de restoreFiles().
+- **restoreTransfering() y BRService$5:** las ramas brState==3 → CMD_BACKUP + extra_is_retransfering=true y brState==4 → startRestoreCommand(5 args) ya están en la sección de retransferencia del índice. El mapping mBakFilesType y v8 ya fue reconciliado por evidencias 51/57/58/60/61/65/78; no trasladar el v8 de BRService$5 a BRService$6:2101.
+- **Otros resúmenes:** ProgressItemAdapter, BRService.smali:12849–12956, 16787–16791 y BRService$5 en 103–186 ya están cubiertos en evidencias/índice. No se recuperaron bloques fuente adicionales ni un stdout nuevo.
+
+### Conclusión
+
+No se crea evidencia 116 ni se modifica el índice v1.16: esta pasada no produjo un delta técnico que supere el material ya preservado. Se actualiza únicamente este handoff para dejar constancia de la deduplicación y de las correcciones de procedencia/alcance. Próxima acción válida: recuperar mensajes fuente literales pendientes, no repetir las búsquedas o extracciones ya documentadas.
+
+**Procedencia:** búsqueda de memoria persistente y resúmenes históricos; cotejo contra el índice maestro v1.16 y evidencias existentes. No es fuente Smali primaria ni verificación local.
