@@ -104,3 +104,24 @@ Antes de extraer nada, comprobar si el usuario necesita cotejar los cuatro hashe
 - No cambiar de rama ni hacer cambios ajenos al alcance sin autorización.
 - No declarar un hallazgo guardado sin commit y verificación posterior.
 - Evitar duplicar evidencias; preservar solo deltas nuevos.
+
+## Auditoría adversarial de memoria persistente — 2026-11-22
+
+Se realizó una búsqueda dirigida de recuerdos y resúmenes históricos posteriores a la consolidación v1.13. El cotejo se hizo contra el índice maestro y las evidencias vigentes; este apartado registra resultados de deduplicación y límites, no crea evidencia técnica nueva.
+
+### Candidatos recuperados y reconciliación
+
+- **Barrido global `BRItem.state/error` (chat 2026-11-19T22:36–22:39Z):** un resumen histórico de salida grep enumeraba `ArchiveHelper.smali:1741`, `CompatibilityActivity$1.smali:144/152`, `ProgressPageFragmentBase.smali:625`, `BRService$6.smali:1557/2101/2128/2495` y `BRService$7.smali:53/58`. Ya están reconciliados en las secciones/evidencias 70, 76 y 77; no duplicar. En particular, `ArchiveHelper:1741` se reconcilió con el writer `error=1` de evidencia 27; `ProgressPageFragmentBase:625` conserva ambigüedad entre coordenada física y directiva `.line`.
+- **Propagaciones en `BRService.smali`:** los resúmenes citan `6855–6862` (copia entre objetos), `7004/7009` y `17431–17436` (propagación `PkgInfo.state/error` a `BRItem`). El índice ya conserva `6855–6857` como resumen de menor procedencia y las referencias 7004/7009 y 17431–17436 en la sección 46. No extender el rango 6855–6857 hasta 6862 ni atribuir semántica adicional sin el bloque Smali literal.
+- **`BRService$6` lectura en 1877:** un resumen previo la describía como `iget ...->error:I`; el índice ya registra la lectura reportada en 1877 y la lectura de 2518 (sección 83). No es una definición de `v8` ni resuelve el valor escrito en `error` en 2101.
+- **Rama de `BRService$6` 2110–2128:** el bloque histórico recuperado indica que `equals()` verdadero conserva `state` y falso asigna 1. Ya está documentado en evidencia 82; no identificar la cadena comparada como `files_for_backup` sin recuperar su definición.
+- **`startRestoreCommand` (5 y 7 argumentos):** los resúmenes y las llamadas históricas están recogidos en evidencia 94. Los fragmentos A–D literales no se recuperaron en esta búsqueda; no reconstruirlos.
+- **`handleTaskFinish` / `showFinishNotification()`:** el resumen de `handleTaskFinish(IIILjava/util/ArrayList;)V` ya está en el expediente. El cuerpo literal de `showFinishNotification()` no apareció; queda pendiente solo si una pregunta concreta lo requiere.
+- **`ArchiveHelper.unzipFiles`:** el resumen recuperado sobre ZIP, temporales y `BRItem.error=1` no se elevó a hallazgo nuevo porque la escritura `error=1` ya está reconciliada con evidencia 27 y el contexto literal adicional no fue recuperado en esta búsqueda.
+- **`BRService$5` registros `v10/v14`:** una conversación indica que el barrido para resolver sus inicializaciones no se ejecutó por un error tipográfico en el comando. No existe stdout de ese barrido; no inferir valores ni repetirlo sin necesidad específica.
+
+### Conclusión y siguiente recuperación
+
+No se crea evidencia 114: los candidatos técnicos recuperables ya están cubiertos o son resúmenes incompletos sin delta probatorio. La próxima recuperación de mayor valor sigue siendo obtener del historial o del usuario el stdout literal del barrido global y los fragmentos A–D de `startRestoreCommand`, o el cuerpo literal de `showFinishNotification()`. Hasta entonces, mantener estos puntos como pendientes y no volver a ejecutar extracciones por rutina.
+
+**Procedencia de esta auditoría:** búsqueda de memoria persistente y resúmenes de asistente; cotejo documental contra el índice v1.13 y evidencias 27, 70, 76, 77, 82, 83 y 94. No es evidencia Smali primaria ni verificación local del APK.
