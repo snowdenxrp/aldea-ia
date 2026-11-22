@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.15 --- claves literales de extras y acción Intent recuperadas\\
+**Versión:** 1.16 --- estado de recuperación de fragmentos A–D documentado\\
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -1865,6 +1865,8 @@ Se conserva la pauta de recuperación por intervalos consecutivos de 30 minutos 
 ## 94. Rutas de restauración de cinco y siete argumentos; recepción CMD_RESTORE — 2026-11-21
 
 Se incorporó evidencia 94: [`94_RESTORE_OVERLOAD_RECURSION_AND_CMD_RESTORE_RECEIVER.md`](evidence/2026-11-21/94_RESTORE_OVERLOAD_RECURSION_AND_CMD_RESTORE_RECEIVER.md).
+
+**Auditoría adversarial 2026-11-22:** memoria persistente confirma que el usuario pegó los fragmentos Smali literales A–D el 2026-11-17T03:27:35Z (rutas `$HOME/backup-static/decoded/smali/...`), pero la búsqueda actual no recuperó el payload literal; el contenido técnico permanece resumido y no debe reconstruirse. El mensaje del 03:29:25Z también contenía una salida parcial literal de `CMD_RESTORE` y quedó cortado al leer `extra_zip_file_path`; la continuación posterior hasta `restoreFiles(...)` ya está en el addendum de evidencia 94. La búsqueda confirmó que el stdout completo del barrido global `BRItem.state/error` del 2026-11-19T22:37:46Z no está disponible en la memoria consultada; no sintetizarlo desde resúmenes parciales.
 
 El resumen compartido por el usuario distingue dos rutas que no deben mezclarse:
 
