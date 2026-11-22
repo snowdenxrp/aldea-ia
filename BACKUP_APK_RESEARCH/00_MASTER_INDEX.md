@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.14 --- transporte de resultado showFinishNotification recuperado\\
+**Versión:** 1.15 --- claves literales de extras y acción Intent recuperadas\\
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2159,5 +2159,19 @@ Se incorporó [evidencia 114](evidence/2026-11-22/114_SHOW_FINISH_NOTIFICATION_R
 La recuperación de memoria persistente encontró resúmenes históricos del bloque compartido por el usuario para `BRService.showFinishNotification(IIILjava/util/ArrayList;)V`. El método transmite estado global, etapa y código de error a la pantalla de resultados; cuando `p4 != null`, llama a `clearLocalFiles(p4)` y agrega la lista mediante `putParcelableArrayListExtra("extra_last_britems", ...)`. También calcula el título con `getFinishNotificationTitle(mIsTransingTask,p1,p2)`, el recurso de error con `getErrStringRes(p1,p3)`, crea la notificación mediante `NotificationUtils.createNotification(...)` y la publica con ID `0x7f120037`.
 
 **Delta y límites:** los métodos de título/error, la limpieza `clearLocalFiles()` y `handleTaskFinish()` ya tenían cobertura previa. Evidencia 114 añade el transporte a la pantalla de resultados, la condición de `p4`, la clave `extra_last_britems` y el ID de notificación. Los nombres literales completos de los tres primeros extras y el bloque Smali íntegro no se recuperaron. La procedencia es `PRIOR_ASSISTANT_SUMMARY / RECOVERED-CHAT` basada en un bloque histórico compartido por el usuario; no es `LOCAL-VERIFIED` ni transcripción primaria completa.
+
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 115. Claves literales y extras de showFinishNotification — 2026-11-22
+
+Se incorporó [evidencia 115](evidence/2026-11-22/115_SHOW_FINISH_NOTIFICATION_LITERAL_EXTRAS_RECOVERED.md), recuperada de mensajes del usuario del 2026-11-19T19:30:56Z y 19:31:46Z.
+
+El Intent usa la acción literal `com.miui.backup.activity.ACTION_VIEW_BRRESULT`. Los extras reportados son `extra_last_task_state=p1`, `extra_last_workingstage=p2` y `extra_last_errcode=p3`. También se recuperó `localBackup = mIsFlashDriveTask xor v0` (la definición de `v0` no está disponible), y `extra_last_britems` recibe `p4` después de `clearLocalFiles(p4)`. El bloque contiene el literal `SHOULDN'T RESOLVE!`.
+
+Las líneas físicas 14394–14574 corresponden al bloque principal compartido. La continuación sitúa `extra_last_workingstage` en 14577–14580 y `extra_last_errcode` en 14582–14585; se mencionan además `extra_title`, `PendingIntent` y `getFinishNotificationTitle`, sin coordenadas precisas recuperadas para esos elementos.
+
+**Procedencia y límites:** `USER-PASTED-SMALI / RECOVERED-CHAT); no se recuperó el bloque completo ni se cotejó localmente. La evidencia 115 complementa y actualiza la limitación original de evidencia 114 sobre los nombres literales de los extras. No inferir la definición de `v0`, argumentos completos del PendingIntent/notificación ni ejecución en todas las ramas.
 
 ------------------------------------------------------------------------
