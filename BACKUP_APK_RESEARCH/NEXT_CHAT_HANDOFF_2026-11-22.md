@@ -149,3 +149,25 @@ Se cruzaron nuevos resultados de búsqueda de memoria persistente con las seccio
 No se crea evidencia 116 ni se modifica el índice v1.16: esta pasada no produjo un delta técnico que supere el material ya preservado. Se actualiza únicamente este handoff para dejar constancia de la deduplicación y de las correcciones de procedencia/alcance. Próxima acción válida: recuperar mensajes fuente literales pendientes, no repetir las búsquedas o extracciones ya documentadas.
 
 **Procedencia:** búsqueda de memoria persistente y resúmenes históricos; cotejo contra el índice maestro v1.16 y evidencias existentes. No es fuente Smali primaria ni verificación local.
+
+## Auditoría adversarial adicional de memoria — 2026-11-22 (tercera pasada)
+
+Se amplió la búsqueda por fechas (2026-11-18 y 2026-11-19), títulos de conversaciones y términos literales `clearLocalFiles`, `showFinishNotification`, `extra_last_britems`, `ACTION_VIEW_BRRESULT`, `ProgressPageFragmentBase` y `PendingIntent`. El cotejo contra el índice v1.16 mostró un delta genuino: el índice solo conservaba un resumen de `clearLocalFiles` y declaraba que su implementación literal no se había recuperado.
+
+### Delta preservado
+
+- Evidencia 116 recupera el método `clearLocalFiles(ArrayList<BRItem>)`: null retorna; itera BRItem; para `packageName.equals("files_for_backup")`, vacía `localFileList` si no está vacía. Coordenadas físicas reportadas 3977–4040 y directivas `.line` 4975–4977.
+- El efecto es acotado: no modifica `BRItem.state`, `BRItem.error`, `packageName`, la lista principal ni elimina el BRItem.
+- En `showFinishNotification`, la llamada a `clearLocalFiles(p4)` precede a la inserción de `extra_last_britems=p4`; coordenadas físicas reportadas 14592–14600 (inserción 14595–14597), `.line` 4962–4963.
+- Se recuperaron además `extra_title=v1` y `PendingIntent.getActivity(..., flags=0xc000000)`; argumentos completos no disponibles.
+- En `ProgressPageFragmentBase.smali` se reportaron línea física 541 para la recuperación de `extra_last_britems` y 2397 para la acción `ACTION_VIEW_BRRESULT`. Son anclas, no el cuerpo del receptor.
+- Se creó evidencia 116 y el índice maestro pasó a v1.17. Procedencia `USER-PASTED-SMALI / RECOVERED-CHAT`; no es verificación local.
+
+### Límites que siguen abiertos
+
+- Los fragmentos A–D de `startRestoreCommand` no reaparecieron como texto literal; no reconstruirlos.
+- El stdout completo del barrido global `BRItem.state/error` del 2026-11-19 sigue sin recuperarse.
+- El método completo `showFinishNotification` y el receptor completo de `ProgressPageFragmentBase` tampoco se recuperaron.
+- La evidencia 116 no demuestra comportamiento runtime ni autoriza extrapolar cómo la pantalla consume o presenta los extras.
+
+**Procedencia de esta pasada:** búsqueda de memoria persistente por fecha, título y palabras literales; cotejo contra índice v1.16 y evidencias 114–115. No se repitieron extracciones Smali locales.
