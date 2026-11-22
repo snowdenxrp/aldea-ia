@@ -7,9 +7,9 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.15.
+- Última versión del índice verificada al actualizar este handoff: 1.16.
 - Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
-- HEAD de rama verificado antes de esta actualización del handoff: `d0652347bacbf19b291d044f0a298d007097c54e`.
+- HEAD de rama verificado antes de esta actualización del handoff: `3500f7b5776b867d95787278c69dba1afcb42669`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
 - APK investigado: MIUI `Backup.apk`; SHA-256 histórico registrado en el expediente: `36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae`. No recalcular salvo necesidad.
 
@@ -38,7 +38,9 @@
 - Evidencia 113 conserva las coordenadas físicas 121 (`state`) y 123 (`error`) de `BRItem(BRItem)`, recuperadas de chat del 2026-11-20T04:41:25Z. La semántica de copia ya constaba en evidencia 41; 113 añade únicamente las coordenadas, no writers funcionales nuevos.
 - Evidencia 114 conserva el resumen del transporte de resultado en `showFinishNotification(IIILjava/util/ArrayList;)V` y la notificación ID `0x7f120037`; su limitación sobre nombres literales fue complementada por evidencia 115.
 - Evidencia 115 recupera de mensajes del usuario del 2026-11-19T19:30:56Z y 19:31:46Z los extras literales `extra_last_task_state=p1`, `extra_last_workingstage=p2`, `extra_last_errcode=p3`, acción `com.miui.backup.activity.ACTION_VIEW_BRRESULT`, `localBackup=mIsFlashDriveTask xor v0`, `extra_last_britems=p4` tras `clearLocalFiles`, y el literal `SHOULDN'T RESOLVE!`. Coordenadas reportadas: bloque 14394–14574; continuación workingstage 14577–14580 y errcode 14582–14585. No se recuperó método completo ni definición de `v0`.
-- El índice maestro fue actualizado a v1.15. Las evidencias 111–115 conservan hashes/tamaños reportados, coordenadas adicionales de `BRService$5`, coordenadas de copia `BRItem` y detalles de transporte/notificación; su cotejo local sigue pendiente.
+- Auditoría adversarial: la memoria confirma que el usuario pegó los fragmentos A–D literales de `startRestoreCommand` el 2026-11-17T03:27:35Z, pero la búsqueda actual no recuperó el payload. Evidencia 94 fue anotada; no reconstruir A–D desde resúmenes. El mensaje de 03:29:25Z contenía una salida parcial de `CMD_RESTORE`, cuya continuación posterior ya está en evidencia 94.
+- El stdout completo del barrido global `BRItem.state/error` del 2026-11-19T22:37:46Z no se recuperó; una conversación del 2026-11-20 confirma que ese stdout no estaba en la memoria disponible. No sintetizar coincidencias desde resúmenes parciales.
+- El índice maestro fue actualizado a v1.16. Las evidencias 111–115 conservan hashes/tamaños reportados, coordenadas adicionales de `BRService$5`, coordenadas de copia `BRItem` y detalles de transporte/notificación; su cotejo local sigue pendiente.
 
 ## Interpretación técnica conservadora de mLastError
 
@@ -124,6 +126,6 @@ Se realizó una búsqueda dirigida de recuerdos y resúmenes históricos posteri
 
 ### Conclusión y siguiente recuperación
 
-La auditoría amplió la recuperación de `showFinishNotification()`: evidencia 115 incorpora claves literales y la acción del Intent a partir de mensajes del usuario del 2026-11-19, y evidencia 114 fue anotada con la referencia cruzada. El índice queda en v1.15. La próxima recuperación de mayor valor sigue siendo obtener el stdout literal del barrido global y los fragmentos A–D de `startRestoreCommand`, o el cuerpo Smali completo de `showFinishNotification()`; no reconstruir lo que no está disponible.
+La auditoría amplió la recuperación de `showFinishNotification()` con evidencia 115 y actualizó la evidencia 94 para dejar constancia de que los fragmentos A–D literales fueron pegados históricamente pero no pudieron recuperarse en esta búsqueda. El índice queda en v1.16. El stdout completo del barrido global `BRItem.state/error` tampoco está disponible en memoria. Próximo avance: recuperar el mensaje original A–D o el bloque Smali completo de `showFinishNotification()`; no reconstruir lo ausente.
 
 **Procedencia de esta auditoría:** búsqueda de memoria persistente y resúmenes de asistente; cotejo documental contra el índice v1.13 y evidencias 27, 70, 76, 77, 82, 83 y 94. No es evidencia Smali primaria ni verificación local del APK.
