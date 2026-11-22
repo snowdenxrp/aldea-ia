@@ -7,9 +7,9 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.13.
+- Última versión del índice verificada al actualizar este handoff: 1.14.
 - Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
-- HEAD anterior a esta actualización del handoff: `925c2ae918c785479ce9a108d7d4930e2fa6546d`.
+- HEAD de rama verificado antes de esta actualización del handoff: `e58cd6344df0bc8dc4705a0d32dbf6296884425f`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
 - APK investigado: MIUI `Backup.apk`; SHA-256 histórico registrado en el expediente: `36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae`. No recalcular salvo necesidad.
 
@@ -36,7 +36,8 @@
 - Evidencia 111 conserva cuatro SHA-256 y tamaños reportados para `BRService$5.smali`, `BRService.smali`, `BRService$FakeBackupListenerImp.smali` y `MiAsistService.smali`. Procedencia `USER-FACT / RECOVERED-CHAT` del 2026-11-19; no se recuperó stdout íntegro ni se recalcularon en esta sesión. Consultar la evidencia para los valores completos; no etiquetarlos como verificación local actual.
 - Evidencia 112 conserva seis coordenadas físicas adicionales reportadas para `BRService$5.smali`: 2547, 2707, 3225, 3463, 3691 y 3801. Solo son anclas `RECOVERED-CHAT`; no asignar método, campo, valor ni condición. La lista completa y los duplicados excluidos están en la evidencia.
 - Evidencia 113 conserva las coordenadas físicas 121 (`state`) y 123 (`error`) de `BRItem(BRItem)`, recuperadas de chat del 2026-11-20T04:41:25Z. La semántica de copia ya constaba en evidencia 41; 113 añade únicamente las coordenadas, no writers funcionales nuevos.
-- El índice maestro fue actualizado a v1.13. Los hashes Smali están recuperados documentalmente en evidencia 111, las coordenadas adicionales de `BRService$5` en evidencia 112 y las coordenadas de copia `BRItem` en evidencia 113; su cotejo local sigue pendiente.
+- Evidencia 114 conserva el transporte de resultado en `showFinishNotification(IIILjava/util/ArrayList;)V`: extras de estado/etapa/error, inclusión condicional de `extra_last_britems`, cálculo separado de título/error y notificación ID `0x7f120037`. Es `PRIOR_ASSISTANT_SUMMARY / RECOVERED-CHAT`; no se recuperó el cuerpo Smali íntegro ni los nombres literales de los tres primeros extras.
+- El índice maestro fue actualizado a v1.14. Las evidencias 111–114 conservan hashes/tamaños reportados, coordenadas adicionales de `BRService$5`, coordenadas de copia `BRItem` y el flujo de notificación; su cotejo local sigue pendiente.
 
 ## Interpretación técnica conservadora de mLastError
 
@@ -116,12 +117,12 @@ Se realizó una búsqueda dirigida de recuerdos y resúmenes históricos posteri
 - **`BRService$6` lectura en 1877:** un resumen previo la describía como `iget ...->error:I`; el índice ya registra la lectura reportada en 1877 y la lectura de 2518 (sección 83). No es una definición de `v8` ni resuelve el valor escrito en `error` en 2101.
 - **Rama de `BRService$6` 2110–2128:** el bloque histórico recuperado indica que `equals()` verdadero conserva `state` y falso asigna 1. Ya está documentado en evidencia 82; no identificar la cadena comparada como `files_for_backup` sin recuperar su definición.
 - **`startRestoreCommand` (5 y 7 argumentos):** los resúmenes y las llamadas históricas están recogidos en evidencia 94. Los fragmentos A–D literales no se recuperaron en esta búsqueda; no reconstruirlos.
-- **`handleTaskFinish` / `showFinishNotification()`:** el resumen de `handleTaskFinish(IIILjava/util/ArrayList;)V` ya está en el expediente. El cuerpo literal de `showFinishNotification()` no apareció; queda pendiente solo si una pregunta concreta lo requiere.
+- **`handleTaskFinish` / `showFinishNotification()`:** `handleTaskFinish(IIILjava/util/ArrayList;)V` ya está documentado. La segunda búsqueda recuperó un resumen del transporte de resultado en `showFinishNotification()` y se guardó como evidencia 114; el cuerpo Smali literal completo sigue sin estar disponible.
 - **`ArchiveHelper.unzipFiles`:** el resumen recuperado sobre ZIP, temporales y `BRItem.error=1` no se elevó a hallazgo nuevo porque la escritura `error=1` ya está reconciliada con evidencia 27 y el contexto literal adicional no fue recuperado en esta búsqueda.
 - **`BRService$5` registros `v10/v14`:** una conversación indica que el barrido para resolver sus inicializaciones no se ejecutó por un error tipográfico en el comando. No existe stdout de ese barrido; no inferir valores ni repetirlo sin necesidad específica.
 
 ### Conclusión y siguiente recuperación
 
-No se crea evidencia 114: los candidatos técnicos recuperables ya están cubiertos o son resúmenes incompletos sin delta probatorio. La próxima recuperación de mayor valor sigue siendo obtener del historial o del usuario el stdout literal del barrido global y los fragmentos A–D de `startRestoreCommand`, o el cuerpo literal de `showFinishNotification()`. Hasta entonces, mantener estos puntos como pendientes y no volver a ejecutar extracciones por rutina.
+La primera ronda de búsqueda no produjo evidencia técnica nueva. Una segunda búsqueda recuperó un delta documental sobre el transporte de resultado en `showFinishNotification()`, guardado como evidencia 114 e indexado en v1.14. La próxima recuperación de mayor valor sigue siendo obtener del historial o del usuario el stdout literal del barrido global y los fragmentos A–D de `startRestoreCommand`, o el cuerpo literal completo de `showFinishNotification()`. Hasta entonces, mantener estos puntos como pendientes y no volver a ejecutar extracciones por rutina.
 
 **Procedencia de esta auditoría:** búsqueda de memoria persistente y resúmenes de asistente; cotejo documental contra el índice v1.13 y evidencias 27, 70, 76, 77, 82, 83 y 94. No es evidencia Smali primaria ni verificación local del APK.
