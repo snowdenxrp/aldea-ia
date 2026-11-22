@@ -547,8 +547,7 @@ error por elemento 9 no implica que sean el mismo código semántico.
 -   Registrar las búsquedas negativas con su alcance exacto; "no
     encontrado en esta clase" no equivale a "no existe en todo el APK".
 -   Toda nueva evidencia debe añadirse con fecha, ruta, método, líneas,
-    comando, salida y clasificación.
--   Mantener el trabajo estático y de solo lectura. No ejecutar
+    comando, salida y clasificación.-   Mantener el trabajo estático y de solo lectura. No ejecutar
     restauraciones, backups, servicios ni pruebas dinámicas salvo
     autorización expresa del usuario.
 
@@ -1099,7 +1098,6 @@ El cierre reportado incluye `mReconnector.quit()`, `ITransFileService.stopAll(0)
 
 **Pendientes:** cuerpo completo de `BRService$5.run()/startRestore()`, implementación de `StorageMonitor.startMonitor()`, ruta completa ZIP/zipStreamReader → executor → PerformAdbRestoreTask → BRManager.restorePackage(), y verificación de los usos restantes de `mBakFilesType`, en particular la asignación literal de `v8`. Todo lo nuevo sigue RECOVERED-CHAT/DIRECT-CHAT, no LOCAL-VERIFIED.
 
-
 ## 40. ArchiveHelper, restoreLocalMediaFile y tareas MiAsist/transferencia — 2026-11-20
 
 Se incorporó evidencia 49: [`49_ARCHIVEHELPER_AND_MIASIST_TRANSFER_RECOVERY.md`](evidence/2026-11-20/49_ARCHIVEHELPER_AND_MIASIST_TRANSFER_RECOVERY.md).
@@ -1648,7 +1646,6 @@ Evidencia 70 fue corregida para marcar la coordenada ambigua. No se añaden writ
 Se incorporó evidencia 78: [`78_BRSERVICE5_V8_CLUE_SEPARATION_FROM_BRSERVICE6.md`](evidence/2026-11-21/78_BRSERVICE5_V8_CLUE_SEPARATION_FROM_BRSERVICE6.md).
 
 La recuperación de conversaciones encontró un bloque literal previo de `BRService$5` donde `v8=1` si `mBakFilesType==2` y `v8=0` en caso contrario; en ese método se usa después como condición de ruta. Esta información no resuelve el writer distinto reportado en `BRService$6.smali:2101`, que escribe el registro local `v8` en `BRItem.error`. La coincidencia de nombre de registro entre clases internas no prueba continuidad de valor ni equivalencia semántica.
-
 **Erratum preventivo:** no transferir `v8=1/0` ni la condición `mBakFilesType==2` desde `BRService$5` a `BRService$6`. El valor efectivo de `BRService$6:2101` permanece desconocido; evidencia 76 sigue siendo la referencia de su estado pendiente. Evidencia 78 no añade writers ni convierte la pista histórica en verificación local.
 
 
@@ -2031,3 +2028,19 @@ El mensaje histórico del usuario del 2026-11-17T05:16:53Z corrige el límite pr
 **Corrección de estado:** ya no es correcto afirmar que la continuación se corta al comenzar `extra_zip_file_path`. La continuación está recuperada parcialmente, no íntegramente.
 
 **Límites:** el bloque local disponible termina en 19490, dentro de la rama vacía; falta la continuación posterior para cotejar las condiciones y argumentos exactos de `setState`. No confundir con el cuerpo independiente `restoreFiles(...)` reportado alrededor de física 12672. Clasificación mixta: despacho no vacío `LOCAL-VERIFIED`; rama vacía parcialmente `RECOVERED-CHAT`.
+
+------------------------------------------------------------------------
+
+## 106. BRService.onStartCommand: rama vacía y cierre de CMD_RESTORE — 2026-11-22
+
+Se incorporó evidencia 106: [106_BRSERVICE_ONSTARTCOMMAND_CMD_RESTORE_TAIL.md](evidence/2026-11-22/106_BRSERVICE_ONSTARTCOMMAND_CMD_RESTORE_TAIL.md).
+
+El usuario compartió salida local `nl -ba` de `BRService.smali`, físicas 19480–19620. El fragmento completa el bloque que evidencia 105 había dejado parcialmente pendiente:
+
+- Lista vacía: si `v3==3` o `mIsReStartCommand` es verdadero, llama a `restoreFiles(v5,v6,v3)`; en caso contrario registra `restoreFiles brItems is null` y llama a `setState(mState,0xC,0x6)`.
+- Tras el despacho, `onStartCommand` comprueba `isIdleState()`; si es verdadero, registra el mensaje de posible reinicio y llama a `backupPackagesByRetransfering(v1)`. Después vuelve a comprobar el estado idle y llama a `stopSelf()` si sigue idle.
+- El retorno final es `v1` únicamente cuando `mBakFilesType==3` y `mState==3`; en cualquier otro caso devuelve `2`.
+
+**Delta frente a evidencia 105:** se verifican los argumentos de `setState`, la continuación de recuperación/retransferencia, el cierre idle y las condiciones del retorno. No se duplican las instrucciones ya registradas en evidencia 105.
+
+**Clasificación:** `LOCAL-VERIFIED` para las físicas 19480–19611, basándose en la salida local aportada el 2026-11-22. Los significados de `0xC`, `0x6`, `v1` y los códigos de retorno siguen sin resolverse semánticamente; no se infiere ejecución efectiva ni éxito de retransmisión.
