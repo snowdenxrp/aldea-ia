@@ -2020,14 +2020,14 @@ La recuperación del mensaje del usuario del 2026-11-17T03:27:35Z añade detalle
 
 Se incorporó evidencia 105: [105_CMD_RESTORE_CONTINUATION_PARTIAL_RECOVERY.md](evidence/2026-11-21/105_CMD_RESTORE_CONTINUATION_PARTIAL_RECOVERY.md).
 
-La recuperación del mensaje del usuario del 2026-11-17T05:16:53Z corrige el límite previo de evidencia 94/96: el bloque histórico de `BRService.onStartCommand()` continuaba después de leer `extra_zip_file_path` hasta los despachos a `restoreFiles(...)`:
+El mensaje histórico del usuario del 2026-11-17T05:16:53Z corrige el límite previo de evidencia 94/96. El usuario aportó después salida local `nl -ba` para físicas 19410–19490, verificando el despacho de lista no vacía hasta 19485:
 
-- `extra_zip_file_path`: ancla física reportada 19417–19426.
+- Física 19417 asigna `mDescriptorPath`; `extra_zip_file_path` se lee en 19419–19422 y se asigna a `mZipFilePath` en 19426.
 - `extra_britems` no vacío: `ArrayList.toArray()` produce `BRItem[]` y se llama `restoreFiles(BRItem[], v6, v3)`.
 - Lista vacía: `restoreFiles(null, v6, v3)` solo si `v3==3` o `mIsReStartCommand`.
 - Lista vacía sin esas condiciones: log literal `restoreFiles brItems is null` y llamada a `setState(...)`.
-- Las llamadas se asocian a directivas `.line 913` y `.line 915`; el log/error a `.line 915–918`. No son coordenadas físicas.
+- La llamada de lista no vacía está localmente en 19483 bajo `.line 913`. `.line 915` y la rama de lista vacía siguen siendo referencias históricas, no cotejadas en esta salida.
 
 **Corrección de estado:** ya no es correcto afirmar que la continuación se corta al comenzar `extra_zip_file_path`. La continuación está recuperada parcialmente, no íntegramente.
 
-**Límites:** no se recuperó el bloque Smali consecutivo completo, el comando de extracción ni el rango físico posterior a 19426; tampoco los argumentos exactos de `setState`. No confundir con el cuerpo independiente `restoreFiles(...)` reportado alrededor de física 12672. Clasificación `USER-FACT / RECOVERED-CHAT`; no `LOCAL-VERIFIED`.
+**Límites:** el bloque local disponible termina en 19490, dentro de la rama vacía; falta la continuación posterior para cotejar las condiciones y argumentos exactos de `setState`. No confundir con el cuerpo independiente `restoreFiles(...)` reportado alrededor de física 12672. Clasificación mixta: despacho no vacío `LOCAL-VERIFIED`; rama vacía parcialmente `RECOVERED-CHAT`.
