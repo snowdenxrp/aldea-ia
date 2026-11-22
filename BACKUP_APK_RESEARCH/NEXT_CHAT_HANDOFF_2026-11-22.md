@@ -8,7 +8,7 @@
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
 - Última versión del índice verificada al actualizar este handoff: 1.11.
-- Commit del índice v1.11 verificado antes de esta actualización: `925c2ae918c785479ce9a108d7d4930e2fa6546d`.
+- Commit del índice v1.11 verificado antes de esta actualización: `224720dd1459738ddc72de5d947b9822f828a2b2`.
 - HEAD anterior a esta actualización del handoff: `925c2ae918c785479ce9a108d7d4930e2fa6546d`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
 - APK investigado: MIUI `Backup.apk`; SHA-256 histórico registrado en el expediente: `36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae`. No recalcular salvo necesidad.
