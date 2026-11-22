@@ -7,8 +7,9 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al crear este handoff: 1.09.
-- Commit previo verificado: `35e36b44d8a17dd970b5875857fc4c6dba0a35c6`.
+- Última versión del índice verificada al actualizar este handoff: 1.11.
+- Commit del índice v1.11 verificado antes de esta actualización: `925c2ae918c785479ce9a108d7d4930e2fa6546d`.
+- HEAD anterior a esta actualización del handoff: `925c2ae918c785479ce9a108d7d4930e2fa6546d`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
 - APK investigado: MIUI `Backup.apk`; SHA-256 histórico registrado en el expediente: `36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae`. No recalcular salvo necesidad.
 
@@ -32,6 +33,8 @@
   - 107: receptor `setState(III)V` / `setState(IIII)V`, mapeo de parámetros, escritura condicional de `mLastError` y propagación a `BRItem`.
 - Evidencia 108 conserva el resumen histórico de `abortBackupAndRestore(I)V`: constructor `mLastError=0`; el método conserva `p1` solo si el campo sigue en cero; la sobrecarga sin argumentos llama con 3; las rutas directas resumidas aportan 7 en transferencia/espera de conexión. Está clasificada `RECOVERED-CHAT / USER-PASTED-SUMMARY`, no `LOCAL-VERIFIED`.
 - Evidencia 109 conserva la lista consolidada de 40 títulos de chats transcritos de tres capturas, como índice de navegación, no como evidencia técnica.
+- Evidencia 111 conserva cuatro SHA-256 y tamaños reportados para `BRService$5.smali`, `BRService.smali`, `BRService$FakeBackupListenerImp.smali` y `MiAsistService.smali`. Procedencia `USER-FACT / RECOVERED-CHAT` del 2026-11-19; no se recuperó stdout íntegro ni se recalcularon en esta sesión. Consultar la evidencia para los valores completos; no etiquetarlos como verificación local actual.
+- El índice maestro fue actualizado a v1.11. El dato de hashes Smali ya no debe describirse como completamente ausente: está recuperado documentalmente, aunque su cotejo criptográfico actual sigue pendiente.
 
 ## Interpretación técnica conservadora de mLastError
 
@@ -91,7 +94,7 @@ La evidencia 95 conserva una lista anterior y la 109 la amplía. Antes de volver
 
 ## Próximo punto de continuación
 
-Continuar el análisis causal de `mLastError` solo después de buscar en las conversaciones anteriores y en GitHub si ya está preservada la salida Smali literal de constructor, `abortBackupAndRestore(I)V` y sus sitios de llamada. No ejecutar de nuevo las extracciones si el material ya existe. Si la salida literal no puede recuperarse, conservar la limitación como `RECOVERED-CHAT` y preguntar al usuario únicamente si una cuestión nueva exige ese cotejo.
+Antes de extraer nada, comprobar si el usuario necesita cotejar los cuatro hashes/tamaños de evidencia 111; no recalcularlos por rutina. Continuar el análisis causal de `mLastError` solo después de buscar en las conversaciones anteriores y en GitHub si ya está preservada la salida Smali literal de constructor, `abortBackupAndRestore(I)V` y sus sitios de llamada. No ejecutar de nuevo las extracciones si el material ya existe. Si la salida literal no puede recuperarse, conservar la limitación como `RECOVERED-CHAT` y preguntar al usuario únicamente si una cuestión nueva exige ese cotejo.
 
 ## Restricciones de trabajo
 
