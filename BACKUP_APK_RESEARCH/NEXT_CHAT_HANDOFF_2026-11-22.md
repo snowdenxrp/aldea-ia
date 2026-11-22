@@ -7,8 +7,8 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.12.
-- Commit del índice v1.11 verificado antes de esta actualización: `f1a1b975184fa36130f33d3060efc03921400de8`.
+- Última versión del índice verificada al actualizar este handoff: 1.13.
+- Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
 - HEAD anterior a esta actualización del handoff: `925c2ae918c785479ce9a108d7d4930e2fa6546d`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
 - APK investigado: MIUI `Backup.apk`; SHA-256 histórico registrado en el expediente: `36a5fc5f8e06881959004e4981bb905b656626211e8ab0472be2a30b8a6825ae`. No recalcular salvo necesidad.
@@ -35,7 +35,8 @@
 - Evidencia 109 conserva la lista consolidada de 40 títulos de chats transcritos de tres capturas, como índice de navegación, no como evidencia técnica.
 - Evidencia 111 conserva cuatro SHA-256 y tamaños reportados para `BRService$5.smali`, `BRService.smali`, `BRService$FakeBackupListenerImp.smali` y `MiAsistService.smali`. Procedencia `USER-FACT / RECOVERED-CHAT` del 2026-11-19; no se recuperó stdout íntegro ni se recalcularon en esta sesión. Consultar la evidencia para los valores completos; no etiquetarlos como verificación local actual.
 - Evidencia 112 conserva seis coordenadas físicas adicionales reportadas para `BRService$5.smali`: 2547, 2707, 3225, 3463, 3691 y 3801. Solo son anclas `RECOVERED-CHAT`; no asignar método, campo, valor ni condición. La lista completa y los duplicados excluidos están en la evidencia.
-- El índice maestro fue actualizado a v1.12. Los hashes Smali están recuperados documentalmente en evidencia 111 y las coordenadas adicionales en evidencia 112; su cotejo local sigue pendiente.
+- Evidencia 113 conserva las coordenadas físicas 121 (`state`) y 123 (`error`) de `BRItem(BRItem)`, recuperadas de chat del 2026-11-20T04:41:25Z. La semántica de copia ya constaba en evidencia 41; 113 añade únicamente las coordenadas, no writers funcionales nuevos.
+- El índice maestro fue actualizado a v1.13. Los hashes Smali están recuperados documentalmente en evidencia 111, las coordenadas adicionales de `BRService$5` en evidencia 112 y las coordenadas de copia `BRItem` en evidencia 113; su cotejo local sigue pendiente.
 
 ## Interpretación técnica conservadora de mLastError
 
@@ -95,7 +96,7 @@ La evidencia 95 conserva una lista anterior y la 109 la amplía. Antes de volver
 
 ## Próximo punto de continuación
 
-Antes de extraer nada, comprobar si el usuario necesita cotejar los cuatro hashes/tamaños de evidencia 111 o inspeccionar las seis coordenadas nuevas de evidencia 112; no recalcular ni extraer por rutina. Continuar el análisis causal de `mLastError` solo después de buscar en las conversaciones anteriores y en GitHub si ya está preservada la salida Smali literal de constructor, `abortBackupAndRestore(I)V` y sus sitios de llamada. No ejecutar de nuevo las extracciones si el material ya existe. Si la salida literal no puede recuperarse, conservar la limitación como `RECOVERED-CHAT` y preguntar al usuario únicamente si una cuestión nueva exige ese cotejo.
+Antes de extraer nada, comprobar si el usuario necesita cotejar los cuatro hashes/tamaños de evidencia 111 o inspeccionar las seis coordenadas nuevas de evidencia 112 o cotejar las coordenadas 121/123 de evidencia 113; no recalcular ni extraer por rutina. Continuar el análisis causal de `mLastError` solo después de buscar en las conversaciones anteriores y en GitHub si ya está preservada la salida Smali literal de constructor, `abortBackupAndRestore(I)V` y sus sitios de llamada. No ejecutar de nuevo las extracciones si el material ya existe. Si la salida literal no puede recuperarse, conservar la limitación como `RECOVERED-CHAT` y preguntar al usuario únicamente si una cuestión nueva exige ese cotejo.
 
 ## Restricciones de trabajo
 
