@@ -26,3 +26,8 @@ La recuperación independiente del 2026-11-19 también resumía las llamadas a `
 - No afirmar que `p4` siempre sea no nulo ni que la limpieza se ejecute en todas las rutas.
 
 **Estado:** delta de flujo de notificación y transporte de resultado recuperado de conversación; fuente literal completa y cotejo local pendientes.
+
+
+## Nota de actualización documental — evidencia 115
+
+Una recuperación posterior de mensajes del usuario del 2026-11-19T19:30:56Z y 19:31:46Z permitió recuperar los nombres literales `extra_last_task_state`, `extra_last_workingstage` y `extra_last_errcode`, además de la acción Intent `com.miui.backup.activity.ACTION_VIEW_BRRESULT` y el extra `localBackup`. Véase [evidencia 115](115_SHOW_FINISH_NOTIFICATION_LITERAL_EXTRAS_RECOVERED.md). Por tanto, la limitación anterior sobre nombres no recuperados queda superada. La recuperación no aporta el método completo ni verificación local.
