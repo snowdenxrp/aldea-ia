@@ -1,7 +1,7 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.26 — contexto de guardias de transferencia y preload en BRService$5
-**Fecha de corte:** 2026-11-22\
+**Versión:** 1.27 — flujo de registros y convergencia en :goto_9 de BRService$5
+**Fecha de corte:** 2026-11-23\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
 implica ejecución de restauraciones, modificación del APK ni pruebas
@@ -2398,3 +2398,19 @@ Se incorporó [evidencia 128](evidence/2026-11-23/128_BRSERVICE5_PRELOAD_AND_TRA
 - La rama `AppUtils.isPadDisableApps(packageName)` confirma el writer físico 1283 (`state=v10`), la escritura contigua `error=v3` y la llamada `notifyItemTaskError(...,v3)`. Los valores dominantes de `v10` y `v3` siguen UNKNOWN.
 
 **Dedupe:** evidencia 126 ya documentaba las coordenadas y parte de estas condiciones; evidencia 128 añade contexto de guardias y orden de instrucciones, sin declarar writers nuevos. No conectar `v10=3` reportado en otra región con el writer 1283 sin demostrar alcance/flujo. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 129. BRService$5: convergencia en :goto_9 y flujo de v2 — 2026-11-23
+
+Se incorporó [evidencia 129](evidence/2026-11-23/129_BRSERVICE5_GOTO9_V2_STATUS_REGISTER_FLOW.md), basada en la ventana física 520–620 de `BRService$5.smali` compartida directamente por el usuario.
+
+**Delta contextual:**
+- En `:cond_d`, `mIsAborted=true` selecciona `v0=3`; falso selecciona `v0=6`. `:cond_e` selecciona `v0=2`. Estas rutas convergen en `:goto_7`, que escribe `v7` en `mIsAborted`; el valor dominante de `v7` permanece UNKNOWN.
+- `:cond_f` consulta `isStorageSpaceEnough(mTransSingleItemMaxSize)`. Si no hay espacio, escribe `v7` en `mIsAborted`, asigna `v2=2` y salta a `:goto_9`.
+- En la ruta que alcanza `:goto_8`, `move v2,v0` hace que `v2` reciba el valor seleccionado previamente en `v0`.
+- La rama local puede llamar a `updateLocalRestoreItems(mDescriptorPath)`.
+- `:goto_9` recupera descriptor e items y llama a `BRServiceDataHolder.setBRServiceFileList(descriptor,items)`. La ventana termina tras cargar el literal de log `"startRestore, transed"`; todavía no muestra el consumidor posterior de `v2`.
+
+**Dedupe y límites:** evidencia 128 cubre las guardias de transferencia/preload en otras ventanas; evidencia 129 añade el flujo de registros y la convergencia de esta ventana, no nuevos writers de `BRItem.state/error`. No se resuelve el valor de `v7`, el consumidor posterior de `v2` ni la semántica global de los valores 2/3/6. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
