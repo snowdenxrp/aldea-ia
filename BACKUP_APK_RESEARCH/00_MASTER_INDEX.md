@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.24 — callbacks de ProgressItemAdapter y contabilidad de tamaños documentados
+**Versión:** 1.25 — resolución de BRItem.state en FakeBackupListenerImp.onBackupEnd
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2373,3 +2373,14 @@ Se incorporó [evidencia 126](evidence/2026-11-22/126_BRService5_PRELOAD_STATE_A
 **Dedupe:** las coordenadas ya estaban en el inventario grep. Evidencia 126 añade condiciones y operandos visibles, sin declarar nuevos writers. Las líneas 1544 y 1557–1589 se conservan en evidencia 124 y no se duplican.
 
 **Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`; ventanas del usuario no verificadas independientemente ni ejecutadas dinámicamente. Pendiente rastrear definiciones de `v14), `v10) y `v3) y recuperar ventanas completas sin corrupción de formato.
+
+
+------------------------------------------------------------------------
+
+## 127. Resolución de BRItem.state en FakeBackupListenerImp.onBackupEnd — 2026-11-23
+
+Se incorporó [evidencia 127](evidence/2026-11-23/127_FAKEBACKUPLISTENER_ONBACKUPEND_STATE_REGISTER_RESOLUTION.md), recuperada de las ventanas históricas compartidas por el usuario para `BRService$FakeBackupListenerImp.smali` (físicas 1100–1165, 1160–1225 y 1220–1290).
+
+**Corrección de evidencia 124:** el bloque anterior al writer contiene `const/4 v3, 0x1`; las ventanas intermedias no muestran redefinición de `v3` antes de la instrucción física 1273 `iput v3, v0, BRItem.state`. Por tanto, esa escritura asigna `state=1`. La descripción anterior de `v3` como no resuelto queda supersedida para este writer.
+
+**Dedupe y límites:** las escrituras del adaptador vuelven a aparecer en evidencia 123 y no se duplican. El grep global mezcla lecturas y escrituras. Un intento malformado de asignar `F` para `BRService$5.smali` falló en Bash; el grep posterior siguió apuntando al archivo previo del adaptador y no produjo extracción de `BRService$5`. No afirmar que ese archivo fue inspeccionado por ese comando. Procedencia `USER-PROVIDED / RECOVERED-CHAT-TERMUX-OUTPUT`; no es verificación local independiente ni runtime.
