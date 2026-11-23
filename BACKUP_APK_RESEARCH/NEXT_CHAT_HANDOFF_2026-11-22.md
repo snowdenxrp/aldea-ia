@@ -7,7 +7,7 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.20.
+- Última versión del índice verificada al actualizar este handoff: 1.21.
 - Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
 - HEAD de rama verificado antes de esta actualización del handoff: `3500f7b5776b867d95787278c69dba1afcb42669`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
@@ -207,3 +207,20 @@ Se creó evidencia 119 y se actualizó el índice maestro a v1.20.
 - No se ha visto el procesamiento posterior de los BRItem ni se ha resuelto `v8`; no inferir valores de estado ni presentación UI. No hay escrituras visibles de `BRItem.state/error` en esta ventana.
 
 **Siguiente entrada esperada del usuario:** salida ya solicitada de `sed -n '580,700p' "$HOME/backup-static/decoded/smali/com/miui/backup/activity/ProgressPageFragmentBase.smali"`. Tratarla como continuación; no volver a pedir ni ejecutar 510–590.
+
+
+## Actualización de continuidad — evidencia 120 (2026-11-22)
+
+El usuario continúa compartiendo las salidas Termux en el orden ya indicado por el chat anterior. No cambiar la secuencia ni pedir extracciones ya realizadas. Verificar cada bloque contra índice/evidencias, deduplicar y guardar solo deltas nuevos.
+
+Se creó evidencia 120 y el índice maestro pasó a v1.21.
+
+**Nuevo material recibido:**
+- Ventana física 580–700 de `ProgressPageFragmentBase.smali`: en la ruta de lista `v3` no nula/no vacía, se convierte `ArrayList<BRItem>` a `BRItem[]`, se recorren sus objetos y se lee `BRItem.state`. Si es 6, se escribe `v7` al campo.
+- Ventana física 430–515 del mismo método resuelve `v7=1` y `v8=-1`. Así, la mutación demostrada es `BRItem.state: 6 → 1`; y la ruta `mState == v8` de evidencia 119 es `mState == -1`, la ruta que obtiene `extra_last_britems` desde el Bundle.
+- El arreglo se crea con `ArrayList.toArray()`; sus elementos son las mismas referencias BRItem, de modo que la escritura afecta los objetos referenciados y no una copia profunda.
+- Tras la iteración, el arreglo se asigna a `v6` y se crea/instala `ProgressItemAdapter`.
+
+**Cautelas:** la normalización solo queda probada en esta ruta de lista `v3`; no extenderla a `mLastItems` ni a `IBRService.getBRItems()` sin fuente. No se ven escrituras de `error`, cálculo de resultados ni enlace de filas. El cuerpo directo del adaptador sigue pendiente. No convertir resúmenes históricos del índice sobre el adaptador en verificación primaria nueva.
+
+**Siguiente objetivo ya planteado:** continuar con el cuerpo de `ProgressPageFragmentBase$ProgressItemAdapter` (constructor y métodos de conteo/obtención/enlace de filas), sin repetir las ventanas 430–515, 510–590 o 580–700.
