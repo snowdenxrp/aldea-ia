@@ -101,3 +101,18 @@ Se recibió la ventana física 740–860 de `BRService$5.smali` y se preservó e
 **No repetir:** ventanas 520–620, 620–740 ni 740–860. El siguiente bloque útil empieza después de la inicialización/entrada al bucle `:goto_d`, en el punto exacto que el usuario comparta. No adelantar comandos ni nuevas extracciones.
 
 **Límites:** no se observan writes directos a `BRItem.state/error`; no inferir significado de los argumentos de `setState` ni autenticación/éxito de restauración. Procedencia de evidencia 131: salida pegada directamente por el usuario, no verificación local independiente ni runtime.
+
+
+## Actualización 6 — evidencia 132 (2026-11-23)
+
+Se recibió la ventana física 850–970 de `BRService$5.smali` y se preservó en evidencia 132. El índice maestro avanzó a **v1.30**.
+
+**Hallazgos:**
+- Completa el iterador inicial de `mBRItems`: obtiene BRItem, lee `packageName` y llama a `equals("files_for_backup")`. En el fragmento pegado no aparece `move-result` ni branch basado en el resultado; después se ve `v11=5) y retorno al bucle. No atribuir filtrado/selección sin cotejo del Smali íntegro.
+- Comprueba `mZipFilePath`; null o vacío no abre ZIP. Ruta no vacía intenta `new ZipFile(path)`.
+- Éxito → ZipFile en `v5). `IOException` → log, lectura de `mState), llamada `setState(mState,v3,v14)), y `v5=null). Las rutas sin path también dejan `v5=null).
+- En `:goto_e` inicializa `v11=0), `v13=0); `:goto_f` recupera `mBRItems`, carga `v3=11) y comprueba null hacia `:cond_62`.
+
+**Continuidad inmediata:** continuar desde la rama de lista no nula de `:goto_f` / destino `:cond_62` según el siguiente bloque que comparta el usuario. No repetir ventanas 520–620, 620–740, 740–860 ni 850–970. No adelantar extracciones.
+
+**Límites:** sin writes directos a `BRItem.state/error`; no asignar semántica a `v11=5), `v3=11) o `v14). La llamada `setState` es global al servicio. Procedencia de evidencia 132: salida pegada por el usuario, sin verificación local independiente ni runtime.
