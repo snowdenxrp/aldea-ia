@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.18 --- estado de recuperación de fragmentos A–D documentado\\
+**Versión:** 1.19 --- estado de recuperación de fragmentos A–D documentado\\
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2204,5 +2204,24 @@ El usuario compartió en este chat la salida de grep que contiene el encabezado 
 **No duplicado:** la acción, el nombre de `localBackup`, los extras globales, el literal `SHOULDN'T RESOLVE!`, el transporte de `p4), `clearLocalFiles) y las referencias del consumidor ya constaban en evidencias 114–116. Evidencia 117 no los vuelve a contar como hallazgos independientes; aporta la fuente directa para el segmento inicial y precisa el flujo de construcción del Intent y selección de interfaz.
 
 **Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-GREP-OUTPUT`; salida de grep compartida por el usuario, no ejecutada independientemente aquí. El fragmento se corta en física 14574, al comenzar la carga de `extra_last_task_state`. No permite concluir si el método completo invoca callbacks; tampoco muestra aún el transporte final de lista/notificación. No es verificación local independiente ni evidencia de ejecución dinámica.
+
+------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+
+## 118. Continuación y cierre de showFinishNotification — 2026-11-23
+
+Se incorporó [evidencia 118](evidence/2026-11-23/118_SHOW_FINISH_NOTIFICATION_COMPLETION.md), continuación directa del segmento preservado en evidencia 117.
+
+El fragmento compartido por el usuario completa el método hasta `.end method`. Confirma los extras globales `extra_last_task_state=p1`, `extra_last_workingstage=p2`, `extra_last_errcode=p3) y `extra_title=v1`. Confirma además que, **si `p4 != null`**, se ejecuta `clearLocalFiles(p4)` y después se agrega la misma lista al Intent mediante `putParcelableArrayListExtra("extra_last_britems", p4)`.
+
+Después se crea `PendingIntent.getActivity(p0,v2,p4,0x0c000000)`; se calculan título y recurso de error mediante `getFinishNotificationTitle(mIsTransingTask,p1,p2)` y `getErrStringRes(p1,p3)`; finalmente `NotificationUtils.createNotification(...)` crea la notificación y `mNotificationManager.notify(0x7f120037,...)` la publica.
+
+**Conclusión:** queda confirmado el transporte conjunto del resultado global y de la lista de resultados individuales hacia la pantalla, con la lista condicionada a `p4 != null` y limpiada antes de adjuntarse. Esto no demuestra cómo el consumidor procesa cada BRItem ni que existan callbacks `onRestoreEnd()`/`onError()`. No inferir significado de estados ni presentación por aplicación.
+
+**Dedupe:** evidencias 114–116 ya contenían resúmenes históricos de esos nombres y operaciones. El delta de 118 es la continuación Smali directa que confirma el orden, condición, argumentos y cierre del método; no se cuentan nuevamente como descubrimientos conceptuales independientes.
+
+**Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-SED-OUTPUT`; salida de `sed` compartida por el usuario, no verificada localmente de forma independiente. Evidencias 117 y 118, en conjunto, contienen el método completo según los fragmentos compartidos. El receptor de `ACTION_VIEW_BRRESULT` sigue pendiente.
 
 ------------------------------------------------------------------------
