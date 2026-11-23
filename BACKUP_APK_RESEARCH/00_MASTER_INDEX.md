@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.23 — ciclo de vida y conservación de BRItem documentados
+**Versión:** 1.24 — callbacks de ProgressItemAdapter y contabilidad de tamaños documentados
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2300,3 +2300,22 @@ Se incorporó [evidencia 122](evidence/2026-11-22/122_PROGRESSPAGEFRAGMENTBASE_I
 - La comprobación de aborto llama showAbortConfirmDialog() solo cuando la preferencia indica servicio activo, el botón existe y su visibilidad es 0.
 
 **Límites:** no demuestra persistencia en disco ni contiene getView/getCount/getItemViewType. No reemplaza la inspección del archivo Smali separado del adaptador. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; fragmentos incompletos y sin runtime.
+
+
+------------------------------------------------------------------------
+
+## 123. ProgressItemAdapter: callbacks, estado activo y contabilidad de tamaños — 2026-11-22
+
+Se incorporó [evidencia 123](evidence/2026-11-22/123_PROGRESSITEMADAPTER_CALLBACK_STATE_AND_SIZE_ACCOUNTING.md), basada en los bloques compartidos desde Termux para `itemStart`, `setItemsAborted`, `updateWorkingItemProgress`, `workingItemError` y `workingItemFinished`.
+
+**Delta directo:**
+- `itemStart` localiza paquete/feature, asigna `mWorkingIndex`, escribe `state=2`, actualiza la fila, desplaza el ListView y recalcula progreso total.
+- `setItemsAborted` recorre todos los elementos y escribe `state=3,error=9` sin filtrar estado previo.
+- `updateWorkingItemProgress` solo vuelve a buscar cuando `mWorkingIndex==-1`; actualiza `progType/completedSize` y solo inicializa `totalSize` cuando el valor existente es cero y el nuevo no es `-1`.
+- `workingItemError` escribe `state=3,error=p3`; en el fragmento no reinicia `mWorkingIndex` ni recalcula progreso total.
+- `workingItemFinished` contiene una secuencia condicional precisa de transición/contadores, calcula `bakFileSize`, puede ajustar `completedSize` con `totalSize` o `bakFileSize`, suma `splitFileSize` y acumula `mSuccessfulSize` con la excepción ×1000 para MMS/Contacts tipo 9.
+- **Corrección:** el cuerpo directo muestra que `workingItemFinished` reinicia `mWorkingIndex=-1`, no `-2` como decía el resumen previo de evidencia 54. La evidencia 54 fue anotada para reflejarlo.
+
+**Dedupe:** evidencia 54 ya resumía las mutaciones generales y el factor ×1000; evidencia 67 ya conservaba resúmenes de `initData/getView/updateInfoView`. La evidencia 123 aporta detalle de las condiciones/orden de instrucciones y corrige el valor de reinicio; no reabre ni duplica los métodos cubiertos por 67.
+
+**Límites:** no se recibieron los cuerpos de `findProgressItemIndex`, `getBRItemSize`, `computeTotalProgress`, `updateSingleItem` ni `ProgressItem.updateProgress`. No atribuir unidades físicas a los campos de tamaño ni semántica universal a los códigos de estado/error. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin verificación local independiente ni runtime.
