@@ -98,3 +98,8 @@ Estas relaciones son referencias históricas de callers, no reconstrucción comp
 7. Solo lectura estática.
 
 **Conclusión:** el adapter considera state 1/6 exitosos, state 3 terminado no exitoso y state 2 en progreso; state 1/6 muestran 100%, state 2/4/5/7/8 calcula hasta 99%, state 0/3 muestra 0. Conserva la referencia BRItem y calcula tamaños con una excepción ×1000 para MMS/Contacts type 9. La UI exacta de errores permanece incompleta.
+
+
+## Corrección basada en evidencia directa posterior — 2026-11-22
+
+El bloque Smali compartido posteriormente para `workingItemFinished()` muestra que el método reinicia `mWorkingIndex=-1`, no `-2`. También precisa que el incremento condicionado de `mFinishedAndFailedCount` se evalúa antes de la condición `BRItem.error == 0` que puede forzar `state=1`. Véase evidencia 123 para el detalle y la procedencia directa. Esta corrección sustituye únicamente esas dos afirmaciones del resumen de callbacks; no altera el resto del alcance de esta evidencia.
