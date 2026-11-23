@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.17 --- estado de recuperación de fragmentos A–D documentado\\
+**Versión:** 1.18 --- estado de recuperación de fragmentos A–D documentado\\
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2189,3 +2189,20 @@ En `showFinishNotification`, se reportó la llamada a `clearLocalFiles(p4)` segu
 
 **Procedencia y límites:** `USER-PASTED-SMALI / RECOVERED-CHAT`; fragmentos descritos por el usuario en mensajes históricos, no cotejados localmente en esta sesión. No confundir la limpieza de `localFileList` con modificación de estado ni con eliminación del BRItem.
 
+
+
+------------------------------------------------------------------------
+
+## 117. Segmento Smali directo de showFinishNotification — 2026-11-23
+
+Se incorporó [evidencia 117](evidence/2026-11-23/117_SHOW_FINISH_NOTIFICATION_PRIMARY_SEGMENT.md).
+
+El usuario compartió en este chat la salida de grep que contiene el encabezado y el segmento físico 14394–14574 de `BRService.showFinishNotification(IIILjava/util/ArrayList;)V`. A diferencia de las evidencias 114–116, que conservaban resúmenes y detalles recuperados de conversaciones históricas, evidencia 117 preserva el segmento Smali directo compartido ahora.
+
+**Delta cotejado:** se confirma en el texto visible `stopForeground(true)); la bifurcación `mIsTransingTask` que construye el Intent con el literal `SHOULDN'T RESOLVE!`; la selección de recursos de título según `mIsFlashDriveTask`, tablet y `p1==3`; el umbral `getSwDp() < 600`; la elección entre Intent explícito a `ProgressPageActivity` y deep link a `PROGRESS_PAGE_ACTIVITY`; y la acción `ACTION_VIEW_BRRESULT` junto con el inicio de la preparación del extra `localBackup`.
+
+**No duplicado:** la acción, el nombre de `localBackup`, los extras globales, el literal `SHOULDN'T RESOLVE!`, el transporte de `p4), `clearLocalFiles) y las referencias del consumidor ya constaban en evidencias 114–116. Evidencia 117 no los vuelve a contar como hallazgos independientes; aporta la fuente directa para el segmento inicial y precisa el flujo de construcción del Intent y selección de interfaz.
+
+**Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-GREP-OUTPUT`; salida de grep compartida por el usuario, no ejecutada independientemente aquí. El fragmento se corta en física 14574, al comenzar la carga de `extra_last_task_state`. No permite concluir si el método completo invoca callbacks; tampoco muestra aún el transporte final de lista/notificación. No es verificación local independiente ni evidencia de ejecución dinámica.
+
+------------------------------------------------------------------------
