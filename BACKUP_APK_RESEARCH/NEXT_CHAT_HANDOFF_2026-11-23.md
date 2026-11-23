@@ -5,9 +5,9 @@
 - Repositorio: `snowdenxrp/aldea-ia`
 - Rama: `backup-apk-static-research-2026-11-19`
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`
-- Versión del índice: **1.25**
+- Versión del índice: **1.26**
 - Último HEAD antes de crear este handoff: `e92946f3dd6f394d92761a36a46048cdc35849bd` (índice de evidencia 127)
-- Evidencia nueva: `evidence/2026-11-23/127_FAKEBACKUPLISTENER_ONBACKUPEND_STATE_REGISTER_RESOLUTION.md`
+- Evidencias nuevas: `evidence/2026-11-23/127_FAKEBACKUPLISTENER_ONBACKUPEND_STATE_REGISTER_RESOLUTION.md` y `evidence/2026-11-23/128_BRSERVICE5_PRELOAD_AND_TRANSFER_GUARD_CONTEXT.md`
 - Evidencias relacionadas: 123 (callbacks de ProgressItemAdapter), 124 (writers de callbacks), 126 (writers BRService$5).
 
 ## Delta guardado en esta sesión
@@ -45,3 +45,15 @@ El usuario está reconstruyendo el orden de una conversación anterior y compart
 ## Estado de verificación
 
 Evidencia 127 e índice maestro fueron escritos en la rama indicada. Este handoff se añade como documento de continuidad independiente; después de crearlo, verificar el HEAD y volver a leer los tres archivos (evidencia 127, índice y handoff) antes de declarar la preservación completa.
+
+
+## Actualización 2 — evidencia 128 (2026-11-23)
+
+El usuario compartió dos nuevas ventanas de `BRService$5.smali`: físicas 1050–1160 y 1200–1300. Se preservó únicamente el delta contextual en evidencia 128; el índice maestro avanzó a v1.26.
+
+**Contexto adicional confirmado:**
+- Writer físico 1151 (`state=v14)): pertenece a la rama `shouldSkipBRItem(mState, BRItem)`; requiere `mIsTransingTask=true), estado actual igual a `v7), paquete distinto de `files_for_backup) y resultado no nulo de `findBakInCachePath()). El valor de `v14) sigue sin resolverse.
+- Writer físico 1259: la ventana vuelve a mostrar que `files_for_backup` conserva su estado actual y los demás paquetes reciben `state=4); después se llama a `notifyItemTaskPreload()). Ya estaba documentado en evidencia 126; la nueva ventana añade corroboración/orden.
+- Writer físico 1283: la rama `AppUtils.isPadDisableApps(packageName)` escribe `state=v10,error=v3) y llama a `notifyItemTaskError(...,v3)). Los valores efectivos de `v10) y `v3) no quedan resueltos. No conectar la definición histórica `v10=3) de otra región sin demostrar flujo y alcance.
+
+**Dedupe:** no son writers nuevos; evidencia 128 amplía el contexto de evidencias 124/126. No repetir estas ventanas. Continuar esperando el siguiente bloque histórico del usuario, sin adelantar comandos ni nuevas extracciones.
