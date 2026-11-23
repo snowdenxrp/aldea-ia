@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.19 --- estado de recuperación de fragmentos A–D documentado\\
+**Versión:** 1.20 — receptor parcial de resultados ProgressPageFragmentBase documentado
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2225,3 +2225,18 @@ Después se crea `PendingIntent.getActivity(p0,v2,p4,0x0c000000)`; se calculan t
 **Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-SED-OUTPUT`; salida de `sed` compartida por el usuario, no verificada localmente de forma independiente. Evidencias 117 y 118, en conjunto, contienen el método completo según los fragmentos compartidos. El receptor de `ACTION_VIEW_BRRESULT` sigue pendiente.
 
 ------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------
+
+## 119. Receptor parcial de resultados en ProgressPageFragmentBase — 2026-11-22
+
+Se incorporó [evidencia 119](evidence/2026-11-22/119_PROGRESSPAGEFRAGMENTBASE_RESULT_RECEIVER_PARTIAL.md), con las salidas Smali compartidas en este chat para las ventanas físicas solicitadas 3970–4070 de `BRService.smali` y 510–590 de `ProgressPageFragmentBase.smali`.
+
+**Cotejo/dedupe:**
+- `clearLocalFiles(ArrayList<BRItem>)` queda corroborado por fuente directa actual: solo limpia `localFileList` del elemento `files_for_backup`; no es un writer de `state/error` ni elimina el BRItem. El comportamiento ya estaba documentado en evidencias 116/118; no se cuenta como hallazgo conceptual nuevo.
+- El transporte `showFinishNotification() → extra_last_britems` ya está cubierto por evidencias 114–118 y no se duplica.
+- **Delta nuevo:** el receptor parcial distingue la ruta `mState != v8` (consulta `BRServiceDataHolder.getBrItems()`, con fallback a `mLastItems` si el resultado es null) de la ruta `mState == v8` (si el Bundle `v5` existe, recupera `extra_last_britems` mediante `getParcelableArrayList`; si no, usa `v6`). En la ruta del Bundle, si el contexto existe y `isServiceWorkingFromPreference(context)` devuelve false, actualiza `mProgress` desde `BRServiceDataHolder.getmProgress()`. Las rutas convergen en comprobaciones de null y tamaño de la lista.
+- No se ha resuelto el valor de `v8`, ni el procesamiento posterior de los BRItem, ni su presentación UI. La ventana no muestra escrituras a `BRItem.state/error`.
+
+**Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; salida directa pegada por el usuario, no verificación local independiente ni runtime. Véase evidencia 119. La continuación física 580–700 sigue siendo el siguiente fragmento pendiente; no repetir 510–590.
