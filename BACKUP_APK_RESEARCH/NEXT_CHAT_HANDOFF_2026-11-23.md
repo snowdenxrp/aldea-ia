@@ -85,3 +85,19 @@ Se recibió la ventana física 620–740 de `BRService$5.smali`. El delta se pre
 - No aparece uso de `v2`; su consumidor sigue sin localizar. No hay escrituras directas a `BRItem.state/error`.
 
 **Dedupe:** no repetir ventanas 520–620 ni 620–740. Continuar desde la instrucción posterior a `ConnectivityHelper.getInstance(context)` y el destino `:cond_17` solo cuando el usuario comparta el bloque siguiente. Mantener procedencia de fragmentos compartidos y no inferir efectos posteriores.
+
+
+## Actualización 5 — evidencia 131 (2026-11-23)
+
+Se recibió la ventana física 740–860 de `BRService$5.smali` y se preservó el delta en evidencia 131. El índice maestro avanzó a **v1.29**.
+
+**Hallazgos y continuidad inmediata:**
+- Consulta conectividad mediante `ConnectivityHelper.isNetworkConnected()`. Sin conexión, asigna `v0=4) y salta a salida anticipada.
+- Con conexión, llama a `setState(v4,v4,v6)`, descifra `mEncryptedPasswd` mediante `EncryptPassword.decryptPasswdFromXiaomiAccount(context,...)` y guarda el resultado en `mPasswd`.
+- Contraseña vacía → `v0=1); no vacía → `v0=0). La ruta no nula llama a `setState(v4,v3,v0)`, `handleTaskFinish(v4,v3,v0,mBRItems)` y retorna.
+- **Consumidor de v2 localizado:** en `:cond_17`, `v2==0) ejecuta `setState(v4,v11,v6)`; `v2!=0) omite esa llamada. Esto cierra el pendiente de evidencia 129/130 sobre la localización del consumidor, pero no resuelve el significado de v2, v11 o v6.
+- Tras esa decisión obtiene PackageManager y comienza a iterar `mBRItems`; el cuerpo del bucle aún no se ha recibido.
+
+**No repetir:** ventanas 520–620, 620–740 ni 740–860. El siguiente bloque útil empieza después de la inicialización/entrada al bucle `:goto_d`, en el punto exacto que el usuario comparta. No adelantar comandos ni nuevas extracciones.
+
+**Límites:** no se observan writes directos a `BRItem.state/error`; no inferir significado de los argumentos de `setState` ni autenticación/éxito de restauración. Procedencia de evidencia 131: salida pegada directamente por el usuario, no verificación local independiente ni runtime.
