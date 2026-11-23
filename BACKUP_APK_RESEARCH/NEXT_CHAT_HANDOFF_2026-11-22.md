@@ -193,3 +193,17 @@ El usuario compartió la salida de `sed -n '14570,14780p' .../BRService.smali`, 
 **Dedupe/procedencia:** evidencias 114–116 ya contenían resúmenes históricos de estos elementos; evidencia 118 conserva la continuación Smali directa y el orden/condición/argumentos. Evidencias 117+118 cubren el método completo según los segmentos compartidos por el usuario. Clasificación `USER-PROVIDED / CURRENT-CHAT-SED-OUTPUT`, no verificación local independiente ni runtime.
 
 **Siguiente punto de trabajo:** no repetir la extracción de `showFinishNotification()`. Investigar el receptor de `ACTION_VIEW_BRRESULT` en `ProgressPageFragmentBase.smali` y el consumo de `extra_last_britems` y extras globales. Las antiguas anclas físicas 541 y 2397 son pistas de navegación, no sustituyen el cuerpo del receptor. Objetivo: determinar cómo la pantalla consume cada BRItem y si lee `state/error`; no inferir callbacks ni semántica de estados sin fuente.
+
+
+## Actualización de continuidad — evidencia 119 (2026-11-22)
+
+El usuario indicó que continuará compartiendo, en el orden ya solicitado por el chat anterior, las salidas de Termux. El chat actual debe limitarse a verificar cada bloque, cotejarlo con el índice/evidencias y guardar únicamente los deltas nuevos, sin cambiar la secuencia ni pedir repeticiones.
+
+Se creó evidencia 119 y se actualizó el índice maestro a v1.20.
+
+**Contenido recibido y deduplicado:**
+- El bloque directo de `BRService.clearLocalFiles(ArrayList<BRItem>)` confirma el comportamiento ya descrito en evidencias 116/118: vacía solo `localFileList` del elemento `files_for_backup`; no modifica `state/error`, no elimina el BRItem. Se preserva el texto fuente en evidencia 119 como corroboración, sin contarlo como hallazgo conceptual nuevo.
+- El bloque físico 510–590 de `ProgressPageFragmentBase.smali` añade el receptor parcial: ruta `mState != v8` consulta `BRServiceDataHolder.getBrItems()` y recurre a `mLastItems` si el resultado es null; ruta `mState == v8` recupera `extra_last_britems` del Bundle si está disponible, o asigna `v6` cuando no lo está. En la ruta del Bundle, una condición de contexto/servicio controla la actualización de `mProgress` desde `BRServiceDataHolder.getmProgress()`. Las rutas convergen en comprobaciones de null/tamaño.
+- No se ha visto el procesamiento posterior de los BRItem ni se ha resuelto `v8`; no inferir valores de estado ni presentación UI. No hay escrituras visibles de `BRItem.state/error` en esta ventana.
+
+**Siguiente entrada esperada del usuario:** salida ya solicitada de `sed -n '580,700p' "$HOME/backup-static/decoded/smali/com/miui/backup/activity/ProgressPageFragmentBase.smali"`. Tratarla como continuación; no volver a pedir ni ejecutar 510–590.
