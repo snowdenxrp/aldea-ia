@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.20 — receptor parcial de resultados ProgressPageFragmentBase documentado
+**Versión:** 1.21 — normalización de BRItem.state en ProgressPageFragmentBase documentada
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2240,3 +2240,23 @@ Se incorporó [evidencia 119](evidence/2026-11-22/119_PROGRESSPAGEFRAGMENTBASE_R
 - No se ha resuelto el valor de `v8`, ni el procesamiento posterior de los BRItem, ni su presentación UI. La ventana no muestra escrituras a `BRItem.state/error`.
 
 **Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; salida directa pegada por el usuario, no verificación local independiente ni runtime. Véase evidencia 119. La continuación física 580–700 sigue siendo el siguiente fragmento pendiente; no repetir 510–590.
+
+
+------------------------------------------------------------------------
+
+## 120. Normalización de BRItem.state y preparación del adaptador — 2026-11-22
+
+Se incorporó [evidencia 120](evidence/2026-11-22/120_PROGRESSPAGEFRAGMENTBASE_STATE_NORMALIZATION_AND_ARRAY_PREPARATION.md), con las salidas directas compartidas para las ventanas físicas 580–700 y 430–515 de `ProgressPageFragmentBase.smali`.
+
+**Delta confirmado:**
+- La ventana 430–515 asigna `v7=1` y `v8=-1`; por tanto, en el flujo documentado en evidencia 119, la ruta `mState == v8` equivale a `mState == -1` y es la que recupera `extra_last_britems` del Bundle.
+- La ventana 580–700 convierte la lista no vacía a `BRItem[]`, recorre sus elementos y, cuando `BRItem.state == 6`, escribe `1` en el mismo campo mediante `iput v7`.
+- El arreglo contiene referencias a los mismos objetos BRItem; no es una clonación de cada elemento. La escritura modifica esos objetos referenciados.
+- Después de la iteración, la ruta asigna el arreglo a `v6` y converge en la creación/instalación de `ProgressItemAdapter`.
+
+**Alcance y cautelas:**
+- La mutación `6 → 1` está confirmada en la ruta que procesa la lista `v3` no nula/no vacía. No extenderla sin prueba a las alternativas `mLastItems` o `IBRService.getBRItems()`, que aparecen en otra rama del fragmento y no muestran aquí el mismo bucle.
+- No se observan escrituras a `BRItem.error`, conteo de éxitos/errores, filtrado ni enlace de filas en este segmento.
+- El índice contiene notas históricas sobre `ProgressItemAdapter`; el cuerpo directo del adaptador sigue siendo el siguiente objetivo para cotejar el significado visual de los estados.
+
+**Procedencia:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime. Véase evidencia 120.
