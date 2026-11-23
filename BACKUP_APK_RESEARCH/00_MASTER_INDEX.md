@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.29 — conectividad, descifrado y consumidor de v2 en BRService$5
+**Versión:** 1.30 — recorrido de paquetes y apertura de ZipFile en BRService$5
 **Fecha de corte:** 2026-11-23\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2445,3 +2445,18 @@ Se incorporó [evidencia 131](evidence/2026-11-23/131_BRSERVICE5_CONNECTIVITY_DE
 - Queda localizado el consumidor de `v2` anunciado como pendiente en evidencia 129/130. Su semántica funcional y los valores de `v11)/`v6) siguen sin resolverse.
 
 **Dedupe y límites:** no hay escrituras directas a `BRItem.state/error` en esta ventana. La iteración de items solo comienza; el cuerpo queda fuera del bloque. Las llamadas a `setState` no se clasifican como escrituras BRItem. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 132. BRService$5: recorrido de packageName y apertura de ZipFile — 2026-11-23
+
+Se incorporó [evidencia 132](evidence/2026-11-23/132_BRSERVICE5_PACKAGE_ITERATION_ZIPFILE_OPEN.md), basada en la ventana física 850–970 de `BRService$5.smali` compartida directamente por el usuario.
+
+**Delta contextual:**
+- Completa el cuerpo visible del iterador inicial de `mBRItems`: obtiene cada BRItem, lee `packageName` y ejecuta `equals("files_for_backup")). En el texto recibido no aparece `move-result` ni bifurcación basada en ese booleano; después asigna `v11=5) y repite. No afirmar filtrado/selección.
+- Comprueba `mZipFilePath`: null/vacío evita la apertura; ruta no vacía intenta construir `ZipFile`.
+- Apertura exitosa conserva ZipFile en `v5`. `IOException` genera log, recupera `mState` y llama a `setState(mState,v3,v14)`; después `v5=null). Las rutas null/vacío también dejan `v5=null).
+- En `:goto_e` inicializa `v11=0), `v13=0); `:goto_f` recupera `mBRItems`, carga `v3=11) y comprueba null, con destino `:cond_62`.
+
+**Dedupe y límites:** evidencia 131 ya cubría la entrada al iterador y la obtención de PackageManager; evidencia 132 preserva el cuerpo compartido, la preparación de ZipFile y el comienzo de la siguiente fase. No hay writes directos a `BRItem.state/error`. La llamada a `setState` no se clasifica como mutación directa de BRItem. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
