@@ -2319,3 +2319,19 @@ Se incorporó [evidencia 123](evidence/2026-11-22/123_PROGRESSITEMADAPTER_CALLBA
 **Dedupe:** evidencia 54 ya resumía las mutaciones generales y el factor ×1000; evidencia 67 ya conservaba resúmenes de `initData/getView/updateInfoView`. La evidencia 123 aporta detalle de las condiciones/orden de instrucciones y corrige el valor de reinicio; no reabre ni duplica los métodos cubiertos por 67.
 
 **Límites:** no se recibieron los cuerpos de `findProgressItemIndex`, `getBRItemSize`, `computeTotalProgress`, `updateSingleItem` ni `ProgressItem.updateProgress`. No atribuir unidades físicas a los campos de tamaño ni semántica universal a los códigos de estado/error. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin verificación local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 124. Writers de BRItem.state en BRService$5, BRService$6 y FakeBackupListenerImp — 2026-11-22
+
+Se incorporó [evidencia 124](evidence/2026-11-22/124_BRITEM_STATE_WRITES_BACKUP_SERVICE_CALLBACKS.md), basada en las ventanas físicas compartidas desde Termux para `BRService$5.smali`, `BRService$6.smali` y `BRService$FakeBackupListenerImp.smali`.
+
+**Delta de contexto directo:**
+- `BRService$5`: la rama de `files_for_backup` que espera el fin de transferencia puede escribir `state=6` si el estado previo es distinto; dos ramas de aborto escriben `state=3,error=9`; otra rama escribe `state=1,progType=0` solo si el estado previo no es 1, 6 ni 3 y después notifica fin de ítem.
+- `BRService$6`: la rama `:cond_42` escribe `state=3` y registra `Backup One, result failed`.
+- `FakeBackupListenerImp`: `onBackupStart` escribe explícitamente `state=2`; `onError` escribe `state=3`; `onBackupEnd` escribe `state=v3`, cuyo valor no se resuelve con la ventana recibida, y después escribe `progType=v4`.
+
+**Dedupe y límites:** las coordenadas físicas ya figuraban en el inventario grep anterior; evidencia 124 añade el contexto de instrucciones y condiciones, no nuevos writers independientes. No se resolvieron los registros fuente de las escrituras restantes ni el mapping completo de `p3` en `onError`. Las líneas `.line` de Smali no son coordenadas físicas. Véase evidencia 124 para las ventanas exactas, procedencia y pendientes.
+
+**Procedencia:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`; fragmentos compartidos por el usuario, no verificados independientemente aquí y sin ejecución dinámica.
