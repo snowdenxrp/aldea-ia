@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.27 — flujo de registros y convergencia en :goto_9 de BRService$5
+**Versión:** 1.28 — contraseña cifrada y lista future task en BRService$5
 **Fecha de corte:** 2026-11-23\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2414,3 +2414,18 @@ Se incorporó [evidencia 129](evidence/2026-11-23/129_BRSERVICE5_GOTO9_V2_STATUS
 - `:goto_9` recupera descriptor e items y llama a `BRServiceDataHolder.setBRServiceFileList(descriptor,items)`. La ventana termina tras cargar el literal de log `"startRestore, transed"`; todavía no muestra el consumidor posterior de `v2`.
 
 **Dedupe y límites:** evidencia 128 cubre las guardias de transferencia/preload en otras ventanas; evidencia 129 añade el flujo de registros y la convergencia de esta ventana, no nuevos writers de `BRItem.state/error`. No se resuelve el valor de `v7`, el consumidor posterior de `v2` ni la semántica global de los valores 2/3/6. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 130. BRService$5: contraseña cifrada y preparación de future task — 2026-11-23
+
+Se incorporó [evidencia 130](evidence/2026-11-23/130_BRSERVICE5_ENCRYPTED_PASSWORD_FUTURE_TASK_PACKAGES.md), basada en la ventana física 620–740 compartida por el usuario.
+
+**Delta contextual:**
+- Tras el log `"startRestore, transed"`, recupera `mBackupDescriptor`; si es null propaga null, y si existe lee `encryptedPwd`. El valor resultante se asigna a `BRService.mEncryptedPasswd`.
+- Si `mBRItems` no es null, crea una nueva `ArrayList`, recorre los BRItem y agrega únicamente cada `packageName` (String). Entrega esa lista a `BRManager.setFutureTask(List)`. No son copias de BRItem.
+- Comprueba `TextUtils.isEmpty(mEncryptedPasswd)`. En la rama no vacía obtiene Context desde `val$contextRef` y llama a `ConnectivityHelper.getInstance(context)`; el bloque no muestra efectos posteriores.
+- La ventana no consume `v2`; su consumidor sigue pendiente.
+
+**Dedupe y límites:** no hay escrituras a `BRItem.state/error`. `mEncryptedPasswd` pertenece a BRService y no debe confundirse con `BRItem.error`. Evidencia 129 documenta el flujo anterior y la convergencia en `:goto_9`; evidencia 130 añade solo la continuación 620–740. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin verificación local independiente ni runtime.
