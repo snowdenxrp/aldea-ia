@@ -182,3 +182,14 @@ El usuario compartió directamente la salida de grep del segmento físico 14394�
 **Dedupe:** evidencias 114–116 ya contenían resúmenes históricos de transporte, extras, `clearLocalFiles) y consumidor. Evidencia 117 conserva la fuente directa de la parte inicial y precisa su flujo, sin volver a contar los elementos anteriores como hallazgos nuevos.
 
 **Siguiente paso:** continuar únicamente con la salida que falta de `showFinishNotification()` desde después de física 14574, si el usuario la comparte. En particular, cotejar extras, envío condicional de `p4), creación/publicación de notificación y el destino de `:goto_4`. Después, inspeccionar el cuerpo completo del receptor de `ACTION_VIEW_BRRESULT` solo cuando exista el fragmento; no inferir callbacks a partir de la mitad inicial. Mantener la clasificación de evidencia 117 como salida compartida por el usuario, no verificación local independiente.
+
+
+## Actualización de continuidad — evidencia 118 (2026-11-23)
+
+El usuario compartió la salida de `sed -n '14570,14780p' .../BRService.smali`, que contiene la continuación de `showFinishNotification()` y su cierre. Se creó evidencia 118 y el índice maestro pasó a v1.19.
+
+**Conclusión confirmada por el fragmento:** el Intent transmite `extra_last_task_state=p1`, `extra_last_workingstage=p2`, `extra_last_errcode=p3) y `extra_title=v1). Cuando `p4 != null`, llama a `clearLocalFiles(p4)` y agrega la lista mediante `putParcelableArrayListExtra("extra_last_britems",p4)`. Luego crea `PendingIntent.getActivity(...,0x0c000000)`, calcula título y recurso de error con `getFinishNotificationTitle(mIsTransingTask,p1,p2)` y `getErrStringRes(p1,p3)`, construye la notificación con `NotificationUtils.createNotification(...)` y la publica con `mNotificationManager.notify(0x7f120037,...)`. El método termina en `.end method`.
+
+**Dedupe/procedencia:** evidencias 114–116 ya contenían resúmenes históricos de estos elementos; evidencia 118 conserva la continuación Smali directa y el orden/condición/argumentos. Evidencias 117+118 cubren el método completo según los segmentos compartidos por el usuario. Clasificación `USER-PROVIDED / CURRENT-CHAT-SED-OUTPUT`, no verificación local independiente ni runtime.
+
+**Siguiente punto de trabajo:** no repetir la extracción de `showFinishNotification()`. Investigar el receptor de `ACTION_VIEW_BRRESULT` en `ProgressPageFragmentBase.smali` y el consumo de `extra_last_britems` y extras globales. Las antiguas anclas físicas 541 y 2397 son pistas de navegación, no sustituyen el cuerpo del receptor. Objetivo: determinar cómo la pantalla consume cada BRItem y si lee `state/error`; no inferir callbacks ni semántica de estados sin fuente.
