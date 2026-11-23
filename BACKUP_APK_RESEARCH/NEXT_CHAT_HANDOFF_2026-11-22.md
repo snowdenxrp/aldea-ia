@@ -7,7 +7,7 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.16.
+- Última versión del índice verificada al actualizar este handoff: 1.18.
 - Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
 - HEAD de rama verificado antes de esta actualización del handoff: `3500f7b5776b867d95787278c69dba1afcb42669`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
@@ -40,7 +40,7 @@
 - Evidencia 115 recupera de mensajes del usuario del 2026-11-19T19:30:56Z y 19:31:46Z los extras literales `extra_last_task_state=p1`, `extra_last_workingstage=p2`, `extra_last_errcode=p3`, acción `com.miui.backup.activity.ACTION_VIEW_BRRESULT`, `localBackup=mIsFlashDriveTask xor v0`, `extra_last_britems=p4` tras `clearLocalFiles`, y el literal `SHOULDN'T RESOLVE!`. Coordenadas reportadas: bloque 14394–14574; continuación workingstage 14577–14580 y errcode 14582–14585. No se recuperó método completo ni definición de `v0`.
 - Auditoría adversarial: la memoria confirma que el usuario pegó los fragmentos A–D literales de `startRestoreCommand` el 2026-11-17T03:27:35Z, pero la búsqueda actual no recuperó el payload. Evidencia 94 fue anotada; no reconstruir A–D desde resúmenes. El mensaje de 03:29:25Z contenía una salida parcial de `CMD_RESTORE`, cuya continuación posterior ya está en evidencia 94.
 - El stdout completo del barrido global `BRItem.state/error` del 2026-11-19T22:37:46Z no se recuperó; una conversación del 2026-11-20 confirma que ese stdout no estaba en la memoria disponible. No sintetizar coincidencias desde resúmenes parciales.
-- El índice maestro fue actualizado a v1.16. Las evidencias 111–115 conservan hashes/tamaños reportados, coordenadas adicionales de `BRService$5`, coordenadas de copia `BRItem` y detalles de transporte/notificación; su cotejo local sigue pendiente.
+- El índice maestro fue actualizado a v1.18. Las evidencias 111–115 conservan hashes/tamaños reportados, coordenadas adicionales de `BRService$5`, coordenadas de copia `BRItem` y detalles de transporte/notificación; su cotejo local sigue pendiente.
 
 ## Interpretación técnica conservadora de mLastError
 
@@ -126,7 +126,7 @@ Se realizó una búsqueda dirigida de recuerdos y resúmenes históricos posteri
 
 ### Conclusión y siguiente recuperación
 
-La auditoría amplió la recuperación de `showFinishNotification()` con evidencia 115 y actualizó la evidencia 94 para dejar constancia de que los fragmentos A–D literales fueron pegados históricamente pero no pudieron recuperarse en esta búsqueda. El índice queda en v1.16. El stdout completo del barrido global `BRItem.state/error` tampoco está disponible en memoria. Próximo avance: recuperar el mensaje original A–D o el bloque Smali completo de `showFinishNotification()`; no reconstruir lo ausente.
+La auditoría amplió la recuperación de `showFinishNotification()` con evidencias 115–117 y actualizó la evidencia 94 para dejar constancia de que los fragmentos A–D literales fueron pegados históricamente pero no pudieron recuperarse en esa búsqueda. El índice queda en v1.18. El stdout completo del barrido global `BRItem.state/error` tampoco está disponible en memoria. Próximo avance: recuperar el mensaje original A–D o el bloque Smali completo de `showFinishNotification()`; no reconstruir lo ausente.
 
 **Procedencia de esta auditoría:** búsqueda de memoria persistente y resúmenes de asistente; cotejo documental contra el índice v1.13 y evidencias 27, 70, 76, 77, 82, 83 y 94. No es evidencia Smali primaria ni verificación local del APK.
 
@@ -171,3 +171,14 @@ Se amplió la búsqueda por fechas (2026-11-18 y 2026-11-19), títulos de conver
 - La evidencia 116 no demuestra comportamiento runtime ni autoriza extrapolar cómo la pantalla consume o presenta los extras.
 
 **Procedencia de esta pasada:** búsqueda de memoria persistente por fecha, título y palabras literales; cotejo contra índice v1.16 y evidencias 114–115. No se repitieron extracciones Smali locales.
+
+
+## Actualización de continuidad — evidencia 117 (2026-11-23)
+
+El usuario compartió directamente la salida de grep del segmento físico 14394–14574 de `BRService.showFinishNotification(IIILjava/util/ArrayList;)V`. Se creó evidencia 117 y el índice maestro pasó a v1.18.
+
+**Nuevo material directo:** instrucciones iniciales de `showFinishNotification`, incluyendo `stopForeground(true)`, bifurcación `mIsTransingTask` con Intent que contiene `SHOULDN'T RESOLVE!`, selección de recursos según `mIsFlashDriveTask`/tablet/`p1==3`, umbral de 600 dp, creación de Intent explícito o deep link, y acción `ACTION_VIEW_BRRESULT`. El segmento se corta en física 14574; no contiene el cierre del método ni permite concluir sobre callbacks.
+
+**Dedupe:** evidencias 114–116 ya contenían resúmenes históricos de transporte, extras, `clearLocalFiles) y consumidor. Evidencia 117 conserva la fuente directa de la parte inicial y precisa su flujo, sin volver a contar los elementos anteriores como hallazgos nuevos.
+
+**Siguiente paso:** continuar únicamente con la salida que falta de `showFinishNotification()` desde después de física 14574, si el usuario la comparte. En particular, cotejar extras, envío condicional de `p4), creación/publicación de notificación y el destino de `:goto_4`. Después, inspeccionar el cuerpo completo del receptor de `ACTION_VIEW_BRRESULT` solo cuando exista el fragmento; no inferir callbacks a partir de la mitad inicial. Mantener la clasificación de evidencia 117 como salida compartida por el usuario, no verificación local independiente.
