@@ -57,3 +57,17 @@ El usuario compartió dos nuevas ventanas de `BRService$5.smali`: físicas 1050�
 - Writer físico 1283: la rama `AppUtils.isPadDisableApps(packageName)` escribe `state=v10,error=v3) y llama a `notifyItemTaskError(...,v3)). Los valores efectivos de `v10) y `v3) no quedan resueltos. No conectar la definición histórica `v10=3) de otra región sin demostrar flujo y alcance.
 
 **Dedupe:** no son writers nuevos; evidencia 128 amplía el contexto de evidencias 124/126. No repetir estas ventanas. Continuar esperando el siguiente bloque histórico del usuario, sin adelantar comandos ni nuevas extracciones.
+
+
+## Actualización 3 — evidencia 129 (2026-11-23)
+
+Se recibió la ventana física 520–620 de `BRService$5.smali` y se preservó su delta como evidencia 129. El índice maestro avanzó a **v1.27**.
+
+**Continuidad técnica inmediata:**
+- `:cond_d`: selecciona `v0=3` cuando `mIsAborted` es verdadero y `v0=6` cuando es falso; `:cond_e` asigna `v0=2`.
+- `:goto_7` escribe `v7` en `mIsAborted`; el valor dominante de `v7` no se resuelve en esta ventana.
+- La rama de espacio insuficiente asigna `v2=2` y salta a `:goto_9`.
+- La ruta por `:goto_8` hace `v2=v0`.
+- `:goto_9` recupera descriptor e items y llama a `setBRServiceFileList(descriptor,items)`. El bloque termina después del literal `"startRestore, transed"`; aún falta ver el uso posterior de `v2`.
+
+**Dedupe:** no hay writer directo de `BRItem.state/error` en esta ventana. Evidencia 129 añade flujo de registros, no writers nuevos. No repetir la ventana 520–620. Continuar esperando el siguiente bloque histórico del usuario, preservando el orden y sin adelantar extracciones.
