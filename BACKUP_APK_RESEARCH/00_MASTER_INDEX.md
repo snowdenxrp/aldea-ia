@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.30 — recorrido de paquetes y apertura de ZipFile en BRService$5
+**Versión:** 1.31 — guardias del bucle individual y ramas Theme Manager/USB en BRService$5
 **Fecha de corte:** 2026-11-23\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2460,3 +2460,19 @@ Se incorporó [evidencia 132](evidence/2026-11-23/132_BRSERVICE5_PACKAGE_ITERATI
 - En `:goto_e` inicializa `v11=0), `v13=0); `:goto_f` recupera `mBRItems`, carga `v3=11) y comprueba null, con destino `:cond_62`.
 
 **Dedupe y límites:** evidencia 131 ya cubría la entrada al iterador y la obtención de PackageManager; evidencia 132 preserva el cuerpo compartido, la preparación de ZipFile y el comienzo de la siguiente fase. No hay writes directos a `BRItem.state/error`. La llamada a `setState` no se clasifica como mutación directa de BRItem. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 133. BRService$5: guardias del bucle individual, Theme Manager y USB — 2026-11-23
+
+Se incorporó [evidencia 133](evidence/2026-11-23/133_BRSERVICE5_ITEM_LOOP_THEME_AND_USB_GUARDS.md), basada en la ventana física 960–1080 de `BRService$5.smali` compartida directamente por el usuario.
+
+**Delta contextual:**
+- Desde `:goto_f`, el procesamiento continúa solo si `mBRItems != null`, `mIsAborted == false` y `v11 < mBRItems.size()`; de lo contrario salta a `:cond_62`.
+- Obtiene `mBRItems[v11]` como `BRItem` en `v6` y registra su `packageName` y `type` en el mensaje `"Restore One, start"`.
+- Si `packageName == "com.android.thememanager"`, escribe `v7` en `BRService.isRestoreTheme`. El valor efectivo de `v7` sigue UNKNOWN.
+- Si `v8` es verdadero, asigna `v4=10` y `v16=8), saltando a `:goto_3f`.
+- Si `v8` es falso y `mIsFlashDriveTask` es verdadero, consulta `isUsbAvaliable()`. Si USB no está disponible, asigna `v4=10` y `v16=9), y continúa hacia `:goto_3f`.
+
+**Dedupe y límites:** evidencia 132 ya documenta la inicialización de `v11/v13` y la entrada a `:goto_f`; evidencia 133 añade guardias de iteración, lectura/log por elemento y las ramas de tema/USB. No hay escrituras directas a `BRItem.state/error`; `isRestoreTheme` es campo de BRService. No atribuir semántica a `v4`, `v16`, `v7`, `v8` ni a los literales 8/9. Las directivas `.line 1519–1528` no son coordenadas físicas. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
