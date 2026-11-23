@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.25 — resolución de BRItem.state en FakeBackupListenerImp.onBackupEnd
+**Versión:** 1.26 — contexto de guardias de transferencia y preload en BRService$5
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2384,3 +2384,17 @@ Se incorporó [evidencia 127](evidence/2026-11-23/127_FAKEBACKUPLISTENER_ONBACKU
 **Corrección de evidencia 124:** el bloque anterior al writer contiene `const/4 v3, 0x1`; las ventanas intermedias no muestran redefinición de `v3` antes de la instrucción física 1273 `iput v3, v0, BRItem.state`. Por tanto, esa escritura asigna `state=1`. La descripción anterior de `v3` como no resuelto queda supersedida para este writer.
 
 **Dedupe y límites:** las escrituras del adaptador vuelven a aparecer en evidencia 123 y no se duplican. El grep global mezcla lecturas y escrituras. Un intento malformado de asignar `F` para `BRService$5.smali` falló en Bash; el grep posterior siguió apuntando al archivo previo del adaptador y no produjo extracción de `BRService$5`. No afirmar que ese archivo fue inspeccionado por ese comando. Procedencia `USER-PROVIDED / RECOVERED-CHAT-TERMUX-OUTPUT`; no es verificación local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 128. Contexto de guardias de transferencia y preload en BRService$5 — 2026-11-23
+
+Se incorporó [evidencia 128](evidence/2026-11-23/128_BRSERVICE5_PRELOAD_AND_TRANSFER_GUARD_CONTEXT.md), basada en las ventanas físicas compartidas por el usuario 1050–1160 y 1200–1300 de `BRService$5.smali`.
+
+**Delta contextual:**
+- El writer físico 1151 (`state=v14`) está dentro de la rama `shouldSkipBRItem(mState, BRItem)`; además requiere transferencia activa, estado igual a `v7`, paquete distinto de `files_for_backup` y resultado no nulo de `findBakInCachePath()`. El valor dominante de `v14` sigue sin resolverse.
+- La ventana 1200–1300 corrobora el writer físico 1259: conserva el estado actual para `files_for_backup`, asigna 4 a los demás paquetes y llama después a `notifyItemTaskPreload()`.
+- La rama `AppUtils.isPadDisableApps(packageName)` confirma el writer físico 1283 (`state=v10`), la escritura contigua `error=v3` y la llamada `notifyItemTaskError(...,v3)`. Los valores dominantes de `v10` y `v3` siguen UNKNOWN.
+
+**Dedupe:** evidencia 126 ya documentaba las coordenadas y parte de estas condiciones; evidencia 128 añade contexto de guardias y orden de instrucciones, sin declarar writers nuevos. No conectar `v10=3` reportado en otra región con el writer 1283 sin demostrar alcance/flujo. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime.
