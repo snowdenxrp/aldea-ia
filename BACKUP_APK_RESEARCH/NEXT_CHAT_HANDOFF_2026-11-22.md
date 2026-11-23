@@ -7,7 +7,7 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.23.
+- Última versión del índice verificada al actualizar este handoff: 1.24.
 - Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
 - HEAD de rama verificado antes de esta actualización del handoff: `3500f7b5776b867d95787278c69dba1afcb42669`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
@@ -257,3 +257,21 @@ Se recibió un nuevo bloque del archivo padre ProgressPageFragmentBase.smali, no
 **Límites:** no se ha demostrado persistencia en disco; no se recibió getView/getCount/getItemViewType. No inferir el comportamiento interno de destroy().
 
 **Siguiente objetivo sigue siendo:** el archivo separado ProgressPageFragmentBase$ProgressItemAdapter.smali. El bloque recibido no sustituye esa extracción. No repetir el grep de evidencia 121.
+
+
+## Actualización — evidencia 123: callbacks de ProgressItemAdapter (2026-11-22)
+
+Se recibió la salida del archivo separado `ProgressPageFragmentBase$ProgressItemAdapter.smali` para los rangos 446–599 y 1208–1792. Se comparó con evidencias 54 y 67; se guardó únicamente el detalle incremental en evidencia 123. Índice maestro actualizado a v1.24.
+
+**Hallazgos preservados:**
+- `itemStart`: localiza paquete/feature, almacena `mWorkingIndex`, escribe `BRItem.state=2`, actualiza la fila, hace scroll y recalcula progreso total.
+- `setItemsAborted`: asigna `state=3,error=9` a cada elemento de `mItems`, sin condición visible por estado previo.
+- `updateWorkingItemProgress`: solo vuelve a localizar cuando el índice vale -1; escribe `progType/completedSize`; solo establece `totalSize` cuando el existente es cero y el argumento no es -1.
+- `workingItemError`: escribe `state=3,error=p3`; el fragmento no muestra reinicio de índice ni recálculo de progreso total.
+- `workingItemFinished`: orden exacto de transiciones y contadores; escritura de `bakFileSize`; reglas de inicialización de `completedSize`; suma de `splitFileSize`; acumulación de `mSuccessfulSize`.
+
+**Corrección importante:** el cuerpo compartido de `workingItemFinished` reinicia `mWorkingIndex=-1`, no -2 como afirmaba una frase de evidencia 54. Se corrigió evidencia 54 con una nota explícita y se conservó el bloque de respaldo/detalle en evidencia 123.
+
+**Dedupe:** no volver a extraer `initData()`, `getView()` ni `updateInfoView()` (evidencia 67); no volver a resumir las mutaciones generales ya recogidas en evidencia 54. Los cuerpos de `findProgressItemIndex()`, `getBRItemSize()`, `computeTotalProgress()`, `updateSingleItem()` y `ProgressItem.updateProgress()` no se recibieron en esta entrega.
+
+**Siguiente punto de continuación:** el inventario del archivo muestra como no cubiertos en los bloques actuales `getBrItems()`, `getCount()`, `getFailedCount()`, `getItem()`, `getItemId()`, `getSpecificStatePkgs()`, `getSuccessfulCount()`, `getSuccessfulSize()`, `destroy()` y el constructor. Antes de analizarlos, cotejar cada uno con el índice/evidencias para evitar duplicar los métodos ya resumidos. El usuario continuará compartiendo las salidas; esperar sus bloques y analizarlos, sin adelantarse a indicar comandos salvo que lo solicite.
