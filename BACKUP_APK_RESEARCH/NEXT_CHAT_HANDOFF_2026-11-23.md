@@ -133,4 +133,4 @@ Se recibió la ventana física 960–1080 de `BRService$5.smali`. El delta se pr
 
 **Continuidad inmediata:** continuar con el siguiente bloque que comparta el usuario después de la región física 960–1080; no repetirla ni adelantar extracciones. La ventana cubre `.line 1519–1528`; esas directivas no sustituyen coordenadas físicas.
 
-**Verificación documental:** evidencia 133, índice v1.31 y este handoff deben releerse en GitHub después de esta actualización; registrar el HEAD resultante solo tras consultar la rama.
+**Verificación documental completada:** evidencia 133, índice v1.31 y este handoff fueron releídos en GitHub; sus contenidos y SHA de blobs se comprobaron. HEAD de la rama verificado tras la actualización: `3afd63519f7de95a8cd2b9fee21de00f09739351` (este commit de verificación documental queda como antecedente inmediato del presente commit).
