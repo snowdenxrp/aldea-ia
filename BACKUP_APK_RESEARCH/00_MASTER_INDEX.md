@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.28 — contraseña cifrada y lista future task en BRService$5
+**Versión:** 1.29 — conectividad, descifrado y consumidor de v2 en BRService$5
 **Fecha de corte:** 2026-11-23\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2429,3 +2429,19 @@ Se incorporó [evidencia 130](evidence/2026-11-23/130_BRSERVICE5_ENCRYPTED_PASSW
 - La ventana no consume `v2`; su consumidor sigue pendiente.
 
 **Dedupe y límites:** no hay escrituras a `BRItem.state/error`. `mEncryptedPasswd` pertenece a BRService y no debe confundirse con `BRItem.error`. Evidencia 129 documenta el flujo anterior y la convergencia en `:goto_9`; evidencia 130 añade solo la continuación 620–740. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin verificación local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 131. BRService$5: conectividad, descifrado de contraseña y consumidor de v2 — 2026-11-23
+
+Se incorporó [evidencia 131](evidence/2026-11-23/131_BRSERVICE5_CONNECTIVITY_DECRYPTION_V2_CONSUMER.md), basada en la ventana física 740–860 de `BRService$5.smali` compartida directamente por el usuario.
+
+**Delta contextual:**
+- Tras obtener `ConnectivityHelper`, consulta `isNetworkConnected()`. Sin conexión asigna `v0=4) y salta a la salida anticipada.
+- Con conexión, llama a `setState(v4,v4,v6)), descifra `mEncryptedPasswd` mediante `EncryptPassword.decryptPasswdFromXiaomiAccount(context,...)` y guarda el resultado en `mPasswd`.
+- Si `mPasswd` está vacío, asigna `v0=1); si no, `v0=0). La salida no nula llama a `setState(v4,v3,v0)`, `handleTaskFinish(v4,v3,v0,mBRItems)` y retorna.
+- En `:cond_17`, tras el log `"startRestore, decrypted"`, `v2==0) habilita `setState(v4,v11,v6)`; `v2!=0) omite esa llamada. Después comienza la iteración de `mBRItems`.
+- Queda localizado el consumidor de `v2` anunciado como pendiente en evidencia 129/130. Su semántica funcional y los valores de `v11)/`v6) siguen sin resolverse.
+
+**Dedupe y límites:** no hay escrituras directas a `BRItem.state/error` en esta ventana. La iteración de items solo comienza; el cuerpo queda fuera del bloque. Las llamadas a `setState` no se clasifican como escrituras BRItem. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
