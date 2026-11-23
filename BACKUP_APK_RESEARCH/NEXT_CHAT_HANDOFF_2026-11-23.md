@@ -5,9 +5,9 @@
 - Repositorio: `snowdenxrp/aldea-ia`
 - Rama: `backup-apk-static-research-2026-11-19`
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`
-- Versión del índice: **1.26**
-- Último HEAD antes de crear este handoff: `e92946f3dd6f394d92761a36a46048cdc35849bd` (índice de evidencia 127)
-- Evidencias nuevas: `evidence/2026-11-23/127_FAKEBACKUPLISTENER_ONBACKUPEND_STATE_REGISTER_RESOLUTION.md` y `evidence/2026-11-23/128_BRSERVICE5_PRELOAD_AND_TRANSFER_GUARD_CONTEXT.md`
+- Versión del índice: **1.31**
+- HEAD previo a esta actualización del handoff: `66e47bef841bead11efd66688c2d75d05d55e04c` (índice v1.31, evidencia 133)
+- Evidencias recientes: 127–133; última: `evidence/2026-11-23/133_BRSERVICE5_ITEM_LOOP_THEME_AND_USB_GUARDS.md`
 - Evidencias relacionadas: 123 (callbacks de ProgressItemAdapter), 124 (writers de callbacks), 126 (writers BRService$5).
 
 ## Delta guardado en esta sesión
@@ -116,3 +116,21 @@ Se recibió la ventana física 850–970 de `BRService$5.smali` y se preservó e
 **Continuidad inmediata:** continuar desde la rama de lista no nula de `:goto_f` / destino `:cond_62` según el siguiente bloque que comparta el usuario. No repetir ventanas 520–620, 620–740, 740–860 ni 850–970. No adelantar extracciones.
 
 **Límites:** sin writes directos a `BRItem.state/error`; no asignar semántica a `v11=5), `v3=11) o `v14). La llamada `setState` es global al servicio. Procedencia de evidencia 132: salida pegada por el usuario, sin verificación local independiente ni runtime.
+
+
+## Actualización 7 — evidencia 133 (2026-11-23)
+
+Se recibió la ventana física 960–1080 de `BRService$5.smali`. El delta se preservó en evidencia 133 y el índice maestro avanzó a **v1.31**.
+
+**Hallazgos:**
+- La iteración individual continúa solo si `mBRItems` no es null, `mIsAborted` es false y `v11 < mBRItems.size()`; de lo contrario el flujo salta a `:cond_62`.
+- Obtiene `mBRItems[v11]` como BRItem en `v6` y registra `packageName` y `type`.
+- Para `com.android.thememanager`, escribe `v7` en `BRService.isRestoreTheme`; el valor efectivo de `v7` sigue UNKNOWN.
+- Si `v8` es verdadero, asigna `v4=10` y `v16=8`, saltando a `:goto_3f`.
+- Si `v8` es falso y la tarea es de unidad externa, consulta `isUsbAvaliable()`; USB no disponible produce `v4=10` y `v16=9`, con continuación hacia `:goto_3f`.
+
+**Límites:** no hay escrituras directas a `BRItem.state/error`. La escritura a `isRestoreTheme` afecta BRService. No atribuir semántica a `v4`, `v16`, `v7`, `v8` ni a los literales 8/9. No se ejecutó Backup/Restore ni pruebas dinámicas.
+
+**Continuidad inmediata:** continuar con el siguiente bloque que comparta el usuario después de la región física 960–1080; no repetirla ni adelantar extracciones. La ventana cubre `.line 1519–1528`; esas directivas no sustituyen coordenadas físicas.
+
+**Verificación documental:** evidencia 133, índice v1.31 y este handoff deben releerse en GitHub después de esta actualización; registrar el HEAD resultante solo tras consultar la rama.
