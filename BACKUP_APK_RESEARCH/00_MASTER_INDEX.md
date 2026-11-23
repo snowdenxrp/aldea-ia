@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.31 — guardias del bucle individual y ramas Theme Manager/USB en BRService$5
+**Versión:** 1.32 — referencias a setState(III) y cruces de llamadas en BRService
 **Fecha de corte:** 2026-11-23\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2476,3 +2476,21 @@ Se incorporó [evidencia 133](evidence/2026-11-23/133_BRSERVICE5_ITEM_LOOP_THEME
 - Si `v8` es falso y `mIsFlashDriveTask` es verdadero, consulta `isUsbAvaliable()`. Si USB no está disponible, asigna `v4=10` y `v16=9), y continúa hacia `:goto_3f`.
 
 **Dedupe y límites:** evidencia 132 ya documenta la inicialización de `v11/v13` y la entrada a `:goto_f`; evidencia 133 añade guardias de iteración, lectura/log por elemento y las ramas de tema/USB. No hay escrituras directas a `BRItem.state/error`; `isRestoreTheme` es campo de BRService. No atribuir semántica a `v4`, `v16`, `v7`, `v8` ni a los literales 8/9. Las directivas `.line 1519–1528` no son coordenadas físicas. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`, sin cotejo local independiente ni runtime.
+
+
+------------------------------------------------------------------------
+
+## 134. BRService: referencias a setState(III) y cruces de llamadas — 2026-11-23
+
+Se incorporó [evidencia 134](evidence/2026-11-23/134_BRSERVICE_SETSTATE_CALLSITE_CROSSCHECK.md), basada en la salida de grep contextual compartida directamente por el usuario.
+
+**Delta:** inventario contextual de llamadas a `setState(III)V`:
+- Física 3334: `setState(3,1,0)` en el flujo de inicialización de backup.
+- Física 5562: `setState(3,12,9)` en la rama USB no disponible, seguida de `handleTaskFinish(3,12,9,mBRItems)`. La llamada ya estaba registrada como recuperación histórica; el bloque actual aporta corroboración y contexto contiguo.
+- Física 12706: `setState(4,1,0)` en la entrada de `restoreFiles`.
+- Física 18922: `setState(0,11,0)` en la ruta visible de limpieza/cierre del servicio.
+- Física 19512: `setState(mState,12,6)` en la rama `restoreFiles brItems is null`; llamada y receptor ya cubiertos por evidencias 106–107.
+
+**Dedupe:** el cuerpo de `setState(III/IIII)`, sus reglas de asignación y la propagación a BRItem ya están preservados en evidencia 107 y no se duplican. La llamada `(3,12,9)) ya figuraba en la sección 12; la rama de lista nula y su receptor ya figuran en evidencias 106–107.
+
+**Límites:** los argumentos son parámetros de estado global del servicio; no convertir los literales 6/9 en afirmaciones directas sobre `BRItem.error`, ni el segundo argumento 12 en `BRItem.state=12`. No se demuestra ejecución dinámica, ni éxito/fallo efectivo de backup/restore. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no se declara verificación local independiente.
