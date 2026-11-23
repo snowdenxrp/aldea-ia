@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.21 — normalización de BRItem.state en ProgressPageFragmentBase documentada
+**Versión:** 1.22 — cableado initUI → ProgressItemAdapter documentado
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2260,3 +2260,25 @@ Se incorporó [evidencia 120](evidence/2026-11-22/120_PROGRESSPAGEFRAGMENTBASE_S
 - El índice contiene notas históricas sobre `ProgressItemAdapter`; el cuerpo directo del adaptador sigue siendo el siguiente objetivo para cotejar el significado visual de los estados.
 
 **Procedencia:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime. Véase evidencia 120.
+
+
+------------------------------------------------------------------------
+
+## 121. Cableado de ProgressItemAdapter desde ProgressPageFragmentBase — 2026-11-22
+
+Se incorporó [evidencia 121](evidence/2026-11-22/121_PROGRESSPAGEFRAGMENTBASE_ADAPTER_WIRING_GREP.md), basada en la salida de:
+
+`grep -n -A220 'ProgressItemAdapter' "$HOME/backup-static/decoded/smali/com/miui/backup/activity/ProgressPageFragmentBase.smali"`
+
+**Delta directo nuevo del archivo padre:**
+- `initUI()` instancia `ProgressPageFragmentBase$ProgressItemAdapter` con el fragmento/contexto y almacena la instancia en `mAdapter`.
+- Antes de `initData(v6)`, establece `ProgressItemAdapter.isSaveInstance=true` cuando `mLastItems != null`; si no, lo establece cuando `mIsViewResult == true` y `v6 != null`.
+- Pasa el arreglo `BRItem[] v6` a `initData()`.
+- Obtiene el `ListView` por ID `0x7f0a021f`, guarda `mListView` y conecta el adaptador mediante `ListView.setAdapter()`.
+- Publica un `ListScollThread` con una `WeakReference` al ListView y el mismo arreglo `v6`.
+
+**Dedupe:** los detalles funcionales históricos de `initData/getView/updateInfoView`, estados y porcentajes ya constan en evidencias 54 y 67; no se vuelven a atribuir como hallazgos nuevos. La salida actual no contiene los cuerpos internos de `getView()`, `getCount()` ni `getItemViewType()`.
+
+**Corrección de objetivo:** el grep se ejecutó sobre el archivo padre `ProgressPageFragmentBase.smali`; sus hits muestran referencias/callsites, no el cuerpo de la clase interna. El archivo a inspeccionar para métodos del adapter es `ProgressPageFragmentBase$ProgressItemAdapter.smali` en el directorio `smali/com/miui/backup/activity/`.
+
+**Procedencia:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime. Véase evidencia 121.
