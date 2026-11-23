@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.22 — cableado initUI → ProgressItemAdapter documentado
+**Versión:** 1.23 — ciclo de vida y conservación de BRItem documentados
 **Fecha de corte:** 2026-11-22\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2282,3 +2282,21 @@ Se incorporó [evidencia 121](evidence/2026-11-22/121_PROGRESSPAGEFRAGMENTBASE_A
 **Corrección de objetivo:** el grep se ejecutó sobre el archivo padre `ProgressPageFragmentBase.smali`; sus hits muestran referencias/callsites, no el cuerpo de la clase interna. El archivo a inspeccionar para métodos del adapter es `ProgressPageFragmentBase$ProgressItemAdapter.smali` en el directorio `smali/com/miui/backup/activity/`.
 
 **Procedencia:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime. Véase evidencia 121.
+
+
+------------------------------------------------------------------------
+
+## 122. Restauración y conservación de estado en ProgressPageFragmentBase — 2026-11-22
+
+Se incorporó [evidencia 122](evidence/2026-11-22/122_PROGRESSPAGEFRAGMENTBASE_INSTANCE_STATE_AND_ITEM_RETENTION.md).
+
+**Delta de fuente directa compartida:**
+- onCreate() restaura mState, mStage y mError desde last_state/last_stage/last_error; también mProgress, isShowCancelDialog, isBackup y mZipPath.
+- Con Bundle no nulo, obtiene BRServiceDataHolder.getBrItems() y lo asigna a mLastItems.
+- Sin Bundle, si hay contexto y isServiceWorkingFromPreference(context) devuelve true, también carga mLastItems desde BRServiceDataHolder.
+- onSaveInstanceState() guarda estado/etapa/error y transfiere BRItem a BRServiceDataHolder: primero desde IBRService.getBRItems() si devuelve arreglo no nulo; en la rama alternativa, desde ProgressItemAdapter.getBrItems().
+- La ruta del servicio construye ArrayList desde Arrays.asList(array); no se observa clonación individual de BRItem.
+- Se observa llamada a ProgressItemAdapter.destroy() antes de unbindBRService(); el cuerpo de destroy() no se recibió.
+- La comprobación de aborto llama showAbortConfirmDialog() solo cuando la preferencia indica servicio activo, el botón existe y su visibilidad es 0.
+
+**Límites:** no demuestra persistencia en disco ni contiene getView/getCount/getItemViewType. No reemplaza la inspección del archivo Smali separado del adaptador. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; fragmentos incompletos y sin runtime.
