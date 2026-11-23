@@ -2356,3 +2356,20 @@ Se incorporó [evidencia 125](evidence/2026-11-22/125_PROGRESSITEMADAPTER_INITDA
 
 **Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; ventanas compartidas por el usuario, no cotejadas independientemente contra el archivo local ni ejecutadas dinámicamente. Los IDs de recursos no se traducen a textos en esta evidencia.
 
+
+
+------------------------------------------------------------------------
+
+## 126. BRService$5: selección de estado previo a preload y escrituras condicionadas — 2026-11-22
+
+Se incorporó [evidencia 126](evidence/2026-11-22/126_BRService5_PRELOAD_STATE_ASSIGNMENTS.md), basada en las ventanas físicas 1125–1170, 1235–1300 y 1310–1460 de `BRService$5.smali`.
+
+**Delta contextual:**
+- Writer 1151: `state=v14) cuando `findBakInCachePath(bakFileName)` devuelve ruta no nula; el valor de `v14` no se resuelve.
+- Writer 1259: si el paquete es `files_for_backup`, conserva el estado actual; para otros paquetes escribe explícitamente `state=4`; luego notifica preload.
+- Writers 1283 y 1336: ramas de aplicación deshabilitada / elemento de sistema cuyo paquete no existe escriben `state=v10,error=v3`; ambos registros siguen sin valor resuelto.
+- Writer 1441: rama de GMS no instalado para paquete GMS escribe `state=v10,error=13); `v10` sigue sin resolverse.
+
+**Dedupe:** las coordenadas ya estaban en el inventario grep. Evidencia 126 añade condiciones y operandos visibles, sin declarar nuevos writers. Las líneas 1544 y 1557–1589 se conservan en evidencia 124 y no se duplican.
+
+**Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`; ventanas del usuario no verificadas independientemente ni ejecutadas dinámicamente. Pendiente rastrear definiciones de `v14), `v10) y `v3) y recuperar ventanas completas sin corrupción de formato.
