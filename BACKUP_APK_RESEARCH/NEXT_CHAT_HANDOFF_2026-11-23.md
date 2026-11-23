@@ -134,3 +134,21 @@ Se recibió la ventana física 960–1080 de `BRService$5.smali`. El delta se pr
 **Continuidad inmediata:** continuar con el siguiente bloque que comparta el usuario después de la región física 960–1080; no repetirla ni adelantar extracciones. La ventana cubre `.line 1519–1528`; esas directivas no sustituyen coordenadas físicas.
 
 **Verificación documental completada:** evidencia 133, índice v1.31 y este handoff fueron releídos en GitHub; sus contenidos y SHA de blobs se comprobaron. HEAD de la rama verificado tras la actualización: `3afd63519f7de95a8cd2b9fee21de00f09739351` (este commit de verificación documental queda como antecedente inmediato del presente commit).
+
+
+## Actualización 8 — evidencia 134 (2026-11-23)
+
+Se recibió una salida de grep contextual de `BRService.smali` para `setState(III)V`. Se cotejó con el índice y evidencia 107 antes de preservar el delta.
+
+**Call sites observados:**
+- Física 3334: `setState(3,1,0)` durante la inicialización del flujo de backup.
+- Física 5562: `setState(3,12,9)` en la rama USB no disponible; después llama `handleTaskFinish(3,12,9,mBRItems)` y retorna. Ya constaba como recuperación histórica en la sección 12; esta salida añade corroboración directa/contexto contiguo.
+- Física 12706: `setState(4,1,0)` al entrar a `restoreFiles`.
+- Física 18922: `setState(0,11,0)` en la ruta visible de limpieza/cierre.
+- Física 19512: `setState(mState,12,6)` en la rama de lista nula de `onStartCommand`; ya cubierto por evidencias 106–107.
+
+**Dedupe:** el cuerpo de `setState(III/IIII)` y sus efectos ya están en evidencia 107; no repetir. Tampoco duplicar la ruta de lista nula/receptor 106–107 ni la invocación USB ya registrada en sección 12. Índice maestro actualizado a **v1.32**.
+
+**Límites:** los argumentos corresponden al estado global del servicio según el receptor documentado en evidencia 107. No interpretar 6/9 como escrituras directas de `BRItem.error`, ni 12 como `BRItem.state`. No se demuestra ejecución dinámica.
+
+**Continuidad:** el usuario está enviando bloques uno por uno. Esperar el siguiente bloque; no adelantar comandos ni extracciones. Antes de preservar otro delta, verificar rama/HEAD, índice, handoff y evidencias relacionadas.
