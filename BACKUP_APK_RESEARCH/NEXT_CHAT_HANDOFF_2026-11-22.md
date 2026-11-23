@@ -7,7 +7,7 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.21.
+- Última versión del índice verificada al actualizar este handoff: 1.22.
 - Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
 - HEAD de rama verificado antes de esta actualización del handoff: `3500f7b5776b867d95787278c69dba1afcb42669`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
@@ -224,3 +224,25 @@ Se creó evidencia 120 y el índice maestro pasó a v1.21.
 **Cautelas:** la normalización solo queda probada en esta ruta de lista `v3`; no extenderla a `mLastItems` ni a `IBRService.getBRItems()` sin fuente. No se ven escrituras de `error`, cálculo de resultados ni enlace de filas. El cuerpo directo del adaptador sigue pendiente. No convertir resúmenes históricos del índice sobre el adaptador en verificación primaria nueva.
 
 **Siguiente objetivo ya planteado:** continuar con el cuerpo de `ProgressPageFragmentBase$ProgressItemAdapter` (constructor y métodos de conteo/obtención/enlace de filas), sin repetir las ventanas 430–515, 510–590 o 580–700.
+
+
+## Actualización de continuidad — evidencia 121 (2026-11-22)
+
+El usuario continúa compartiendo salidas Termux en el orden solicitado. Verificar, deduplicar y preservar; no pedir que repita comandos ni cambiar la secuencia sin necesidad.
+
+Se guardó evidencia 121 y el índice maestro pasó a v1.22.
+
+**Salida recibida:** `grep -n -A220 'ProgressItemAdapter' .../ProgressPageFragmentBase.smali`. Esta búsqueda fue sobre el archivo padre, no sobre el archivo Smali separado de la clase interna.
+
+**Delta directo del callsite `initUI()`:**
+- instancia el `ProgressItemAdapter` y guarda `mAdapter`;
+- asigna `isSaveInstance=true` si `mLastItems != null`, o si `mIsViewResult && v6 != null`;
+- llama `initData(v6)` con el arreglo `BRItem[]`;
+- conecta el adapter al `ListView` ID `0x7f0a021f`;
+- publica `ListScollThread(WeakReference(ListView), v6)` mediante `ListView.post()`.
+
+**No duplicar:** la semántica histórica de `initData/getView/updateInfoView`, estados y porcentajes ya aparece en evidencias 54/67. La salida no contiene los cuerpos internos de los métodos de la clase adapter.
+
+**Siguiente objetivo preciso:** inspeccionar el archivo separado:
+`$HOME/backup-static/decoded/smali/com/miui/backup/activity/ProgressPageFragmentBase\$ProgressItemAdapter.smali`.
+Obtener primero encabezados y coordenadas de métodos; luego extraer únicamente los métodos que correspondan al orden de investigación. No repetir el grep en el archivo padre ni asumir que el contenido de esta salida es el cuerpo del adapter.
