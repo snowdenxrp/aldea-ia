@@ -2335,3 +2335,24 @@ Se incorporó [evidencia 124](evidence/2026-11-22/124_BRITEM_STATE_WRITES_BACKUP
 **Dedupe y límites:** las coordenadas físicas ya figuraban en el inventario grep anterior; evidencia 124 añade el contexto de instrucciones y condiciones, no nuevos writers independientes. No se resolvieron los registros fuente de las escrituras restantes ni el mapping completo de `p3` en `onError`. Las líneas `.line` de Smali no son coordenadas físicas. Véase evidencia 124 para las ventanas exactas, procedencia y pendientes.
 
 **Procedencia:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`; fragmentos compartidos por el usuario, no verificados independientemente aquí y sin ejecución dinámica.
+
+
+------------------------------------------------------------------------
+
+## 125. ProgressItemAdapter: detalle de initData, filtros, getters y mapping visual de errores — 2026-11-22
+
+Se incorporó [evidencia 125](evidence/2026-11-22/125_PROGRESSITEMADAPTER_INITDATA_STATE_FILTER_UI_ERROR_MAPPING_AND_GETTERS.md), basada en las ventanas Smali compartidas directamente por el usuario desde Termux: 1875–2060, 2061–2420, 2421–2600 y 869–1207.
+
+**Delta respecto de evidencias 67 y 123:**
+- Precisa el filtro de `initData()`: solo agrega BRItem con `state=1/3/6`; los tres incrementan `mFinishedAndFailedCount), pero solo 1/6 recorren contabilidad de éxito/tamaño.
+- Documenta el ajuste condicional de `completedSize`: `progType==0`, `isSaveInstance), estado de `completedSize), excepción `files_for_backup) y fallback a `bakFileSize).
+- Añade el comportamiento exacto de `getSpecificStatePkgs()`, `getSuccessfulCount()`, `getFailedCount()`, `getSuccessfulSize()`, `getItem()` y `getItemId()`.
+- Precisa que `getFailedCount()` es `getCount()-getSuccessfulCount()`, no un conteo exclusivo de `state==3`.
+- Añade el mapping directo `BRItem.error → resource ID` para 2, 5, 6, 7, 9, 11 y fallback.
+- Registra la diferencia contextual: `state=6) se cuenta como éxito en getters/contabilidad, pero la rama directa de `updateSingleItemUI()` lo envía a la barra de progreso. No generalizar fuera de la ruta observada.
+- Observa que `initData()` incrementa `mSuccessfulCount` sin reiniciarlo en el cuerpo compartido; `getSuccessfulCount()` recalcula iterando `mItems`. Queda pendiente localizar otros lectores antes de evaluar impacto.
+
+**Dedupe:** `getView()`, la matriz general de estados, `updateInfoView()` y el resumen general de `initData()` ya constaban en evidencia 67; callbacks y parte de la contabilidad ya constaban en evidencia 123. Esta evidencia preserva únicamente el detalle literal adicional y no los duplica como hallazgos independientes.
+
+**Procedencia y límites:** `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; ventanas compartidas por el usuario, no cotejadas independientemente contra el archivo local ni ejecutadas dinámicamente. Los IDs de recursos no se traducen a textos en esta evidencia.
+
