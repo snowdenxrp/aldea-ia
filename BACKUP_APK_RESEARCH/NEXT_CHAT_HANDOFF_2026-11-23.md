@@ -71,3 +71,17 @@ Se recibió la ventana física 520–620 de `BRService$5.smali` y se preservó s
 - `:goto_9` recupera descriptor e items y llama a `setBRServiceFileList(descriptor,items)`. El bloque termina después del literal `"startRestore, transed"`; aún falta ver el uso posterior de `v2`.
 
 **Dedupe:** no hay writer directo de `BRItem.state/error` en esta ventana. Evidencia 129 añade flujo de registros, no writers nuevos. No repetir la ventana 520–620. Continuar esperando el siguiente bloque histórico del usuario, preservando el orden y sin adelantar extracciones.
+
+
+## Actualización 4 — evidencia 130 (2026-11-23)
+
+Se recibió la ventana física 620–740 de `BRService$5.smali`. El delta se preservó en evidencia 130; índice maestro actualizado a **v1.28**.
+
+**Continuidad inmediata:**
+- Después de `setBRServiceFileList(descriptor,items)`, registra `"startRestore, transed"`.
+- Propaga `BackupDescriptor.encryptedPwd` a `BRService.mEncryptedPasswd`; cuando el descriptor es null, asigna null.
+- Si `mBRItems` no es null, construye una lista nueva que contiene solo `BRItem.packageName` y la entrega a `BRManager.setFutureTask(List)`.
+- Comprueba si `mEncryptedPasswd` está vacío. En la rama no vacía obtiene Context desde `val$contextRef` y llama a `ConnectivityHelper.getInstance(context)`.
+- No aparece uso de `v2`; su consumidor sigue sin localizar. No hay escrituras directas a `BRItem.state/error`.
+
+**Dedupe:** no repetir ventanas 520–620 ni 620–740. Continuar desde la instrucción posterior a `ConnectivityHelper.getInstance(context)` y el destino `:cond_17` solo cuando el usuario comparta el bloque siguiente. Mantener procedencia de fragmentos compartidos y no inferir efectos posteriores.
