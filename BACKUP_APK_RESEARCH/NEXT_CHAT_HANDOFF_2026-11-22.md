@@ -7,7 +7,7 @@
 - Repositorio: `snowdenxrp/aldea-ia`.
 - Rama de trabajo: `backup-apk-static-research-2026-11-19`.
 - Índice maestro: `BACKUP_APK_RESEARCH/00_MASTER_INDEX.md`.
-- Última versión del índice verificada al actualizar este handoff: 1.22.
+- Última versión del índice verificada al actualizar este handoff: 1.23.
 - Commit del índice v1.11 verificado antes de esta actualización: `9f89d32e4e7239a440ba813d488b97d1b7187d3b`.
 - HEAD de rama verificado antes de esta actualización del handoff: `3500f7b5776b867d95787278c69dba1afcb42669`.
 - Árbol local de trabajo referido por el usuario: `$HOME/backup-static/decoded`.
@@ -246,3 +246,14 @@ Se guardó evidencia 121 y el índice maestro pasó a v1.22.
 **Siguiente objetivo preciso:** inspeccionar el archivo separado:
 `$HOME/backup-static/decoded/smali/com/miui/backup/activity/ProgressPageFragmentBase\$ProgressItemAdapter.smali`.
 Obtener primero encabezados y coordenadas de métodos; luego extraer únicamente los métodos que correspondan al orden de investigación. No repetir el grep en el archivo padre ni asumir que el contenido de esta salida es el cuerpo del adapter.
+
+
+## Actualización — evidencia 122 (2026-11-22)
+
+Se recibió un nuevo bloque del archivo padre ProgressPageFragmentBase.smali, no del archivo interno ProgressItemAdapter. Se preservó como evidencia 122 y el índice maestro avanzó a v1.23.
+
+**Hallazgos:** onCreate restaura estado/etapa/error/progreso/flags/ruta ZIP desde Bundle y recupera mLastItems desde BRServiceDataHolder. Sin Bundle, la recuperación de mLastItems depende de contexto y de isServiceWorkingFromPreference=true. onSaveInstanceState guarda estado/etapa/error y actualiza BRServiceDataHolder con BRItem obtenidos desde IBRService.getBRItems(), o desde ProgressItemAdapter.getBrItems() en la rama alternativa. También se ve destroy() antes de unbindBRService(), sin cuerpo de destroy disponible.
+
+**Límites:** no se ha demostrado persistencia en disco; no se recibió getView/getCount/getItemViewType. No inferir el comportamiento interno de destroy().
+
+**Siguiente objetivo sigue siendo:** el archivo separado ProgressPageFragmentBase$ProgressItemAdapter.smali. El bloque recibido no sustituye esa extracción. No repetir el grep de evidencia 121.
