@@ -1,7 +1,7 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.33 — cierre de restauración, métricas y finalización de BRService$5
-**Fecha de corte:** 2026-11-23\
+**Versión:** 1.34 — reconciliación de hashes, decode y procedencia de comandos
+**Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
 implica ejecución de restauraciones, modificación del APK ni pruebas
@@ -2545,3 +2545,19 @@ El usuario confirmó que el archivo consultado era `BRService$5.smali`; las tres
 
 Evidencias 132 y 138 ya conservan, respectivamente, la inicialización `v13=0` en `:goto_e` y el uso final de `v13` en la métrica/log local de restauración. Evidencia 139 añade solo las nuevas coordenadas y su contexto inmediato. No se concluye todavía que todos los incrementos alimenten el mismo contador efectivo ni que `v13` represente universalmente restauraciones exitosas: faltan rastrear redefiniciones, usos, guardias y convergencias. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no cotejo local independiente ni ejecución dinámica.
 
+
+------------------------------------------------------------------------
+
+## 140. Reconciliación final de salidas Termux recuperadas — 2026-11-24
+
+Se incorporó [evidencia 140](evidence/2026-11-24/140_TERMUX_HASH_DECODE_METADATA_AND_COMMAND_PROVENANCE_RECONCILIATION.md), reconciliando los bloques Termux compartidos en este chat con la evidencia previa.
+
+**Hashes y tamaños — DEDUPE, no hallazgo nuevo:** los cuatro SHA-256 y tamaños de Smali coinciden exactamente con evidencia 111 (2026-11-22). El SHA-256 de `Backup.apk` coincide con el valor ya conservado en §1.2. La salida actual aporta el stdout íntegro de `sha256sum` y `wc -c` como procedencia adicional, pero sigue siendo salida compartida por el usuario, no recomputación independiente. No se crean hashes nuevos ni se altera evidencia 111.
+
+**Corrección crítica de procedencia del grep:** el comando define `F="$S/BRService$5.smali"` sin escapar el signo `$`. En Bash, `$5` se expande como el quinto parámetro posicional; por tanto, el nombre de destino no queda demostrado como `BRService$5.smali`. En una sesión interactiva ordinaria sin ese parámetro, `F` apuntaría a `BRService.smali`. Como no se imprimió `printf '%s\n' "$F"` ni se mostró el valor de `$5`, las salidas de los greps de `mBakFilesType` y `BRItem.state` de este bloque **no se atribuyen a BRService$5.smali**. No deben usarse para confirmar coordenadas o writers de esa clase. Las conclusiones anteriores de BRService$5 continúan dependiendo de las ventanas correctamente identificadas preservadas en las evidencias 126–139.
+
+**Inventario ProgressItemAdapter:** el `find` sí reporta la clase base `ProgressPageFragmentBase$ProgressItemAdapter.smali` y cinco clases internas relacionadas. Es corroboración de presencia/ruta; el análisis funcional ya resumido en evidencias previas no se duplica.
+
+**Metadatos del decode:** el bloque adicional confirma presencia y metadatos reportados de `decoded/AndroidManifest.xml` (19K), `decoded/original/AndroidManifest.xml` (33K) y `decoded/apktool.yml` (3.8K), todos con fecha mostrada Nov 16 00:18. No aporta contenido, hashes, versión exacta de Apktool ni comando de decodificación.
+
+**Estado reconciliado:** no se identifica un nuevo hallazgo técnico de comportamiento. Se conserva un delta de procedencia y metadatos, junto con una advertencia de atribución de archivo que impide usar el grep ambiguo como evidencia de `BRService$5`. La investigación sigue INCOMPLETA; no se infieren ejecución dinámica, causalidad no demostrada ni integridad criptográfica actual.
