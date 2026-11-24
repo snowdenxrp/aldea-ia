@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.38 — recuperación parcial del encabezado del caller #1 de backupPackages
+**Versión:** 1.39 — resolución del default extra_bakfiles_type en onStartCommand
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2603,4 +2603,16 @@ Se incorporó [evidencia 143](evidence/2026-11-24/143_BRSERVICE_BACKUPPACKAGES_C
 **Dedupe y límites:** evidencia 141 ya conservaba el argumento `p4=3` del caller #1, el origen Intent del caller #2 y el default `v13` aún no resuelto. Evidencia 143 no vuelve a registrar esas conclusiones como nuevas. El cuerpo del caller #1 no se recibió íntegramente; la recuperación del encabezado es parcial y procede de salida compartida por el usuario, sin cotejo local independiente ni ejecución dinámica.
 
 **Pendientes:** recuperar el cuerpo/contexto completo del caller #1; resolver el default `v13` del caller #2; recuperar el literal `v8` y la cadena causal del tipo 2; completar el rastreo de `v13`. Investigación INCOMPLETA y estática.
+
+------------------------------------------------------------------------
+
+## 144. Caller de backupPackages desde onStartCommand y default de extra_bakfiles_type — 2026-11-24
+
+Se incorporó [evidencia 144](evidence/2026-11-24/144_ONSTARTCOMMAND_BACKUPPACKAGES_INTENT_DEFAULT_TYPE.md), basada en la ventana Smali compartida desde Termux.
+
+**Delta confirmado en el extracto:** dentro de `BRService.onStartCommand(Intent;II)I`, rama `CMD_BACKUP`, la ruta normal lee `extra_bakfiles_type` con `getIntExtra(..., v13)` cuando `v13=1`; luego mueve el resultado a `v4`, que ocupa el argumento entero `p4` de `backupPackages(...)`. Así, el default de ese extra en esta ruta es **1** y se resuelve el pendiente que evidencia 141/143 habían dejado como `v13` desconocido. Antes de la invocación, `v13` se reutiliza para el último booleano; no confundir ambos usos.
+
+**Distinción de rutas:** si `extra_is_retransfering=true`, el flujo llama a `backupPackagesByRetransfering(Z)V` y salta la llamada directa normal. No generalizar el default 1 a ese camino ni a todos los caminos de backup.
+
+**Pendientes:** cuerpo/contexto íntegro del caller #1; literal `v8` y cadena causal del tipo 2; rastreo integral de `v13` donde tenga relevancia independiente. Investigación INCOMPLETA y estática.
 
