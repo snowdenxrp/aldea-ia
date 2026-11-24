@@ -85,3 +85,24 @@ Después de la rama condicional, el bloque muestra mReconnector.quit(), obtiene 
 - No hay verificación local independiente, ejecución dinámica ni afirmación de comportamiento observado en dispositivo.
 
 **Conclusión:** evidencia nueva de procedencia de argumentos y control de flujo. Investigación estática INCOMPLETA.
+
+
+## 7. Segunda pasada de reconciliación contra el expediente anterior
+
+Esta revisión no añade un hallazgo de comportamiento independiente. Confirma que el delta de esta evidencia queda conectado con los registros anteriores y que no sustituye ni borra sus límites:
+
+- **Campo mBakFilesType — evidencia 60:** el campo está declarado en BRService y la evidencia 60 conserva la escritura desde el argumento p4 en backupPackages (física 3325) y desde p3 en restoreFiles (física 12697). Por tanto, los callers descritos aquí documentan el origen anterior de esos argumentos. La secuencia de restoreFiles escribe p3 al campo antes de reutilizar el registro; no confundir la constante posterior que modifica p3 con el valor ya almacenado. La evidencia 60 conserva además las referencias grep a copyFile/createFile/deleteFile/makeDirs, sin atribuirles condiciones no vistas.
+- **Writers BRItem.state — evidencia 124:** la escritura state=6 en BRService$5 física 2351/.line 1735 ocurre después de waitingForFilesTransingEnd() y solo si el estado previo no es 6. La misma evidencia conserva las escrituras de aborto state=3/error=9 y otras ramas; el inventario global de coordenadas no equivale a tener resueltos todos los writers. No se vuelve a contar state=6 como hallazgo nuevo.
+- **Rama Theme/USB y goto_3f — evidencias 133, 135–138:** la asignación v16=8/9 y convergencia ya constan en 133/135; 136 conserva el consumidor y cleanup; 137/138 conservan el cierre, métricas y liberación. Evidencia 141 solo completa el origen de argumentos de callers y el efecto condicional de v16 en la rama de transferencia.
+- **Contador v13 — evidencias 132, 138 y 139:** inicialización, uso final y tres incrementos físicos (2227, 2422 y 3503) ya están preservados. Sigue sin resolverse si todas las rutas alimentan el mismo valor final o si v13 es un contador universal de restauraciones exitosas.
+- **Procedencia de greps — evidencia 140:** la variable F definida con BRService$5 sin escapar el signo $ deja ambiguas las salidas de grep correspondientes. Ninguna de esas salidas se usa en esta evidencia para ampliar el inventario de writers o lecturas de BRService$5.
+
+### Pendientes preservados tras la segunda pasada
+
+1. Recuperar el encabezado y el contexto completo del caller #1 de backupPackages; solo queda visible su tramo final y la transferencia de p4=3.
+2. Resolver el valor por defecto v13 usado por getIntExtra en el caller #2 de backupPackages.
+3. Recuperar el valor literal de v8 en BRService$5 y completar la cadena causal del tipo 2; v8=1 continúa como PRIOR-ASSISTANT-OUTPUT / UNVERIFIED.
+4. Completar el rastreo de v13 (redefiniciones, usos, guardias y convergencias) antes de asignarle semántica global.
+5. Mantener separados mBakFilesType, BRItem.state/error, setState global y códigos de notificación 8/9.
+
+**Resultado de auditoría:** no se encontró en el material recuperado un delta técnico adicional distinto de lo ya registrado en evidencias 60, 124, 132–140 y el delta caller/consumidor de esta evidencia 141. La investigación continúa INCOMPLETA y basada en evidencia estática compartida; no se declara verificación local independiente ni ejecución dinámica.
