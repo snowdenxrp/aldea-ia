@@ -2494,3 +2494,14 @@ Se incorporó [evidencia 134](evidence/2026-11-23/134_BRSERVICE_SETSTATE_CALLSIT
 **Dedupe:** el cuerpo de `setState(III/IIII)`, sus reglas de asignación y la propagación a BRItem ya están preservados en evidencia 107 y no se duplican. La llamada `(3,12,9)) ya figuraba en la sección 12; la rama de lista nula y su receptor ya figuran en evidencias 106–107.
 
 **Límites:** los argumentos son parámetros de estado global del servicio; no convertir los literales 6/9 en afirmaciones directas sobre `BRItem.error`, ni el segundo argumento 12 en `BRItem.state=12`. No se demuestra ejecución dinámica, ni éxito/fallo efectivo de backup/restore. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no se declara verificación local independiente.
+
+
+------------------------------------------------------------------------
+
+## 135. BRService$5: continuación de :goto_3f — 2026-11-23
+
+Se incorporó [evidencia 135](evidence/2026-11-23/135_BRSERVICE5_GOTO3F_STAGE12_HANDOFF.md), basada en el grep contextual compartido por el usuario (ventanas físicas reportadas alrededor de 1042–1120 y 3831–3875).
+
+**Delta:** `:goto_3f` obtiene `mRunningItemIndexLock`, entra al monitor, escribe `-1` en `mRunningItemIndex`, sale y registra `"startRestore, restored"`. La continuación visible consulta `mIsTransingTask` y, si es verdadero, lee `mIsAborted`; el bloque termina antes de mostrar la continuación completa.
+
+**Dedupe y límites:** evidencia 133 ya conserva las guardias Theme/USB y la convergencia hacia `:goto_3f`; evidencia 135 añade el efecto del destino y el comienzo de su continuación. El fragmento no muestra consumo de `v16` ni escritura directa a `BRItem.state/error`. No inferir el destino final de `v16`. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime.
