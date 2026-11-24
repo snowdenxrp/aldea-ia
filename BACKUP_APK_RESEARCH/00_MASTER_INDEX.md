@@ -2515,3 +2515,12 @@ Se incorporó [evidencia 136](evidence/2026-11-23/136_BRSERVICE5_GOTO3F_TRANSING
 **Delta:** el `setState(4,8,0)` y la espera de 500 ms solo ocurren si `mIsTransingTask` es verdadero, `mIsAborted` es falso y `v16==0`. Si está abortado o `v16!=0`, salta ese bloque. Después se observa cleanup: `mReconnector.quit()`, `mTransFileService.stopAll(0)` (con captura/log de `RemoteException`) y `unbindTransFileService()`. En `:cond_64` comienza la comprobación de `mIsLocalBackupTask`, pero el fragmento termina antes de mostrar su destino.
 
 **Dedupe y límites:** evidencia 135 ya conserva el reset sincronizado de `mRunningItemIndex`, el log y el inicio de esta rama. `setState(4,8,0)` es una llamada de estado global del servicio; no demuestra `BRItem.state=8`. No se resuelve el destino final de `v16` ni la rama local. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`, sin cotejo independiente ni runtime.
+------------------------------------------------------------------------
+
+## 137. BRService$5: cierre, estado final y limpieza — 2026-11-23
+
+Se incorporó [evidencia 137](evidence/2026-11-23/137_BRSERVICE5_RESTORE_FINAL_STATE_RELEASE_AND_TEMP_CLEANUP.md), continuación de la salida Termux compartida por el usuario.
+
+**Delta:** si `mIsLocalBackupTask` es verdadero realiza `unbindTransFileService()` adicional; luego registra `startRestore, stoped`, llama `BRManager.release(observer)` y `StorageMonitor.stopMonitor()`. En la selección final, `v16!=0` asigna inicialmente `v14=v16` y `v2=12`, pero el flujo posterior en `:goto_43` vuelve a asignar `v2=10` si `mIsAborted` o `v2=11` si no. `v14` queda como `v16` cuando no es cero; con `v16==0`, toma 3 si está abortado o 0 si no. Llama `setState(4,v2,0,v14)`, elimina el contenido de `getTransTempBackupRootPath()` mediante `Utils.deleteContents()` y registra `Restoring end`.
+
+**Dedupe y límites:** evidencia 136 cubre el cleanup previo y la entrada a la rama local. La llamada `setState` es del estado global del servicio, no una escritura directa demostrada de `BRItem.state/error`. El bloque termina al obtener `BRServiceDataHolder`; no se infiere la continuación. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`, sin cotejo independiente ni runtime.
