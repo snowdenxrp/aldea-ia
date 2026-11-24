@@ -2505,3 +2505,13 @@ Se incorporó [evidencia 135](evidence/2026-11-23/135_BRSERVICE5_GOTO3F_STAGE12_
 **Delta:** `:goto_3f` obtiene `mRunningItemIndexLock`, entra al monitor, escribe `-1` en `mRunningItemIndex`, sale y registra `"startRestore, restored"`. La continuación visible consulta `mIsTransingTask` y, si es verdadero, lee `mIsAborted`; el bloque termina antes de mostrar la continuación completa.
 
 **Dedupe y límites:** evidencia 133 ya conserva las guardias Theme/USB y la convergencia hacia `:goto_3f`; evidencia 135 añade el efecto del destino y el comienzo de su continuación. El fragmento no muestra consumo de `v16` ni escritura directa a `BRItem.state/error`. No inferir el destino final de `v16`. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime.
+
+------------------------------------------------------------------------
+
+## 136. BRService$5: :goto_3f, estado global 8 y cleanup — 2026-11-23
+
+Se incorporó [evidencia 136](evidence/2026-11-23/136_BRSERVICE5_GOTO3F_TRANSINGTASK_STATE8_CLEANUP.md), continuación directa de la salida Termux compartida por el usuario.
+
+**Delta:** el `setState(4,8,0)` y la espera de 500 ms solo ocurren si `mIsTransingTask` es verdadero, `mIsAborted` es falso y `v16==0`. Si está abortado o `v16!=0`, salta ese bloque. Después se observa cleanup: `mReconnector.quit()`, `mTransFileService.stopAll(0)` (con captura/log de `RemoteException`) y `unbindTransFileService()`. En `:cond_64` comienza la comprobación de `mIsLocalBackupTask`, pero el fragmento termina antes de mostrar su destino.
+
+**Dedupe y límites:** evidencia 135 ya conserva el reset sincronizado de `mRunningItemIndex`, el log y el inicio de esta rama. `setState(4,8,0)` es una llamada de estado global del servicio; no demuestra `BRItem.state=8`. No se resuelve el destino final de `v16` ni la rama local. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`, sin cotejo independiente ni runtime.
