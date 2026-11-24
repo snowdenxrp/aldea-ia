@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.32 — referencias a setState(III) y cruces de llamadas en BRService
+**Versión:** 1.33 — cierre de restauración, métricas y finalización de BRService$5
 **Fecha de corte:** 2026-11-23\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2524,3 +2524,15 @@ Se incorporó [evidencia 137](evidence/2026-11-23/137_BRSERVICE5_RESTORE_FINAL_S
 **Delta:** si `mIsLocalBackupTask` es verdadero realiza `unbindTransFileService()` adicional; luego registra `startRestore, stoped`, llama `BRManager.release(observer)` y `StorageMonitor.stopMonitor()`. En la selección final, `v16!=0` asigna inicialmente `v14=v16` y `v2=12`, pero el flujo posterior en `:goto_43` vuelve a asignar `v2=10` si `mIsAborted` o `v2=11` si no. `v14` queda como `v16` cuando no es cero; con `v16==0`, toma 3 si está abortado o 0 si no. Llama `setState(4,v2,0,v14)`, elimina el contenido de `getTransTempBackupRootPath()` mediante `Utils.deleteContents()` y registra `Restoring end`.
 
 **Dedupe y límites:** evidencia 136 cubre el cleanup previo y la entrada a la rama local. La llamada `setState` es del estado global del servicio, no una escritura directa demostrada de `BRItem.state/error`. El bloque termina al obtener `BRServiceDataHolder`; no se infiere la continuación. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`, sin cotejo independiente ni runtime.
+
+------------------------------------------------------------------------
+
+## 138. BRService$5: finalización, métricas y liberación — 2026-11-23
+
+Se incorporó [evidencia 138](evidence/2026-11-23/138_BRSERVICE5_RESTORE_FINISH_METRICS_AND_TASK_COMPLETION.md), basada en las ventanas físicas 4060–4170, 4160–4225 y 4220–4285 de `BRService$5.smali` compartidas por el usuario.
+
+**Delta:** después de `Restoring end`, el flujo limpia el descriptor con `setDescriptor(null)`, llama a `updatePkgStae(v14)`, ejecuta `handleTaskFinish(4,v2,v14,mBRItems)` y libera WakeLock. Si `mIsFlashDriveTask` es verdadero, también desregistra el storage receiver. Luego registra `startRestore, released`.
+
+La telemetría de finalización solo se procesa cuando `v2==v3`: `mBakFilesType==1` registra `backup_local_restore_finish`; tipo 3 selecciona `backup_pc_restore_finish` o `backup_trans_restore_finish` según `mIsFromMiAsist`; tipo 5 registra `backup_usb_restore_finish`. En la ruta local, el evento finish se registra antes de consultar `mIsAborted`. Si no está abortado, registra el total `mBRItems.size()`, el contador `v13` como éxito y el log `total restore: ..., total susses count: ...`. Las ramas convergen en `return-void`; la salida excepcional libera el monitor y relanza la excepción.
+
+**Dedupe y límites:** evidencia 137 termina al obtener `BRServiceDataHolder.getInstance()`; evidencia 138 conserva únicamente la continuación posterior. No resolver los valores/significados generales de `v2`, `v3`, `v13` o `v14`; no equiparar los eventos de telemetría con éxito efectivo; no atribuir a `handleTaskFinish` efectos internos no examinados. No se demuestra ejecución dinámica ni resultado real en dispositivo. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`, sin cotejo local independiente.
