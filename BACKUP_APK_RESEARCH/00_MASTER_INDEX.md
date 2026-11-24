@@ -397,8 +397,7 @@ mensaje de error se calculan por separado.
 **CANDIDATO CONSERVADO --- requiere cotejo del fragmento completo:** en
 `BRService$5/startRestore`, `v16=8` en una rama descrita como
 `v8/Themes`, o `v16=9` en Flash Drive/USB no disponible, llega a
-`setState(4,12,0,v16)`. Se indicó que conserva `mLastError=8/9` si
-estaba en cero. En la misma conversación se resumió que con
+`setState(4,12,0,v16)`. Se indicó que conserva `mLastError=8/9` siestaba en cero. En la misma conversación se resumió que con
 `mWorkingStage=12`, `setState` escribe `BRItem.state=3` y `error=9`;
 este detalle debe cotejarse con el cuerpo exacto de `setState(IIII)`
 para no confundir argumentos ni capas de estado.
@@ -798,7 +797,6 @@ Se conserva el inventario de escritores de `BRItem.state` en `BRService$5` y lla
 
 También se conservaron ambas sobrecargas de `startRestoreCommand`. Evidencia 55 documenta el invoke directo del overload de cinco argumentos hacia el mismo overload con los mismos parámetros, seguido de return en el bloque compartido: anomalía de autoinvocación recursiva confirmada a nivel de fuente directa histórica. No se ha observado ejecución ni StackOverflow; mantener esa conclusión limitada al bloque pegado y a su procedencia.
 
-
 ## 19. setState(IIII) y llamada final — orden de argumentos resuelto
 
 Se recuperó el bloque Smali pegado por el usuario para
@@ -1197,8 +1195,7 @@ Se incorporó evidencia 53: [`53_BRService_DIRECT_STATE_ERROR_WRITERS_AND_PROPAG
 
 **Bloque 12849–12956 (contexto restoreLocalMediaFile):**
 - 12851: `BRItem.state=3`.
-- 12856 carga 0x7; 12859 escribe ese valor en `BRItem.error`, no en state.
-- 12903: `BRItem.state=8`.
+- 12856 carga 0x7; 12859 escribe ese valor en `BRItem.error`, no en state.- 12903: `BRItem.state=8`.
 - 12948/12953 preparan final según `mIsAborted`; 12956 escribe state=9 si abortado o state=1 si no.
 - No se recuperó encabezado/descriptor del método en el mismo fragmento; mantener atribución como ancla histórica contextual.
 
@@ -1597,7 +1594,6 @@ Se incorporó evidencia 74: [`74_RESTORESTREAMSPLITAPK_COORDINATE_PROVENANCE_ERR
 La recuperación dirigida del historial no encontró el supuesto bloque literal físico 1653–1738 ni el `invoke` atribuido a 1683; esa referencia queda como síntesis histórica no verificada. Para 1899, evidencias 50/58 conservan una referencia de grep, pero no un invoke literal ni una coordenada física inequívoca. El usuario sí había compartido un fragmento físico 3445–3468 con directivas `.line 1898` y `.line 1899` asociadas a escrituras de estado y `progType`; esto no prueba un call site en esa posición.
 
 **Corrección:** no afirmar dos call sites, dos builds distintos ni que 1683/1899 sean coordenadas físicas comparables. Evidencia 72 fue corregida y enlaza a evidencia 74. Los cuerpos de `restoreStreamSplitApk` y métodos relacionados siguen pendientes.
-
 
 ------------------------------------------------------------------------
 
@@ -1998,7 +1994,6 @@ La recuperación del chat “Reconstrucción de MiAsistService” (mensajes del 
 - 796/799/811/813: referencias a `mCurrentDate`; 827/867/869: referencias a `mCurrentRootPath`.
 - 959: `mTotalSize`; 1059/1061/1064: `loadAppBRItems` / `loadFileBRItems`.
 - 1132: `updateBakFilePath`; 1191: `mAllBRItems`; 1220–1347: progreso/notificación; la continuación en 1347 menciona `-$$Nest$fputmLastUpdateTime`.
-
 **Delta frente a sección 40:** la responsabilidad general y los nombres de métodos de `$8` ya estaban resumidos; no estaban preservadas estas coordenadas físicas concretas. Se añade únicamente el inventario de anclas.
 
 **Procedencia y límites:** `USER-PASTED-SMALI / RECOVERED-CHAT`, pero el contexto recuperado contiene líneas/anclas sueltas y referencias, no cuerpos completos ni encabezados `.method`. No atribuir ramas, valores, orden, efectos ni semántica de sincronización no conservados. No `LOCAL-VERIFIED`; no afirmar exhaustividad. Véase evidencia 103.
@@ -2399,7 +2394,6 @@ Se incorporó [evidencia 128](evidence/2026-11-23/128_BRSERVICE5_PRELOAD_AND_TRA
 
 **Dedupe:** evidencia 126 ya documentaba las coordenadas y parte de estas condiciones; evidencia 128 añade contexto de guardias y orden de instrucciones, sin declarar writers nuevos. No conectar `v10=3` reportado en otra región con el writer 1283 sin demostrar alcance/flujo. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no verificación local independiente ni runtime.
 
-
 ------------------------------------------------------------------------
 
 ## 129. BRService$5: convergencia en :goto_9 y flujo de v2 — 2026-11-23
@@ -2536,3 +2530,18 @@ Se incorporó [evidencia 138](evidence/2026-11-23/138_BRSERVICE5_RESTORE_FINISH_
 La telemetría de finalización solo se procesa cuando `v2==v3`: `mBakFilesType==1` registra `backup_local_restore_finish`; tipo 3 selecciona `backup_pc_restore_finish` o `backup_trans_restore_finish` según `mIsFromMiAsist`; tipo 5 registra `backup_usb_restore_finish`. En la ruta local, el evento finish se registra antes de consultar `mIsAborted`. Si no está abortado, registra el total `mBRItems.size()`, el contador `v13` como éxito y el log `total restore: ..., total susses count: ...`. Las ramas convergen en `return-void`; la salida excepcional libera el monitor y relanza la excepción.
 
 **Dedupe y límites:** evidencia 137 termina al obtener `BRServiceDataHolder.getInstance()`; evidencia 138 conserva únicamente la continuación posterior. No resolver los valores/significados generales de `v2`, `v3`, `v13` o `v14`; no equiparar los eventos de telemetría con éxito efectivo; no atribuir a `handleTaskFinish` efectos internos no examinados. No se demuestra ejecución dinámica ni resultado real en dispositivo. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-SED-OUTPUT`, sin cotejo local independiente.
+
+------------------------------------------------------------------------
+
+## 139. BRService$5: coordenadas iniciales de incrementos de v13 — 2026-11-23
+
+Se incorporó evidencia 139: [139_BRSERVICE5_V13_INCREMENT_SITES_INITIAL_CONTEXT.md](evidence/2026-11-23/139_BRSERVICE5_V13_INCREMENT_SITES_INITIAL_CONTEXT.md).
+
+El usuario confirmó que el archivo consultado era `BRService$5.smali`; las tres coordenadas 2227, 2422 y 3503 pertenecen a `.method public run()V`. Los fragmentos inmediatos muestran:
+
+- **2227:** incremento después de la región que puede llamar a `unpackBakSdDatas()` para WeChat/QQ; el incremento queda después de `:cond_38`, por lo que no se atribuye exclusivamente a esos paquetes.
+- **2422:** incremento en `:goto_24`, tras la llamada a `restoreLocalMediaFile()` en la rama `mIsFlashDriveTask`, `packageName == "files_for_backup"` y `v3 != null`. La ruta `v3 == null` salta a otra etiqueta y no pasa por ese incremento.
+- **3503:** incremento inmediatamente después de `MediaScannerConnection.scanFile()`; las guardias de entrada completas no se recuperaron.
+
+Evidencias 132 y 138 ya conservan, respectivamente, la inicialización `v13=0` en `:goto_e` y el uso final de `v13` en la métrica/log local de restauración. Evidencia 139 añade solo las nuevas coordenadas y su contexto inmediato. No se concluye todavía que todos los incrementos alimenten el mismo contador efectivo ni que `v13` represente universalmente restauraciones exitosas: faltan rastrear redefiniciones, usos, guardias y convergencias. Procedencia `USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT`; no cotejo local independiente ni ejecución dinámica.
+
