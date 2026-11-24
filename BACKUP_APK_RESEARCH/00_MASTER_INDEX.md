@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.36 — segunda pasada de reconciliación de evidencia y trazabilidad
+**Versión:** 1.37 — recuperación documental del chat anterior y auditoría de cobertura Git
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2581,3 +2581,13 @@ Se incorporó [evidencia 141](evidence/2026-11-24/141_BRSERVICE_MBAKFILESTYPE_CA
 **Límites:** llamadas setState son estado global del servicio, no prueba de BRItem.state=8. No se resuelve el default v13, no se amplía la semántica completa de los tipos, y no se reconstruye el encabezado ausente del caller #1. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin verificación local independiente ni ejecución dinámica.
 
 **Estado:** investigación INCOMPLETA; evidencia estática documental.
+
+------------------------------------------------------------------------
+
+## 142. Recuperación del chat anterior y auditoría de cobertura Git — 2026-11-24
+
+Se incorporó [registro 142](evidence/2026-11-24/142_PREVIOUS_CHAT_RECOVERY_AND_GIT_COVERAGE_AUDIT.md) para responder a la aclaración del usuario: la solicitud de “guardar todo en Git” se refería a preservar el contenido relevante del chat anterior completo, no solo la evidencia 141.
+
+El registro 142 consolida el mapa de cobertura de ese chat: hashes y tamaños (deduplicados contra evidencia 111/140), metadatos del decode, inventario ProgressItemAdapter, mapeo conocido de `mBakFilesType`, estado de `BRItem`, callers/consumo de `v16`, advertencia Bash sobre `$5`, pendientes y procedencia. Enlaza evidencias 60, 124, 133, 135–141 y distingue los datos ya guardados de los elementos que no pudieron recuperarse íntegramente.
+
+**Límite importante:** el registro 142 es una reconstrucción documental de todo el contenido recuperable en el contexto disponible; no es la transcripción íntegra del chat. No se promueve `v8=1` a confirmado: continúa como PRIOR-ASSISTANT-OUTPUT / UNVERIFIED hasta recuperar el fragmento Smali primario. La investigación sigue INCOMPLETA y estática.
