@@ -2561,3 +2561,23 @@ Se incorporó [evidencia 140](evidence/2026-11-24/140_TERMUX_HASH_DECODE_METADAT
 **Metadatos del decode:** el bloque adicional confirma presencia y metadatos reportados de `decoded/AndroidManifest.xml` (19K), `decoded/original/AndroidManifest.xml` (33K) y `decoded/apktool.yml` (3.8K), todos con fecha mostrada Nov 16 00:18. No aporta contenido, hashes, versión exacta de Apktool ni comando de decodificación.
 
 **Estado reconciliado:** no se identifica un nuevo hallazgo técnico de comportamiento. Se conserva un delta de procedencia y metadatos, junto con una advertencia de atribución de archivo que impide usar el grep ambiguo como evidencia de `BRService$5`. La investigación sigue INCOMPLETA; no se infieren ejecución dinámica, causalidad no demostrada ni integridad criptográfica actual.
+
+
+------------------------------------------------------------------------
+
+## 141. BRService: callers de mBakFilesType y consumo de v16 en :goto_3f — 2026-11-24
+
+Se incorporó [evidencia 141](evidence/2026-11-24/141_BRSERVICE_MBAKFILESTYPE_CALLERS_AND_GOTO3F_V16_CONSUMPTION.md), basada en extractos Smali compartidos directamente por el usuario.
+
+**Delta preservado:**
+- Caller desde descriptor de transferencia: el contexto visible prepara BRItems, contraseña cifrada, ruta raíz y TransDeviceInfo; fija el argumento entero cuarto de backupPackages (p4) en 3. El encabezado completo del método caller no quedó visible por una transcripción de terminal parcialmente mezclada.
+- Caller desde Intent: getIntExtra(...) produce v11, que se mueve a v4 y llega como p4 a backupPackages. El valor por defecto es v13, no resuelto en el extracto.
+- Caller de restoreFiles: el tercer argumento (p3) procede de getIntExtra(...) con default 1; tanto la ruta con BRItems como la ruta alternativa conservan v3.
+- En BRService$5.:goto_3f, setState(4,8,0) y sleep(500 ms) solo ocurren si mIsTransingTask==true, mIsAborted==false y v16==0. Los valores v16=8/9 preservados en evidencia 133 no satisfacen esa última condición.
+- El fragmento de consumo no lee v4; no se atribuye a v4=10 la decisión condicional. El cleanup posterior ya está cubierto por evidencia 136.
+
+**Dedupe:** evidencias 133, 135 y 136 conservan las ramas de asignación, convergencia y cleanup. Evidencia 141 añade el origen de argumentos en los callers y el consumo condicional de v16; no crea writers directos de BRItem.state/error.
+
+**Límites:** llamadas setState son estado global del servicio, no prueba de BRItem.state=8. No se resuelve el default v13, no se amplía la semántica completa de los tipos, y no se reconstruye el encabezado ausente del caller #1. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin verificación local independiente ni ejecución dinámica.
+
+**Estado:** investigación INCOMPLETA; evidencia estática documental.
