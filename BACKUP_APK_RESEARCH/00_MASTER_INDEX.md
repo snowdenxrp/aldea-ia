@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.34 — reconciliación de hashes, decode y procedencia de comandos
+**Versión:** 1.35 — reconciliación de hashes, decode y procedencia de comandos
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
