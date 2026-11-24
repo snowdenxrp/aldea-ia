@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.37 — recuperación documental del chat anterior y auditoría de cobertura Git
+**Versión:** 1.38 — recuperación parcial del encabezado del caller #1 de backupPackages
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2591,3 +2591,16 @@ Se incorporó [registro 142](evidence/2026-11-24/142_PREVIOUS_CHAT_RECOVERY_AND_
 El registro 142 consolida el mapa de cobertura de ese chat: hashes y tamaños (deduplicados contra evidencia 111/140), metadatos del decode, inventario ProgressItemAdapter, mapeo conocido de `mBakFilesType`, estado de `BRItem`, callers/consumo de `v16`, advertencia Bash sobre `$5`, pendientes y procedencia. Enlaza evidencias 60, 124, 133, 135–141 y distingue los datos ya guardados de los elementos que no pudieron recuperarse íntegramente.
 
 **Límite importante:** el registro 142 es una reconstrucción documental de todo el contenido recuperable en el contexto disponible; no es la transcripción íntegra del chat. No se promueve `v8=1` a confirmado: continúa como PRIOR-ASSISTANT-OUTPUT / UNVERIFIED hasta recuperar el fragmento Smali primario. La investigación sigue INCOMPLETA y estática.
+
+------------------------------------------------------------------------
+
+## 143. Recuperación parcial del encabezado del caller #1 de backupPackages — 2026-11-24
+
+Se incorporó [evidencia 143](evidence/2026-11-24/143_BRSERVICE_BACKUPPACKAGES_CALLER1_HEADER_RECOVERY_PARTIAL.md), basada en la salida de grep compartida desde Termux.
+
+**Delta:** se recupera el encabezado del caller #1 previamente incompleto: `BRService.backupPackagesByRetransfering(Z)V`, con `.locals 17`; la invocación a `backupPackages(...)` aparece en la línea física 3774. La invocación del caller desde Intent queda localizada en la línea física 19318.
+
+**Dedupe y límites:** evidencia 141 ya conservaba el argumento `p4=3` del caller #1, el origen Intent del caller #2 y el default `v13` aún no resuelto. Evidencia 143 no vuelve a registrar esas conclusiones como nuevas. El cuerpo del caller #1 no se recibió íntegramente; la recuperación del encabezado es parcial y procede de salida compartida por el usuario, sin cotejo local independiente ni ejecución dinámica.
+
+**Pendientes:** recuperar el cuerpo/contexto completo del caller #1; resolver el default `v13` del caller #2; recuperar el literal `v8` y la cadena causal del tipo 2; completar el rastreo de `v13`. Investigación INCOMPLETA y estática.
+
