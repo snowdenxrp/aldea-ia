@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.39 — resolución del default extra_bakfiles_type en onStartCommand
+**Versión:** 1.40 — recuperación del cuerpo de backupPackagesByRetransfering
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2615,4 +2615,18 @@ Se incorporó [evidencia 144](evidence/2026-11-24/144_ONSTARTCOMMAND_BACKUPPACKA
 **Distinción de rutas:** si `extra_is_retransfering=true`, el flujo llama a `backupPackagesByRetransfering(Z)V` y salta la llamada directa normal. No generalizar el default 1 a ese camino ni a todos los caminos de backup.
 
 **Pendientes:** cuerpo/contexto íntegro del caller #1; literal `v8` y cadena causal del tipo 2; rastreo integral de `v13` donde tenga relevancia independiente. Investigación INCOMPLETA y estática.
+
+------------------------------------------------------------------------
+
+## 145. Cuerpo del caller #1 backupPackagesByRetransfering — 2026-11-24
+
+Se incorporó [evidencia 145](evidence/2026-11-24/145_BRSERVICE_BACKUPPACKAGESBYRETRANSFERING_CALLER1_BODY.md), basada en el rango Smali compartido desde Termux.
+
+**Delta:** se recupera el cuerpo sustancial del caller #1. Antes de llamar a backupPackages, obtiene el descriptor con RetransferUtils.getProgress; exige descriptor no nulo y brState==3; en retransmisión automática (p1=true) detiene el flujo cuando autoRetransferCnt>=3 y, si continúa, incrementa mAutoRetransferCnt; con p1=false reinicia ese campo a cero. Restaura los campos currentSendedSdFile y pendingFiles, reconstruye TransDeviceInfo desde los campos del descriptor, obtiene BRItems y ruta con tipo 3, calcula el booleano de cifrado a partir de que encryptedPwd no esté vacío, y pasa p4=3. El booleano final de la llamada procede de p1.
+
+**Reconciliación:** el tipo 3 de este caller pertenece a la ruta de retransmisión basada en descriptor; no contradice el default 1 de extra_bakfiles_type en la ruta normal CMD_BACKUP, documentado en evidencia 144. El valor p4=3 ya constaba en evidencia 141 y no se cuenta como hallazgo aislado nuevo.
+
+**Cautela:** la salida recibida presenta desalineación de espacios/tabulaciones en la región de movimientos de registros y llamada. La reconstrucción se registra con esa limitación; no hay cotejo local independiente ni ejecución dinámica.
+
+**Pendientes:** literal v8 y cadena causal del tipo 2; confirmar con extracción limpia cualquier detalle de asignación de registros que dependa de la región desalineada; investigación INCOMPLETA y estática.
 
