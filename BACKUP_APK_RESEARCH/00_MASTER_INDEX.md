@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.66 — E175: copyToUsb, disponibilidad USB y normalización de ruta
+**Versión:** 1.67 — E176: createFile, creación directa y espera asíncrona
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3177,4 +3177,21 @@ Se incorporó [evidencia 175](evidence/2026-11-25/175_BRSERVICE_COPYTOUSB_AVAILA
 **Dedupe y límites:** E174 solo localizaba este método como siguiente objetivo; no documentaba su cuerpo. E175 añade su flujo completo. Los códigos numéricos se preservan como argumentos literales, sin asignarles semántica adicional. La captura de IOException no prueba éxito de copia. No se inspeccionó el interior de `copyFile()`; por tanto, no se concluye sobre rollback, borrado parcial, sync o integridad de destino. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
 
 **Siguiente paso:** continuar con `createFile(File)`, comenzando por la siguiente ventana física de Termux después de la definición observada, por ejemplo `BRService.smali:5700–5840`. Mantener separados el wrapper USB `copyToUsb` y el método receptor `copyFile`, que requerirá análisis propio si se necesita establecer garantías de copia.
+
+------------------------------------------------------------------------
+
+## 47. Evidencia 176 — BRService.createFile: creación directa y espera de operación asíncrona — 2026-11-25
+
+Se incorporó [evidencia 176](evidence/2026-11-25/176_BRSERVICE_CREATEFILE_DIRECT_AND_ASYNC_LATCH.md), basada en las ventanas Termux `BRService.smali:5650–5740` y `5700–5840`, que recuperan el método completo.
+
+**Delta preservado:**
+- Si `mBakFilesType != 5`, llama `Utils.createFile(file,true)`. Si devuelve verdadero, retorna; si devuelve falso, registra `fail to create file` con la ruta absoluta y lanza `IOException`.
+- Si `mBakFilesType == 5`, entra en el monitor de `mFileOpLatch`, reinicia el `AtomicBoolean` a falso, crea e inicia `BRService$20(this,file)` y espera mediante `wait()`.
+- Tras la espera, si el latch está en verdadero retorna; si está en falso lanza `IOException`. Una `InterruptedException` se registra como `createFile wait error` y el método continúa con la lectura del latch.
+- El bloque `catchall` sale del monitor antes de propagar excepciones.
+- No se observa timeout explícito en la espera. El productor de la señal y el resultado de la operación asíncrona quedan pendientes de inspeccionar en `BRService$20`.
+
+**Dedupe y límites:** E175 solo localizaba `createFile(File)` como método siguiente y no documentaba su cuerpo. E176 añade el método completo sin duplicar E170–E175. No se infiere el contrato interno de `Utils.createFile`, ni quién cambia el latch a verdadero, ni éxito dinámico. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+**Siguiente paso:** continuar con `deleteFile(File)`, cuyo comienzo aparece al final de la ventana `5700–5840`; recuperar primero su continuación y final. Después, si se necesita cerrar la ruta asíncrona de creación, analizar por separado `BRService$20`.
 
