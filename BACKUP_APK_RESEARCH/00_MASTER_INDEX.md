@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.56 — E165: continuación BRService$5 y streams ZIP por archivo
+**Versión:** 1.57 — E166: rama localFileList y localización de copyFileFromStream
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2997,3 +2997,22 @@ Se incorporó [evidencia 165](evidence/2026-11-25/165_BRSERVICE5_POST_GOTO1C_RES
 **Siguiente paso:** continuar `BRService$5.smali` desde la línea 2760 hasta el final del método; recuperar `BRService.copyFileFromStream` completo y revisar asignaciones/cierres del InputStream original. Después continuar con `extra_zip_file_path`.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 37. Evidencia 166 — BRService$5: rama localFileList y localización de copyFileFromStream — 2026-11-25
+
+Se incorporó [evidencia 166](evidence/2026-11-25/166_BRSERVICE5_LOCAL_FILELIST_COPY_AND_COPYFILEFROMSTREAM_LOCATOR.md), basada en la ventana Termux `BRService$5.smali:2760–2900` y el grep de referencias a `copyFileFromStream` en `BRService.smali`.
+
+**Delta preservado:**
+- La rama `localFileList` itera rutas y, si `mIsAborted` es true, asigna `BRItem.state=3,error=9`.
+- En la ruta no abortada, normaliza la ruta contra `mCurrentBackupRootPath`, llama `Utils.newDirChangePath` y ejecuta el puente `copyFile(BRService,4,File(destino normalizado),File(origen))`.
+- Si `copyFile` retorna sin IOException, agrega la ruta absoluta del File de origen a la lista; después consulta el tiempo de modificación mediante `getModifyTimeByReceiveFileMap` e intenta aplicarlo con `File.setLastModified`. La RuntimeException de parseo/aplicación se registra.
+- El grep localiza el puente sintético `-$$Nest$mcopyFileFromStream` en la línea física 1685 y la definición privada `copyFileFromStream` en la línea física 4185 de `BRService.smali`; todavía no se ha recuperado el cuerpo.
+
+**Dedupe y límites:** E165 ya conserva la rama distinta de streams ZIP por entrada que llama a `copyFileFromStream`. E166 añade la rama File→File y las coordenadas del método receptor. La ventana termina antes de los handlers y del final de `BRService$5.run()`. No se afirma que `copyFileFromStream` cierre los streams ni se concluye fuga.
+
+**Siguiente paso:** recuperar el método completo `BRService.copyFileFromStream` desde la línea física 4185 hasta `.end method`, incluidos handlers y cierres. Expediente **INCOMPLETO**.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica.
