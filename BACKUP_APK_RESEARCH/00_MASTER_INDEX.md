@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.62 — E171: cierre ZIP y progreso de copia directa en copyFileWithProgress
+**Versión:** 1.63 — E172: cierre de copia directa y finalización común en copyFileWithProgress
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3101,5 +3101,22 @@ Se incorporó [evidencia 171](evidence/2026-11-25/171_BRSERVICE_COPYFILEWITHPROG
 - La notificación periódica de la copia directa comunica etapa/estado 2, origen absoluto de `p2` y selecciona el destino entre `v20` o la ruta absoluta de `p3` según la comparación `v10 == v15`.
 
 **Dedupe y límites:** E170 ya conserva el comienzo del método y el bucle ZIP; E171 añade la cola de progreso/cierre ZIP y el inicio de la rama File → File. No se generaliza el cierre ZIP a la copia directa. La ventana termina antes de completar la notificación directa y no muestra cierres de sus streams, flush/sync, handlers, retorno ni limpieza de destino parcial. Tampoco muestra el destino de `:goto_7`. No se atribuye semántica a `v10`, `v15` o `v20` más allá de la selección observada.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 43. Evidencia 172 — BRService.copyFileWithProgress: cierre de copia directa y finalización común — 2026-11-25
+
+Se incorporó [evidencia 172](evidence/2026-11-25/172_BRSERVICE_COPYFILEWITHPROGRESS_DIRECT_COPY_CLEANUP_AND_COMMON_COMPLETION.md), basada en la continuación Termux de `BRService.smali:4860–5000`.
+
+**Delta preservado:**
+- En la rama File → File, al alcanzar EOF, intenta cerrar primero `FileOutputStream` y después `FileInputStream`. Cada `IOException` de cierre se captura y registra; la ruta continúa hacia `:goto_7`.
+- `:goto_7` es el punto de finalización común al que llega también la rama ZIP preservada en E171.
+- Si la tarea no es local, el método emite notificación final de etapa/estado 3 con origen absoluto de `p2`, destino seleccionado entre `v20` y la ruta absoluta de `p3` según `v10 == v15`, y ambos argumentos long iguales a la longitud `v16`.
+- Si la tarea es local, omite esa notificación. Después retorna `v23`, cuyo valor no se resuelve en esta ventana.
+
+**Dedupe y límites:** E170–E171 conservan preparación, rama ZIP y comienzo de copia directa. E172 añade los cierres directos en EOF y la convergencia/finalización común. Los cierres observados no se extienden a excepciones durante lectura/escritura: falta inspeccionar el destino de `:catchall_0`. No se afirma que los bytes realmente escritos coincidan con `v16`, que el destino sea íntegro, ni se atribuye valor a `v23`. No se demuestra borrado de destino parcial ni flush/sync en esta rama.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
