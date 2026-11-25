@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.50 — BRService: receptor restoreLocalMediaFile y fallback ZIP/stream
+**Versión:** 1.51 — BRService: consumidores mZipFilePath, split APK y limpieza
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
