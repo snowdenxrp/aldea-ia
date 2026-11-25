@@ -1,3 +1,18 @@
+## DELTA DE SESIÓN — PRIORIDAD EXCLUSIVA DE CIERRE NCS M0 (2026-11-25)
+
+- Instrucción explícita del propietario para esta línea de trabajo: la única misión activa es cerrar NEXO NCS M0 con evidencia verificable. No dedicar trabajo a MIUI Backup.apk/BRService ni a sistemas de terceros mientras no exista una dependencia M0 concreta demostrada.
+- La investigación de MIUI Backup.apk queda pausada en E177. No se elimina ni se invalida su evidencia; simplemente queda fuera del alcance operativo de esta conversación M0.
+- Estado M0 conservador: OPEN / STOP / UNKNOWN; **INCOMPLETO**. No declarar PASS, terminado ni cerrado sin evidencia admisible vinculada al SHA exacto.
+- Bloqueos a conservar: P07-C UNKNOWN/BLOCKING; P05 OPEN (P05-C RATIFICADA); E2/E3 PARTIAL/NOT CLOSED; P09 OPEN/UNKNOWN en cobertura efectiva dentro del universo ratificado; CI sin evidencia verificable asociada al SHA exacto evaluado. P08 está DECIDED/RATIFIED en su mapping, con implementación pendiente; no reabrir su decisión.
+- Punto técnico prioritario documentado: P07-C. Reutilizar P07 V2.2 como base y aplicar V2.3 como delta; no reiniciar desde V2.1. Evaluar únicamente los oráculos bloqueantes ya enumerados en el handoff y las obligaciones O1–O9 existentes. No seleccionar primitivas ni inventar mecanismos por inferencia.
+- Snapshot técnico referido por el handoff vigente: rama de producto `ncs-lumina-decoupling-2026-10-29`, SHA `d8b5ca8720908d926acc18130614cce132a43b5d`. Es un snapshot documentado, no afirmación de HEAD actual de la rama.
+- Rama documental consultada para esta actualización: `ncs-continuity-handoff-correction-2026-11-07`. PR #111 fue encontrado OPEN/DRAFT/NOT MERGED en la consulta realizada; esta actualización documental no implica integración en la rama base ni modifica PR #110.
+- Evidencia consultada en esta sesión: STATUS, README, CORE/MASTER y protocolo de no repetición; el handoff confirma el orden obligatorio y los gaps ya mapeados. En la consulta de estados de commit y ejecuciones asociadas al SHA `d8b5ca8` no se devolvieron estados ni runs; por tanto CI-VERIFIED permanece UNKNOWN/NO DEMOSTRADO para ese SHA.
+- Restricciones operativas reafirmadas: solo lectura salvo autorización explícita; no runtime, tests, CI, workflows, Termux/POCO, bootstrap, instalación, commissioning, stores ni efectos protegidos sin autorización específica. No crear ramas/PR ni modificar código como consecuencia de este registro.
+- Esta delta registra la prioridad y la fotografía de trabajo de esta sesión; no cambia decisiones ratificadas, no cierra gates y no constituye evidencia técnica de PASS.
+
+---
+
 ## DELTA PRIORITARIA — RATIFICACIONES P08/P09 DEL PROPIETARIO (2026-11-09; REGISTRADAS 2026-11-12)
 
 **Fuente de procedencia:** handoff maestro NCS fechado 2026-11-10, suministrado por el propietario en esta conversación el 2026-11-12. La fecha de decisión consignada es 2026-11-09. Esta entrada transcribe el contenido declarado; no inventa SHA-256 para el handoff conversacional.
