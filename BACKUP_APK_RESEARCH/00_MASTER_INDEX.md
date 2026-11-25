@@ -2728,3 +2728,17 @@ Se incorporó [evidencia 151](evidence/2026-11-24/151_BRSERVICE5_ALTERNATIVE_RES
 - Si el estado no es 1, 6 o 3, se escribe `state=1`, `progType=0` y se notifica fin. Los estados 1, 6 y 3 quedan excluidos de esa normalización.
 
 **Límites:** notificar error 7 no demuestra asignación de `BRItem.error=7`; la ventana termina durante `MediaScannerConnection.scanFile`. Análisis estático de salida Termux aportada por el usuario, sin ejecución dinámica ni cotejo local independiente. El expediente continúa INCOMPLETO.
+
+------------------------------------------------------------------------
+
+## 22. Evidencia 152 — BRService$5: escaneo multimedia, ruta alternativa y asignación de error — 2026-11-24
+
+Se incorporó [evidencia 152](evidence/2026-11-24/152_BRSERVICE5_MEDIA_SCAN_ALTERNATE_RESTORE_AND_ERROR_ASSIGNMENT.md), continuación de evidencia 151 desde la línea 3501.
+
+**Delta preservado:**
+- La rama convierte las rutas acumuladas en un array y llama `MediaScannerConnection.scanFile(context, paths, null, null)`; después incrementa `v13` y regresa a `:goto_26`. La llamada no confirma que el escaneo haya terminado.
+- La ruta alternativa construye `mCurrentBackupRootPath/backup_<suffix>.zip` y llama `restoreLocalMediaFile(BRItem, false, InputStream)`, regresando después a `:goto_38`.
+- La ruta de fallo llama `BackupRestoreListener.onError(packageName, feature, 6)` y `onRestoreEnd(...)`, y registra `Restore failed`.
+- Si el ZIP existe y `v5 == false`, escribe `BRItem.error=1`; si la referencia es nula o el archivo no existe y `v5 == false`, escribe `BRItem.error=10`. El código 6 de la notificación no es el valor asignado a `BRItem.error` en estas ramas.
+
+**Límites:** origen/significado de `v5` pendiente; no inferir integridad del ZIP a partir de `File.exists()`. La ventana termina al inicio de la rama que comprueba `BRItem.error` (línea 3680). Análisis estático de salida Termux aportada por el usuario; expediente INCOMPLETO.
