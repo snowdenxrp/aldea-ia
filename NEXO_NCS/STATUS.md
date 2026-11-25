@@ -1,3 +1,13 @@
+## DELTA — RECONCILIACIÓN C3 / P07-21 HARDLINK-NLINK (2026-11-25)
+
+- C3 **NO ESTÁ PENDIENTE**: la decisión del propietario del 2026-11-07 ya establece que cualquier modificación de `nlink` del objeto protegido constituye afectación, aunque sea reversible.
+- Por tanto, eliminar un hardlink propio que apunta al inode protegido también constituye afectación. La propiedad del nombre no concede excepción.
+- La regla se aplica al inode cuando su rol es objeto protegido. P07-21 Caso A solo puede caracterizar cleanup propio si el fixture declara un temporal propio no protegido y el contrato permite ese cambio; rol ambiguo => UNKNOWN/BLOCKED.
+- Reconciliación y evidencia: [NCS_M0_D2_P07_C3_HARDLINK_NLINK_RECONCILIATION_2026-11-25.md](BUILD/NCS_M0_D2_P07_C3_HARDLINK_NLINK_RECONCILIATION_2026-11-25.md), commit `87decf9ec993b24f88ab2fb38bdeb117f458df3a`.
+- No es nueva ratificación ni evidencia de ejecución. P07-C sigue UNKNOWN/BLOCKING; P05 OPEN; P09 OPEN/UNKNOWN; NCS M0 INCOMPLETO. No PASS, TESTED ni CI-VERIFIED.
+
+---
+
 ## DELTA DE SESIÓN — PRIORIDAD EXCLUSIVA DE CIERRE NCS M0 (2026-11-25)
 
 - Instrucción explícita del propietario para esta línea de trabajo: la única misión activa es cerrar NEXO NCS M0 con evidencia verificable. No dedicar trabajo a MIUI Backup.apk/BRService ni a sistemas de terceros mientras no exista una dependencia M0 concreta demostrada.
