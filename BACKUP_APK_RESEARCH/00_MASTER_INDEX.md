@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.52 — BRService: restoreStreamSplitApk completo y ciclo de streams
+**Versión:** 1.53 — BRService$5 caller de restoreStreamSplitApk y flujo posterior
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2890,3 +2890,19 @@ Se incorporó [evidencia 162](evidence/2026-11-25/162_BRSERVICE_RESTORE_STREAM_S
 - El grep dentro de `BRService.smali` devuelve la definición privada (13035), el puente sintético (2101) y la llamada interna del puente (2104); no cubre callers en otros archivos.
 
 **Dedupe y límites:** E161 ya conservaba la identificación parcial y el comienzo del método; E162 añade el cuerpo completo y la gestión de recursos. No se duplican los consumidores `mZipFilePath` de E161 ni el receptor/fallback de E160. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Pendiente rastrear el puente en todos los directorios Smali y revisar el caller para determinar la propiedad del stream original. Después continuar con el origen/ciclo de vida de `extra_zip_file_path`. Expediente INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 33. Evidencia 163 — BRService$5: caller de restoreStreamSplitApk y flujo posterior — 2026-11-25
+
+Se incorporó [evidencia 163](evidence/2026-11-25/163_BRSERVICE5_CALLER_RESTORE_STREAM_SPLITAPK_AND_POSTCALL_FLOW.md), basada en el grep global del puente sintético y la ventana `BRService$5.smali:1815–1965`.
+
+**Delta preservado:**
+- El grep global encontró la invocación del puente en `BRService$5.smali:1899`; la otra coincidencia es la definición del puente en `BRService.smali:2101`.
+- El caller entrega `v3` como InputStream, junto con `BRItem v6` y `ZipFile v5`, al puente que delega en `restoreStreamSplitApk`.
+- Tras regresar, usa el mismo `ZipFile v5` para obtener otra entrada basada en el basename de `BRItem.bakFilePath`, obtiene un nuevo InputStream `v0`, crea un pipe, construye `zipStreamReader` y lo entrega a `BackupApp.workExecutor`.
+- El array de descriptores del pipe se guarda en `v3`, sobrescribiendo el registro del caller que contenía el InputStream original. El `v0` posterior es un stream distinto del original entregado al método split.
+- La sobrescritura de `p3` en el método receptor no altera el registro `v3` del caller. En el tramo posterior compartido no aparece un cierre explícito del InputStream original; todavía deben inspeccionarse el contexto previo, el resto del método y sus handlers/catchall antes de concluir si existe fuga o cierre externo.
+
+**Dedupe y límites:** E162 ya contiene el cuerpo completo del método privado y la sobrescritura de su parámetro local. E163 añade el caller y distingue el stream original del stream entregado al lector del pipe. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Siguiente paso: recuperar el método contenedor completo y rastrear asignaciones/cleanup de `v3`. Después, continuar con el origen/ciclo de vida de `extra_zip_file_path`. Expediente INCOMPLETO.
