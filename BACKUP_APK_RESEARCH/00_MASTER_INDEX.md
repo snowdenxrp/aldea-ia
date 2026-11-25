@@ -2731,6 +2731,18 @@ Se incorporó [evidencia 151](evidence/2026-11-24/151_BRSERVICE5_ALTERNATIVE_RES
 
 ------------------------------------------------------------------------
 
+## 23. Evidencia 153 — BRService$5: ciclo de vida de ZipFile en v5 y reinicio de v13 — 2026-11-24
+
+Se incorporó [evidencia 153](evidence/2026-11-24/153_BRSERVICE5_ZIPFILE_REGISTER_V5_LIFECYCLE_AND_V13_RESET.md).
+
+La salida Termux de las ventanas físicas 850–970 confirma que `run()V` intenta construir `ZipFile(mZipFilePath)`; en el camino exitoso mueve el objeto a `v5` y salta a `:goto_e`. Si la ruta es nula/vacía o el constructor lanza `IOException`, el flujo llega a `:cond_1a` y asigna `v5=null` antes del bucle principal. El manejador reutiliza temporalmente v5 para String/estado, pero la asignación null normaliza el camino de fallo.
+
+La ventana 853–875 muestra que v13 se reutiliza antes como booleano de `Iterator.hasNext()` y como objeto/BRItem. La instrucción física 958 (`:goto_e`) lo reinicia a cero antes del bucle principal; esos usos previos no pertenecen al contador numérico posterior. Las tres coordenadas de incremento y el uso final no se duplican: ya constan en evidencias 139 y 138.
+
+Esta evidencia conecta el origen de v5 con las comprobaciones de `BRItem.error=1/10` documentadas en evidencia 152. La lectura de `if-nez v5` como presencia del ZipFile queda condicionada a que no haya reasignaciones intermedias no cubiertas; no se afirma integridad del ZIP ni éxito de restauración. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente ni ejecución dinámica.
+
+------------------------------------------------------------------------
+
 ## 22. Evidencia 152 — BRService$5: escaneo multimedia, ruta alternativa y asignación de error — 2026-11-24
 
 Se incorporó [evidencia 152](evidence/2026-11-24/152_BRSERVICE5_MEDIA_SCAN_ALTERNATE_RESTORE_AND_ERROR_ASSIGNMENT.md), continuación de evidencia 151 desde la línea 3501.
