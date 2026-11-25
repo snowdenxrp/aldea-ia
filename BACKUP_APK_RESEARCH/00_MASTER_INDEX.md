@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.61 — E170: rama ZIP Flash Drive de copyFileWithProgress
+**Versión:** 1.62 — E171: cierre ZIP y progreso de copia directa en copyFileWithProgress
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3086,3 +3086,20 @@ Se incorporó [evidencia 170](evidence/2026-11-25/170_BRSERVICE_COPYFILEWITHPROG
 - La salida termina dentro del bucle, tras consultar `elapsedRealtime()`; no contiene el resto del método.
 
 **Límites:** no afirmar cierre del FileInputStream, cierre de ZipEntry, progreso final, handlers ni retorno. No generalizar la rama a todas las copias USB. Los cuerpos de `putNextEntry` y `outputStreamWrite` no están incluidos. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 42. Evidencia 171 — BRService.copyFileWithProgress: cierre de rama ZIP y progreso de copia directa — 2026-11-25
+
+Se incorporó [evidencia 171](evidence/2026-11-25/171_BRSERVICE_COPYFILEWITHPROGRESS_ZIP_COMPLETION_AND_DIRECT_COPY_PROGRESS.md), basada en la continuación Termux de `BRService.smali:4740–4880`.
+
+**Delta preservado:**
+- En la rama ZIP Flash Drive, cuando vence el intervalo de notificación y la tarea no es local, informa etapa/estado 2 con ruta absoluta del origen, destino null, bytes acumulados y longitud total; después actualiza la marca temporal.
+- Al salir del bucle ZIP llama `closeEntry(mZipOutputStream)` y cierra silenciosamente el InputStream referenciado por `v12` mediante `IOUtils.closeQuietly`; después salta a `:goto_7`.
+- Se identifica la rama separada File → File: abre `FileInputStream` sobre `v11`, `FileOutputStream` sobre `p3` y un búfer de 4 KiB. Lee hasta resultado negativo, escribe cada bloque y acumula bytes.
+- La notificación periódica de la copia directa comunica etapa/estado 2, origen absoluto de `p2` y selecciona el destino entre `v20` o la ruta absoluta de `p3` según la comparación `v10 == v15`.
+
+**Dedupe y límites:** E170 ya conserva el comienzo del método y el bucle ZIP; E171 añade la cola de progreso/cierre ZIP y el inicio de la rama File → File. No se generaliza el cierre ZIP a la copia directa. La ventana termina antes de completar la notificación directa y no muestra cierres de sus streams, flush/sync, handlers, retorno ni limpieza de destino parcial. Tampoco muestra el destino de `:goto_7`. No se atribuye semántica a `v10`, `v15` o `v20` más allá de la selección observada.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
