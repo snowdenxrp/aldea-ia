@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.40 — recuperación del cuerpo de backupPackagesByRetransfering
+**Versión:** 1.41 — rastreo literal de v8 y ruta de restauración tipo 2
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2630,3 +2630,20 @@ Se incorporó [evidencia 145](evidence/2026-11-24/145_BRSERVICE_BACKUPPACKAGESBY
 
 **Pendientes:** literal v8 y cadena causal del tipo 2; confirmar con extracción limpia cualquier detalle de asignación de registros que dependa de la región desalineada; investigación INCOMPLETA y estática.
 
+
+
+------------------------------------------------------------------------
+
+## 146. BRService$5: v8, tipo 2, copia temporal y ruta de restorePackage — 2026-11-24
+
+Se incorporó [evidencia 146](evidence/2026-11-24/146_BRSERVICE5_V8_TYPE2_TEMP_COPY_AND_RESTORE_MANAGER_PATH.md), basada en ventanas Smali y el inventario completo de referencias a `v8` compartidos directamente por el usuario desde Termux.
+
+**Hallazgo confirmado en los extractos:** `v8` se asigna como 1 cuando `mBakFilesType==2`, y como 0 en caso contrario (líneas físicas 119–124). El inventario de referencias muestra que, antes del consumidor en 1728, no hay redefinición de `v8`; las referencias intermedias 1051 y 1235 lo leen/mueven. Por tanto, el tipo 2 conduce a la rama que crea `.tmp_bak_file` bajo `getTransTempBackupRootPath()`, llama a `mcopyFile(4, v4, v10)` y sustituye la referencia local `v4` por el archivo temporal.
+
+**Rama alternativa:** con `v8==0`, se evalúa `mIsTransingTask`; si es true se conserva `v4`; si es false se evalúa `mIsFlashDriveTask` y, para paquetes distintos de WeChat y QQ, puede llamarse a `unpackBakSdDatas(v4, localFileList)`. Ambas rutas convergen en `:goto_17`.
+
+**Convergencia posterior:** se documentan las dos rutas de preparación de descriptor (PerformAdbRestoreTask o pipe/zipStreamReader) y la llamada alternativa a `BRManager.restorePackage(packageName, feature, passwd, absolutePath(v4), listener, descriptor)`. No se observa asignación a `v16` en las ventanas recibidas. No se vincula el valor `v16=8/9` de evidencia 133 con esta rama de tipo 2.
+
+**Límites:** no se demuestra éxito de copia/restauración, efecto dinámico, estado final ni cadena completa hasta `mLastError`. El SHA-256 `7c0112052117caf5b5fb119fc807f62ea0cf42bf35fe8d7e75c38af8a18bde25` fue reportado por el usuario; no se recalculó localmente. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente.
+
+**Estado:** investigación estática INCOMPLETA; evidencia 146 añade el literal de la condición de tipo 2 y su ruta de copia temporal/restauración, sin promover inferencias fuera de los extractos.
