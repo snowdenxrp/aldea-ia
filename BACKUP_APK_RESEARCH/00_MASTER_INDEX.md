@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.51 — BRService: consumidores mZipFilePath, split APK y limpieza
+**Versión:** 1.52 — BRService: restoreStreamSplitApk completo y ciclo de streams
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2871,3 +2871,22 @@ Se incorporó [evidencia 161](evidence/2026-11-25/161_BRSERVICE_MZIPFILE_RESTORE
 - Se corrige la atribución provisional del intercambio anterior: el fragmento físico 13075–13123 pertenece a `restoreStreamSplitApk`, no se atribuye a `handleTaskFinish`. `getZipPath()` simplemente devuelve `mZipFilePath`.
 
 **Dedupe y límites:** E160 conserva el resumen del receptor `restoreLocalMediaFile` y el contrato de `ArchiveHelper.unzipFiles`; E161 no los duplica. El inventario anterior de `mZipFilePath` y la escritura visible desde `extra_zip_file_path` tampoco se repiten. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Quedan pendientes el método `restoreStreamSplitApk` completo y el ciclo de vida/origen de `extra_zip_file_path`. El expediente sigue **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 32. Evidencia 162 — BRService.restoreStreamSplitApk: método completo, streams y limpieza — 2026-11-25
+
+Se incorporó [evidencia 162](evidence/2026-11-25/162_BRSERVICE_RESTORE_STREAM_SPLITAPK_COMPLETE_METHOD_AND_STREAM_CLEANUP.md), basada en la salida completa de Termux para `BRService.smali:13035–13362` y el grep de referencias dentro del mismo archivo.
+
+**Delta preservado:**
+- Si `splitApkPath` está vacío, el método omite la búsqueda de entrada y llega a la limpieza; si la entrada ZIP no existe, cierra el stream recibido (si no es null) y retorna.
+- Si la entrada existe, obtiene un nuevo InputStream con `ZipFile.getInputStream(entry)` y sobrescribe el registro `p3`, que inicialmente contenía el InputStream recibido como argumento.
+- Construye el destino concatenando el prefijo de `mZipFilePath` anterior a su último punto con el `splitApkPath` previo; actualiza el campo con la ruta absoluta.
+- Crea el directorio padre solo si no existe, llama `mkdirs()` y `createNewFile()` en esa rama sin comprobar sus booleanos; después abre FileOutputStream.
+- Copia en bloques de 1024 bytes mediante BufferedOutputStream, hace flush y cierra el buffer. Después intenta cerrar explícitamente también el FileOutputStream subyacente.
+- Los handlers ordinarios y catchall intentan cerrar el FileOutputStream y el InputStream actualmente referenciado por `p3`; catchall relanza la excepción. No se observa `ZipFile.close()` en el cuerpo.
+- **Hallazgo acotado:** en la rama de entrada ZIP existente, el parámetro InputStream original se sobrescribe antes de la limpieza y no aparece otra referencia a él dentro del método. No se observa su cierre local en esa rama; el caller podría administrarlo externamente y debe revisarse antes de concluir una fuga.
+- El grep dentro de `BRService.smali` devuelve la definición privada (13035), el puente sintético (2101) y la llamada interna del puente (2104); no cubre callers en otros archivos.
+
+**Dedupe y límites:** E161 ya conservaba la identificación parcial y el comienzo del método; E162 añade el cuerpo completo y la gestión de recursos. No se duplican los consumidores `mZipFilePath` de E161 ni el receptor/fallback de E160. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Pendiente rastrear el puente en todos los directorios Smali y revisar el caller para determinar la propiedad del stream original. Después continuar con el origen/ciclo de vida de `extra_zip_file_path`. Expediente INCOMPLETO.
