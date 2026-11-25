@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.53 — BRService$5 caller de restoreStreamSplitApk y flujo posterior
+**Versión:** 1.54 — recuperación de rutas Smali y continuidad pendiente de lectura
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2906,3 +2906,61 @@ Se incorporó [evidencia 163](evidence/2026-11-25/163_BRSERVICE5_CALLER_RESTORE_
 - La sobrescritura de `p3` en el método receptor no altera el registro `v3` del caller. En el tramo posterior compartido no aparece un cierre explícito del InputStream original; todavía deben inspeccionarse el contexto previo, el resto del método y sus handlers/catchall antes de concluir si existe fuga o cierre externo.
 
 **Dedupe y límites:** E162 ya contiene el cuerpo completo del método privado y la sobrescritura de su parámetro local. E163 añade el caller y distingue el stream original del stream entregado al lector del pipe. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Siguiente paso: recuperar el método contenedor completo y rastrear asignaciones/cleanup de `v3`. Después, continuar con el origen/ciclo de vida de `extra_zip_file_path`. Expediente INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 34. Continuidad operativa — rutas corregidas de los tres archivos — 2026-11-25
+
+Durante la continuación posterior a E163 se detectó que los comandos
+anteriores omitían el subdirectorio `smali/`. Por ello, las rutas no
+resolvían los archivos y **no llegaron a leer su contenido**. El usuario
+confirmó que los tres archivos existen en:
+
+`$HOME/backup-static/decoded/smali/com/miui/backup/service`
+
+La ruta correcta se define así:
+
+```bash
+D="$HOME/backup-static/decoded/smali/com/miui/backup/service"
+```
+
+Lecturas pendientes, aún no recibidas en el chat:
+
+- `BRService.smali`: líneas físicas 13190–13320, continuación de
+  `restoreStreamSplitApk` (excepciones y cierre).
+- `BRService$zipStreamReader.smali`: líneas físicas 180–280, final de
+  `run()`.
+- `BRService$5.smali`: líneas físicas 1935–2005, continuación del
+  caller tras crear la tubería.
+
+Comando exacto compartido para la siguiente lectura:
+
+```bash
+D="$HOME/backup-static/decoded/smali/com/miui/backup/service"
+
+echo "===== Líneas totales ====="
+wc -l "$D/BRService.smali" "$D/BRService\\$zipStreamReader.smali" "$D/BRService\\$5.smali"
+
+echo
+echo "===== restoreStreamSplitApk: excepciones y cierre ====="
+sed -n '13190,13320p' "$D/BRService.smali"
+
+echo
+echo "===== zipStreamReader: final de run() ====="
+sed -n '180,280p' "$D/BRService\\$zipStreamReader.smali"
+
+echo
+echo "===== BRService$5: continuación tras crear la tubería ====="
+sed -n '1935,2005p' "$D/BRService\\$5.smali"
+```
+
+**Clasificación:** CONTINUIDAD OPERATIVA / PENDIENTE DE LECTURA; no es
+una nueva evidencia del comportamiento del APK. No se crea número de
+evidencia ni se atribuyen resultados a ventanas que todavía no se han
+compartido. E160–E163 permanecen como están, sin duplicación.
+
+**Siguiente paso:** recibir y cotejar la salida completa de esos tres
+comandos. Solo entonces determinar si existe un delta técnico nuevo,
+compararlo con E160–E163 y añadir una evidencia nueva únicamente si
+corresponde. Mantener el expediente **INCOMPLETO**.
