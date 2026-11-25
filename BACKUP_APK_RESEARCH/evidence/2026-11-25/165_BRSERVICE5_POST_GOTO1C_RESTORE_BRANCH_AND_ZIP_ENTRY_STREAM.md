@@ -41,7 +41,7 @@ La ventana 2200–2480 continúa con:
 ## 3. Rama files_for_backup y streams ZIP por archivo
 
 Las ventanas 2340–2760 muestran una rama condicionada por `mIsFlashDriveTask` y `packageName == "files_for_backup"`, con bifurcación adicional según registros locales:
-- Si el registro `v3` (la lista de rutas en esta rama) no es null, se llama `restoreLocalMediaFile(BRItem, false, v3)` únicamente cuando el registro `v3` del flujo previo es un InputStream; esta atribución no se extiende a la rama de lista que aparece después. La rama visible desde 2480 muestra que `v3` pasa a ser una `ArrayList` de rutas.
+- En la rama alternativa donde el registro `v3` es un InputStream no nulo, se llama `restoreLocalMediaFile(BRItem, false, v3)`. La ventana posterior muestra otra rama: si `v5` está presente, se procesa una lista de rutas; no se equiparan ambos tipos de `v3` entre ramas.
 - En la rama de lista, obtiene rutas desde `BRItem.localFileList` o desde `BRServiceDataHolder.getTypeBRServiceFileList(suffix)`.
 - Si la lista es null/vacía, notifica error y fin de tarea.
 - Itera sobre cada ruta; si la tarea fue abortada, asigna estado 3 y error 9.
