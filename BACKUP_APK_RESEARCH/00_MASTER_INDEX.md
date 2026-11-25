@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.43 — BRService$5: ciclo de vida de v5 y reinicio de v13
+**Versión:** 1.44 — BRService$5: inventario de escrituras candidatas v5/v13
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2754,3 +2754,13 @@ Se incorporó [evidencia 152](evidence/2026-11-24/152_BRSERVICE5_MEDIA_SCAN_ALTE
 - Si el ZIP existe y `v5 == false`, escribe `BRItem.error=1`; si la referencia es nula o el archivo no existe y `v5 == false`, escribe `BRItem.error=10`. El código 6 de la notificación no es el valor asignado a `BRItem.error` en estas ramas.
 
 **Límites:** origen/significado de `v5` pendiente; no inferir integridad del ZIP a partir de `File.exists()`. La ventana termina al inicio de la rama que comprueba `BRItem.error` (línea 3680). Análisis estático de salida Termux aportada por el usuario; expediente INCOMPLETO.
+
+------------------------------------------------------------------------
+
+## 24. Evidencia 154 — BRService$5: inventario grep de operandos destino v5/v13 — 2026-11-24
+
+Se incorporó [evidencia 154](evidence/2026-11-24/154_BRSERVICE5_V5_V13_REGISTER_WRITE_SITE_INVENTORY.md), con el inventario completo de ocurrencias que el patrón grep del usuario devolvió para v5/v13.
+
+**Delta relevante:** aparecen escrituras posteriores a la inicialización principal de v13: `const/4 v13, 0x0` en la línea física 2266 y `move-object v13, v10` en la 2304. Sus contextos y rutas de control están pendientes; no se puede asumir que el contador iniciado en 958 alcance el resumen sin redefiniciones. Las coordenadas 2227, 2422 y 3503 ya constan en evidencia 139 y no se duplican. Para v5, el inventario agrega ocurrencias candidatas en 97, 111, 804 y 3844–4088, todavía sin contexto suficiente para clasificar sus valores; las asignaciones 913/953 y los usos de error están preservados en evidencias 153/152.
+
+El patrón también devuelve lecturas de registros en bifurcaciones y operaciones aritméticas; por tanto, la salida se conserva como inventario de operandos destino/candidatos, no como listado ya validado de escrituras semánticas. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Estado INCOMPLETO.
