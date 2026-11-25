@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.57 — E166: rama localFileList y localización de copyFileFromStream
+**Versión:** 1.58 — E167: copyFileFromStream parcial
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
