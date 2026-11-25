@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.65 — E174: copyLocalMediaFile, empaquetado ZIP y manejo de errores
+**Versión:** 1.66 — E175: copyToUsb, disponibilidad USB y normalización de ruta
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3161,4 +3161,20 @@ Se incorporó [evidencia 174](evidence/2026-11-25/174_BRSERVICE_COPYLOCALMEDIAFI
 
 **Siguiente paso:** continuar con el siguiente método localizado, `copyToUsb(String)`, comenzando por la ventana Termux `BRService.smali:5560–5700`. Antes de avanzar, mantener la distinción entre el empaquetado ZIP local aquí documentado y la copia USB del método siguiente.
 
+------------------------------------------------------------------------
+
+## 46. Evidencia 175 — BRService.copyToUsb: disponibilidad USB, normalización de ruta y resultado de copia — 2026-11-25
+
+Se incorporó [evidencia 175](evidence/2026-11-25/175_BRSERVICE_COPYTOUSB_AVAILABILITY_PATH_NORMALIZATION_AND_COPY_RESULT.md), basada en las ventanas Termux `BRService.smali:5520–5590` y `5560–5700`, que permiten reconstruir el método completo.
+
+**Delta preservado:**
+- `copyToUsb(String)` comprueba `isUsbAvaliable()`. Si no está disponible, ejecuta `setState(3,12,9)`, `handleTaskFinish(3,12,9,mBRItems)` y retorna sin copiar.
+- Si USB está disponible, normaliza la ruta mediante `normalizeAbsoluteSdPath(p1,mCurrentBackupRootPath)`, construye Files para ruta original y normalizada y las compara con `TextUtils.equals()`.
+- Si las rutas difieren, llama `copyFile(1, originalFile, normalizedFile)`. Si captura `IOException`, registra `copy to Usb error`, consulta dos veces la longitud del original y notifica `notifyTransFileProgressChange(4,p1,null,length,length)`; absorbe la excepción.
+- Si las rutas coinciden, omite `copyFile()`, consulta dos veces la longitud del original y notifica `notifyTransFileProgressChange(3,p1,null,length,length)`.
+- El método retorna después de esas ramas; a continuación comienza `createFile(File)`.
+
+**Dedupe y límites:** E174 solo localizaba este método como siguiente objetivo; no documentaba su cuerpo. E175 añade su flujo completo. Los códigos numéricos se preservan como argumentos literales, sin asignarles semántica adicional. La captura de IOException no prueba éxito de copia. No se inspeccionó el interior de `copyFile()`; por tanto, no se concluye sobre rollback, borrado parcial, sync o integridad de destino. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+**Siguiente paso:** continuar con `createFile(File)`, comenzando por la siguiente ventana física de Termux después de la definición observada, por ejemplo `BRService.smali:5700–5840`. Mantener separados el wrapper USB `copyToUsb` y el método receptor `copyFile`, que requerirá análisis propio si se necesita establecer garantías de copia.
 
