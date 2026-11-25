@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.64 — E173: cleanup excepcional y origen inexistente en copyFileWithProgress
+**Versión:** 1.65 — E174: copyLocalMediaFile, empaquetado ZIP y manejo de errores
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3138,3 +3138,27 @@ Se incorporó [evidencia 173](evidence/2026-11-25/173_BRSERVICE_COPYFILEWITHPROG
 **Dedupe y límites:** E172 conserva la ruta normal y la finalización común; E173 añade cleanup excepcional y origen inexistente. Los cierres excepcionales son intentos condicionados a referencias no nulas; no se garantiza éxito si el cierre lanza IOException. No se observa borrado del destino parcial, rollback ni sync en esta rama. No se asigna valor a `v23` ni se analiza el método siguiente.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 45. Evidencia 174 — BRService.copyLocalMediaFile: selección de archivos, empaquetado ZIP y manejo de errores — 2026-11-25
+
+Se incorporó [evidencia 174](evidence/2026-11-25/174_BRSERVICE_COPYLOCALMEDIAFILE_ZIP_PACKAGING_AND_EXCEPTION_HANDLING.md), basada en las tres ventanas Termux `BRService.smali:5120–5560`, que cubren el método completo.
+
+**Delta preservado:**
+- El método filtra `files_for_backup`, WeChat y QQ; para la lista local recorre `localFileList` desde `sendingIndex` con comprobación de aborto.
+- Para `p2 == true`, selecciona la ruta externa WeChat/QQ, obtiene subarchivos con `Utils.getAllSubfiles()` y los incorpora a la lista de empaquetado.
+- Si no está abortado, asigna `state=7`, crea el ZIP temporal `backup_<suffix>.zip` mediante `ArchiveHelper.zipFiles()`, abre una entrada del mismo nombre en el ZIP principal y transfiere el ZIP temporal con un búfer de 32 KiB.
+- En la ruta normal elimina el ZIP temporal, cierra la entrada ZIP y cierra el InputStream con `IOUtils.closeQuietly()`.
+- El handler `:catch_0` captura `Exception`, registra `zip file error` y la absorbe. Para `p2 == false`, el método puede asignar después `state=1` si no está abortado, incluso tras ese error capturado.
+- Para `files_for_backup`, finaliza con `progType=0` y `notifyItemTaskEnd()`.
+- En la rama `SDK_INT < 23`, `v6` queda nulo y se utiliza posteriormente como `Set` mediante `addAll()` o `size()`, según la existencia/directorio de la ruta. El bytecode indica posible `NullPointerException`; la alcanzabilidad práctica depende del `minSdkVersion` y del entorno.
+- Si ocurre una excepción después de abrir el InputStream, el handler salta las operaciones normales visibles de borrado del temporal, `closeEntry()` y cierre silencioso del stream. Se documenta falta de garantía de cleanup excepcional, sin afirmar fuga universal.
+- La asignación final de estado está condicionada por `p2 == false`; no se extrapola a `p2 == true`.
+
+**Dedupe y límites:** E173 termina antes de este método y no lo cubre. E174 consolida las tres ventanas completas compartidas, sin duplicar E170–E173. No se demuestra integridad del ZIP principal, rollback de una entrada parcial ni éxito real por la mera asignación `state=1`. No se realizó ejecución dinámica ni cotejo local independiente; no hay hash nuevo del Smali. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT. Expediente **INCOMPLETO**.
+
+**Siguiente paso:** continuar con el siguiente método localizado, `copyToUsb(String)`, comenzando por la ventana Termux `BRService.smali:5560–5700`. Antes de avanzar, mantener la distinción entre el empaquetado ZIP local aquí documentado y la copia USB del método siguiente.
+
+
