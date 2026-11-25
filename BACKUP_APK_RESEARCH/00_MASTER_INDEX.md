@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.63 — E172: cierre de copia directa y finalización común en copyFileWithProgress
+**Versión:** 1.64 — E173: cleanup excepcional y origen inexistente en copyFileWithProgress
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3118,5 +3118,23 @@ Se incorporó [evidencia 172](evidence/2026-11-25/172_BRSERVICE_COPYFILEWITHPROG
 - Si la tarea es local, omite esa notificación. Después retorna `v23`, cuyo valor no se resuelve en esta ventana.
 
 **Dedupe y límites:** E170–E171 conservan preparación, rama ZIP y comienzo de copia directa. E172 añade los cierres directos en EOF y la convergencia/finalización común. Los cierres observados no se extienden a excepciones durante lectura/escritura: falta inspeccionar el destino de `:catchall_0`. No se afirma que los bytes realmente escritos coincidan con `v16`, que el destino sea íntegro, ni se atribuye valor a `v23`. No se demuestra borrado de destino parcial ni flush/sync en esta rama.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 44. Evidencia 173 — BRService.copyFileWithProgress: cleanup excepcional y origen inexistente — 2026-11-25
+
+Se incorporó [evidencia 173](evidence/2026-11-25/173_BRSERVICE_COPYFILEWITHPROGRESS_EXCEPTIONAL_CLEANUP_AND_MISSING_SOURCE.md), basada en la continuación Termux de `BRService.smali:4980–5120`.
+
+**Delta preservado:**
+- Los handlers `:catchall_1`, `:catchall_2` y `:catchall_3` convergen en `:goto_a`, conservando la excepción original y las referencias disponibles de los streams.
+- El cleanup intenta cerrar condicionalmente el `FileOutputStream` y luego el `FileInputStream`; las `IOException` de cierre se registran mediante `LogUtils.e`.
+- Tras el cleanup se relanza la excepción original con `throw v1`.
+- Si el archivo origen no existe, registra `src file not exist: ` más la ruta absoluta de `p2`, crea una `IOException` con ese mensaje y la lanza.
+- El método termina en `.end method`; a continuación comienza `copyLocalMediaFile(BRItem, boolean)`.
+
+**Dedupe y límites:** E172 conserva la ruta normal y la finalización común; E173 añade cleanup excepcional y origen inexistente. Los cierres excepcionales son intentos condicionados a referencias no nulas; no se garantiza éxito si el cierre lanza IOException. No se observa borrado del destino parcial, rollback ni sync en esta rama. No se asigna valor a `v23` ni se analiza el método siguiente.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
