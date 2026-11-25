@@ -3016,3 +3016,21 @@ Se incorporó [evidencia 166](evidence/2026-11-25/166_BRSERVICE5_LOCAL_FILELIST_
 **Siguiente paso:** recuperar el método completo `BRService.copyFileFromStream` desde la línea física 4185 hasta `.end method`, incluidos handlers y cierres. Expediente **INCOMPLETO**.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica.
+
+
+------------------------------------------------------------------------
+
+## 38. Evidencia 167 — BRService.copyFileFromStream: preparación de destino y bucle parcial — 2026-11-25
+
+Se incorporó [evidencia 167](evidence/2026-11-25/167_BRSERVICE_COPYFILEFROMSTREAM_PARTIAL_BUFFER_AND_OUTPUT_SETUP.md), basada en la salida Termux de `BRService.smali:4185–4350`.
+
+**Delta preservado:**
+- El método privado `copyFileFromStream(int, BRItem, InputStream, String, long)Z` registra origen/destino, normaliza el destino mediante `Utils.newDirChangePath` y crea el File de salida.
+- Si el destino no tiene padre, retorna false. Si el padre no existe, llama `Utils.makeDirs`; el resultado booleano no se comprueba en la ventana recibida.
+- Si el InputStream es null, registra el error y retorna false.
+- Notifica el inicio del progreso; con `p1==3`, la ruta de origen notificada es null; de otro modo usa la ruta absoluta del destino.
+- Abre `FileOutputStream`, crea un búfer de 32 KiB (`0x8000`) y comienza un bucle que lee del InputStream y escribe al output. También acumula bytes y consulta `elapsedRealtime()` para la lógica de progreso.
+
+**Dedupe y límites:** E165 conserva el caller ZIP-entry; E166 conserva la rama File→File y la ubicación del receptor. E167 añade solo la preparación y el inicio parcial del método receptor. La salida se interrumpe en mitad del bucle, antes de handlers y `.end method`; no permite determinar cierres, flush, manejo completo de errores, retorno final ni borrado de destino parcial. No inferir fuga ni éxito/integridad.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
