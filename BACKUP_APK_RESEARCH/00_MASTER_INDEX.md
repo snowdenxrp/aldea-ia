@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.67 — E176: createFile, creación directa y espera asíncrona
+**Versión:** 1.68 — E177: deleteFile, eliminación directa y espera asíncrona
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3194,4 +3194,21 @@ Se incorporó [evidencia 176](evidence/2026-11-25/176_BRSERVICE_CREATEFILE_DIREC
 **Dedupe y límites:** E175 solo localizaba `createFile(File)` como método siguiente y no documentaba su cuerpo. E176 añade el método completo sin duplicar E170–E175. No se infiere el contrato interno de `Utils.createFile`, ni quién cambia el latch a verdadero, ni éxito dinámico. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
 
 **Siguiente paso:** continuar con `deleteFile(File)`, cuyo comienzo aparece al final de la ventana `5700–5840`; recuperar primero su continuación y final. Después, si se necesita cerrar la ruta asíncrona de creación, analizar por separado `BRService$20`.
+
+------------------------------------------------------------------------
+
+## 48. Evidencia 177 — BRService.deleteFile: eliminación directa y espera de operación asíncrona — 2026-11-25
+
+Se incorporó [evidencia 177](evidence/2026-11-25/177_BRSERVICE_DELETEFILE_DIRECT_AND_ASYNC_LATCH.md), basada en las ventanas Termux `BRService.smali:5730–5860` y `5820–5910`, que recuperan el método completo.
+
+**Delta preservado:**
+- Si `mBakFilesType != 5`, llama directamente a `Utils.deleteFile(file)` y continúa a la salida común.
+- Si `mBakFilesType == 5`, entra en el monitor de `mFileOpLatch`, reinicia el `AtomicBoolean` a falso, crea e inicia `BRService$19(this,file)` y espera mediante `wait()`.
+- Tras la espera, si el latch está en verdadero retorna; si está en falso lanza `IOException`. Una `InterruptedException` se registra como `deleteFile wait error` y el método continúa con la lectura del latch.
+- El bloque `catchall` sale del monitor antes de propagar excepciones.
+- No se observa timeout explícito. El productor de la señal y el resultado de la operación asíncrona quedan pendientes de inspeccionar en `BRService$19`.
+
+**Dedupe y límites:** E176 documenta `createFile(File)` y solo menciona `BRService$19` como hilo creado por el método de eliminación cuyo cuerpo estaba pendiente. E177 añade el método completo sin duplicar E170–E176. No se infiere el contrato interno de `Utils.deleteFile`, ni quién cambia el latch a verdadero, ni éxito dinámico. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+**Siguiente paso:** continuar con `directSendFileIfNetworkIdle()`, cuyo inicio aparece al final de la ventana `5820–5910`; recuperar su cuerpo completo. Los hilos `BRService$19` y `BRService$20` pueden analizarse después como unidades separadas para determinar la señalización y el resultado real de las operaciones asíncronas.
 
