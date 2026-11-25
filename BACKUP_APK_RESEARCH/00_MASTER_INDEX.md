@@ -2714,3 +2714,17 @@ Se incorporó [evidencia 150](evidence/2026-11-24/150_BRSERVICE5_ALTERNATIVE_RES
 - La extracción termina en la propia invocación, línea 3300; retorno, tratamiento de errores, cierre del flujo, avance del bucle y destino de `:goto_35` permanecen pendientes.
 
 **Límites:** 256 KiB es un factor de estimación por elemento, no un tamaño real demostrado. Análisis estático de salida Termux compartida por el usuario; no hay ejecución dinámica ni cotejo local independiente. El expediente continúa INCOMPLETO.
+
+------------------------------------------------------------------------
+
+## 21. Evidencia 151 — BRService$5: resultado de copia ZIP, cierre de flujo y finalización — 2026-11-24
+
+Se incorporó [evidencia 151](evidence/2026-11-24/151_BRSERVICE5_ALTERNATIVE_RESTORE_COPY_RESULT_FINAL_STATE_AND_NOTIFICATIONS.md), continuación de evidencia 150 desde la línea 3301.
+
+**Delta preservado:**
+- Si `copyFileFromStream` devuelve true, la ruta absoluta se agrega a `v3`; si devuelve false, se registra `copyOneFile error, file lost`, sin escritura directa visible a `BRItem.error` en ese bloque. Las excepciones de obtención/copia se registran como `copyFileFromStream error` y el bucle continúa.
+- Al terminar el bucle o entrar por `:goto_35`, se intenta cerrar el InputStream si el registro es no nulo. Una excepción de cierre genera `notifyItemTaskError(..., 7)` y `notifyItemTaskEnd(...)`; no se observa escritura directa a `BRItem.error` en ese bloque.
+- Si `v3` (rutas copiadas) está vacía y `v4` (lista de origen) no, se notifican error 7 y fin de tarea.
+- Si el estado no es 1, 6 o 3, se escribe `state=1`, `progType=0` y se notifica fin. Los estados 1, 6 y 3 quedan excluidos de esa normalización.
+
+**Límites:** notificar error 7 no demuestra asignación de `BRItem.error=7`; la ventana termina durante `MediaScannerConnection.scanFile`. Análisis estático de salida Termux aportada por el usuario, sin ejecución dinámica ni cotejo local independiente. El expediente continúa INCOMPLETO.
