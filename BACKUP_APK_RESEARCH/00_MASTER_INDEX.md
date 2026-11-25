@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.60 — E169: handlers de excepción y final de copyFileFromStream
+**Versión:** 1.61 — E170: rama ZIP Flash Drive de copyFileWithProgress
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3069,3 +3069,20 @@ Se incorporó [evidencia 169](evidence/2026-11-25/169_BRSERVICE_COPYFILEFROMSTRE
 - En el cuerpo revisado no aparece cierre explícito del InputStream. Esto no resuelve si el caller lo administra externamente ni demuestra una fuga.
 
 **Dedupe y límites:** E167 conserva preparación y bucle inicial; E168 conserva progreso, EOF, flush/sync y cierre normal; E169 añade handlers y final del método. No se afirma eliminación de destino parcial ni se asigna semántica a `v14`. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo del Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 41. Evidencia 170 — BRService.copyFileWithProgress: preparación y rama ZIP Flash Drive — 2026-11-25
+
+Se incorporó [evidencia 170](evidence/2026-11-25/170_BRSERVICE_COPYFILEWITHPROGRESS_FLASHDRIVE_ZIP_BRANCH.md), basada en la salida Termux de `BRService.smali:4600–4740`.
+
+**Delta preservado:**
+- Si existe el archivo origen, obtiene su longitud e inicializa el contador de bytes.
+- Si no es tarea local, emite progreso inicial con origen/destino absolutos; para `p1==3`, la ruta destino notificada es null.
+- La rama ZIP se activa bajo la condición conjunta `p1==3`, `mIsFlashDriveTask==true` y `mIsUsbFold==false`.
+- Calcula el nombre de ZipEntry a partir de la ruta absoluta destino, recortando el prefijo de `mCurrentBackupRootPath) más un separador; crea ZipEntry y llama `putNextEntry`.
+- Abre FileInputStream sobre el archivo origen, crea búfer de 32 KiB y escribe bloques en `mZipOutputStream` mediante `outputStreamWrite`, acumulando bytes.
+- La salida termina dentro del bucle, tras consultar `elapsedRealtime()`; no contiene el resto del método.
+
+**Límites:** no afirmar cierre del FileInputStream, cierre de ZipEntry, progreso final, handlers ni retorno. No generalizar la rama a todas las copias USB. Los cuerpos de `putNextEntry` y `outputStreamWrite` no están incluidos. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
