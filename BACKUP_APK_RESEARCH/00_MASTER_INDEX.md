@@ -697,8 +697,7 @@ La causalidad completa y la reconciliación de las rutas con estado global
 
 ## 13. Manifiesto, MiAsistService y Binder — recuperación ampliada
 
-Se recuperaron datos históricos adicionales de los chats del 16–17 de
-noviembre: `sharedUserId="android.uid.backup"`, `allowBackup=false`,
+Se recuperaron datos históricos adicionales de los chats del 16–17 denoviembre: `sharedUserId="android.uid.backup"`, `allowBackup=false`,
 permisos declarados, servicios no exportados, acción
 `miui.intent.action.MIASIST_PROXY`, validación de `mimover_action` /
 `client_port`, los 14 IDs Binder y más referencias de línea. El registro
@@ -1397,7 +1396,6 @@ Se actualizaron evidencias 11 y 15: la escritura `BRItem.state=6` de `BRService$
 Evidencia 12 también resuelve el orden de argumentos de la llamada final: `setState(4,12,0,v14)`. La forma `setState(4,0,v2,v14)` queda invalidada. Un productor adicional state=6 se reporta en `BRService.smali:16787–16791`, evidencia 53; no inferir exclusividad del productor de `files_for_backup`.
 
 ## 58. Cierre de coordenadas y productores state 6 — 2026-11-20
-
 Se corrigieron las evidencias 11 y 15: `BRService$5.smali` physical line 2351 corresponde a la directiva Smali `.line 1735` y a una sola escritura `BRItem.state=6` para `files_for_backup` tras `waitingForFilesTransingEnd()`. No es un conflicto entre dos líneas físicas. Además, evidencia 53 reporta otro productor en `BRService.smali:16787–16791`, por lo que no debe afirmarse exclusividad del productor de `BRService$5`.
 
 Evidencia 12 conserva el invoke final exacto `setState(4,12,0,v14)`; la forma antigua `setState(4,0,v2,v14)` queda descartada. Véanse evidencias 11, 12, 15 y 53.
@@ -2099,7 +2097,6 @@ El handoff consolida: repositorio/rama, fuente de verdad, protocolo de verificac
 
 **Clasificación:** documento de continuidad operativa; no añade evidencia técnica primaria ni autoriza nuevas extracciones o pruebas.
 
-
 ------------------------------------------------------------------------
 
 ## 111. Hashes y tamaños reportados de cuatro archivos Smali — 2026-11-22
@@ -2683,3 +2680,21 @@ Se incorporó [evidencia 148](evidence/2026-11-24/148_BRSERVICE5_LOCAL_FILE_REST
 - La ruta alternativa `:cond_47` comienza a iterar `BRItem.localFileList` cuando `v5` es null, pero la ventana acaba en 2780 y queda pendiente.
 
 **Cautelas:** no asignar significado semántico global a los códigos 1/3/6 o error 9; no equiparar notificación de error 7 con escritura de campo; no inferir éxito dinámico ni cierre de `mLastError`/resultado de `restorePackage`. El expediente sigue INCOMPLETO.
+
+------------------------------------------------------------------------
+
+## 19. Evidencia 149 — BRService$5: ruta alternativa de restauración local, IOException y MediaScanner — 2026-11-24
+
+Se incorporó [evidencia 149](evidence/2026-11-24/149_BRSERVICE5_ALTERNATIVE_LOCAL_RESTORE_COPY_ERROR_AND_MEDIA_SCAN.md), basada en las ventanas físicas 2750–2940 y 2920–3120 compartidas directamente desde Termux.
+
+**Delta preservado:**
+- En la ruta `:cond_47`, itera `BRItem.localFileList` y vuelve a comprobar `mIsAborted`; el aborto escribe `BRItem.state=3` y `BRItem.error=9`.
+- Normaliza cada ruta con `normalizeAbsoluteSdPath(originalPath, mCurrentBackupRootPath)`, llama `Utils.newDirChangePath(originalPath)` y ejecuta `BRService.copyFile(4, File(normalizedPath), File(originalPath))`.
+- Tras el retorno normal de la copia, agrega la ruta absoluta original a la lista de MediaScanner. Obtiene la fecha mediante `getModifyTimeByReceiveFileMap`, la parsea como long y llama `File.setLastModified`; el retorno booleano no se consume. El catch RuntimeException solo registra y continúa.
+- El catch IOException notifica progreso de transferencia con código 4, rutas normalizada/original y tamaños 0/longitud del archivo; escribe directamente `BRItem.error=1`, registra la excepción y continúa el iterador. No se observa en ese catch escritura directa de `BRItem.state` ni finalización inmediata.
+- Al terminar la iteración o salir por aborto, llama `MediaScannerConnection.scanFile` con las rutas agregadas y salta a `:goto_25`.
+- La continuación local comprueba `mIsLocalBackupTask` y paquete `files_for_backup`; si `v3` no es null, llama `restoreLocalMediaFile(BRItem,false,v3)`. En otra rama vuelve a obtener la lista local o la lista alternativa por sufijo; si queda vacía, notifica error 7 y fin de tarea, sin mostrar escritura de `BRItem.error=7`.
+
+**Dedupe y límites:** evidencia 148 conserva la ruta ZIP y el escaneo multimedia asociado; evidencia 149 añade la ruta alternativa de copia local y su catch IOException. El catch IOException de evidencia 147 pertenece a otro tramo y no se equipara automáticamente. No se atribuye semántica global a los códigos de estado/error ni se demuestra éxito dinámico, efecto real de `setLastModified` o finalización del escaneo. La extracción termina en línea 3120; la continuación queda pendiente. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica.
+
+**Estado:** investigación INCOMPLETA; evidencia estática documental.
