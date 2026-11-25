@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.45 — BRService$5: limpieza excepcional de v13 y reutilización de v5
+**Versión:** 1.46 — BRService$5: guardias v5 y selección de rutas de restauración
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2774,3 +2774,18 @@ Se incorporó [evidencia 155](evidence/2026-11-24/155_BRSERVICE5_V13_EXCEPTION_C
 **Delta principal:** las asignaciones `v13=0` (2266) y `v13=v10` (2304) están dentro de handlers `catchall` que convergen en `:goto_23`, limpian mediante `File.delete()` la referencia temporal si existe y relanzan la excepción. No son reinicios del contador en el flujo normal hacia el resumen. Se contextualizan además ocurrencias v5: 97/804 son resultados `mBRItems` en rutas tempranas de finalización; 111 es constante para comparar `mBakFilesType`; las ocurrencias 3844–4088 son valores/argumentos de índice, estado, espera y logging, no la ZipFile. La evidencia 154 queda parcialmente clasificada; no se declara auditoría exhaustiva de todos los usos.
 
 Dedupe: no se repiten incrementos 2227/2422/3503 ni el uso final de v13, conservados en evidencias 139/138. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente ni ejecución dinámica. Expediente INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 26. Evidencia 156 — BRService$5: comprobaciones de v5 y selección de rutas de restauración — 2026-11-24
+
+Se incorporó [evidencia 156](evidence/2026-11-24/156_BRSERVICE5_V5_ZIPFILE_GATED_RESTORE_BRANCHES.md), basada en las ventanas físicas 1485–1535, 2410–2465 y 2980–3040 compartidas desde Termux.
+
+**Delta preservado:**
+- En 1509, v5 null desvía a `:cond_2a`; con v5 no null se comprueba además `File.exists()` sobre v4, y la ausencia del archivo también desvía a `:cond_2a`.
+- En 2437, v5 null desvía a `:cond_47`, ruta alternativa local descrita en evidencias 148/149. Con v5 no null continúa por la rama que obtiene `BRItem.localFileList` o consulta `BRServiceDataHolder.getTypeBRServiceFileList(getZipSuffixType(packageName,type))`.
+- En 3011, v5 null desvía a `:cond_59`; con v5 no null continúa por otra rama que obtiene la lista local directa o la lista de `BRServiceDataHolder`. No se atribuye semántica adicional a `:cond_59` fuera del fragmento.
+- Las guardias confirman que v5 participa en la selección de rutas de restauración, no solo en las asignaciones de `BRItem.error` ya documentadas en evidencia 152.
+
+**Dedupe y límites:** los cuerpos de recorrido de listas y la ruta alternativa ya constan en evidencias 148/149; evidencia 156 conserva únicamente la relación de las tres guardias con v5. La comprobación `File.exists()` no demuestra integridad ZIP ni éxito de restauración. El vínculo entre inicialización y guardias se apoya en evidencias 153–155, sin declarar auditoría exhaustiva de todos los usos. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Estado INCOMPLETO.
