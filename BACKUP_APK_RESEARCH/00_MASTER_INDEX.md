@@ -2700,3 +2700,17 @@ Se incorporó [evidencia 149](evidence/2026-11-24/149_BRSERVICE5_ALTERNATIVE_LOC
 **Dedupe y límites:** evidencia 148 conserva la ruta ZIP y el escaneo multimedia asociado; evidencia 149 añade la ruta alternativa de copia local y su catch IOException. El catch IOException de evidencia 147 pertenece a otro tramo y no se equipara automáticamente. No se atribuye semántica global a los códigos de estado/error ni se demuestra éxito dinámico, efecto real de `setLastModified` o finalización del escaneo. La extracción termina en línea 3120; la continuación queda pendiente. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica.
 
 **Estado:** investigación INCOMPLETA; evidencia estática documental.
+
+------------------------------------------------------------------------
+
+## 20. Evidencia 150 — BRService$5: cálculo de tamaño y segundo recorrido de extracción ZIP — 2026-11-24
+
+Se incorporó [evidencia 150](evidence/2026-11-24/150_BRSERVICE5_ALTERNATIVE_RESTORE_SIZE_AND_ZIP_STREAM.md), continuación de evidencia 149 desde la línea 3121.
+
+**Delta preservado:**
+- Si `BRItem.transingTotalSize` ya es distinto de cero, esta rama lo conserva. Si es cero, consulta `mTransingTotalSizeMap` mediante el sufijo `v3`; usa el valor de mapa cuando es distinto de cero y, si falta o vale cero, calcula `v4.size() × 0x100 × 0x400` (262144 bytes / 256 KiB por elemento).
+- Inicia un segundo recorrido de `v4`. Antes de cada elemento comprueba `mIsAborted`; si está activo, escribe `BRItem.state=3` y `BRItem.error=9`, y salta a `:goto_35`.
+- Para cada ruta obtiene la ruta relativa respecto al almacenamiento externo, localiza la entrada con `ZipFile.getEntry`, obtiene su `InputStream` y prepara `copyFileFromStream(4, BRItem, inputStream, originalPath, transingTotalSize)`.
+- La extracción termina en la propia invocación, línea 3300; retorno, tratamiento de errores, cierre del flujo, avance del bucle y destino de `:goto_35` permanecen pendientes.
+
+**Límites:** 256 KiB es un factor de estimación por elemento, no un tamaño real demostrado. Análisis estático de salida Termux compartida por el usuario; no hay ejecución dinámica ni cotejo local independiente. El expediente continúa INCOMPLETO.
