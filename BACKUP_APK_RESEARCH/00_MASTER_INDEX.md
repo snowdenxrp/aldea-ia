@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.54 — recuperación de rutas Smali y continuidad pendiente de lectura
+**Versión:** 1.55 — E164: cleanup de zipStreamReader y continuación de PerformAdbRestoreTask
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2910,7 +2910,7 @@ Se incorporó [evidencia 163](evidence/2026-11-25/163_BRSERVICE5_CALLER_RESTORE_
 
 ------------------------------------------------------------------------
 
-## 34. Continuidad operativa — rutas corregidas de los tres archivos — 2026-11-25
+## 34. Continuidad operativa — rutas corregidas y lecturas recibidas — 2026-11-25
 
 Durante la continuación posterior a E163 se detectó que los comandos
 anteriores omitían el subdirectorio `smali/`. Por ello, las rutas no
@@ -2925,7 +2925,7 @@ La ruta correcta se define así:
 D="$HOME/backup-static/decoded/smali/com/miui/backup/service"
 ```
 
-Lecturas pendientes, aún no recibidas en el chat:
+Lecturas solicitadas (ya recibidas parcialmente en el chat):
 
 - `BRService.smali`: líneas físicas 13190–13320, continuación de
   `restoreStreamSplitApk` (excepciones y cierre).
@@ -2955,12 +2955,24 @@ echo "===== BRService$5: continuación tras crear la tubería ====="
 sed -n '1935,2005p' "$D/BRService\$5.smali"
 ```
 
-**Clasificación:** CONTINUIDAD OPERATIVA / PENDIENTE DE LECTURA; no es
-una nueva evidencia del comportamiento del APK. No se crea número de
-evidencia ni se atribuyen resultados a ventanas que todavía no se han
-compartido. E160–E163 permanecen como están, sin duplicación.
+**Actualización tras recibir las salidas:** las tres ventanas se recibieron el 2026-11-25. La continuación de `BRService.smali` solapa el cleanup ya preservado en E162 y no se duplica. La cola de `zipStreamReader.run()` y la continuación de `BRService$5` hacia `PerformAdbRestoreTask` aportan deltas nuevos, registrados en E164.
 
-**Siguiente paso:** recibir y cotejar la salida completa de esos tres
-comandos. Solo entonces determinar si existe un delta técnico nuevo,
-compararlo con E160–E163 y añadir una evidencia nueva únicamente si
-corresponde. Mantener el expediente **INCOMPLETO**.
+**Clasificación:** la corrección de rutas permanece como continuidad operativa; las observaciones nuevas se clasifican en E164. E160–E163 permanecen sin duplicación.
+
+**Siguiente paso:** completar el constructor/inicio de `zipStreamReader.run()` y el resto de `BRService$5` hasta `.end method`, incluidos handlers y cleanup de los descriptores. Mantener el expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 35. Evidencia 164 — zipStreamReader cleanup y continuación de BRService$5 — 2026-11-25
+
+Se incorporó [evidencia 164](evidence/2026-11-25/164_ZIPSTREAMREADER_CLEANUP_AND_BRSERVICE5_RESTORE_TASK_CONTINUATION.md), basada en las ventanas Termux `BRService$zipStreamReader.smali:180–280` y `BRService$5.smali:1935–2005`, además del cotejo de `BRService.smali:13190–13320` y los conteos físicos de los tres archivos.
+
+**Delta preservado:**
+- El final de `zipStreamReader.run()` intenta cerrar el OutputStream local y el campo `mZipInputStream` tanto en la ruta de error de transferencia como en la ruta catchall que relanza la excepción.
+- Después de entregar el lector del pipe, el caller `BRService$5` comprueba `mRestoreTaskExecutor.isShutdown()`; si no está apagado, construye y ejecuta `PerformAdbRestoreTask` con Context, ParcelFileDescriptor, BRItem, contraseña y BackupRestoreListener, y después llama a `waitForRestoreTaskEnd()`.
+- La ventana de `restoreStreamSplitApk` solapa la limpieza de streams ya descrita en E162; no se crea un hallazgo duplicado.
+
+**Límites:** las ventanas no muestran el constructor/inicio de `zipStreamReader.run()`, el destino de `:goto_1c`, el resto de `BRService$5` hasta `.end method`, ni todos los handlers/cierres de descriptores. No se afirma fuga, cierre completo de ambos extremos del pipe ni restauración exitosa. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo y sin ejecución dinámica.
+
+**Siguiente paso:** completar constructor e inicio de `zipStreamReader`; recuperar `BRService$5` desde el destino de `:goto_1c` hasta el final del método y revisar todos los caminos de cleanup. Después continuar con `extra_zip_file_path`. Expediente INCOMPLETO.
