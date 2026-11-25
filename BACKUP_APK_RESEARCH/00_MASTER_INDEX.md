@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.59 — E168: progreso, sync y cierre normal de copyFileFromStream
+**Versión:** 1.60 — E169: handlers de excepción y final de copyFileFromStream
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3053,3 +3053,19 @@ Se incorporó [evidencia 168](evidence/2026-11-25/168_BRSERVICE_COPYFILEFROMSTRE
 **Dedupe y límites:** E167 ya conserva la preparación y el inicio del bucle. E168 añade progreso, sincronización, contador y cierre normal. No determina cierre del InputStream, cierre de FileOutputStream en rutas excepcionales, borrado de destino parcial ni retorno tras errores. No inferir cierre universal ni fuga.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 40. Evidencia 169 — BRService.copyFileFromStream: handlers y final del método — 2026-11-25
+
+Se incorporó [evidencia 169](evidence/2026-11-25/169_BRSERVICE_COPYFILEFROMSTREAM_EXCEPTION_HANDLERS_AND_METHOD_END.md), basada en la salida Termux de `BRService.smali:4480–4600`.
+
+**Delta preservado:**
+- La ruta normal cierra `FileOutputStream` y retorna `v2` (el retorno true de la ruta normal ya está respaldado por E168).
+- `:catch_0` y `:catch_1` convergen en `:goto_4`; se registra `IOException`, se cierra `FileOutputStream` y se retorna `v14`. No se atribuye valor booleano a `v14` sin cotejar su asignación previa.
+- `:catchall_0` prepara la referencia de output y llega a `:goto_5`; allí cierra `FileOutputStream` y relanza la excepción.
+- El método termina en `.end method`; a continuación comienza `copyFileWithProgress`, un método distinto.
+- En el cuerpo revisado no aparece cierre explícito del InputStream. Esto no resuelve si el caller lo administra externamente ni demuestra una fuga.
+
+**Dedupe y límites:** E167 conserva preparación y bucle inicial; E168 conserva progreso, EOF, flush/sync y cierre normal; E169 añade handlers y final del método. No se afirma eliminación de destino parcial ni se asigna semántica a `v14`. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo del Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
