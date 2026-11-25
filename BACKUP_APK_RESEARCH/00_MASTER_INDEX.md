@@ -697,7 +697,8 @@ La causalidad completa y la reconciliación de las rutas con estado global
 
 ## 13. Manifiesto, MiAsistService y Binder — recuperación ampliada
 
-Se recuperaron datos históricos adicionales de los chats del 16–17 denoviembre: `sharedUserId="android.uid.backup"`, `allowBackup=false`,
+Se recuperaron datos históricos adicionales de los chats del 16–17 de
+noviembre: `sharedUserId="android.uid.backup"`, `allowBackup=false`,
 permisos declarados, servicios no exportados, acción
 `miui.intent.action.MIASIST_PROXY`, validación de `mimover_action` /
 `client_port`, los 14 IDs Binder y más referencias de línea. El registro
