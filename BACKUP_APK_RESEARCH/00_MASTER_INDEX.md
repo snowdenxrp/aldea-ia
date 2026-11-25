@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.55 — E164: cleanup de zipStreamReader y continuación de PerformAdbRestoreTask
+**Versión:** 1.56 — E165: continuación BRService$5 y streams ZIP por archivo
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2976,3 +2976,24 @@ Se incorporó [evidencia 164](evidence/2026-11-25/164_ZIPSTREAMREADER_CLEANUP_AN
 **Límites:** las ventanas no muestran el constructor/inicio de `zipStreamReader.run()`, el destino de `:goto_1c`, el resto de `BRService$5` hasta `.end method`, ni todos los handlers/cierres de descriptores. No se afirma fuga, cierre completo de ambos extremos del pipe ni restauración exitosa. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo y sin ejecución dinámica.
 
 **Siguiente paso:** completar constructor e inicio de `zipStreamReader`; recuperar `BRService$5` desde el destino de `:goto_1c` hasta el final del método y revisar todos los caminos de cleanup. Después continuar con `extra_zip_file_path`. Expediente INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 36. Evidencia 165 — BRService$5: continuación posterior a :goto_1c y streams ZIP por archivo — 2026-11-25
+
+Se incorporó [evidencia 165](evidence/2026-11-25/165_BRSERVICE5_POST_GOTO1C_RESTORE_BRANCH_AND_ZIP_ENTRY_STREAM.md), basada en las ventanas Termux `BRService$zipStreamReader.smali:1–179` y `BRService$5.smali:2070–2760`, con ubicación de `:goto_1c` en la línea física 2083.
+
+**Delta preservado:**
+- El constructor de `zipStreamReader` guarda el array en `mPipe` y el InputStream en `mZipInputStream`. El inicio de `run()` crea el FileOutputStream usando específicamente `mPipe[1].getFileDescriptor()`, lee del InputStream almacenado y escribe al descriptor. E164 ya conserva la limpieza; E165 añade el mapeo del índice usado.
+- El destino de `:goto_1c` continúa con comprobación de app del sistema y, para paquetes no sistémicos, consulta el estado de habilitación; si el valor es 2, llama `setApplicationEnabledSetting(packageName, 0, 0)`.
+- Continúa la rama de tareas flash-drive/WeChat/QQ y puede invocar `unpackBakSdDatas`.
+- En una rama de `files_for_backup`, si el registro es InputStream no nulo, se llama `restoreLocalMediaFile(BRItem, false, InputStream)`. En la rama alternativa con lista, las rutas se obtienen de `BRItem.localFileList` o `BRServiceDataHolder`.
+- La rama de lista itera rutas, obtiene entradas de `ZipFile`, abre streams con `getInputStream`, los pasa a `copyFileFromStream`, acumula rutas absolutas de copias reportadas como correctas y, al terminar el bucle, intenta cerrar la referencia actual `v7`. También puede invocar `MediaScannerConnection.scanFile`.
+- Se conservan los handlers observados: IOException asigna el código de error al BRItem y elimina el temporal si existe; catchall elimina el temporal y relanza.
+
+**Dedupe y límites:** E163 conserva el caller y la preparación del pipe; E164 conserva el cleanup de `zipStreamReader.run()` y la tarea `PerformAdbRestoreTask`. E165 no duplica esos hallazgos. No está demostrado que `copyFileFromStream` cierre cada stream, que el descriptor complementario del pipe se cierre, ni que el InputStream original se cierre. La ventana termina en otra rama y no llega a `.end method`.
+
+**Siguiente paso:** continuar `BRService$5.smali` desde la línea 2760 hasta el final del método; recuperar `BRService.copyFileFromStream` completo y revisar asignaciones/cierres del InputStream original. Después continuar con `extra_zip_file_path`.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
