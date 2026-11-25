@@ -1,7 +1,7 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.49 — BRService$5: cuerpos parciales de cond_2c y cond_3b
-**Fecha de corte:** 2026-11-24\
+**Versión:** 1.50 — BRService: receptor restoreLocalMediaFile y fallback ZIP/stream
+**Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
 implica ejecución de restauraciones, modificación del APK ni pruebas
@@ -2834,3 +2834,24 @@ Se incorporó [evidencia 159](evidence/2026-11-24/159_BRSERVICE5_COND59_NULL_STR
 **Corrección y límites:** E157 dejaba pendiente el origen de v3 en :cond_59; E159 resuelve ese punto concreto. No se afirma que el ZIP construido sea irrelevante para el método receptor: restoreLocalMediaFile puede abrir/derivar la ruta mediante su propia lógica interna, cuyo cuerpo debe cotejarse. No se infiere integridad ZIP, restauración exitosa ni ejecución dinámica. E156 conserva las guardias de v5 y E158 las ramas de transferencia; no se duplican.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash del Smali y sin ejecución dinámica. Expediente INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 30. Evidencia 160 — BRService: receptor restoreLocalMediaFile y fallback ZIP/stream — 2026-11-25
+
+Se incorporó [evidencia 160](evidence/2026-11-25/160_BRSERVICE_RESTORELOCALMEDIAFILE_AND_ZIP_STREAM_FALLBACK.md), consolidación de la continuación del análisis de `BRService$5.run()`, el método privado `BRService.restoreLocalMediaFile(BRItem, boolean, InputStream)` y el caller `BRService$11`.
+
+**Delta conservado:**
+- El método receptor fue localizado en `BRService.smali`, alrededor de la línea física 12772 (`.line 3136–3168)); el puente/caller sintético aparece en `BRService$11.smali:1478`.
+- Según el fragmento directo compartido en el chat, el receptor deriva `backup_<suffix>.zip` desde `mCurrentBackupRootPath`. Si el archivo falta y el InputStream también es null, la ruta reportada asigna `state=3,error=7` y notifica error/fin. Si existe el archivo o el stream no es null, pasa ambos a `ArchiveHelper.unzipFiles`, registra el estado de extracción y después finaliza según aborto/éxito.
+- La evidencia histórica 27 de `ArchiveHelper.unzipFiles` conserva la distinción: stream no nulo usa `ZipInputStream`; stream null abre `FileInputStream(File)`. Por tanto, un argumento null no significa por sí solo ausencia de fuente: el receptor puede usar el ZIP local.
+- El resumen recuperado de `BRService$11.smali:3765–3788` describe lectura de `mZipFilePath`, apertura de `ZipFile`, selección de `backup_qq.zip` o `backup_wechat.zip`, extracción de InputStream y entrega al receptor; si falla la apertura, el stream queda null y continúa hacia el receptor. Esta parte permanece `RECOVERED-CHAT / PRIOR-ASSISTANT-SUMMARY`, pendiente de cotejo con el bloque literal.
+- Esto complementa E159: `:cond_59` entrega null y no pasa su objeto File local; el receptor puede reconstruir la ruta a partir del BRItem y la raíz, y ArchiveHelper puede abrir el archivo local. No se afirma éxito ni integridad del ZIP.
+
+**Dedupe y continuidad:** E153–E159 permanecen como evidencias independientes; no se duplican sus hallazgos. El SHA-256 reportado de `BRService$5.smali` y el mapping `v8=1` cuando `mBakFilesType==2` se conservan como contexto ya registrado, no como nuevos hallazgos de E160.
+
+**Siguiente objetivo aceptado:** rastrear todas las escrituras, lecturas y limpiezas de `mZipFilePath`, así como las condiciones que activan cada ruta. Cotejar el bloque de `BRService$11` y el método receptor completos antes de elevar los resúmenes a evidencia primaria.
+
+**Procedencia y límites:** el resumen de `restoreLocalMediaFile` procede de una salida directa compartida por el usuario, recuperada aquí sin transcripción literal completa; el bloque de `BRService$11` se conserva como resumen histórico, no como fuente primaria. No `LOCAL-VERIFIED`, no ejecución dinámica. El expediente continúa **INCOMPLETO**.
+
