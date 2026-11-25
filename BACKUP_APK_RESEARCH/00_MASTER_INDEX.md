@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.48 — BRService$5: cuerpos parciales de cond_2c y cond_3b
+**Versión:** 1.49 — BRService$5: cuerpos parciales de cond_2c y cond_3b
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2816,3 +2816,21 @@ Se incorporó [evidencia 158](evidence/2026-11-24/158_BRSERVICE5_COND2C_AND_COND
 - En `:cond_3b`, si hay transferencia activa y el paquete es `files_for_backup`, se llama `waitingForFilesTransingEnd()`; si BRItem.state no es 6, se escribe 6; después se notifica mediante `notifyTransItemChange(...)` y se salta a `:goto_25`. Las demás condiciones continúan por `:cond_3c`.
 
 **Dedupe y límites:** E157 conserva la entrada a ambos destinos; E158 añade sus cuerpos parciales. No se atribuye semántica no demostrada a los argumentos de `copyFile`, no se afirma que el archivo temporal sea el origen del InputStream de `:cond_59`, y no se infiere apertura o integridad de ZIP. Continúan pendientes la procedencia de v3 en `:cond_59` y las continuaciones de `:cond_2e` / `:cond_3c` si se requiere cerrar esas rutas. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Expediente INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 29. Evidencia 159 — BRService$5: procedencia de v3 y ruta null-stream hacia :cond_59 — 2026-11-24
+
+Se incorporó [evidencia 159](evidence/2026-11-24/159_BRSERVICE5_COND59_NULL_STREAM_CONTROL_FLOW.md), basada en las ventanas físicas 1540–1680, 2385–2435, 2975–3020 y 3505–3570, más los contextos 2990–3065 y 1650–1730 compartidos desde Termux.
+
+**Delta confirmado en el flujo de control:**
+- La ruta ordinaria obtiene un ZipEntry con ZipFile.getEntry() y después un InputStream con ZipFile.getInputStream(); move-result-object v3 sustituye el ZipEntry por el flujo en la línea física 1661.
+- Las llamadas ordinarias de restauración local en 2419 y 3006 están precedidas por la comprobación v3 != null.
+- En la ruta alternativa, línea 2999, v3 == null conduce a :cond_4c. Allí, línea 3011, v5 == null conduce directamente a :cond_59.
+- La reasignación v3 = BRItem.packageName de la línea 3017 solo ocurre en la caída cuando v5 != null; queda omitida en el salto directo a :cond_59. Por tanto, v3 sigue siendo null al llegar a la llamada de línea 3561.
+- :cond_59 construye un File con la ruta mCurrentBackupRootPath/backup_<suffix>.zip, pero ese objeto no se pasa como argumento a restoreLocalMediaFile(BRItem,false,v3). El cuarto argumento v3 es null.
+
+**Corrección y límites:** E157 dejaba pendiente el origen de v3 en :cond_59; E159 resuelve ese punto concreto. No se afirma que el ZIP construido sea irrelevante para el método receptor: restoreLocalMediaFile puede abrir/derivar la ruta mediante su propia lógica interna, cuyo cuerpo debe cotejarse. No se infiere integridad ZIP, restauración exitosa ni ejecución dinámica. E156 conserva las guardias de v5 y E158 las ramas de transferencia; no se duplican.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash del Smali y sin ejecución dinámica. Expediente INCOMPLETO.
