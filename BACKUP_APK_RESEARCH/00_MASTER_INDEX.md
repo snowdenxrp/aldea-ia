@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.42 — continuación de BRService$5: estado 6, IOException y v8→v35
+**Versión:** 1.43 — BRService$5: ciclo de vida de v5 y reinicio de v13
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
