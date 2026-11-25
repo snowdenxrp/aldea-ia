@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.47 — BRService$5: destinos iniciales de cond_2a y cond_59
+**Versión:** 1.48 — BRService$5: cuerpos parciales de cond_2c y cond_3b
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2802,3 +2802,17 @@ Se incorporó [evidencia 157](evidence/2026-11-24/157_BRSERVICE5_COND2A_AND_COND
 - `:cond_59` calcula el sufijo y construye la ruta `mCurrentBackupRootPath/backup_<suffix>.zip`, crea un `File` y luego llama `restoreLocalMediaFile(BRItem,false,v3)`. No se observa en la ventana apertura del File ni obtención de InputStream desde él; no se afirma que ese ZIP sea el flujo entregado. El origen de v3 queda pendiente.
 
 **Dedupe y límites:** E148/E149 ya describen la ruta alternativa `:cond_47`; E156 conserva las guardias de entrada. E157 añade únicamente los destinos iniciales de `:cond_2a` y `:cond_59`. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Pendientes: cuerpos de `:cond_2c`/`:cond_3b` y procedencia de v3 en `:cond_59`. Expediente INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 28. Evidencia 158 — BRService$5: destinos :cond_2c y :cond_3b — 2026-11-24
+
+Se incorporó [evidencia 158](evidence/2026-11-24/158_BRSERVICE5_COND2C_AND_COND3B_TRANSFER_BRANCHES.md), basada en las ventanas físicas 1708–1790 y 2308–2391 compartidas desde Termux.
+
+**Delta preservado:**
+- En `:cond_2c`, cuando v8 no es cero, se obtiene `getTransTempBackupRootPath()`, se construye `.tmp_bak_file` y se llama `copyFile(4,v4,tempFile)`; después v4 se reasigna al archivo temporal y el flujo salta a `:goto_17`.
+- Cuando v8 es cero, `:cond_2d` comprueba `mIsTransingTask`; si está activo conserva v4 y salta a `:goto_17`; si no, continúa a `:cond_2e` y empieza la comprobación de `mIsFlashDriveTask`.
+- En `:cond_3b`, si hay transferencia activa y el paquete es `files_for_backup`, se llama `waitingForFilesTransingEnd()`; si BRItem.state no es 6, se escribe 6; después se notifica mediante `notifyTransItemChange(...)` y se salta a `:goto_25`. Las demás condiciones continúan por `:cond_3c`.
+
+**Dedupe y límites:** E157 conserva la entrada a ambos destinos; E158 añade sus cuerpos parciales. No se atribuye semántica no demostrada a los argumentos de `copyFile`, no se afirma que el archivo temporal sea el origen del InputStream de `:cond_59`, y no se infiere apertura o integridad de ZIP. Continúan pendientes la procedencia de v3 en `:cond_59` y las continuaciones de `:cond_2e` / `:cond_3c` si se requiere cerrar esas rutas. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Expediente INCOMPLETO.
