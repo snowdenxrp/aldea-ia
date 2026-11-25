@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.41 — rastreo literal de v8 y ruta de restauración tipo 2
+**Versión:** 1.42 — continuación de BRService$5: estado 6, IOException y v8→v35
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2647,3 +2647,20 @@ Se incorporó [evidencia 146](evidence/2026-11-24/146_BRSERVICE5_V8_TYPE2_TEMP_C
 **Límites:** no se demuestra éxito de copia/restauración, efecto dinámico, estado final ni cadena completa hasta `mLastError`. El SHA-256 `7c0112052117caf5b5fb119fc807f62ea0cf42bf35fe8d7e75c38af8a18bde25` fue reportado por el usuario; no se recalculó localmente. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente.
 
 **Estado:** investigación estática INCOMPLETA; evidencia 146 añade el literal de la condición de tipo 2 y su ruta de copia temporal/restauración, sin promover inferencias fuera de los extractos.
+
+
+------------------------------------------------------------------------
+
+## 17. Evidencia 147 — continuación de BRService$5 tras restorePackage (24-11-2026)
+
+**CONFIRMADO EN CHAT mediante salida directa de Termux; véase [Evidencia 147](evidence/2026-11-24/147_BRSERVICE5_RESTORE_RESULT_STATE_ERROR_AND_V35_CONTINUATION.md).**
+
+- Líneas 2145–2180: rama condicional registra una aplicación deshabilitada y llama `PackageManager.setApplicationEnabledSetting(packageName, 0, 0)`.
+- Líneas 2188–2224: en tarea Flash Drive se comparan los paquetes WeChat/QQ; la rama coincidente llama `unpackBakSdDatas(v4, BRItem.localFileList)`.
+- Líneas 2278–2287: el catch de IOException escribe `v7` en `BRItem.error` y registra la excepción. No se observa escritura a `mLastError` en esta ventana.
+- Líneas 2245–2249 y 2301–2314: se intenta eliminar el archivo temporal en la ruta ordinaria y en catch-all; no se verifica el resultado booleano de `File.delete()`.
+- Líneas 2297, 2364 y 2391: se copia `v8` a `v35` en rutas concretas; no se atribuye semántica persistente al registro.
+- Líneas 2316–2386: para `mIsTransingTask==true` y `packageName=="files_for_backup"`, se espera el fin de transferencia; si el estado previo no es 6, se escribe `BRItem.state=6` y se llama `notifyTransItemChange(...)`.
+- Líneas 2393–2420: para tarea Flash Drive y `files_for_backup`, si `v3!=0`, se llama `restoreLocalMediaFile(BRItem, false, v3)`.
+
+**Límites:** la ventana no contiene la invocación previa completa a `BRManager.restorePackage`; no demuestra un valor de retorno ni el éxito de esa llamada. Tampoco cierra `mLastError`, las ramas posteriores ni el resultado de `restoreLocalMediaFile`. El expediente sigue INCOMPLETO.
