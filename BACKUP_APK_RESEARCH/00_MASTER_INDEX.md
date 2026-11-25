@@ -2664,3 +2664,22 @@ Se incorporó [evidencia 146](evidence/2026-11-24/146_BRSERVICE5_V8_TYPE2_TEMP_C
 - Líneas 2393–2420: para tarea Flash Drive y `files_for_backup`, si `v3!=0`, se llama `restoreLocalMediaFile(BRItem, false, v3)`.
 
 **Límites:** la ventana no contiene la invocación previa completa a `BRManager.restorePackage`; no demuestra un valor de retorno ni el éxito de esa llamada. Tampoco cierra `mLastError`, las ramas posteriores ni el resultado de `restoreLocalMediaFile`. El expediente sigue INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 18. Evidencia 148 — BRService$5: restauración local, cancelación, estado y MediaScanner — 2026-11-24
+
+Se incorporó [evidencia 148](evidence/2026-11-24/148_BRSERVICE5_LOCAL_FILE_RESTORE_STATE_ABORT_AND_MEDIA_SCAN.md), basada en las ventanas 2410–2600 y 2580–2780 compartidas directamente desde Termux.
+
+**Delta preservado:**
+- La lista local se obtiene desde `BRItem.localFileList` o, si es null/vacía, desde `BRServiceDataHolder.getTypeBRServiceFileList(getZipSuffixType(packageName,type))`.
+- Si la lista final es null/vacía, se llama `notifyItemTaskError(packageName, feature, 7)` y después `notifyItemTaskEnd(packageName, feature)`. No se observa escritura de 7 en `BRItem.error`.
+- Durante el recorrido, `mIsAborted` verdadero produce escrituras explícitas `BRItem.state=3` y `BRItem.error=9`.
+- La extracción obtiene ZipEntry/InputStream y llama `copyFileFromStream(4, BRItem, inputStream, path, transingTotalSize)`. Si devuelve true, agrega la ruta absoluta a una lista para MediaScanner; si devuelve false, solo registra `copyOneFile error, file lost` en este fragmento.
+- Excepciones de copia y de cierre del InputStream se registran; no se observa asignación directa a `BRItem.error` en esos manejadores.
+- Tras el cierre, si el estado es 1, 6 o 3, se conserva. Para cualquier otro estado se escribe `state=1`, `progType=0` y se llama `notifyItemTaskEnd(packageName,feature)`.
+- La lista de rutas copiadas se pasa a `MediaScannerConnection.scanFile(context, paths, null, null)`.
+- La ruta alternativa `:cond_47` comienza a iterar `BRItem.localFileList` cuando `v5` es null, pero la ventana acaba en 2780 y queda pendiente.
+
+**Cautelas:** no asignar significado semántico global a los códigos 1/3/6 o error 9; no equiparar notificación de error 7 con escritura de campo; no inferir éxito dinámico ni cierre de `mLastError`/resultado de `restorePackage`. El expediente sigue INCOMPLETO.
