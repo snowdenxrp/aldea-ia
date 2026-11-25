@@ -118,6 +118,17 @@ Alcance: política normativa para P05/P07. No demuestra cumplimiento del mecanis
 
 Esto resuelve solo la interpretación reservada en P07 V2.2 §8. No ratifica V2.3, no selecciona mecanismo y no cambia P07-C UNKNOWN / BLOCKING, P05 OPEN, P09 UNKNOWN ni `authorization: NOT_EVALUATED`. Tampoco autoriza implementación, harness, tests, CI, POCO/Termux ni cleanup.
 
+### 6.1.2 Reconciliación C3 / P07-21 hardlinks (2026-11-25)
+
+La pregunta sobre eliminar un hardlink propio al inode protegido ya está resuelta por la decisión del propietario del 2026-11-07: cualquier modificación de `nlink` del objeto protegido es afectación, aunque sea reversible. Eliminar ese hardlink propio también es afectación; la propiedad del nombre no crea una excepción.
+
+Distinguir el rol del inode antes de aplicar P07-21 Caso A:
+- inode protegido: no aceptar el decremento de `nlink` como cleanup seguro;
+- temporal propio no protegido: el caso puede caracterizar cleanup atribuido si el contrato específico lo permite;
+- rol ambiguo: UNKNOWN/BLOCKED.
+
+Reconciliación canónica: [NCS_M0_D2_P07_C3_HARDLINK_NLINK_RECONCILIATION_2026-11-25.md](../BUILD/NCS_M0_D2_P07_C3_HARDLINK_NLINK_RECONCILIATION_2026-11-25.md), commit `87decf9ec993b24f88ab2fb38bdeb117f458df3a`. No reabrir C3 ni pedir otra ratificación. Esta precisión no cierra P07-C ni P05.
+
 1. **No repetir las bases ya cerradas documentalmente:** P09, P08, seams P03/P04 y lock/release del snapshot `d8b5ca8` ya tienen reconciliaciones. Reabrir solo UNKNOWN o evidencia nueva con SHA/ruta concreta.
 2. **P07-C — siguiente problema técnico:** evaluar una arquitectura candidata que satisfaga O4/O5 y los oráculos bloqueantes V2.2+V2.3 (P07-05/06/07/16/18b/19/21). Debe demostrar prevención o serialización dentro del modelo aprobado; DETECTION_ONLY y RETENTION_VERIFIED no cierran el gate. No seleccionar primitivas ni inventar marker, lock hermano, tombstone, epoch, daemon o journal.
 3. **P05 — cuarentena durable:** cualquier candidato debe responder O1–O9, preservando P05-C ratificada. Exclusión viva por lock efímero no equivale a BLOCKED durable tras crash. Si no existe mecanismo demostrado, conservar STOP; no improvisar readmisión.
