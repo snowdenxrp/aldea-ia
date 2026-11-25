@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.44 — BRService$5: inventario de escrituras candidatas v5/v13
+**Versión:** 1.45 — BRService$5: limpieza excepcional de v13 y reutilización de v5
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2764,3 +2764,13 @@ Se incorporó [evidencia 154](evidence/2026-11-24/154_BRSERVICE5_V5_V13_REGISTER
 **Delta relevante:** aparecen escrituras posteriores a la inicialización principal de v13: `const/4 v13, 0x0` en la línea física 2266 y `move-object v13, v10` en la 2304. Sus contextos y rutas de control están pendientes; no se puede asumir que el contador iniciado en 958 alcance el resumen sin redefiniciones. Las coordenadas 2227, 2422 y 3503 ya constan en evidencia 139 y no se duplican. Para v5, el inventario agrega ocurrencias candidatas en 97, 111, 804 y 3844–4088, todavía sin contexto suficiente para clasificar sus valores; las asignaciones 913/953 y los usos de error están preservados en evidencias 153/152.
 
 El patrón también devuelve lecturas de registros en bifurcaciones y operaciones aritméticas; por tanto, la salida se conserva como inventario de operandos destino/candidatos, no como listado ya validado de escrituras semánticas. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Estado INCOMPLETO.
+
+------------------------------------------------------------------------
+
+## 25. Evidencia 155 — BRService$5: v13 en limpieza excepcional y reutilizaciones de v5 — 2026-11-24
+
+Se incorporó [evidencia 155](evidence/2026-11-24/155_BRSERVICE5_V13_EXCEPTION_CLEANUP_AND_V5_REGISTER_REUSE.md), con el contexto físico 2245–2320, 70–125, 780–820, 3825–3960 y 4025–4105.
+
+**Delta principal:** las asignaciones `v13=0` (2266) y `v13=v10` (2304) están dentro de handlers `catchall` que convergen en `:goto_23`, limpian mediante `File.delete()` la referencia temporal si existe y relanzan la excepción. No son reinicios del contador en el flujo normal hacia el resumen. Se contextualizan además ocurrencias v5: 97/804 son resultados `mBRItems` en rutas tempranas de finalización; 111 es constante para comparar `mBakFilesType`; las ocurrencias 3844–4088 son valores/argumentos de índice, estado, espera y logging, no la ZipFile. La evidencia 154 queda parcialmente clasificada; no se declara auditoría exhaustiva de todos los usos.
+
+Dedupe: no se repiten incrementos 2227/2422/3503 ni el uso final de v13, conservados en evidencias 139/138. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente ni ejecución dinámica. Expediente INCOMPLETO.
