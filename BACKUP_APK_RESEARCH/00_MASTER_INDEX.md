@@ -2855,3 +2855,19 @@ Se incorporó [evidencia 160](evidence/2026-11-25/160_BRSERVICE_RESTORELOCALMEDI
 
 **Procedencia y límites:** el resumen de `restoreLocalMediaFile` procede de una salida directa compartida por el usuario, recuperada aquí sin transcripción literal completa; el bloque de `BRService$11` se conserva como resumen histórico, no como fuente primaria. No `LOCAL-VERIFIED`, no ejecución dinámica. El expediente continúa **INCOMPLETO**.
 
+
+
+------------------------------------------------------------------------
+
+## 31. Evidencia 161 — BRService: consumidores de mZipFilePath, extracción split APK y limpieza — 2026-11-25
+
+Se incorporó [evidencia 161](evidence/2026-11-25/161_BRSERVICE_MZIPFILE_RESTORE_STREAM_SPLITAPK_AND_CLEANUP.md), basada en las ventanas Termux de `BRService$11.smali:1350–1530, 1535–1585 y 1575–1645`, y `BRService.smali:13020–13085 y 13135–13215`.
+
+**Delta preservado:**
+- Se coteja con salida literal el bloque de `BRService$11` que E160 conservaba como resumen: lee `mZipFilePath`, intenta abrir `ZipFile`, selecciona `backup_qq.zip` o `backup_wechat.zip`, obtiene un InputStream y llama `restoreLocalMediaFile(BRItem, boolean, InputStream)`. Si la ruta es null/vacía o falla la apertura, el stream queda null y el flujo llega al receptor. Si falla la obtención del stream, registra `can't get zipInputStream` y notifica error 7 antes de la unión del flujo.
+- Después de la llamada, el callback comprueba `BRItem.error==0` y `splitApkPath` no vacío; si el archivo split existe, agrega su longitud a `totalSize` y `completedSize`.
+- La limpieza exige que `mZipFilePath` no esté vacío y que el archivo correspondiente exista; entonces obtiene el directorio padre del File creado desde `BRItem.splitApkPath` y llama `FileUtils.deleteFile(parent)`. El objeto eliminado no es directamente el archivo `mZipFilePath`. No se demuestra que la eliminación tenga éxito.
+- La ventana 13020–13085 identifica el método `restoreStreamSplitApk(BRItem, ZipFile, InputStream)`. La continuación muestra que elimina la extensión de `mZipFilePath`, concatena ese prefijo con el `splitApkPath` previo, actualiza el campo con la ruta absoluta, crea el directorio/archivo de destino y comienza a copiar desde un InputStream en bloques de 1024 bytes. El método no está recuperado completo.
+- Se corrige la atribución provisional del intercambio anterior: el fragmento físico 13075–13123 pertenece a `restoreStreamSplitApk`, no se atribuye a `handleTaskFinish`. `getZipPath()` simplemente devuelve `mZipFilePath`.
+
+**Dedupe y límites:** E160 conserva el resumen del receptor `restoreLocalMediaFile` y el contrato de `ArchiveHelper.unzipFiles`; E161 no los duplica. El inventario anterior de `mZipFilePath` y la escritura visible desde `extra_zip_file_path` tampoco se repiten. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Quedan pendientes el método `restoreStreamSplitApk` completo y el ciclo de vida/origen de `extra_zip_file_path`. El expediente sigue **INCOMPLETO**.
