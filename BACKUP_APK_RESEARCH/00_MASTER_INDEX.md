@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.58 — E167: copyFileFromStream parcial
+**Versión:** 1.59 — E168: progreso, sync y cierre normal de copyFileFromStream
 **Fecha de corte:** 2026-11-25\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -3032,5 +3032,24 @@ Se incorporó [evidencia 167](evidence/2026-11-25/167_BRSERVICE_COPYFILEFROMSTRE
 - Abre `FileOutputStream`, crea un búfer de 32 KiB (`0x8000`) y comienza un bucle que lee del InputStream y escribe al output. También acumula bytes y consulta `elapsedRealtime()` para la lógica de progreso.
 
 **Dedupe y límites:** E165 conserva el caller ZIP-entry; E166 conserva la rama File→File y la ubicación del receptor. E167 añade solo la preparación y el inicio parcial del método receptor. La salida se interrumpe en mitad del bucle, antes de handlers y `.end method`; no permite determinar cierres, flush, manejo completo de errores, retorno final ni borrado de destino parcial. No inferir fuga ni éxito/integridad.
+
+**Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
+
+
+------------------------------------------------------------------------
+
+## 39. Evidencia 168 — BRService.copyFileFromStream: progreso, sync y cierre normal — 2026-11-25
+
+Se incorporó [evidencia 168](evidence/2026-11-25/168_BRSERVICE_COPYFILEFROMSTREAM_PROGRESS_SYNC_AND_PARTIAL_HANDLERS.md), basada en la continuación Termux de `BRService.smali:4340–4500`.
+
+**Delta preservado:**
+- Durante la copia, cuando transcurren más de 16 ms desde la última notificación, el método informa progreso si `mIsLocalBackupTask` es false; comunica bytes acumulados, destino absoluto y total esperado.
+- Al alcanzar EOF notifica la etapa/estado 3. Para `p1==3`, la ruta de origen notificada es null; en otro caso usa la ruta absoluta del destino.
+- Ejecuta `FileOutputStream.flush()` y `FileDescriptor.sync()`.
+- Registra la ruta/contador e incrementa `imageTotalCount`.
+- En la ruta normal visible cierra `FileOutputStream` y retorna true.
+- La salida llega a `:catch_1`, pero no contiene los cuerpos completos de los handlers ni `.end method`.
+
+**Dedupe y límites:** E167 ya conserva la preparación y el inicio del bucle. E168 añade progreso, sincronización, contador y cierre normal. No determina cierre del InputStream, cierre de FileOutputStream en rutas excepcionales, borrado de destino parcial ni retorno tras errores. No inferir cierre universal ni fuga.
 
 **Procedencia:** USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT; sin cotejo local independiente, sin hash nuevo de Smali y sin ejecución dinámica. Expediente **INCOMPLETO**.
