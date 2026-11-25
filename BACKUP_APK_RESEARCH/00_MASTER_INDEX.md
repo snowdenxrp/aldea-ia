@@ -1,6 +1,6 @@
 # MIUI Backup.apk --- Expediente maestro de investigación estática
 
-**Versión:** 1.46 — BRService$5: guardias v5 y selección de rutas de restauración
+**Versión:** 1.47 — BRService$5: destinos iniciales de cond_2a y cond_59
 **Fecha de corte:** 2026-11-24\
 **Estado:** INCOMPLETO --- consolidación documental en curso\
 **Alcance:** ingeniería inversa estática de MIUI `Backup.apk`; no
@@ -2789,3 +2789,16 @@ Se incorporó [evidencia 156](evidence/2026-11-24/156_BRSERVICE5_V5_ZIPFILE_GATE
 - Las guardias confirman que v5 participa en la selección de rutas de restauración, no solo en las asignaciones de `BRItem.error` ya documentadas en evidencia 152.
 
 **Dedupe y límites:** los cuerpos de recorrido de listas y la ruta alternativa ya constan en evidencias 148/149; evidencia 156 conserva únicamente la relación de las tres guardias con v5. La comprobación `File.exists()` no demuestra integridad ZIP ni éxito de restauración. El vínculo entre inicialización y guardias se apoya en evidencias 153–155, sin declarar auditoría exhaustiva de todos los usos. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Estado INCOMPLETO.
+
+
+------------------------------------------------------------------------
+
+## 27. Evidencia 157 — BRService$5: destinos :cond_2a y :cond_59 — 2026-11-24
+
+Se incorporó [evidencia 157](evidence/2026-11-24/157_BRSERVICE5_COND2A_AND_COND59_DESTINATIONS.md), basada en las ventanas físicas 1678–1745 y 3498–3565 compartidas desde Termux.
+
+**Delta preservado:**
+- `:cond_2a` inicializa v3 a cero. Comprueba v4: si es null o `File.exists()` devuelve false, cae en `:cond_2b`; la prueba `if-eqz v3` conduce entonces a `:cond_3b`. Si v4 existe, salta a `:cond_2c`. Los cuerpos de ambos destinos quedan pendientes.
+- `:cond_59` calcula el sufijo y construye la ruta `mCurrentBackupRootPath/backup_<suffix>.zip`, crea un `File` y luego llama `restoreLocalMediaFile(BRItem,false,v3)`. No se observa en la ventana apertura del File ni obtención de InputStream desde él; no se afirma que ese ZIP sea el flujo entregado. El origen de v3 queda pendiente.
+
+**Dedupe y límites:** E148/E149 ya describen la ruta alternativa `:cond_47`; E156 conserva las guardias de entrada. E157 añade únicamente los destinos iniciales de `:cond_2a` y `:cond_59`. Procedencia USER-PROVIDED / CURRENT-CHAT-TERMUX-OUTPUT, sin cotejo local independiente ni ejecución dinámica. Pendientes: cuerpos de `:cond_2c`/`:cond_3b` y procedencia de v3 en `:cond_59`. Expediente INCOMPLETO.
