@@ -2940,7 +2940,7 @@ Comando exacto compartido para la siguiente lectura:
 D="$HOME/backup-static/decoded/smali/com/miui/backup/service"
 
 echo "===== Líneas totales ====="
-wc -l "$D/BRService.smali" "$D/BRService\\$zipStreamReader.smali" "$D/BRService\\$5.smali"
+wc -l "$D/BRService.smali" "$D/BRService\$zipStreamReader.smali" "$D/BRService\$5.smali"
 
 echo
 echo "===== restoreStreamSplitApk: excepciones y cierre ====="
@@ -2948,11 +2948,11 @@ sed -n '13190,13320p' "$D/BRService.smali"
 
 echo
 echo "===== zipStreamReader: final de run() ====="
-sed -n '180,280p' "$D/BRService\\$zipStreamReader.smali"
+sed -n '180,280p' "$D/BRService\$zipStreamReader.smali"
 
 echo
 echo "===== BRService$5: continuación tras crear la tubería ====="
-sed -n '1935,2005p' "$D/BRService\\$5.smali"
+sed -n '1935,2005p' "$D/BRService\$5.smali"
 ```
 
 **Clasificación:** CONTINUIDAD OPERATIVA / PENDIENTE DE LECTURA; no es
