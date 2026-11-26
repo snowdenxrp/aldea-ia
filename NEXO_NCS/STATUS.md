@@ -1,3 +1,13 @@
+## DELTA — CONFIRMACIÓN ESTÁTICA DE PATH FILTER STEP 3A (2026-11-26)
+
+- El path trigger `src/nexo/core/conditional-commit-persist-state.mjs` declarado en `.github/workflows/nexo-step-3a-isolation.yml` no existe en el snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`.
+- El adapter real existe en `src/nexo/adapters/conditional-commit-persist-state.mjs` (blob `d6dc517f9c7841a957749804d612fbfe6e66c9a6`); el test de integración lo importa desde esa ruta.
+- Clasificación: PATH MISMATCH **CONFIRMED-STATIC**. No se ejecutó ni modificó el workflow; no se afirma fallo histórico ni impacto en runs concretos.
+- Evidencia y alcance: [NCS_M0_P09_O5_O7_WRITER_CENSUS_RECONCILIATION_2026-11-26.md](RESEARCH/NCS_M0_P09_O5_O7_WRITER_CENSUS_RECONCILIATION_2026-11-26.md), §6.3.
+- Gates sin cambio: P09 OPEN/UNKNOWN; P05 OPEN; P07-C UNKNOWN/BLOCKING; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP.
+
+---
+
 ## DELTA — P09 WRITER CENSUS + RECUPERACIÓN DE DEFINICIONES O5/O7 (2026-11-26)
 
 - Documento: [NCS_M0_P09_O5_O7_WRITER_CENSUS_RECONCILIATION_2026-11-26.md](RESEARCH/NCS_M0_P09_O5_O7_WRITER_CENSUS_RECONCILIATION_2026-11-26.md), rama `ncs-p09-o5-o7-writer-census-2026-11-26`.
