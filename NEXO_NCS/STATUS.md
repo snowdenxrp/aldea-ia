@@ -3894,3 +3894,18 @@ No se fusionaron ramas divergentes. Solo lectura estática/documentación; sin c
 - Discrepancias de snapshot a revisar documentalmente: `NEXO_STATE_PATH` vs `NEXO_CONTINUITY_PATH`, ausencia de parseo de `--nexo-repair-once`, y ruta de workflow que no coincide con el adapter.
 - Estado heredado sin elevación: P-05-C RATIFICADA; P-05 OPEN; P07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning y efectos protegidos STOP.
 - Solo incorporación documental. Sin tests, CI/Actions, runtime, workflows, Termux/POCO, bootstrap, cambios de producto, PR #110 ni efectos protegidos.
+
+---
+
+## DELTA — TRAZABILIDAD DE APIs PÚBLICAS CONTRA P08 RATIFICADO (2026-11-26)
+
+Informe: [NCS_M0_P08_PUBLIC_API_TRACEABILITY_DELTA_2026-11-26.md](RESEARCH/NCS_M0_P08_PUBLIC_API_TRACEABILITY_DELTA_2026-11-26.md), commit documental `57b6fd3908fd1ae53ceeea49e4508630a8bc35d4`.
+
+- Se confirma en el snapshot `d8b5ca8720908d926acc18130614cce132a43b5d` que las cinco funciones de `continuity-queries.mjs` reciben `continuityPath` y hacen `loadCurrent()` directamente; el export público adicional `previewNexoMissionRequest` delega a `previewNexoMissionDraft`, por lo que la superficie pública de lectura es de **seis APIs**, no cinco.
+- `runNexoChronicleAppend` recibe `continuityPath` y `chroniclePath` independientes, crea ambos stores y lee ambos antes de `openNexoContinuityOwner()`: brecha estática P08 y D1/P03–P04.
+- El hijo CLI acepta `--continuity`, `--chronicle` y `--initialize-chronicle`; el caso de uso permite inicializar Chronicle dentro de la invocación append si esa opción está activa. Contradice el contrato P08 ratificado de init y append separados.
+- El padre CLI usa `--continuity` para las queries y delega Chronicle al hijo sin imponer una root común. El bootstrap separado recibe root/relative-path solo para Continuity; no es resolver root→dos stores.
+- Clasificación: **CONFIRMED-STATIC / NOT TESTED** contra blobs fijados; no demuestra invocaciones externas efectivas ni cierra loaders/consumers dinámicos.
+- P08 permanece DECIDED/RATIFIED con enforcement NO DEMOSTRADO; P09 OPEN/UNKNOWN; O5 UNKNOWN/STOP; O7 contradicción reportada con alcance pendiente y RAW-1 no reproducido; P05-C RATIFICADA/P05 OPEN; P07-C UNKNOWN/BLOCKING; E2/E3 PARTIAL/NOT CLOSED; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP.
+- Solo lectura estática y documentación. Sin tests, CI, runtime, workflows ejecutados, Termux/POCO, bootstrap, stores, PR #110 ni cambios de producto.
+
