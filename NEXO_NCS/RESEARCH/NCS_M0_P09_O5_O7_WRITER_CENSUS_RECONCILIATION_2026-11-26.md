@@ -197,7 +197,15 @@ El informe H2 declara que `NEXO_CONTINUITY_PATH` no aparece en `src/` ni `script
 
 ### 6.3 Workflow STEP 3A y ruta del adapter
 
-El YAML `nexo-step-3a-isolation.yml` lista `src/nexo/core/conditional-commit-persist-state.mjs` como path trigger y ejecuta el test correspondiente. El informe H2 reporta que el adapter real estaría bajo `adapters/`. La diferencia exacta entre ruta declarada, archivo existente y alcance del trigger queda **PENDIENTE DE VERIFICACIÓN DE ÁRBOL**; no declarar aquí un path mismatch confirmado sin cotejar ambos paths en el árbol del mismo SHA.
+**PATH MISMATCH CONFIRMADO ESTÁTICAMENTE en el snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`:**
+
+- El YAML `nexo-step-3a-isolation.yml` declara como path trigger `src/nexo/core/conditional-commit-persist-state.mjs`.
+- Ese path devuelve NOT_FOUND en el snapshot.
+- El adapter existe en `src/nexo/adapters/conditional-commit-persist-state.mjs`, blob `d6dc517f9c7841a957749804d612fbfe6e66c9a6`.
+- El test `tests/nexo/conditional-commit-persist-state.test.mjs`, blob `6170e52f6f04e74126b49afad2ccf39b187b45c9`, importa explícitamente el adapter desde `../../src/nexo/adapters/conditional-commit-persist-state.mjs`.
+- El workflow ejecuta ese test, pero el path filter del adapter apunta a una ruta inexistente; por tanto un cambio exclusivo del adapter real no coincide con el path trigger declarado.
+
+Clasificación: discrepancia de path filter **CONFIRMED-STATIC**. No se ha ejecutado ni modificado el workflow. Esto no prueba que el workflow haya fallado históricamente ni que no se dispare por otros paths del mismo commit.
 
 ### 6.4 Workflow de simulación
 
@@ -231,7 +239,7 @@ No repetir inventario completo ni reauditar locks. Los únicos cierres documenta
 
 1. fijar el texto literal del claim O7 que Claude marcó contradicho y su universo P09;
 2. obtener el fragmento RAW-1 original (incluidos target, env, caller, resultado y fixture) si se pretende atribuirlo al objeto protegido;
-3. verificar en el árbol del mismo SHA la discrepancia del adapter y cualquier workflow/launcher adicional que afecte el censo;
+3. el path mismatch del adapter quedó confirmado estáticamente; verificar únicamente cualquier workflow/launcher adicional que afecte el censo;
 4. contrastar el mapping P08 root→stores con los overrides `NEXO_STATE_PATH` y `NEXO_LUMINA_MEMORY_PATH`, sin asumir que esos overrides están habilitados en R1;
 5. mantener O5 en UNKNOWN hasta que exista evidencia específica de readmisión/no-readmisión bajo pérdida/sustitución/ilegibilidad del estado.
 
