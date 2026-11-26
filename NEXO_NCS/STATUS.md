@@ -1,3 +1,16 @@
+## ERRATA — CORRECCIÓN DE ALCANCE P08/P09: LÚMINA ≠ WRITERS NEXO (2026-11-26)
+
+- Documento normativo de corrección: [NCS_M0_P08_P09_RECONCILIATION_ERRATA_2026-11-26.md](RESEARCH/NCS_M0_P08_P09_RECONCILIATION_ERRATA_2026-11-26.md).
+- Se corrige la unidad P09 del 2026-11-26: `assistants.mjs`, `simulate.mjs` y `lumina-simulation.yml` son superficies Lúmina en el snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`, no callers/writers Nexo activos. La fuente canónica P09 es `BUILD/NCS_M0_P09_CALLER_COVERAGE_RECONCILIATION_2026-11-07.md`, §§2–5.
+- La escritura directa `NEXO_LUMINA_MEMORY_PATH → fs.writeFile` queda como capacidad configurable de Lúmina; no se ha demostrado que el entorno efectivo la dirija a Continuity/Chronicle. RAW-1 sigue REPORTADO / NO REPRODUCIDO INDEPENDIENTEMENTE.
+- P08 está DECIDED/RATIFIED por el propietario: una root canónica deriva `<root>/.nexo-continuity.json` y `<root>/.nexo-chronicle.json`; operación normal no admite rutas independientes ni fallback ambiental. El snapshot aún muestra CLI/API path-based y dos rutas separadas, por lo que implementación/enforcement no están demostrados.
+- P09 Nexo debe basarse en `scripts/nexo.mjs`, `scripts/nexo-chronicle-session.mjs`, bootstrap, APIs públicas `continuity-queries`/ `chronicle-append`, exports/factories y wrappers clasificados por el contrato canónico; no repetir inventario genérico.
+- Hallazgos concretos: `chronicle-append` construye dos stores desde paths independientes y hace `loadCurrent()` de ambos antes de abrir owner; cinco queries públicas son path-based y hacen lectura directa; CLI padre/hijo aceptan paths separados. Son brechas estáticas P08/D1/P03-P04; no prueban invocaciones externas efectivas.
+- P08 DECIDED/RATIFIED, implementación no demostrada; P09 OPEN/UNKNOWN; O5 UNKNOWN/STOP; O7 contradicción reportada con alcance pendiente; P05-C RATIFICADA/P05 OPEN; P07-C UNKNOWN/BLOCKING; E2/E3 PARTIAL/NOT CLOSED; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP.
+- El documento P09 anterior lleva aviso de errata y debe leerse junto con la corrección. Solo lectura documental/estática; sin código, tests, CI, runtime, workflows ejecutados, Termux/POCO, stores, PR #110 ni ramas de producto modificadas.
+
+---
+
 ## DELTA — CONFIRMACIÓN ESTÁTICA DE PATH FILTER STEP 3A (2026-11-26)
 
 - El path trigger `src/nexo/core/conditional-commit-persist-state.mjs` declarado en `.github/workflows/nexo-step-3a-isolation.yml` no existe en el snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`.
