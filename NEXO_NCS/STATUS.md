@@ -3843,3 +3843,18 @@ No se fusionaron ramas divergentes. Solo lectura estática/documentación; sin c
 - No se modifican las definiciones/gates heredados: P-05-C RATIFICADA; P-05 OPEN; P07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; E2/E3 PARTIAL/NOT CLOSED; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning y efectos protegidos STOP.
 - Esta delta es índice de continuidad, no cierre técnico ni promoción de claims.
 - Sin cambios de runtime/tests/workflows/PR #110/ramas de producto/Termux/POCO/Continuity/Chronicle; sin CI ni efectos protegidos.
+
+
+---
+
+## DELTA — AUDITORÍA COMPLEMENTARIA H2 / persistState (2026-11-26)
+
+- Auditoría estática recibida y registrada en `NEXO_NCS/RESEARCH/NCS_M0_H2_PERSIST_STATE_REACHABILITY_AUDIT_2026-11-26.md`.
+- Snapshot auditado: `d8b5ca8720908d926acc18130614cce132a43b5d`; el auditor declara uso exclusivo de `git show`/`git grep`, sin checkout, tests, runtime ni cambios.
+- H2: `persistState` presenta una capacidad de API fail-open CONFIRMED-STATIC según el informe. Separadamente, la exposición efectiva de Continuity desde `assistants` queda PARTIAL/GAP y requiere condiciones de carrera/configuración no demostradas.
+- `assistants` y `simulate` se registran como callers/escritores relevantes para P09; el cron `lumina-simulation.yml` añade un escritor automatizado fuera del perfil R1 manual. P09 continúa OPEN/UNKNOWN; no se declara censo cerrado.
+- El protocolo de reparación pasa `loadStateStrict`; los wrappers reportados están bloqueados por gate incondicional. H2 no demuestra alcanzabilidad del protocolo desde producto ni afectación de B3.
+- O5/O7 no se resuelven en el alcance de esta auditoría porque sus definiciones canónicas no se localizaron en el snapshot. Se preserva por separado el reporte previo RAW-1/O7 condicionado de Claude; no fusionar claims distintos.
+- Discrepancias de snapshot a revisar documentalmente: `NEXO_STATE_PATH` vs `NEXO_CONTINUITY_PATH`, ausencia de parseo de `--nexo-repair-once`, y ruta de workflow que no coincide con el adapter.
+- Estado heredado sin elevación: P-05-C RATIFICADA; P-05 OPEN; P07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning y efectos protegidos STOP.
+- Solo incorporación documental. Sin tests, CI/Actions, runtime, workflows, Termux/POCO, bootstrap, cambios de producto, PR #110 ni efectos protegidos.
