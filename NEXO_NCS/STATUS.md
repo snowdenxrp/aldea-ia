@@ -3827,3 +3827,19 @@ Estado:
 - M0 INCOMPLETO; no se eleva ningún gate.
 
 No se fusionaron ramas divergentes. Solo lectura estática/documentación; sin cambios runtime/tests/workflows, sin comandos POCO/Termux, sin bootstrap ni efectos protegidos.
+
+
+---
+
+## DELTA — RECEPCIÓN Y CONSOLIDACIÓN DOCUMENTAL P05/P07 / CLAUDE + QWEN (2026-11-26)
+
+- Consolidación de recepción guardada en `NEXO_NCS/RESEARCH/NCS_M0_P05_P07_AI_EVIDENCE_CONSOLIDATION_2026-11-26.md`.
+- Rama aislada: `ncs-p05-p07-ai-evidence-consolidation-2026-11-26`.
+- Commit documental: `9814c1600fca2c5e671c5d3a5493b3636bf31a41`.
+- El expediente recibido contiene el marco operativo completo; Documento 2 (A1–A5/B1–B6) y Documento 3 (Claude H1–H9) completos; Documentos 1 y 4 parciales con huecos explícitos. No se reconstruyó contenido ausente.
+- Claude reporta O7 CONTRADICTED condicionado al alcance del claim y RAW-1; no se repitió reproducción ni se afirma verificación independiente. Qwen aporta criterios abstractos del Plano M; Plano D permanece UNKNOWN según el informe parcial.
+- O10 continúa como candidato no ratificado; la matriz de evaluación se limita a O1–O9.
+- Contrato A/B conserva clasificación PROPOSAL / CONTRACT FOR REVIEW.
+- No se modifican las definiciones/gates heredados: P-05-C RATIFICADA; P-05 OPEN; P07-C UNKNOWN/BLOCKING; P-09 OPEN/UNKNOWN; E2/E3 PARTIAL/NOT CLOSED; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning y efectos protegidos STOP.
+- Esta delta es índice de continuidad, no cierre técnico ni promoción de claims.
+- Sin cambios de runtime/tests/workflows/PR #110/ramas de producto/Termux/POCO/Continuity/Chronicle; sin CI ni efectos protegidos.
