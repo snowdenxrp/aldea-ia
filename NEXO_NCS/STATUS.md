@@ -1,3 +1,16 @@
+## DELTA — P09 WRITER CENSUS + RECUPERACIÓN DE DEFINICIONES O5/O7 (2026-11-26)
+
+- Documento: [NCS_M0_P09_O5_O7_WRITER_CENSUS_RECONCILIATION_2026-11-26.md](RESEARCH/NCS_M0_P09_O5_O7_WRITER_CENSUS_RECONCILIATION_2026-11-26.md), rama `ncs-p09-o5-o7-writer-census-2026-11-26`.
+- Se recuperaron las definiciones canónicas O5 (no readmisión ante pérdida/sustitución/ilegibilidad/desaparición del estado) y O7 (todo caller/writer cubierto respeta la frontera) desde el contrato P05/P07 del 2026-11-07. O5/O7 no carecen de definición; su cumplimiento y la atribución exacta de claims siguen abiertos.
+- P09 se amplió documentalmente con `assistants`, `simulate`, `persistState`, bootstrap de Continuity y workflow remoto `lumina-simulation.yml`. Se separa el writer CI remoto de la ventana R1 manual local. Los workflows de tests recuperados no llaman entrypoints productivos.
+- `assistants` tiene overrides `NEXO_STATE_PATH` y `NEXO_LUMINA_MEMORY_PATH`; `simulate` usa `world-state.json` fijo; bootstrap usa `--root/--relative-path` y confirmación interactiva. El workflow remoto ejecuta assistants/simulate y commitea los archivos de estado por defecto.
+- O5 permanece UNKNOWN/STOP; O7 conserva CONTRADICCIÓN REPORTADA condicionada al alcance; RAW-1 no fue reproducido independientemente. H2 demuestra capacidad API/caller estática según snapshot, pero exposición efectiva de Continuity sigue PARTIAL/GAP.
+- Discrepancias `NEXO_STATE_PATH`/`NEXO_CONTINUITY_PATH`, `--nexo-repair-once` y workflow/adapter quedan acotadas según el documento; el path mismatch del adapter permanece pendiente de cotejo del árbol.
+- P09 sigue OPEN/UNKNOWN; P05-C RATIFICADA / P05 OPEN; P07-C UNKNOWN/BLOCKING; E2/E3 PARTIAL/NOT CLOSED; NCS M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP.
+- Solo lectura documental. Sin runtime, tests, CI/Actions, workflows ejecutados, Termux/POCO, stores, PR #110 ni ramas de producto modificadas.
+
+---
+
 ## DELTA — RECONCILIACIÓN C3 / P07-21 HARDLINK-NLINK (2026-11-25)
 
 - C3 **NO ESTÁ PENDIENTE**: la decisión del propietario del 2026-11-07 ya establece que cualquier modificación de `nlink` del objeto protegido constituye afectación, aunque sea reversible.
