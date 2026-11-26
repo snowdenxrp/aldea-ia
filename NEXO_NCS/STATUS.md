@@ -3909,3 +3909,15 @@ Informe: [NCS_M0_P08_PUBLIC_API_TRACEABILITY_DELTA_2026-11-26.md](RESEARCH/NCS_M
 - P08 permanece DECIDED/RATIFIED con enforcement NO DEMOSTRADO; P09 OPEN/UNKNOWN; O5 UNKNOWN/STOP; O7 contradicción reportada con alcance pendiente y RAW-1 no reproducido; P05-C RATIFICADA/P05 OPEN; P07-C UNKNOWN/BLOCKING; E2/E3 PARTIAL/NOT CLOSED; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP.
 - Solo lectura estática y documentación. Sin tests, CI, runtime, workflows ejecutados, Termux/POCO, bootstrap, stores, PR #110 ni cambios de producto.
 
+---
+
+## DELTA — LÍMITE DE RECUPERACIÓN DE LA FUENTE RAW-1 (2026-11-26)
+
+- Se cotejaron el expediente de consolidación Claude/Qwen, el inventario de recepción y los árboles recursivos de la rama documental activa y de `ncs-p07-c3-reconciliation-2026-11-25`.
+- Solo se conserva el resumen de Claude: RAW-1 fue reportado como reproducción en scratchpad y lectura estática `NEXO_LUMINA_MEMORY_PATH → fs.writeFile`. No se localizó el scratchpad ni el informe H1–H9 íntegro en los árboles inspeccionados.
+- La consolidación confirma que la reproducción no se repitió y que no se preservó el cuerpo íntegro de la tabla Claude O1–O9. No se reconstruyen target, env, caller, fixture, precondiciones, resultado ni texto literal del claim O7.
+- Clasificación: RAW-1 **REPORTED / SOURCE ARTIFACT NOT LOCATED IN REPOSITORY TREES INSPECTED / NOT INDEPENDENTLY REPRODUCED**. Esto no demuestra inexistencia fuera de las ramas consultadas.
+- Siguiente requisito documental: disponer del artefacto fuente íntegro de Claude (scratchpad y reporte asociado) para atribuir el claim O7 a un actor, destino y frontera exactos. Hasta entonces O7 conserva contradicción reportada condicionada al alcance; no universalmente CONTRADICTED ni PASS.
+- Sin cambios de gates: P08 DECIDED/RATIFIED con enforcement NO DEMOSTRADO; P09 OPEN/UNKNOWN; O5 UNKNOWN/STOP; P05-C RATIFICADA/P05 OPEN; P07-C UNKNOWN/BLOCKING; E2/E3 PARTIAL/NOT CLOSED; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP.
+- Solo lectura documental/estática. Sin tests, CI, runtime, Termux/POCO, bootstrap, stores, PR #110 ni cambios de producto.
+
