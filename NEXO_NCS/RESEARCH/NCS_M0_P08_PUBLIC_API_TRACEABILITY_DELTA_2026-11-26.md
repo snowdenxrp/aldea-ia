@@ -111,3 +111,18 @@ Este informe no afirma:
 ## 8. Método y exclusiones
 
 Lectura de archivos GitHub y blobs fijados al snapshot indicado. No se ejecutaron tests, CI, workflows, comandos, runtime, Termux/POCO, bootstrap ni acceso a stores. No se modificó código, PR #110 ni ramas de producto. No se seleccionó mecanismo filesystem ni se propuso una implementación como decisión.
+
+## 9. Recuperación documental RAW-1 — límite confirmado
+
+Se inspeccionaron:
+- el expediente de consolidación `NCS_M0_P05_P07_AI_EVIDENCE_CONSOLIDATION_2026-11-26.md`;
+- el inventario recibido `NEXO_NCS/INBOX/IA_RESPONSES/2026-11-26_CLAUDE_RECONCILIATION_INVENTORY.md`;
+- el árbol recursivo de la rama documental activa;
+- el árbol recursivo de `ncs-p07-c3-reconciliation-2026-11-25` en su HEAD `ed8397b6f69d837fa699dc71274243665bfeff50`.
+
+El material disponible conserva solo el resumen: Claude reportó RAW-1 como reproducción en scratchpad y lectura estática de `NEXO_LUMINA_MEMORY_PATH → fs.writeFile`; la consolidación no repitió la reproducción. El inventario de recepción tampoco incluye el scratchpad ni el cuerpo íntegro de Claude H1–H9; indica expresamente que la tabla O1–O9 original no se reprodujo en la conversación.
+
+No se localizó en esos árboles un archivo identificado como RAW-1/scratchpad ni el informe H1–H9 íntegro. Esto **no demuestra que no exista fuera de las ramas consultadas**. La recuperación queda bloqueada por falta del artefacto fuente; no se reconstruyen target, env, caller, fixture, precondiciones ni resultado observable.
+
+Estado RAW-1: **REPORTED / SOURCE ARTIFACT NOT LOCATED IN REPOSITORY TREES INSPECTED / NOT INDEPENDENTLY REPRODUCED**. El claim literal de O7 y su alcance exacto siguen pendientes de la fuente íntegra de Claude.
+
