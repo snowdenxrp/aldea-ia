@@ -1,3 +1,7 @@
+> **ERRATA / PRECEDENCIA — 2026-11-26:** Las secciones de este documento que cuentan `assistants`, `simulate` o `lumina-simulation.yml` como writers/callers Nexo quedan **CORREGIDAS Y SUPERSEDIDAS**. El contrato canónico P09 para el snapshot `d8b5ca8720908d926acc18130614cce132a43b5d` clasifica esos entrypoints como Lúmina, sin imports de owner/Continuity Nexo. La decisión P08 del propietario también está ratificada: una root canónica deriva ambos stores; no hay rutas independientes ni fallback ambiental en operación normal. Véase obligatoriamente [NCS_M0_P08_P09_RECONCILIATION_ERRATA_2026-11-26.md](NCS_M0_P08_P09_RECONCILIATION_ERRATA_2026-11-26.md). El análisis H2 de `assistants` queda como evidencia del subsistema Lúmina y posible alias configurable no demostrado contra el objeto protegido. No usar este documento sin aplicar esa errata.
+
+---
+
 # NCS M0 — P09 writer/caller census y reconciliación O5/O7
 **Fecha:** 2026-11-26  
 **Base documental:** `ncs-p05-p07-ai-evidence-consolidation-2026-11-26`  
