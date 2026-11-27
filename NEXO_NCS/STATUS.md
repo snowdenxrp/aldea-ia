@@ -3876,3 +3876,15 @@ Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo
 - O7 continúa UNKNOWN/OPEN: capacidad estática confirmada, configuración efectiva R1 no demostrada y enforcement de exclusión no demostrado. La siguiente prueba, si se autoriza, debe estar ligada a una invocación/ventana R1 concreta; no repetir el censo P09 ni la captura anterior.
 - Evaluación actualizada: commit `9d24b401fe1c134e4731a20828b6ce0092b85df5`, blob `4e630342c06268a70334ed74957b7470eb066812`.
 - Solo documentación y análisis estático. Sin runtime, tests, CI, workflows, Termux/POCO ni efectos protegidos. `authorization: NOT_EVALUATED`; STOP permanece.
+
+
+---
+
+## DELTA — COBERTURA REAL DE TESTS B2/B3 REVISADA (2026-11-27)
+
+- Inspección estática (sin ejecutar tests) de `continuity-store.test.mjs`, blob `1219b88a78d4c2994e004566905a778ad3b67183`, y `chronicle-store.test.mjs`, blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`, contra el snapshot `d8b5ca8`.
+- Cobertura existente que sí debe reconocerse: owner malformed/oversized fail-closed; stale lock fail-closed; contender interproceso espera mientras existe lock; retries de cleanup; persistencia confirmada separada de handoff fallido; rechazo de reintento en el mismo proceso tras release failure; Chronicle no borra lock cuyo token ya aparece distinto al momento de lectura.
+- Gaps que permanecen: (1) no se demuestra reemplazo del lock entre el token check y `rm(lockPath)`, ni vínculo atómico entre objeto validado y objeto eliminado; (2) la prueba de BLOCKED persistente verifica el marcador process-local en el mismo proceso, no un nuevo proceso tras restart/crash; el test interproceso reanuda después de retirar explícitamente el lock; (3) no son pruebas de fsync, power-loss ni orden durable.
+- B2: CONTRADICTED-CODE/GAP; B3: CONTRADICTED-CODE/GAP; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN. No describir el suite como carente de tests de lock, pero tampoco elevar esta cobertura parcial a PASS.
+- Evaluación ampliada: commit `29d7359082e92f21fbafcc4be46f9f4464d91b5c`, blob `b9e31dbf128992818ca829214a1404d3879dec30`.
+- Solo inspección estática/documentación. No se ejecutaron tests, CI, runtime, Termux/POCO ni efectos protegidos. `authorization: NOT_EVALUATED`; STOP permanece.
