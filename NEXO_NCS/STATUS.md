@@ -3960,3 +3960,35 @@ Do not repeat the variable check, launcher declaration check, or source comparis
 - No local checkout action, fetch/pull, reset, checkout, clean, staging, commit, launcher invocation, tests, CI, or runtime action was performed. Dirty/untracked paths remain untouched and UNKNOWN in provenance.
 - Disposition unchanged: reassess only the scoped RAW-1 claim for the exact local source already compared; do not generalize it to current remote `main`. O7 UNKNOWN/OPEN; P07-C UNKNOWN/BLOCKING; P05 OPEN; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP; NCS M0 INCOMPLETE.
 - Next step: obtain owner-provided read-only evidence to classify the dirty/untracked paths and determine whether the local checkout is intentionally pinned to a historical snapshot or is an accidental stale clone. Do not modify it to answer that question.
+
+---
+
+## DELTA — TERMUX DIRTY TREE CLASSIFICATION PREFLIGHT (2026-11-27)
+
+**Source:** owner-provided read-only Termux transcript following the ancestry check. No local file was modified by this analysis.
+
+### Remote/tracking refs
+- git remote -v reports origin as git@github.com:snowdenxrp/aldea-ia.git for fetch and push.
+- git branch -vv reports local main at 1834182a tracking local origin/main at the same SHA.
+- This does not contradict the GitHub comparison already recorded: local remote-tracking refs have not been refreshed in this observation; the remote GitHub main was 6,018 commits ahead of that historical commit at comparison time. No fetch/pull was performed.
+
+### Tracked modifications
+- Eight tracked files modified: src/exploration.js, src/main-stable.js, src/movement.js, src/simulation.js, and four visual/settlement audit tests.
+- Diff summary: 8 files, 297 insertions, 29 deletions; src/simulation.js accounts for 229 additions and 9 deletions in numstat.
+- Paths and subject matter indicate simulation/visual-audit work, not NCS documentation or NCS core paths. This is a scope clue, not definitive provenance or ownership attribution. Diff content has not yet been inspected.
+
+### Untracked paths and metadata
+- Untracked files include lumina-test.log (10,747 bytes; timestamp 2026-09-22), multiple simulation/movement/needs/spatial .bak files (timestamps 2026-09-22/23), and two anomalous filenames containing shell-command/text fragments.
+- Backup names describe incremental simulation work such as survival, emergency-rest, food-priority, rest-loop, discovery-priority, and movement. These are potentially valuable local work artifacts; do not delete or overwrite.
+- Two backups src/simulation.js.bak-survival-cycle-v3 and src/simulation.js.bak-survival-cycle-v3b share SHA-256 c2386813af644c1e0abc2e088c9be890b3b5885ab1471a7a6e3cdc388041d022; they are byte-identical according to the supplied hashes.
+- The metadata loop failed on the final anomalous filename because git ls-files --others --exclude-standard was consumed as newline-delimited text. A filename containing a newline or other unusual bytes can be split. Its actual metadata/hash remain UNKNOWN; the error does not establish that the file is absent.
+
+### Interpretation and safety
+- The checkout is a historical local base with stale local origin/main tracking metadata, plus substantial uncommitted simulation changes and untracked backups/log/artifacts. It is not a clean representation of current remote main and must not be used as the current product snapshot without a separate exact-SHA scope decision.
+- The dirty tree appears related to simulation/Lúmina work by path names and backup labels, but definitive provenance remains UNKNOWN pending read-only diff/content inspection and NUL-safe filename inventory.
+- No reset, clean, checkout, stash, fetch, pull, stage, commit, launcher invocation, tests, CI, or runtime action was performed. Preserve all local changes and backups.
+
+### Exact next step
+Use NUL-delimited path handling (git ls-files -z --others --exclude-standard) to inventory anomalous names safely, then inspect the tracked diff read-only to identify its project/functionality and whether any NCS-relevant path or protected-store reference exists. Do not execute project code. No need to repeat the branch/remote/HEAD ancestry check.
+
+Gate disposition unchanged: O7 UNKNOWN/OPEN; P07-C UNKNOWN/BLOCKING; P05 OPEN; P09 OPEN/UNKNOWN; E2/E3 PARTIAL; authorization: NOT_EVALUATED; commissioning/protected effects STOP; NCS M0 INCOMPLETE.
