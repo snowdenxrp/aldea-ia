@@ -189,3 +189,64 @@ No convertir `UNSET` en una captura, ausencia de coincidencias, o ausencia de pr
 - NCS M0: **INCOMPLETO**.
 
 Esta evaluación es documental y no modifica el estado de implementación, no ejecuta pruebas y no declara PASS/CI-VERIFIED.
+
+
+---
+
+## DELTA — OWNER-RATIFIED PERIMETER RECONCILIATION / RAW WRITER PRECISION (2026-11-27)
+
+**Decision authority:** the owner ratified the protected-asset perimeter for O7/P07 on 2026-11-27. The decision is preserved in `NEXO_NCS/DECISIONS/NCS_M0_O7_P07_PROTECTED_ASSET_PERIMETER_OWNER_RATIFICATION_2026-11-27.md`, commit `9e2d04f645f386853221228e5038f885ee27d13c`. This delta applies that perimeter to the already identified source evidence; it does not broaden the R1 environment or assert runtime use.
+
+### 1. Exact source re-check
+
+All source observations below are tied to product snapshot `d8b5ca8720908d926acc18130614cce132a43b5d` and these exact blobs:
+
+| File | Blob |
+|---|---|
+| `scripts/assistants.mjs` | `5d773332acf1f762ea9e2eb48dfcf5a5267470d6` |
+| `scripts/simulate.mjs` | `ec322cdff76392d7c99a4f45bf35f76a8b91b667` |
+| `src/nexo/core/continuity-store.mjs` | `c1eb81bf74d2df576079b3269ac4db22d87fe7b6` |
+| `src/nexo/core/chronicle-store.mjs` | `59d2fdebbcd6ddfb3bbe9524d8da7f52397b4e3a` |
+| `.github/workflows/lumina-simulation.yml` | `e11a11b5101c992396737f3520c427c2c6c4f350` |
+
+No source was changed and no code, tests, workflow, CI, runtime, Termux or device operation was performed.
+
+### 2. RAW-1 — Lúmina memory path is a direct conditional writer
+
+In `scripts/assistants.mjs`:
+
+- `NEXO_LUMINA_MEMORY_PATH` is resolved into `MEMORY_PATH` (lines 17–19).
+- `readJson(MEMORY_PATH, null)` reads and parses the selected path (line 78).
+- The code derives `learned` from the parsed object's `runs`, `lessons`, and `patterns` (lines 79–83), preserves only the legacy `nexo` property when present (lines 98–104), and then calls `fs.writeFile(MEMORY_PATH, JSON.stringify(learned, null, 2) + "\\n", "utf8")` (line 106).
+
+Therefore, if the environment variable resolves to the protected Continuity file and that file contains parseable JSON, the static control flow reaches a direct overwrite of that path; no Continuity admission is visible in this route. The Continuity store's own reader confirms that its persisted envelope is JSON-parsed (`continuity-store.mjs`, lines 161–170), so the parseability precondition is compatible with the file format. This is a **static conditional write capability**, not proof that the environment variable was set or that this write occurred in R1.
+
+**Classification:** RAW-1 is a confirmed static conditional writer/affector of the ratified protected asset perimeter. A claim that Lúmina is excluded from O7 solely because its import graph does not reach Nexo modules is invalid. Effective exclusion or admission enforcement has not been demonstrated.
+
+### 3. RAW-2 — configurable simulation state path requires a narrower claim
+
+The same `assistants.mjs` resolves `NEXO_STATE_PATH` (lines 14–16), reads the selected path using `loadStateStrict` when it exists (lines 53–54), and passes it to `persistState` (line 108). `persistState` accepts an absolute path and performs temp-file publication by rename (`simulate.mjs`, lines 215–251).
+
+However, an existing Continuity envelope is not shown to satisfy the simulation schema required by `loadStateStrict` (version >= 3, `world` object, `agents` array, and safe integer `stateRevision`; `simulate.mjs`, lines 103–153). If that validation fails, control exits before `persistState`. Thus this route is a configurable arbitrary-path persistence capability, but this inspection does **not** establish that it can overwrite the existing primary Continuity envelope through the `assistants.mjs` caller. Do not repeat the earlier broader implication as a confirmed direct write to an existing Continuity file without a schema-compatible counterexample or another caller.
+
+**Classification:** RAW-2 remains a relevant path-capability and caller-surface question for O7/P09, but its effective write to the existing protected Continuity file is **NOT DEMONSTRATED** in this snapshot. `simulate.mjs` as a direct CLI uses its own fixed `world-state.json` path; the configurable route described above is supplied by `assistants.mjs`.
+
+### 4. Consequences of the ratified perimeter
+
+- The ratified perimeter explicitly includes Continuity temporaries, publication files, lock/coordination objects, and the relevant namespace. The existing cleanup/release findings therefore remain in scope; they are not merely ancillary implementation details.
+- Chronicle remains a separate store. Its source documents `filePath` as trusted configuration, not a sandbox boundary (`chronicle-store.mjs`, lines 200–206); its lock and temp naming are derived from that path. This is relevant to alias/collision analysis, but does not prove that Chronicle was configured to target Continuity or that it overwrote the primary file.
+- The Lúmina simulation workflow has a five-minute cron and `contents: write` permission (workflow blob above). That proves a repository-writing workflow actor, not a writer to the deployed R1 Continuity file. Keep it outside R1 unless a concrete bridge is evidenced.
+- P09 remains the caller/entrypoint universe. O7 remains the actor/capability universe for every writer or affector of the ratified protected perimeter. The fact that `assistants.mjs` is classified as `ENTRYPOINT_LUMINA` under P09 does not exclude its direct filesystem capability from O7.
+
+### 5. Updated disposition
+
+- O7: **UNKNOWN / OPEN**. A broad exclusion claim that treats the Lúmina import-graph separation as proof that no Lúmina route can affect Continuity is **CONTRADICTED** by RAW-1. The observed shell's lack of the alias remains only a point-in-time observation, not proof of global exclusion.
+- RAW-1: **STATIC CONDITIONAL WRITER CONFIRMED**; runtime activation/use **NOT OBSERVED / UNKNOWN**; enforcement/exclusion **NOT DEMONSTRATED**.
+- RAW-2: arbitrary-path persistence API confirmed; overwrite of an existing Continuity envelope through the inspected caller **NOT DEMONSTRATED** because strict schema validation precedes persistence.
+- P09: **OPEN / UNKNOWN**; its declared universe and unresolved dynamic/external consumers remain unchanged.
+- P07-C: **UNKNOWN / BLOCKING**; B2 replacement-safe cleanup and B3 durable BLOCKED gaps remain.
+- P05-C: **RATIFIED**; P05 **OPEN**.
+- E2/E3: **PARTIAL / NOT CLOSED**.
+- `authorization: NOT_EVALUATED`; commissioning and protected effects **STOP**; NCS M0 **INCOMPLETE**.
+
+**Next bounded unit:** classify the exact RAW-1 configuration control and every documented path by which its environment can be set in the declared R1 universe; distinguish a static capability from an actually configured actor. Do not repeat the P09 import-graph census, the Termux shell capture, or the lock/release sweep. Do not select a filesystem primitive or implement a mitigation from this delta.
