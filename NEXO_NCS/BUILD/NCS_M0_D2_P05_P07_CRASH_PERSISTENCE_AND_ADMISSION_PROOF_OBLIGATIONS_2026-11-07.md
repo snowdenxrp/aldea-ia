@@ -184,7 +184,7 @@ Para todos los escenarios, `harness_verdict`, `result_class` y `product_state` p
 
 ### G.2 Resultado de la evaluación actual
 
-- Candidato arquitectónico admisible: **NINGUNO PRESENTADO / NINGUNO EVALUADO**.
+- La propuesta P05 técnica del 2026-11-03 ya registra las políticas A/B/C; C fue ratificada después como política fail-closed. Esto no selecciona una arquitectura ni un mecanismo técnico. **Ningún candidato completo está demostrado admisible frente a O1–O9**.
 - Mecanismo seleccionado: **NINGUNO**.
 - Harness: **NO IMPLEMENTADO**.
 - Escenarios P07-01…22: **NO EJECUTADOS** en esta línea de evidencia.
