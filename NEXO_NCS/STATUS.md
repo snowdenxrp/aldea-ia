@@ -3827,3 +3827,25 @@ Estado:
 - M0 INCOMPLETO; no se eleva ningún gate.
 
 No se fusionaron ramas divergentes. Solo lectura estática/documentación; sin cambios runtime/tests/workflows, sin comandos POCO/Termux, sin bootstrap ni efectos protegidos.
+
+
+---
+
+## DELTA — TRAZABILIDAD O7 / P07-C / P05 (2026-11-27)
+
+Se preservó una evaluación documental de trazabilidad contra el contrato propuesto A1–A5/B1–B6:
+[NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md](BUILD/NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md), blob `1134de1071c475572ae7f51755df7a9d97d32c0f`, commit `20376a5d2791fa585d07ade44686246de333432e`.
+
+La evaluación reutiliza evidencia existente y no repite el inventario Termux, el barrido estático lock/release del snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`, ni las reconciliaciones P08/P09/P03/P04.
+
+Resultados conservadores:
+- O7: UNKNOWN / OPEN; RAW-1 sigue siendo escritor condicional estático. El alias no fue observado en el shell capturado, lo que no demuestra ausencia global.
+- P09: OPEN / UNKNOWN dentro del universo declarado; loaders dinámicos y consumidores externos no identificados permanecen UNKNOWN.
+- P07-C: UNKNOWN / BLOCKING; B2 cleanup replacement-safe y B3 BLOCKED durable siguen contradichos/gap en seams inspeccionados.
+- P05-C: RATIFICADA; P05 OPEN; O1/O4/O5 no cerradas; O6 GAP; O3/O8 UNKNOWN; O9 PARTIAL; C3/G2 decisión resuelta.
+- E2/E3 PARTIAL / NOT CLOSED; M0 INCOMPLETO.
+- `authorization: NOT_EVALUATED`; commissioning y protected effects STOP.
+
+La evaluación no ratifica P07 V2.3 ni el contrato A/B del 26-11; no selecciona mecanismo, no implementa, no ejecuta pruebas y no declara PASS/CI-VERIFIED. No modifica código, PR #110 ni PR #111.
+
+Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo protegido y del claim O7 dentro de R1; mantener separados el universo de callers P09 y el universo de escritores O7. No seleccionar una primitiva mientras O7 y las contradicciones B2/B3 sigan abiertas.
