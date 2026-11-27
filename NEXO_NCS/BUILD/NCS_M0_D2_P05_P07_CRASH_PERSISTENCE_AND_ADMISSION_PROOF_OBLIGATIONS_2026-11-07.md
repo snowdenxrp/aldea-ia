@@ -151,3 +151,44 @@ Construir una **prueba de admisibilidad neutral a mecanismos** para cualquier fu
 ### F. Límites
 
 Solo documentación. Sin código, tests, harness, CI/Actions, workflows ejecutados, Termux/POCO, bootstrap, stores, cleanup, readmisión, PR #110, ramas de producto, commissioning ni efectos protegidos. No declarar PASS, TESTED o CI-VERIFIED por este checkpoint.
+
+
+## G. Matriz de admisibilidad neutral a mecanismos — O1–O9 × oráculos P07 (2026-11-26)
+
+**Propósito:** traducir las obligaciones existentes a evidencia exigible sin elegir arquitectura, añadir obligaciones ni alterar V2.2/V2.3. Las correspondencias de escenarios indican contribución probatoria; no implican equivalencia uno-a-uno ni PASS.
+
+| Obligación | Claim que debe probarse | Oráculos P07 relacionados | Evidencia mínima admisible | Dependencia / regla UNKNOWN-STOP |
+|---|---|---|---|---|
+| O1 | BLOCKED sobrevive a la terminación del proceso dueño y obliga a la siguiente invocación | P07-09; P07-13/14 como caracterización del ciclo de vida de locks/procesos | Cutpoint real del producto; crash de proceso distinguido de fixture sembrado; proceso independiente posterior que observa BLOCKED; evidencia de que el estado no dependía solo de memoria/descriptor del dueño | P05 durable + R1 + mecanismo implementado. Sin estado post-crash observado por proceso nuevo: UNKNOWN/STOP |
+| O2 | Una invocación nueva descubre el estado previo sin inferirlo por PID, edad o ausencia | P07-09/12/14 como caracterización de crash, sustitución y lifecycle | Nueva invocación independiente; identidad/estado leído; resultado para presente, ausente, sustituido, ilegible y tipo inesperado; no usar PID/TTL como autorización | O1/O3/O5. Si la nueva invocación solo mira el nombre actual o presupone quiescencia: UNKNOWN/STOP |
+| O3 | La coordinación conserva identidad verificable del objeto y del namespace relevante | P07-01/11/12/15/16/21 | Baselines y post de fd, identidad contextual, nombre, namespace, aliases y nlink por rol; R-OBJ y R-NAME separados donde aplique | P07-A y R1. Hash o inode aislado, o dirfd sin continuidad del nombre, no basta: UNKNOWN/STOP |
+| O4 | Cleanup/release afecta exclusivamente el objeto atribuido y adquirido | P07-05/06/07/18b/19/21 | Seam dentro del producto entre última verificación y syscall destructiva; actor B clasificado antes; centinela independiente; syscall/objeto exactos; nombre, identidad y nlink pre/post | P07-C, P05-C, P09 y modelo R1. Sin seam interno o atribución demostrada: no cleanup destructivo; UNKNOWN/BLOCKED |
+| O5 | Pérdida, sustitución, ilegibilidad o desaparición no habilitan readmisión | P07-07/09/12/13/14/19 como subcasos de residuo, crash, sustitución y cleanup | Matriz de estados/error; intento de readmisión desde proceso nuevo; BLOCKED conservado en cada condición; sin retry implícito ni borrado por nombre | P05 durable + O1/O2/O3/O4/O6. Cualquier caso no probado: UNKNOWN/STOP; ausencia no es prueba de liberación |
+| O6 | Solo un procedimiento aprobado puede reclasificar BLOCKED y permitir readmisión | No existe un escenario P07 único que sustituya este requisito de autoridad/procedimiento | Procedimiento normativo explícito; autoridad competente; predicados de elegibilidad; evidencia revisada; registro auditable; demostración de que el caller no puede autocertificar la reclasificación | Decisión del propietario y P05. Sin procedimiento aprobado: BLOCKED; no diseñar recuperación implícita |
+| O7 | Cada caller/writer dentro del universo declarado atraviesa la frontera aplicable | P07-05/06/08/16/18b/19/21 + censo P09 | Grafo de callers/exports/wrappers/entrypoints/workflows; aristas a cada I/O; fixtures de bypass; clase COVERED/RAW/PRIVILEGED/UNCLASSIFIABLE fijada antes del caso | P09. Loaders dinámicos y consumidores externos no identificados permanecen UNKNOWN; no claim universal |
+| O8 | Las garantías se sostienen en el entorno R1 declarado y observado | P07-04/22 como evidencia de ownership/permisos y límites de actor; E2/E3 como gate operacional | Fingerprint de target (filesystem, kernel/API, UID/GID, permisos); actores/launchers relevantes; evidencia de control dentro de una ventana R1; cambios del entorno registrados | R1 aceptado + E2/E3. Snapshot aislado o fingerprint sin control sostenido no cierra: PARTIAL/UNKNOWN |
+| O9 | Commit de negocio, release de admisión y readmisión son resultados independientes | P07-09/20 como evidencia auxiliar de crash y fsync; no hay sustituto P07 único | Oráculos separados para commit/persistencia, release, estado BLOCKED y readmisión; resultados y errores independientes; fsync de archivo/directorio solo si el claim lo exige | P05 + P03/P04. Un campo combinado o un commit exitoso no prueba release; mezcla de resultados: INVALID/UNKNOWN |
+
+### G.1 Núcleo bloqueante P07-C — no sustituible por resultados parciales
+
+Los escenarios P07-05/06/07/16/18b/19/21 forman el conjunto de oráculos de especial relevancia para atribución, sustitución, nombre protegido y cleanup. La lectura admisible debe conservar estas diferencias:
+
+- **P07-05/06:** el seam debe estar dentro del producto; SERIALIZATION para COVERED puede ser resultado intermedio. RAW no demuestra enforcement.
+- **P07-07:** token, nombre, PID o hash no atribuyen por sí solos un residuo; huérfano UNKNOWN se conserva.
+- **P07-16:** R-OBJ y R-NAME son independientes. Detección + STOP es DETECTION_ONLY, no PASS_GATE.
+- **P07-18b:** rename normal puede desplazar el nombre del centinela; RENAME_NOREPLACE caracteriza una primitiva, no cierra por sí solo el gate.
+- **P07-19:** demostrar en la secuencia real fallo → sustitución → cleanup; separar temporal de producto, temporal interno de librería, centinela B y cleanup owner.
+- **P07-21:** observar n1, n2, fd y nlink por separado; disminuir nlink al eliminar un nombre no autorizado es afectación aunque el inode sobreviva.
+
+Para todos los escenarios, `harness_verdict`, `result_class` y `product_state` permanecen campos independientes. `PASS_GATE` requiere `gate_basis`, dependencias cerradas, actor clasificado antes de ejecutar, controles válidos y evidencia del producto en el SHA evaluado. `DETECTION_ONLY`, `RETENTION_VERIFIED`, `PASS_CARAC` y `SERIALIZATION` intermedia no se renombran como `PASS_GATE`.
+
+### G.2 Resultado de la evaluación actual
+
+- Candidato arquitectónico admisible: **NINGUNO PRESENTADO / NINGUNO EVALUADO**.
+- Mecanismo seleccionado: **NINGUNO**.
+- Harness: **NO IMPLEMENTADO**.
+- Escenarios P07-01…22: **NO EJECUTADOS** en esta línea de evidencia.
+- O4/O5: **NOT SATISFIED** por los seams del snapshot estático `d8b5ca8720908d926acc18130614cce132a43b5d`.
+- O1/O2/O3/O6/O7/O8: **UNKNOWN**; O9: **PARTIAL**, conforme a la reconciliación estática citada en §D.1.
+- P05-C RATIFICADA / P05 OPEN; P07-C UNKNOWN/BLOCKING; P09 OPEN/UNKNOWN; E2/E3 PARTIAL/NOT CLOSED; M0 INCOMPLETO.
+- Esta matriz no autoriza selección, implementación, harness, tests, CI, Termux/POCO, bootstrap, cleanup, readmisión ni efectos protegidos.
