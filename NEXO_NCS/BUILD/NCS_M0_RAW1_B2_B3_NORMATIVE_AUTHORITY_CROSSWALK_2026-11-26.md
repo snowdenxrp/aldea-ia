@@ -12,8 +12,9 @@ Los documentos RAW-1 y B2/B3 creados en esta rama son artefactos de análisis y 
 1. La Declaración de autorización constitucional V2.1 fue ratificada expresamente el 2026-11-26. Su instrumento exacto es el blob `9ae2fca3972a8b3c688346f26f6f0a267e2454ad`; el registro de ratificación es el blob `7113f04becbd4cbe047cdb53b63b16692881e22a`, en la rama `ncs-m0-authorization-declaration-v2-1-draft-2026-11-27`, commit `7d89f37f14f81c9eb25e051515a91d3e931cd13d`.
 2. La rama actual de criterios no desciende de esa rama de ratificación y no contiene el registro V2.1. La relación se conserva por referencia explícita; no se hace merge/cherry-pick automático ni se reescribe el instrumento ratificado.
 3. P05-C está ratificada como política de no recuperación automática y conservación de UNKNOWN/BLOCKED ante incertidumbre. No equivale a mecanismo implementado ni a prueba de BLOCKED durable/interproceso.
-4. P07 V2.2 sigue siendo la base normativa vigente. P07 V2.3 y el Contrato B del 2026-11-26 siguen siendo propuestas no ratificadas; no se pueden aplicar de facto ni elevar sus detalles a requisitos normativos por esta matriz.
-5. El perímetro de activos protegidos para O7/P07 fue ratificado y sí está presente en la línea de trazabilidad de la que deriva esta rama. Nexo y Lúmina permanecen separados.
+4. El estado normativo de P07 V2.2 presenta una contradicción documental no resuelta: el instrumento V2.1 ratificado afirma que V2.2 conserva la condición de base normativa vigente; el propio artefacto V2.2 se etiqueta PROPUESTA DOCUMENTAL — NO RATIFICADA. En las ramas/documentos cotejados no se localizó un registro específico de ratificación de V2.2 que resuelva la diferencia. No inferir ratificación ni descartar la afirmación del instrumento V2.1: clasificar el alcance normativo de las adiciones V2.2 como CONFLICTO / UNKNOWN hasta decisión expresa o registro autoritativo inequívoco.
+5. P07 V2.3 y el Contrato A/B del 2026-11-26 siguen siendo propuestas no ratificadas; no se pueden aplicar de facto ni elevar sus detalles a requisitos normativos por esta matriz.
+6. El perímetro de activos protegidos para O7/P07 fue ratificado y sí está presente en la línea de trazabilidad de la que deriva esta rama. Nexo y Lúmina permanecen separados.
 
 ## 2. Alcance efectivo de V2.1 ratificada
 
@@ -49,8 +50,8 @@ Por eso P05-C = RATIFICADA COMO POLÍTICA y P05 = OPEN. B3 es una brecha de enfo
 
 ## 4. P07 y jerarquía de los documentos
 
-- P07 V2.2: base normativa vigente.
-- P07 V2.3: propuesta no ratificada. No sustituye V2.2 ni modifica sus criterios vigentes.
+- P07 V2.2: CONFLICTO DOCUMENTAL DE ESTADO. El instrumento V2.1 ratificado la denomina base normativa vigente, pero el documento V2.2 se identifica como propuesta no ratificada; no se localizó un registro específico que reconcilie ambas afirmaciones en las fuentes cotejadas. No asumir por inferencia que las adiciones V2.2 fueron ratificadas.
+- P07 V2.3: propuesta no ratificada. No puede sustituir ni modificar requisitos normativos que sí estén vigentes.
 - Contrato A/B de O7 y P07-C/P05 del 2026-11-26: propuesta de aceptación/no normativa, no ratificada.
 - Matriz O1–O9 reconciliada: los criterios O1–O9 están identificados como ratificados el 2026-11-07; las filas G1/G3/G4/G5 y cualquier expansión posterior no deben presentarse como ratificadas por defecto. G2/C3 representa una decisión ya ratificada del propietario, no una obligación nueva.
 - C3: decisión del propietario resuelta; clasificar rol del inode antes de interpretar `nlink`; cualquier cambio de `nlink` de un inode protegido constituye afectación. No reabrirla como decisión pendiente.
@@ -67,10 +68,10 @@ Fuentes de referencia en GitHub:
 | Artefacto de esta rama | Naturaleza | Relación con la base ratificada | Lo que no puede hacer |
 |---|---|---|---|
 | RAW-1 R1 effective-path evidence criteria | Protocolo probatorio de observación acotada | Aporta evidencia para la cobertura de actores/capacidades O7 y para distinguir capacidad estática de configuración/runtime | No ratifica Contrato A, no cierra P09/O7, no prueba escritura runtime ni crea obligación de captura universal |
-| B2 replacement-safe criteria | Descomposición técnica no normativa | Principalmente O4; también identidad O3 y no-readmisión O5; bajo P07 V2.2 vigente y P05-C | No sustituye P07 V2.2 ni adopta V2.3/Contrato B como norma |
+| B2 replacement-safe criteria | Descomposición técnica no normativa | Principalmente O4; también identidad O3 y no-readmisión O5, obligaciones O1–O9 ratificadas por separado; cualquier detalle adicional propio de V2.2 queda sujeto al conflicto de estado descrito en §1/§4 | No resuelve el estado normativo de V2.2 ni adopta V2.3/Contrato B como norma |
 | B3 durable BLOCKED criteria | Descomposición técnica no normativa | O1, O5, O6 y O9c; operacionaliza el gap de enforcement de P05-C | No selecciona mecanismo, no ratifica una solución de cuarentena ni crea procedimiento de recovery |
 
-Los términos B2/B3 se usan como etiquetas técnicas del contrato propuesto del 26-11 y del estado de trabajo; no son una segunda matriz normativa paralela a O1–O9. Los oráculos y estados autoritativos siguen siendo los contratos ratificados y sus obligaciones vigentes.
+Los términos B2/B3 se usan como etiquetas técnicas del contrato propuesto del 26-11 y del estado de trabajo; no son una segunda matriz normativa paralela a O1–O9. Los oráculos y estados autoritativos siguen siendo las obligaciones O1–O9 ratificadas y cualquier cláusula P07 cuyo estado normativo sea inequívoco. No importar adiciones de V2.2 mientras su estatus permanezca contradictorio.
 
 ## 6. Precisión sobre evidencia R1
 
@@ -87,7 +88,7 @@ Si una observación posterior se autoriza expresamente:
 
 - V2.1: RATIFICADA; su registro vive en rama separada y se referencia aquí sin fusionar.
 - P05-C: RATIFICADA COMO POLÍTICA; P05: OPEN.
-- P07 V2.2: base normativa vigente.
+- P07 V2.2: estado normativo CONFLICTIVO / UNKNOWN para sus adiciones documentales; V2.1 ratificada la referencia como base vigente, mientras el artefacto V2.2 dice no ratificado. Requiere reconciliación autoritativa.
 - P07 V2.3 / Contrato A-B: NO RATIFICADOS.
 - Perímetro protegido O7/P07: RATIFICADO.
 - C3/G2: decisión semántica resuelta.
