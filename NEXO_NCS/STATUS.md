@@ -3849,3 +3849,17 @@ Resultados conservadores:
 La evaluación no ratifica P07 V2.3 ni el contrato A/B del 26-11; no selecciona mecanismo, no implementa, no ejecuta pruebas y no declara PASS/CI-VERIFIED. No modifica código, PR #110 ni PR #111.
 
 Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo protegido y del claim O7 dentro de R1; mantener separados el universo de callers P09 y el universo de escritores O7. No seleccionar una primitiva mientras O7 y las contradicciones B2/B3 sigan abiertas.
+
+
+---
+
+## DELTA — PERÍMETRO O7/P07 RATIFICADO Y RAW-1/RAW-2 PRECISADOS (2026-11-27)
+
+- El propietario ratificó el perímetro de activos protegidos para la evaluación O7/P07: Continuity principal; locks/objetos de coordinación; temporales y archivos de publicación; root/namespace relevante; Chronicle como almacén separado, protegido contra interferencias y colisiones. Los stores de Nexo y Lúmina permanecen separados.
+- Registro de decisión: [NCS_M0_O7_P07_PROTECTED_ASSET_PERIMETER_OWNER_RATIFICATION_2026-11-27.md](DECISIONS/NCS_M0_O7_P07_PROTECTED_ASSET_PERIMETER_OWNER_RATIFICATION_2026-11-27.md), commit `9e2d04f645f386853221228e5038f885ee27d13c`.
+- Reconciliación estática refinada contra snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`: `scripts/assistants.mjs` usa `NEXO_LUMINA_MEMORY_PATH` y escribe el JSON derivado directamente en esa ruta. Si la ruta apunta al Continuity existente y el contenido es JSON parseable, la ruta estática puede sobrescribirlo sin admisión Nexo visible. Es capacidad condicional confirmada, no evidencia de alias configurado ni de uso runtime.
+- Precisión RAW-2: `NEXO_STATE_PATH` llega a `persistState()`, pero el caller `assistants.mjs` ejecuta antes `loadStateStrict()` para un archivo existente. La envoltura Continuity no se ha demostrado compatible con el schema de simulación; por tanto, overwrite del Continuity existente por esa ruta queda NOT DEMONSTRATED. No repetir la afirmación más amplia sin contraejemplo compatible.
+- P09 (grafo de callers/imports) y O7 (todos los actores/capacidades que pueden afectar el perímetro) siguen siendo universos distintos. Clasificar `assistants.mjs` como ENTRYPOINT_LUMINA no excluye RAW-1 del análisis O7.
+- Estado: O7 UNKNOWN/OPEN; claim amplio de exclusión de toda ruta Lúmina CONTRADICTED por RAW-1; RAW-1 static conditional writer CONFIRMED; RAW-2 overwrite del Continuity existente NOT DEMONSTRATED; P09 OPEN/UNKNOWN; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; E2/E3 PARTIAL; M0 INCOMPLETO.
+- Evaluación actualizada: [NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md](BUILD/NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md), commit `33f26dec71f3dbc2bba113d42435c34d9cef16f5`, blob `c5955a5fcbca575a9547877dec1f614b5242a666`.
+- Solo documentación y análisis estático de blobs existentes. Sin cambios de código/tests/workflows/CI, sin runtime/Termux/POCO ni efectos protegidos. `authorization: NOT_EVALUATED`; commissioning/protected effects STOP. No se seleccionó mecanismo ni se ratificó P07 V2.3.
