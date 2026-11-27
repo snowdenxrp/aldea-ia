@@ -3946,3 +3946,17 @@ Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo
 ### Exact continuation point
 
 Do not repeat the variable check, launcher declaration check, or source comparison for these exact SHAs. First classify the dirty/untracked working-tree entries without modifying them, and identify the provenance/remote relationship of local HEAD `1834182a`. Then determine whether this newer source snapshot is within the ratified NCS/P09 evidence scope. No invocation of `npm run assistants` is authorized by this record.
+
+
+---
+
+## DELTA — LOCAL HEAD REMOTE ANCESTRY CHECK (2026-11-27)
+
+- GitHub `fetch_commit` successfully retrieved exact local Termux HEAD `1834182a2eaf4b1bfe59f9802ce3e49fc89b2ca7` from `snowdenxrp/aldea-ia`.
+- Commit metadata: message `fix: encode visual audit metadata safely`; authored/committed 2026-09-21; the commit diff touches `functions/api/capture.js` only. This confirms the SHA is a real repository commit, not that the dirty working tree is clean or attributable to that commit.
+- GitHub compare `main...1834182a2eaf4b1bfe59f9802ce3e49fc89b2ca7` returned status `behind`, `ahead_by=0`, `behind_by=6018`, with merge base equal to `1834182a...`. The local HEAD is therefore an ancestor of the current remote `main` at comparison time, not its current tip.
+- A branch-name search for `1834182a` returned no matching branch. This does not prove the commit was never pointed to by a branch; it only records that the search returned none.
+- Interpretation: local `main` is a historical checkout point relative to remote `main`. The 6,018-commit divergence makes it unsafe to treat local HEAD as the current product snapshot or infer that its dirty files match current remote product state. The comparison does not classify the local modifications/untracked files or establish NCS/P09 inclusion.
+- No local checkout action, fetch/pull, reset, checkout, clean, staging, commit, launcher invocation, tests, CI, or runtime action was performed. Dirty/untracked paths remain untouched and UNKNOWN in provenance.
+- Disposition unchanged: reassess only the scoped RAW-1 claim for the exact local source already compared; do not generalize it to current remote `main`. O7 UNKNOWN/OPEN; P07-C UNKNOWN/BLOCKING; P05 OPEN; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP; NCS M0 INCOMPLETE.
+- Next step: obtain owner-provided read-only evidence to classify the dirty/untracked paths and determine whether the local checkout is intentionally pinned to a historical snapshot or is an accidental stale clone. Do not modify it to answer that question.
