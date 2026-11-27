@@ -250,3 +250,29 @@ However, an existing Continuity envelope is not shown to satisfy the simulation 
 - `authorization: NOT_EVALUATED`; commissioning and protected effects **STOP**; NCS M0 **INCOMPLETE**.
 
 **Next bounded unit:** classify the exact RAW-1 configuration control and every documented path by which its environment can be set in the declared R1 universe; distinguish a static capability from an actually configured actor. Do not repeat the P09 import-graph census, the Termux shell capture, or the lock/release sweep. Do not select a filesystem primitive or implement a mitigation from this delta.
+
+
+## DELTA — RAW-1 CONFIGURATION SURFACE AND LAUNCHER TRACE (2026-11-27)
+
+### Repository-controlled configuration paths inspected at the pinned snapshot
+
+Exact evidence:
+
+- `package.json`, blob `a42af401a51fde4d38488d136420506b3ed80b38`, declares `"assistants": "node scripts/assistants.mjs"` (line 7). This is the repository's named package-script entry for RAW-1.
+- `scripts/assistants.mjs`, blob `5d773332acf1f762ea9e2eb48dfcf5a5267470d6`, reads `NEXO_LUMINA_MEMORY_PATH` only through `process.env` (lines 17–19); when unset, it uses the repository-local `.lumina-assistant-memory.json` default. No command-line argument or repository config file is read for this variable in the inspected entrypoint.
+- `.github/workflows/lumina-simulation.yml`, blob `e11a11b5101c992396737f3520c427c2c6c4f350`, invokes `npm run assistants` (line 40) and later commits only `world-state.json` and `.lumina-assistant-memory.json`. The inspected workflow does not set `NEXO_LUMINA_MEMORY_PATH`; its job runs on `ubuntu-latest`, so it is outside R1. It proves a remote workflow invocation of the default Lúmina assistant, not a route into the deployed R1 Continuity file.
+- `scripts/nexo*.mjs` entrypoints and the inspected Nexo workflows do not reference this variable in the paths checked for this reconciliation. This is a bounded source observation, not a claim about every external launcher or the user's entire Termux HOME.
+- The prior Termux shell capture recorded in S1 did not show the alias configured at that observation. That remains point-in-time evidence only.
+
+### Classification
+
+1. **Repository launch surface:** CONFIRMED — `npm run assistants` invokes the Lúmina assistant entrypoint.
+2. **Default destination:** CONFIRMED — repository-local `.lumina-assistant-memory.json` when the variable is unset.
+3. **Environment override:** CONFIRMED — arbitrary resolved path can be supplied through the process environment.
+4. **Repository workflow override:** NOT FOUND in the inspected Lúmina workflow; workflow uses default path and is outside R1.
+5. **R1 shell override:** NOT OBSERVED in the prior captured shell; not proven impossible or continuously absent.
+6. **Runtime write to protected Continuity:** NOT OBSERVED. Static conditional writer capability remains confirmed; enforcement preventing an alias to the protected path remains NOT DEMONSTRATED.
+
+### O7 disposition and next proof requirement
+
+O7 remains **UNKNOWN / OPEN**. The source evidence proves the capability edge and the package launch surface, but does not prove that the owner configured that edge in R1. Conversely, one shell capture with no alias cannot prove that every future invocation is sanitized. The narrow remaining question is whether the authorized R1 launch procedure fixes/validates the effective environment for the entire invocation window, or whether an alternate launch path remains admissible. Do not repeat the P09 graph census or the old shell capture; use a new, invocation-bound artifact only if a specifically authorized R1 observation is later conducted. No such observation is authorized by this documentary delta.
