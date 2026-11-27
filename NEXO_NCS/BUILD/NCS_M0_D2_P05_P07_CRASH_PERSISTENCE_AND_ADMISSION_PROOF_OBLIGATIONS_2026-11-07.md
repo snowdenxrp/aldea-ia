@@ -100,3 +100,54 @@ Hasta que se demuestre lo anterior:
 - `authorization: NOT_EVALUATED`; raíz constitucional PENDING/UNKNOWN; commissioning y efectos protegidos STOP.
 
 Esta unidad no ratifica P07 V2.3, no selecciona mecanismo, no modifica código/tests/workflows/configuración/dispositivo y no ejecuta pruebas/CI/Actions/Termux/POCO.
+
+
+---
+
+## DELTA — CHECKPOINT DE CONTINUIDAD Y CIERRE SIN REPETICIÓN (2026-11-26)
+
+**Base documental de este checkpoint:** rama `ncs-p09-o5-o7-writer-census-2026-11-26`, HEAD `5417f1dd3efe5ca4bb88fdce5e82fb4945871a51`.  
+**Naturaleza:** consolidación documental de continuidad. No cambia contratos, decisiones ratificadas, gates ni autorizaciones.
+
+### A. Estado que debe heredarse sin reinterpretación
+
+- **P05-C:** RATIFICADA como política por el propietario; **P05 sigue OPEN** porque no existe enforcement durable/interproceso y procedimiento de resolución/readmisión demostrado.
+- **P07-C:** UNKNOWN / BLOCKING. No hay mecanismo seleccionado.
+- **O4:** NOT SATISFIED en el snapshot estático evaluado: el token se comprueba y luego el cleanup ejecuta `rm(lockPath)` por nombre, sin vincular atómicamente el objeto comprobado con el eliminado.
+- **O5:** NOT SATISFIED en ese snapshot: la marca `lockReleaseFailures` es process-local y la desaparición del path permite reintento; no se demuestra no-readmission durable frente a pérdida/sustitución/ilegibilidad.
+- **O1/O2/O3/O6/O7/O8:** UNKNOWN en la reconciliación estática; **O9: PARTIAL**. No promover estos estados sin evidencia nueva ligada al SHA y al claim.
+- **P09:** OPEN / UNKNOWN dentro del universo declarado ratificado. No reclamar cobertura universal. RAW-1 continúa REPORTADO / NO REPRODUCIDO INDEPENDIENTEMENTE.
+- **E2/E3:** PARTIAL / NOT CLOSED. R1 está ACCEPTED BY OWNER; aceptación del límite no prueba control sostenido de los actores reales.
+- **M0:** INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning y efectos protegidos STOP.
+
+### B. Corrección de continuidad sobre P01-G y bootstrap
+
+P01-G **no está pendiente de una nueva decisión normativa del propietario**: la regla de autorización operacional humana explícita, única y acotada para la primera creación de Continuity L fue RATIFICADA el 2026-11-02. La reconciliación con Core ya está documentada en `NCS_M0_P01_G_CORE_CONTRACT_RECONCILIATION_RE01_RE02_2026-11-02.md`.
+
+No reabrir P01-G ni volver a solicitar esa ratificación. Los estados de RE-01/RE-02 y de la publicación real deben tomarse de las deltas posteriores de `NEXO_NCS/STATUS.md`, no de las filas históricas del documento P01-G del 2026-11-02: STATUS registra RE-01/RE-02 ejercitados, la publicación restringida real y E4 verificado; E2/E3 siguen PARTIAL. Esto no autoriza repetir bootstrap ni tocar el store real.
+
+### C. Precedencia P07 que debe conservarse
+
+- P07 V2.2 es la base documental; V2.3 se aplica como delta sobre V2.2, sin sustituir sus documentos.
+- V2.3 permanece **NO RATIFICADA** y no selecciona mecanismo ni autoriza pruebas.
+- Detección/STOP (`DETECTION_ONLY`) y retención (`RETENTION_VERIFIED`) no son prevención ni `PASS_GATE`.
+- En P07-16, R-OBJ y R-NAME son claims separados; conservar un dirfd no demuestra continuidad del nombre aprobado.
+- Actor B debe clasificarse antes de cada escenario: COVERED, RAW, PRIVILEGED o UNCLASSIFIABLE. Este último implica UNKNOWN-STOP.
+- P07-18b/19/21 requieren sus oráculos específicos de centinela, atribución, seam y nlink; no se sustituyen por una prueba genérica de rename/unlink.
+- La decisión del propietario sobre afectación reversible y C3/nlink ya está resuelta; no solicitar otra ratificación ni reabrir C3.
+
+### D. Trabajo ya completado — NO REPETIR
+
+1. Reconciliación estática lock/release de Continuity y Chronicle para el snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`, incluida la matriz O1–O9: `NCS_M0_D2_CURRENT_SOURCE_LOCK_RELEASE_AND_P05C_RECONCILIATION_2026-11-07.md`.
+2. Definiciones canónicas O1–O9 y criterios de evidencia: este documento, §4.
+3. Contratos P07 V2.2 y deltas V2.3, incluidos los oráculos P07-05/06/07/16/18b/19/21 y trazabilidad.
+4. Reconciliación P09 y errata P08/P09 del 2026-11-26. No reauditar Lúmina, no volver a inferir que su writer por defecto es un writer Nexo, y no repetir el censo ya documentado.
+5. Recuperación de O5/O7, límites de RAW-1 y discrepancia de path filter STEP 3A. No volver a buscar las mismas fuentes sin cambio verificable de SHA o evidencia nueva.
+
+### E. Siguiente acción documental única
+
+Construir una **prueba de admisibilidad neutral a mecanismos** para cualquier futura arquitectura candidata: una tabla que exija, para cada O1–O9 y cada oráculo bloqueante V2.2+V2.3, (i) claim exacto, (ii) actor/clase, (iii) objeto y nombre afectados, (iv) seam y evento observable, (v) evidencia mínima y nivel, (vi) dependencia/gate, y (vii) condición UNKNOWN/STOP. La tabla no debe proponer ni seleccionar primitivas, ni crear obligaciones nuevas, ni reinterpretar O1–O9. Si no hay candidato o evidencia para una fila, registrar `NO CANDIDATE / UNKNOWN`; no rellenar con mecanismos hipotéticos.
+
+### F. Límites
+
+Solo documentación. Sin código, tests, harness, CI/Actions, workflows ejecutados, Termux/POCO, bootstrap, stores, cleanup, readmisión, PR #110, ramas de producto, commissioning ni efectos protegidos. No declarar PASS, TESTED o CI-VERIFIED por este checkpoint.
