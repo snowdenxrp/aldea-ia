@@ -3914,3 +3914,21 @@ Se preservó una matriz no normativa de aceptación para los gaps B2/B3:
 La matriz separa dos obligaciones: B2 debe probar que cleanup solo afecta el objeto cuya identidad fue validada, incluyendo sustitución concurrente entre validación y cleanup; B3 debe probar que BLOCKED sobrevive al fin del proceso y es descubierto por una nueva invocación antes de readmisión/efectos protegidos. Incluye casos fail-closed para ausencia, sustitución, corrupción, ilegibilidad, errores parciales y concurrencia, además de separar terminación de proceso, reinicio y power-loss.
 
 No selecciona mecanismo ni convierte P07 V2.3/contrato A-B no ratificados en norma. No autoriza implementación ni ejecución de tests. B2/B3 permanecen CONTRADICTED-CODE/GAP en seams inspeccionados; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; E2/E3 PARTIAL; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP. Solo documentación; sin cambios de source/tests/workflows/CI/runtime/Termux/POCO.
+
+
+---
+
+## DELTA — RECONCILIACIÓN DE AUTORIDAD V2.1 / P05-C / P07 / RAW-1-B2-B3 (2026-11-26)
+
+Se preservó el crosswalk normativo:
+[ NCS_M0_RAW1_B2_B3_NORMATIVE_AUTHORITY_CROSSWALK_2026-11-26.md ](BUILD/NCS_M0_RAW1_B2_B3_NORMATIVE_AUTHORITY_CROSSWALK_2026-11-26.md), commit `642b9e4260007ef5c5383d05147b210bca3298c7`.
+
+Hallazgos de reconciliación:
+- V2.1 está ratificada. El instrumento/blob `9ae2fca3972a8b3c688346f26f6f0a267e2454ad` y su registro/blob `7113f04becbd4cbe047cdb53b63b16692881e22a` están en rama separada `ncs-m0-authorization-declaration-v2-1-draft-2026-11-27`, commit de registro `7d89f37f14f81c9eb25e051515a91d3e931cd13d`. La rama actual no contiene ese registro; se referencia sin merge automático ni reescritura del instrumento.
+- V2.1 permite trabajo técnico/documental M0 sobre contratos ratificados, sujeto a sus salvaguardas; no permite aplicar propuestas no ratificadas, modificar POCO/Termux, M1, STEP 7 anticipado, commissioning ni protected effects. Modificaciones de tests requieren justificación, preservación de intención y revisión/aprobación del propietario o autoridad independiente designada. CI-VERIFIED exige CI asociado al SHA exacto.
+- P05-C permanece RATIFICADA COMO POLÍTICA; P05 OPEN. La decisión de cleanup atribuible/UNKNOWN-BLOCKED no demuestra enforcement durable, identidad replacement-safe ni recovery.
+- P07 V2.2 es la base normativa vigente. P07 V2.3 y Contrato A/B son NO RATIFICADOS.
+- Los criterios B2/B3 de esta rama son descomposición no normativa de obligaciones existentes: B2 ↔ principalmente O4, además O3/O5; B3 ↔ O1/O5/O6/O9c. No crean una matriz normativa paralela a O1–O9.
+- Perímetro protegido O7/P07 ratificado y C3/G2 resuelto se conservan; no reabrir esas decisiones.
+
+Estados sin cambio: RAW-1 static conditional writer CONFIRMED; alias R1 UNKNOWN; runtime write NOT OBSERVED; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; B2/B3 gaps en seams inspeccionados; P07-C UNKNOWN/BLOCKING; P05 OPEN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP; M0 INCOMPLETO. Solo documentación; sin source/tests/workflows/CI/runtime/Termux/POCO ni efectos protegidos.
