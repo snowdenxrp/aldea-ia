@@ -3888,3 +3888,17 @@ Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo
 - B2: CONTRADICTED-CODE/GAP; B3: CONTRADICTED-CODE/GAP; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN. No describir el suite como carente de tests de lock, pero tampoco elevar esta cobertura parcial a PASS.
 - Evaluación ampliada: commit `29d7359082e92f21fbafcc4be46f9f4464d91b5c`, blob `b9e31dbf128992818ca829214a1404d3879dec30`.
 - Solo inspección estática/documentación. No se ejecutaron tests, CI, runtime, Termux/POCO ni efectos protegidos. `authorization: NOT_EVALUATED`; STOP permanece.
+
+
+---
+
+## DELTA — RAW-1 R1 EFFECTIVE-PATH EVIDENCE CRITERIA (2026-11-26)
+
+Se preservó una especificación documental para la siguiente unidad de cierre:
+[ NCS_M0_RAW1_R1_EFFECTIVE_PATH_EVIDENCE_CRITERIA_2026-11-26.md ](BUILD/NCS_M0_RAW1_R1_EFFECTIVE_PATH_EVIDENCE_CRITERIA_2026-11-26.md), commit `3de8d7e5a3fa870317da06b735ac504d672b9d31`.
+
+La especificación separa la capacidad estática RAW-1 (CONFIRMED) de la configuración efectiva en una invocación R1 (UNKNOWN/NOT ESTABLISHED) y de una escritura runtime real (NOT OBSERVED). Define evidencia ligada a launcher/proceso/entorno/target fingerprint, resultados permitidos y una regla de no ejecutar el escritor si el destino resuelve al perímetro protegido.
+
+La observación propuesta es invocación-acotada: UNSET/default solo permite decir NO ALIAS OBSERVED en esa invocación; no demuestra exclusión universal ni enforcement. Si el destino resuelve a Continuity o cualquier objeto protegido, STOP antes de ejecutar el entrypoint. No repetir la captura genérica anterior ni el censo P09.
+
+Este documento no autoriza captura en dispositivo, ejecución, tests, implementación ni efectos protegidos. No cambia O7 UNKNOWN/OPEN, P09 OPEN/UNKNOWN, P07-C UNKNOWN/BLOCKING, P05 OPEN, `authorization: NOT_EVALUATED`, commissioning/protected effects STOP ni M0 INCOMPLETO. Solo documentación; sin cambios de source/tests/workflows/CI/runtime/Termux/POCO.
