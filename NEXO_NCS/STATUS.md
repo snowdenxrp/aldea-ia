@@ -3902,3 +3902,15 @@ La especificación separa la capacidad estática RAW-1 (CONFIRMED) de la configu
 La observación propuesta es invocación-acotada: UNSET/default solo permite decir NO ALIAS OBSERVED en esa invocación; no demuestra exclusión universal ni enforcement. Si el destino resuelve a Continuity o cualquier objeto protegido, STOP antes de ejecutar el entrypoint. No repetir la captura genérica anterior ni el censo P09.
 
 Este documento no autoriza captura en dispositivo, ejecución, tests, implementación ni efectos protegidos. No cambia O7 UNKNOWN/OPEN, P09 OPEN/UNKNOWN, P07-C UNKNOWN/BLOCKING, P05 OPEN, `authorization: NOT_EVALUATED`, commissioning/protected effects STOP ni M0 INCOMPLETO. Solo documentación; sin cambios de source/tests/workflows/CI/runtime/Termux/POCO.
+
+
+---
+
+## DELTA — B2/B3 REPLACEMENT-SAFE Y BLOCKED DURABLE: CRITERIOS PROBATORIOS (2026-11-26)
+
+Se preservó una matriz no normativa de aceptación para los gaps B2/B3:
+[ NCS_M0_B2_B3_REPLACEMENT_SAFE_AND_DURABLE_BLOCKED_EVIDENCE_CRITERIA_2026-11-26.md ](BUILD/NCS_M0_B2_B3_REPLACEMENT_SAFE_AND_DURABLE_BLOCKED_EVIDENCE_CRITERIA_2026-11-26.md), commit `f66be80f283a81abba86548c6499e88a610d89d6`.
+
+La matriz separa dos obligaciones: B2 debe probar que cleanup solo afecta el objeto cuya identidad fue validada, incluyendo sustitución concurrente entre validación y cleanup; B3 debe probar que BLOCKED sobrevive al fin del proceso y es descubierto por una nueva invocación antes de readmisión/efectos protegidos. Incluye casos fail-closed para ausencia, sustitución, corrupción, ilegibilidad, errores parciales y concurrencia, además de separar terminación de proceso, reinicio y power-loss.
+
+No selecciona mecanismo ni convierte P07 V2.3/contrato A-B no ratificados en norma. No autoriza implementación ni ejecución de tests. B2/B3 permanecen CONTRADICTED-CODE/GAP en seams inspeccionados; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; E2/E3 PARTIAL; M0 INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP. Solo documentación; sin cambios de source/tests/workflows/CI/runtime/Termux/POCO.
