@@ -3888,3 +3888,14 @@ Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo
 - B2: CONTRADICTED-CODE/GAP; B3: CONTRADICTED-CODE/GAP; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN. No describir el suite como carente de tests de lock, pero tampoco elevar esta cobertura parcial a PASS.
 - Evaluación ampliada: commit `29d7359082e92f21fbafcc4be46f9f4464d91b5c`, blob `b9e31dbf128992818ca829214a1404d3879dec30`.
 - Solo inspección estática/documentación. No se ejecutaron tests, CI, runtime, Termux/POCO ni efectos protegidos. `authorization: NOT_EVALUATED`; STOP permanece.
+
+---
+
+## DELTA — CAPTURA R1 TERMUX / PACKAGE LAUNCHER PREFLIGHT (2026-11-27)
+
+- El propietario aportó una nueva captura de solo lectura a las 2026-11-27 04:25:19Z. Desde Termux HOME: `NEXO_STATE_PATH=UNSET`, `NEXO_LUMINA_MEMORY_PATH=UNSET`; `npm pkg get scripts.assistants` falló con `ENOENT` porque no estaba en el repositorio.
+- Desde `/data/data/com.termux/files/home/aldea-ia`: branch local `main`, HEAD reportado `1834182a2eaf4b1bfe59f9802ce3e49fc89b2ca7`, script `assistants` = `node scripts/assistants.mjs`; ambas variables continuaron `UNSET`.
+- Esta evidencia confirma el estado de esas variables en esa sesión y la declaración del package script en ese checkout. No es una invocación real: no se ejecutó `npm run assistants`; por tanto, el entorno efectivo del proceso hijo, la activación/uso RAW-1 y la exclusión del Continuity protegido siguen sin demostrarse.
+- Evidencia preservada: `NEXO_NCS/PROOF/NCS_M0_R1_TERMUX_ENVIRONMENT_LAUNCHER_PREFLIGHT_2026-11-27.md`, commit `c94b55e6434c77090c53df098622525e4a0a8df3`, blob verificado `d75a049c647ae3e72ec5b5ad42d85997126613dd`.
+- El HEAD local reportado `1834182a...` no se equipara al snapshot estático `d8b5ca8720908d926acc18130614cce132a43b5d`.
+- Disposición sin cambio: O7 UNKNOWN/OPEN; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP; M0 INCOMPLETO. Sin ejecución de asistente, escrituras, pruebas, CI ni cambios de código.
