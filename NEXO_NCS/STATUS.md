@@ -3863,3 +3863,16 @@ Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo
 - Estado: O7 UNKNOWN/OPEN; claim amplio de exclusión de toda ruta Lúmina CONTRADICTED por RAW-1; RAW-1 static conditional writer CONFIRMED; RAW-2 overwrite del Continuity existente NOT DEMONSTRATED; P09 OPEN/UNKNOWN; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; E2/E3 PARTIAL; M0 INCOMPLETO.
 - Evaluación actualizada: [NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md](BUILD/NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md), commit `33f26dec71f3dbc2bba113d42435c34d9cef16f5`, blob `c5955a5fcbca575a9547877dec1f614b5242a666`.
 - Solo documentación y análisis estático de blobs existentes. Sin cambios de código/tests/workflows/CI, sin runtime/Termux/POCO ni efectos protegidos. `authorization: NOT_EVALUATED`; commissioning/protected effects STOP. No se seleccionó mecanismo ni se ratificó P07 V2.3.
+
+
+---
+
+## DELTA — RAW-1 LAUNCHER / ENVIRONMENT TRACE (2026-11-27)
+
+- En el snapshot `d8b5ca8`, `package.json` expone `npm run assistants` → `node scripts/assistants.mjs` (blob `a42af401a51fde4d38488d136420506b3ed80b38`). El entrypoint lee `NEXO_LUMINA_MEMORY_PATH` desde `process.env`; si no existe, usa `.lumina-assistant-memory.json` (blob `5d773332acf1f762ea9e2eb48dfcf5a5267470d6`).
+- `.github/workflows/lumina-simulation.yml` invoca `npm run assistants` sin configurar esa variable en el workflow inspeccionado (blob `e11a11b5101c992396737f3520c427c2c6c4f350`); corre en `ubuntu-latest`, fuera de R1, y usa el destino por defecto según el source revisado.
+- La captura Termux previa no mostró el alias configurado en ese instante. No prueba ausencia sostenida. No se repitió la captura ni se ejecutó una nueva observación R1.
+- Clasificación: launch surface package-script CONFIRMED; default path CONFIRMED; environment override capability CONFIRMED; workflow override NOT FOUND in inspected workflow; R1 alias NOT OBSERVED in prior capture; runtime write to protected Continuity NOT OBSERVED.
+- O7 continúa UNKNOWN/OPEN: capacidad estática confirmada, configuración efectiva R1 no demostrada y enforcement de exclusión no demostrado. La siguiente prueba, si se autoriza, debe estar ligada a una invocación/ventana R1 concreta; no repetir el censo P09 ni la captura anterior.
+- Evaluación actualizada: commit `9d24b401fe1c134e4731a20828b6ce0092b85df5`, blob `4e630342c06268a70334ed74957b7470eb066812`.
+- Solo documentación y análisis estático. Sin runtime, tests, CI, workflows, Termux/POCO ni efectos protegidos. `authorization: NOT_EVALUATED`; STOP permanece.
