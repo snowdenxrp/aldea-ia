@@ -3932,3 +3932,20 @@ Hallazgos de reconciliación:
 - Perímetro protegido O7/P07 ratificado y C3/G2 resuelto se conservan; no reabrir esas decisiones.
 
 Estados sin cambio: RAW-1 static conditional writer CONFIRMED; alias R1 UNKNOWN; runtime write NOT OBSERVED; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; B2/B3 gaps en seams inspeccionados; P07-C UNKNOWN/BLOCKING; P05 OPEN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP; M0 INCOMPLETO. Solo documentación; sin source/tests/workflows/CI/runtime/Termux/POCO ni efectos protegidos.
+
+
+---
+
+## CORRECCIÓN DE TRAZABILIDAD — ESTADO NORMATIVO P07 V2.2 (2026-11-26)
+
+El cotejo de la declaración V2.1 ratificada contra el artefacto P07 V2.2 reveló una contradicción que no debe resolverse por inferencia:
+- V2.1 ratificada (instrumento blob `9ae2fca3972a8b3c688346f26f6f0a267e2454ad`) afirma que P07 V2.2 conserva la condición de base normativa vigente.
+- El propio documento P07 V2.2 (blob `7ce10f7e02516da4438358c3d637a275001c6019`) se etiqueta “PROPUESTA DOCUMENTAL — NO RATIFICADA”.
+- La decisión de propietario del 2026-11-07 sobre C3 indica que resuelve solo el punto semántico reservado y no ratifica el conjunto V2.2/V2.3.
+- En las ramas/documentos cotejados no se localizó un registro específico de ratificación de P07 V2.2 que reconcilie las afirmaciones.
+
+Clasificación conservadora: **P07 V2.2 — CONFLICTO / UNKNOWN respecto del estado normativo de sus adiciones**. No asumir que todas sus adiciones son normativas ni ignorar la afirmación contenida en V2.1 ratificada. Las obligaciones O1–O9 constan como ratificadas por separado en la matriz reconciliada; conservarlas como línea base identificable sin importar automáticamente cada delta V2.2.
+
+Crosswalk corregido: [NCS_M0_RAW1_B2_B3_NORMATIVE_AUTHORITY_CROSSWALK_2026-11-26.md](BUILD/NCS_M0_RAW1_B2_B3_NORMATIVE_AUTHORITY_CROSSWALK_2026-11-26.md), actualización commit `bacd60cab0c65b1edd25ac9401285c3e4c7aadc0`.
+
+No se selecciona mecanismo ni se modifica código/tests. La discrepancia requiere resolución autoritativa antes de usar las cláusulas V2.2 disputadas para implementación o modificación de pruebas. M0 permanece INCOMPLETO; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP.
