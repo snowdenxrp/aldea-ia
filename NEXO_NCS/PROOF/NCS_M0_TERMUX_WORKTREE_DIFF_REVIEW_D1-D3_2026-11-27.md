@@ -66,3 +66,46 @@ No hay evidencia aportada que vincule este diff con NCS o Lúmina.
 
 ## 8. Estado NCS M0
 Esta revisión documental no cambia el estado global NCS M0. No cierra gates, no constituye PASS, no modifica `authorization: NOT_EVALUATED`, ni altera UNKNOWN/STOP. La misión prioritaria sigue siendo el cierre de M0 con evidencia verificable.
+
+
+## 9. Transcripción compacta de las líneas de cambio visibles
+Esta transcripción conserva las líneas de cambio relevantes mostradas en la conversación. No sustituye una captura raw de los archivos locales ni certifica que sigan idénticos.
+
+### D1 — `src/exploration.js`
+```diff
+-  if (existing) {
++  if (existing) { rememberAreaVisit(simulation, agent, existing);
++  rememberAreaVisit(simulation, agent, area);
+```
+La llamada para `existing` aparece en la misma línea física que la condición, según la salida de `sed -n l`.
+
+### D2 — `src/main-stable.js`
+```diff
+-  const torso=new THREE.Mesh(new THREE.BoxGeometry(.62,.68,.38),clothMat); torso.position.y=1.18;
++  const torso=new THREE.Mesh(new THREE.BoxGeometry(.62,.68,.38),clothMat); torso.position.y=1.18; const torsoCore=new THREE.Mesh(new THREE.CylinderGeometry(.42,.34,.72,12),clothMat); torsoCore.position.y=1.18; torsoCore.scale.set(.82,1,.72);
+-  g.add(torso,chest,waist,collar,neck,pelvis,shoulderL,shoulderR,head,earL,earR,hair,nose,eyeWL,eyeWR,eyeL,eyeR,mouth,armL,armR,handL,handR,cuffL,cuffR,legL,legR,kneeL,kneeR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR,head};addVisualDetail(g,a);
++  g.add(torso,collar,neck,pelvis,shoulderL,shoulderR); g.add(torsoCore); g.add(torso,chest,waist,collar,neck,pelvis,shoulderL,shoulderR,head,earL,earR,hair,nose,eyeWL,eyeWR,eyeL,eyeR,mouth,armL,armR,handL,handR,cuffL,cuffR,legL,legR,kneeL,kneeR,footL,footR,marker); g.userData.parts={armL,armR,legL,legR,head};addVisualDetail(g,a);
+```
+
+### D3 — `src/movement.js`
+```diff
+-  agent.movement.target = {
++  const nextTarget = {
++  const currentTarget = agent.movement.target;
++  const sameTarget =
++    currentTarget &&
++    Math.abs(currentTarget.x - nextTarget.x) < 0.01 &&
++    Math.abs(currentTarget.z - nextTarget.z) < 0.01;
++  if (!sameTarget) {
++    agent.movement.target = nextTarget;
++  }
++export function advanceSimulationMovement(agent, deltaHours) {
++  agent.movement ??= createMovementState();
++  if (!agent.alive || !agent.movement.target) return false;
++  // La velocidad de locomoción de la simulación se expresa en unidades por hora.
++  const simulationSpeed = agent.movement.speed;
++  const secondsEquivalent = Math.max(0, Number(deltaHours) || 0) * simulationSpeed / 1.8;
++  return moveAgent(agent, secondsEquivalent);
++}
+```
+La salida original de D3 también mostró las líneas de contexto que calculan y asignan las coordenadas X/Z de `nextTarget`; este extracto conserva las adiciones principales, no el hunk completo.
