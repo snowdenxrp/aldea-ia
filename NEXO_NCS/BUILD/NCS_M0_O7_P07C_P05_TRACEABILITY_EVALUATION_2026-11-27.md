@@ -276,3 +276,30 @@ Exact evidence:
 ### O7 disposition and next proof requirement
 
 O7 remains **UNKNOWN / OPEN**. The source evidence proves the capability edge and the package launch surface, but does not prove that the owner configured that edge in R1. Conversely, one shell capture with no alias cannot prove that every future invocation is sanitized. The narrow remaining question is whether the authorized R1 launch procedure fixes/validates the effective environment for the entire invocation window, or whether an alternate launch path remains admissible. Do not repeat the P09 graph census or the old shell capture; use a new, invocation-bound artifact only if a specifically authorized R1 observation is later conducted. No such observation is authorized by this documentary delta.
+
+
+## DELTA — EXISTING TEST ORACLE COVERAGE FOR B2/B3 (STATIC INSPECTION ONLY, 2026-11-27)
+
+This is a source-level inventory of existing test cases, not a test execution. Product snapshot remains `d8b5ca8720908d926acc18130614cce132a43b5d`.
+
+Test sources:
+
+- `tests/nexo/continuity-store.test.mjs`, blob `1219b88a78d4c2994e004566905a778ad3b67183`.
+- `tests/nexo/chronicle-store.test.mjs`, blob `8e182932ae98ad40c3655f6be3bf5e0585bfac26`.
+
+### What the existing tests do cover
+
+- Continuity: malformed/oversized owner records remain UNKNOWN and the lock is preserved; stale locks fail closed rather than being reclaimed; a cross-process contender waits while a lock exists and resumes after the test explicitly removes it; transient release cleanup is retried; persistent release failure reports persistence separately from failed handoff and blocks a subsequent acquisition in the **same process**.
+- Chronicle: malformed/oversized owner records and uninspectable lock state fail closed; a changed owner token observed at release prevents deletion; persistent cleanup failure reports committed persistence but blocks handoff and preserves the lock.
+
+### What those tests do not demonstrate
+
+1. **B2 atomic replacement safety:** the Chronicle `notOwnedRelease` test supplies a different owner record at the time of the ownership read. It does not replace the lock directory in the interval after the token check and before `rm(lockPath)`. The production code still performs a path-based recursive removal after a separate read. No test in the inspected ranges binds the checked directory identity to the object removed under an adversarial replacement race.
+2. **B3 durable/interprocess BLOCKED:** the Continuity persistent-release test verifies a process-local failure marker by retrying in the same process. It then manually removes the lock. The cross-process test proves waiting while a lock exists and resumption after explicit removal; it does not restart the failed owner and verify that a fresh process remains durably blocked under P05-C. Chronicle's persistent-release test likewise leaves a lock for explicit recovery but does not establish a durable recovery classification across process restart.
+3. **Crash/power-loss semantics:** these injected filesystem errors and process coordination tests do not establish power-loss durability, fsync ordering, or atomic persistence of a BLOCKED state.
+
+### Updated interpretation
+
+The test suite contains meaningful partial fail-closed coverage; it must not be described as having no lock/release tests. However, that coverage does not satisfy the specific B2 replacement-safe identity obligation or B3 durable/interprocess BLOCKED obligation. Existing test presence is not a PASS for those obligations, and no tests were run during this inspection.
+
+Disposition unchanged: B2 **CONTRADICTED-CODE / GAP**; B3 **CONTRADICTED-CODE / GAP**; P07-C **UNKNOWN / BLOCKING**; P05-C **RATIFIED** and P05 **OPEN**. No mechanism selected, no implementation authorized by this delta, no runtime/test/CI/Termux/device operation.
