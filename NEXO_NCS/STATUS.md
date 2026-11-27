@@ -3899,3 +3899,50 @@ Siguiente unidad: resolver, con autoridad y evidencia, la definición del activo
 - Evidencia preservada: `NEXO_NCS/PROOF/NCS_M0_R1_TERMUX_ENVIRONMENT_LAUNCHER_PREFLIGHT_2026-11-27.md`, commit `c94b55e6434c77090c53df098622525e4a0a8df3`, blob verificado `d75a049c647ae3e72ec5b5ad42d85997126613dd`.
 - El HEAD local reportado `1834182a...` no se equipara al snapshot estático `d8b5ca8720908d926acc18130614cce132a43b5d`.
 - Disposición sin cambio: O7 UNKNOWN/OPEN; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP; M0 INCOMPLETO. Sin ejecución de asistente, escrituras, pruebas, CI ni cambios de código.
+
+
+---
+
+## DELTA — TERMUX CHECKOUT RECONCILIATION AFTER RAW-1 PREFLIGHT (2026-11-27)
+
+**Source:** owner-provided read-only Termux transcript in the current session. This record preserves the observed output; it does not assert that the local checkout or working tree was modified by this documentation update.
+
+### Checkout and working-tree state
+
+- Local repository: `~/aldea-ia`
+- Branch: `main`
+- HEAD: `1834182a2eaf4b1bfe59f9802ce3e49fc89b2ca7`
+- `git status --short` reports modified tracked files: `src/exploration.js`, `src/main-stable.js`, `src/movement.js`, `src/simulation.js`, and four visual/settlement audit tests.
+- It also reports untracked paths: one filename containing a quoted `how-ref | grep ...` fragment, `lumina-test.log`, multiple `.bak*` files under `src/`, and one filename containing a quoted `... referencia remota ...` fragment.
+- These dirty/untracked paths are not part of the NCS evidence record and were not inspected, modified, staged, deleted, or cleaned. Their origin and relevance are UNKNOWN. Do not run broad cleanup or reset commands.
+
+### Launcher and source comparison
+
+- `package.json` at local HEAD declares `"assistants": "node scripts/assistants.mjs"`.
+- `git grep` at local HEAD finds the launcher declaration and a workflow invocation at `.github/workflows/lumina-simulation.yml:35`; it finds no `NEXO_LUMINA_MEMORY_PATH` reference in the searched `package.json`, `scripts`, or `.github` paths.
+- Local HEAD `scripts/assistants.mjs` blob: `1dc2a8f67acda080205ef61d31a8d297aa8d7d2c`.
+- Prior static-analysis snapshot `d8b5ca8720908d926acc18130614cce132a43b5d` had `scripts/assistants.mjs` blob `5d773332acf1f762ea9e2eb48dfcf5a5267470d6`.
+- The blobs differ. Direct source comparison confirms that the prior snapshot resolved `NEXO_STATE_PATH` and `NEXO_LUMINA_MEMORY_PATH` from the environment (with defaults), used strict state loading/persistence, and wrote the memory file. The local HEAD version hardcodes `STATE_PATH` to `../world-state.json` and `MEMORY_PATH` to `../.lumina-assistant-memory.json`; it reads state with a fallback and writes the memory file. The local version does not contain the two environment-variable resolutions or the prior `persistState` call.
+- Local `package.json` blob: `bb413229b3049efb6de05698a9e852c0e2a61153`; snapshot blob: `a42af401a51fde4d38488d136420506b3ed80b38`. The package script is the same, but the test script lists differ materially. This transcript did not execute tests.
+
+### Interpretation and limits
+
+- The previous RAW-1 finding about an environment-configurable `NEXO_LUMINA_MEMORY_PATH` applies to snapshot `d8b5ca8`, not to the current local HEAD `1834182a`.
+- For the current local HEAD, the source statically identifies a fixed relative Lúmina memory destination `../.lumina-assistant-memory.json`; the prior configurable path into Continuity is not present in this file version. This narrows the RAW-1 claim for this exact HEAD, but does not by itself prove runtime exclusion/enforcement, classify every possible writer, or close O7.
+- The checkout is dirty. The transcript does not establish whether the modified/untracked files are related to NCS, Lúmina, another project activity, or accidental shell artifacts. Preserve them untouched pending owner-directed classification.
+- No assistant invocation, Node execution, tests, CI, device mutation, protected-store access, staging, commit, reset, or cleanup occurred in this observation.
+- This is a new local checkout observation, not a new product snapshot integrated into the NCS branch. No claim is made that local HEAD is the current remote product branch HEAD.
+
+### Disposition
+
+- Current local launcher declaration: CONFIRMED.
+- Current local `assistants.mjs` source differs from the earlier static-analysis snapshot: CONFIRMED by distinct blob SHAs and direct content comparison.
+- Environment-variable RAW-1 path in current local `assistants.mjs`: NOT PRESENT.
+- Fixed Lúmina memory write in current local source: STATICALLY CONFIRMED.
+- Runtime invocation/environment and complete writer exclusion: NOT OBSERVED / NOT DEMONSTRATED.
+- O7: UNKNOWN / OPEN; reassess the scoped RAW-1 claim against this newer source without erasing the older snapshot finding.
+- P07-C: UNKNOWN / BLOCKING; P05: OPEN; `authorization: NOT_EVALUATED`; commissioning/protected effects STOP; NCS M0 INCOMPLETE.
+
+### Exact continuation point
+
+Do not repeat the variable check, launcher declaration check, or source comparison for these exact SHAs. First classify the dirty/untracked working-tree entries without modifying them, and identify the provenance/remote relationship of local HEAD `1834182a`. Then determine whether this newer source snapshot is within the ratified NCS/P09 evidence scope. No invocation of `npm run assistants` is authorized by this record.
