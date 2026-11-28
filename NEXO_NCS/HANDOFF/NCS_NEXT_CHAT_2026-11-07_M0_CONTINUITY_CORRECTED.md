@@ -1,3 +1,19 @@
+# ADDENDUM DE PRECEDENCIA — RATIFICACIÓN P07 V2.2 + V2.3 (2026-11-27)
+
+> Este addendum es posterior al cuerpo histórico fechado 2026-11-07. Si una frase histórica del cuerpo indica que V2.3 está «NO RATIFICADA», esa frase conserva su valor cronológico, pero queda SUPERADA por la decisión del propietario registrada abajo y por el STATUS vigente.
+
+- **Decisión del propietario:** ratificados los tres documentos P07 V2.2 como base y los tres documentos P07 V2.3 como delta que prevalece únicamente en los puntos que corrige.
+- **Acta:** [NCS_M0_P07_V22_V23_OWNER_RATIFICATION_2026-11-27.md](../DECISIONS/NCS_M0_P07_V22_V23_OWNER_RATIFICATION_2026-11-27.md), commit `228df5e100fa969b99e6acdfc746cb690307427c`, blob `3bcdcc4e547ea4e59deb8a794e8eb48e158e1e94`.
+- **Revisión técnica y reconciliación de candidatos:** [NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md](../BUILD/NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md), commit `e10f9586bee15dcc2806c99e6a05fdec766e1c53`, blob `1106b0a6a05078b7598665dfc77758715e80262c`.
+- El perímetro O7/P07 ya está ratificado por separado. No repetir la decisión de perímetro ni confundirla con cobertura demostrada.
+- **Siguiente tarea técnica acotada:** descomponer B2/B3 en requisitos de diseño independientes y verificables: (1) vínculo entre objeto validado y objeto destruido en el seam real; (2) estado BLOCKED durable observable por nueva invocación después de crash; (3) no-readmisión ante ausencia/sustitución/ilegibilidad; (4) procedimiento de reclasificación y autoridad del propietario; (5) cutpoints y orden de persistencia.
+- No seleccionar mecanismo por inferencia. La comparación existente concluye que ninguna familia aislada satisface B1–B5 y O7; dirfd/openat2 + lock de kernel sigue siendo hipótesis de investigación, no arquitectura aprobada. No introducir marker, tombstone, epoch, daemon o journal sin decisión y diseño explícitos.
+- No repetir inventario P09, análisis lock/release ni cobertura estática B2/B3 del snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`. Reabrir solo con cambio verificable de SHA/seam o evidencia nueva admisible.
+- **Estados sin cambio:** O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; O8 UNKNOWN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+- La autorización constitucional V2.1 sigue delimitando el trabajo técnico M0 ratificado; esta ratificación P07 no autoriza por sí sola ejecución en Termux/POCO, bootstrap, publicación, cleanup, readmisión ni efectos protegidos. Usar únicamente un baseline de código explícito y limpio; el worktree Termux conocido como dirty no es baseline admisible.
+
+---
+
 # NCS — HANDOFF CANÓNICO DE CONTINUIDAD CORREGIDO
 **Fecha:** 2026-11-07  
 **Rama documental:** ncs-continuity-handoff-correction-2026-11-07  
