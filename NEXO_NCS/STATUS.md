@@ -1,3 +1,17 @@
+## DELTA PRIORITARIA — DECISIONES DEL PROPIETARIO A / A / A+B / A RATIFICADAS (2026-11-27)
+
+- El propietario aceptó expresamente la recomendación consolidada de la hoja de decisiones: P07-A = A; P05 O6/G5 = A; APP-OWNER cleanup = A+B; residuos = A.
+- Acta: [NCS_M0_P07_A_P05_O6_OWNER_DECISIONS_2026-11-27.md](DECISIONS/NCS_M0_P07_A_P05_O6_OWNER_DECISIONS_2026-11-27.md), commit `5fcf21c3aef51a66049b36f2dec7f5af09dfcdde`.
+- P07-A: raíz única explícita y aprobada; aliases/rutas/montajes no clasificados en STOP/UNKNOWN; hardlinks de archivos separados. No se elige raíz constitucional P01/P02.
+- O6/G5: solo reclasificación manual del propietario por incidente, con expediente de evidencia; sin recuperación autónoma por PID, lock, token, TTL, timestamp o ausencia.
+- APP-OWNER: atribución estricta al objeto/operación/rol exactos, separada de FS-OWNER; ante duda, crash o seam no probado, retener residuo y mantener UNKNOWN/BLOCKED.
+- Residuos: retención indefinida durante M0, sin TTL ni purga automática; presión de almacenamiento produce STOP y revisión, nunca autoridad de borrado.
+- Esta ratificación fija política, no implementación. B2 replacement-safe cleanup y B3 durable BLOCKED siguen sin demostración. No selecciona primitivas ni declara actores COVERED.
+- Estados técnicos sin cambio: P07-C UNKNOWN/BLOCKING; P05 OPEN (P05-C policy ratified); O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; O8 UNKNOWN; O9 PARTIAL; E2/E3 PARTIAL; CI exact-SHA no demostrado; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+- No se ejecutaron cambios de código/tests, CI, runtime, Termux/POCO, bootstrap, publicación, cleanup, readmisión ni efectos protegidos.
+
+---
+
 ## DELTA PRIORITARIA — HOJA DE DECISIONES P07-A / P05-O6 Y BASELINE DE CÓDIGO (2026-11-27)
 
 - Se preparó, sin ratificar en nombre del propietario, la hoja [NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md](BUILD/NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md), commit `a3bc8b7039b3dee5ce6499800b452eab71be28fd`.
