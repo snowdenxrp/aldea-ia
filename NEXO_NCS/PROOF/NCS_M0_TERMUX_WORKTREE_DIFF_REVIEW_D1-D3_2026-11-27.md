@@ -109,3 +109,29 @@ La llamada para `existing` aparece en la misma línea física que la condición,
 +}
 ```
 La salida original de D3 también mostró las líneas de contexto que calculan y asignan las coordenadas X/Z de `nextTarget`; este extracto conserva las adiciones principales, no el hunk completo.
+
+
+## D4 — `src/simulation.js` (salida recibida 2026-11-27)
+
+**Estado:** recibido; revisión preliminar documental. No se ejecutó código ni pruebas.
+
+### Cambios visibles
+- Imports: incorpora `setMovementTarget`, `moveAgent`, `advanceSimulationMovement` y `advanceProductionDay`.
+- Rutina de exploración: calcula `pendingDiscovery`, pero en el fragmento recibido no se utiliza después; el comentario dice que la exploración no debe bloquearse por descubrimientos pendientes.
+- Exploración: invierte el orden de `candidates.sort` de descendente a ascendente.
+- Hambre crítica: exporta `buildCriticalHungerIntent`; cambia filtros y decisiones sobre plantas/pesca.
+- Decisión: cambia el manejo de movimiento y descanso; añade transferencia de conocimiento espacial entre agentes.
+- Ciclo diario: llama `advanceProductionDay`.
+- Tick: añade priorización de supervivencia hambre/sed, ratios de riesgo, compromisos de objetivo, descanso y movimiento por simulación.
+
+### Observaciones y riesgos que requieren comprobación
+1. En la línea modificada de `performDecision`, la salida pegada contiene el fragmento `Math.max(Number(agent.decisionCooldownHours ?? 0), ), FAILED_DECISION_COOLDOWN_HOURS)`. Tal como está transcrito parece sintácticamente inválido; debe verificarse el contenido local exacto antes de clasificarlo como defecto real.
+2. `moveAgent` aparece en el import añadido, pero no se observa uso en el diff recibido; confirmar con búsqueda estática cuando corresponda.
+3. `pendingDiscovery` se calcula, pero aparentemente no afecta a ninguna rama; posible variable sin uso o lógica incompleta.
+4. `foodAvailable` se calcula usando exclusivamente `simulation.world.resources.wild_plants.amount`, aunque `criticalFood` puede representar pescado u otras rutas; revisar coherencia de recursos.
+5. Los nuevos ratios de supervivencia y umbrales de hambre/sed no están validados; no inferir comportamiento correcto sin análisis estático completo.
+6. El cambio de orden de candidatos puede invertir la selección hacia el score mínimo en lugar del máximo; confirmar intención.
+7. El bloque pegado es extenso y contiene líneas preexistentes de una sola línea; el registro preserva los hallazgos visibles, no certifica que el diff íntegro se haya recuperado byte por byte.
+
+### Clasificación provisional
+Cambios del simulador/proyecto Lúmina, no evidencia directa de NCS M0. Mantenerlos aislados; no aplicar, restaurar, descartar, ejecutar ni mezclar con NCS. D4 recibido; D5–D8 siguen pendientes.
