@@ -303,3 +303,78 @@ Test sources:
 The test suite contains meaningful partial fail-closed coverage; it must not be described as having no lock/release tests. However, that coverage does not satisfy the specific B2 replacement-safe identity obligation or B3 durable/interprocess BLOCKED obligation. Existing test presence is not a PASS for those obligations, and no tests were run during this inspection.
 
 Disposition unchanged: B2 **CONTRADICTED-CODE / GAP**; B3 **CONTRADICTED-CODE / GAP**; P07-C **UNKNOWN / BLOCKING**; P05-C **RATIFIED** and P05 **OPEN**. No mechanism selected, no implementation authorized by this delta, no runtime/test/CI/Termux/device operation.
+
+
+---
+
+## DELTA — P07 V2.2 + V2.3 OWNER RATIFICATION AND CANDIDATE FEASIBILITY RECONCILIATION (2026-11-27)
+
+### 1. Normative status correction
+
+The owner expressly ratified the three P07 V2.2 documents as the documentary base and the three P07 V2.3 documents as the normative, scenario/oracle and traceability delta, prevailing only where V2.3 corrects V2.2.
+
+Decision record:
+- `NEXO_NCS/DECISIONS/NCS_M0_P07_V22_V23_OWNER_RATIFICATION_2026-11-27.md`
+- Commit: `228df5e100fa969b99e6acdfc746cb690307427c`
+- Blob: `3bcdcc4e547ea4e59deb8a794e8eb48e158e1e94`
+
+This supersedes historical statements in this evaluation and its cited V2.3 documents that V2.3 was not ratified. Those statements remain valid as dated snapshots, not as the current decision state.
+
+The separate protected-asset perimeter ratification remains in force (decision blob `ddb026275b64027f9fc95aab3861ed0614143c34`). It fixes the O7/P07 evaluation perimeter but does not prove coverage or enforcement.
+
+### 2. Current contract boundary
+
+V2.3 is now normative within the ratified scope. In particular:
+- detection/STOP and retention are not prevention and cannot alone satisfy P07-C;
+- actor B must be classified before a scenario as COVERED, RAW, PRIVILEGED, UNCLASSIFIABLE, or NOT_PRESENT as applicable;
+- R-OBJ and R-NAME remain distinct;
+- `harness_verdict`, `result_class`, and `product_state` remain separate; `PASS_GATE` requires `gate_basis` and all dependencies;
+- P07-18a visibility/atomicity and P07-18b destination protection remain separate;
+- P07-19 requires the exact failure → substitution → cleanup seam and cleanup owner;
+- P07-21 applies the owner-ratified C3 rule by inode role; do not reopen C3/G2.
+
+### 3. Candidate feasibility against the ratified B1–B5 / O1–O9 obligations
+
+The existing Android/Termux mechanism comparison (blob `1feb5510454ee486c1d632d24d0dbdf620c56f01`) was re-evaluated against the now-ratified P07 V2.2+V2.3 contract and the protected perimeter. This is a documentary feasibility assessment, not mechanism selection or implementation.
+
+| Candidate family | What it can contribute | Why it cannot independently close P07-C/P05 |
+|---|---|---|
+| Existing Node path APIs | Cooperative baseline, exclusive create, final-component flags, rename visibility | Path-based cleanup remains vulnerable to replacement between validation and destructive operation; does not fence RAW writers |
+| dirfd / openat / openat2 | Constrain path resolution and anchor operations to an opened directory; potentially address parts of R-NAME/alias handling | Availability and binding are unverified on the exact target; does not itself provide compare-and-unlink or durable BLOCKED; an actor able to mutate the namespace still needs enforcement |
+| flock / fcntl / OFD lock | Kernel-mediated advisory serialization among participants that acquire the same lock object | Does not authenticate the protected path, prevent lock-object substitution, cover RAW-1, or leave durable BLOCKED after owner process termination |
+| lock file / directory | Observable coordination object and exclusive creation by name | Name-based cleanup can affect a substitute; stale/absent state is ambiguous; PID/age/token do not authorize recovery or prove quiescence |
+| SQLite | Transactional data/journal behavior within participants using the database | Does not constrain root/aliases or writers bypassing the database; sidecar/locking behavior remains target-dependent; adds format/migration scope |
+| daemon/service | Could centralize admission and durable state | Adds lifecycle, boot, relaunch, availability and authority surfaces outside the current M0 boundary |
+| hardlink token | May correlate names to one inode on supporting filesystems | Termux probe previously returned EACCES; no support assumption and no compare-and-unlink guarantee |
+
+**Feasibility conclusion:** no single family in the existing comparison independently satisfies B1–B5 and O7. The previously noted dirfd + kernel-lock combination remains only a possible investigation composition for path anchoring and cooperative admission; it does not solve replacement-safe cleanup, durable BLOCKED, approved reclas­sification, or RAW actor coverage. It is not selected.
+
+A candidate architecture cannot be accepted until it independently accounts for:
+1. protected-object and coordination-object identity across acquire/use/release/recovery (B1);
+2. replacement-safe destructive operation at the actual product seam (B2/O4);
+3. BLOCKED state observable by a fresh process after owner crash, without PID/age/absence inference (B3/O1/O2/O5);
+4. owner-approved reclas­sification procedure (B4/O6/G5);
+5. explicit crash ordering and evidence level for each persistence claim (B5/O9);
+6. O7 actor coverage, including the confirmed static conditional RAW-1 path and the exact R1 invocation boundary.
+
+### 4. Evidence and code-snapshot boundary
+
+The source/test findings in this evaluation remain pinned to product snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`. The remote comparison from that SHA to traceability branch head `602afee4e0b8d995b7eafd98add338831dc100b2` reports 92 commits ahead consisting of documentary changes; the comparison result lists no product source or test file changes. This does not establish that a different local worktree is clean or equivalent. The user's Termux worktree remains a separate dirty-worktree recovery concern and must not be used as an implicit source baseline.
+
+The existing B2/B3 test-coverage inventory remains static inspection only. No test, CI, runtime, Termux/POCO, bootstrap, publication, cleanup, readmission, or protected effect was executed by this delta.
+
+### 5. Updated disposition and next bounded action
+
+- P07 V2.2 + V2.3: **OWNER-RATIFIED DOCUMENTARY CONTRACT**.
+- Protected O7/P07 asset perimeter: **OWNER-RATIFIED**.
+- O7: **UNKNOWN / OPEN**; RAW-1 static conditional writer remains confirmed; runtime use not observed; enforcement/exclusion not demonstrated.
+- P09: **OPEN / UNKNOWN** within its ratified declared universe.
+- P07-C: **UNKNOWN / BLOCKING**; B2 replacement-safe cleanup and B3 durable BLOCKED remain unresolved.
+- P05-C: **RATIFIED POLICY**; P05 **OPEN**; O1/O2/O5/O6/G4/G5 remain gaps or contradicted as previously mapped.
+- O8: **UNKNOWN**; target fingerprint is not bound to a new authorized execution.
+- E2/E3: **PARTIAL / NOT CLOSED**.
+- Mechanism selected: **NONE**.
+- Harness: **NOT IMPLEMENTED**; tests: **NOT EXECUTED** in this evaluation.
+- `authorization: NOT_EVALUATED`; commissioning and protected effects: **STOP**; NCS M0: **INCOMPLETE**.
+
+**Next bounded task:** prepare a mechanism-neutral B2/B3 design decomposition that identifies the exact product seam, durable-state requirements, and owner-reserved recovery decisions. Do not select a primitive, introduce a marker/tombstone/epoch/daemon/journal, or execute a device observation by inference. Any new code/test work must stay within the separately ratified M0 authorization and use an explicitly pinned, clean source baseline; the dirty Termux worktree is not such a baseline.
