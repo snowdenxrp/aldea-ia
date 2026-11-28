@@ -1,3 +1,15 @@
+# ADDENDUM DE CONTINUIDAD — DECISIONES A/A/A+B/A RATIFICADAS (2026-11-27)
+
+- **Acta vigente:** [NCS_M0_P07_A_P05_O6_OWNER_DECISIONS_2026-11-27.md](../DECISIONS/NCS_M0_P07_A_P05_O6_OWNER_DECISIONS_2026-11-27.md), commit `5fcf21c3aef51a66049b36f2dec7f5af09dfcdde`.
+- El propietario ratificó: (1) P07-A alternativa A — raíz única explícita; aliases no clasificados STOP/UNKNOWN; (2) O6/G5 alternativa A — reclasificación manual del propietario por incidente con expediente; (3) APP-OWNER A+B — atribución estricta por operación, y retención ante incertidumbre/crash; (4) residuos alternativa A — retención indefinida durante M0, sin TTL ni purga automática.
+- No reabrir estas decisiones ni volver a pedir ratificación. No confundir decisión de política con implementación o evidencia de enforcement.
+- **B2 sigue abierto:** el cleanup debe afectar exactamente al objeto autorizado; path-based validate-then-delete no demuestra ese vínculo.
+- **B3 sigue abierto:** BLOCKED durable debe ser observable por un proceso nuevo después de muerte/crash del dueño; process-local marker/lock efímero no basta.
+- Próximo trabajo técnico: reconciliar baseline limpio sin destruir el worktree Termux; después, sobre SHA limpio explícito, convertir las decisiones ratificadas en diseño/test oracles y evidencia para B2/B3/RAW-1. No seleccionar primitiva por inferencia.
+- Estados sin cambio: P07-C UNKNOWN/BLOCKING; P05 OPEN; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; O8 UNKNOWN; O9 PARTIAL; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+
+---
+
 # ADDENDUM — HOJA DE DECISIÓN Y BLOQUEO DE BASELINE (2026-11-27)
 
 - Hoja de decisiones reservadas preparada para revisión del propietario: [NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md](../BUILD/NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md), commit `a3bc8b7039b3dee5ce6499800b452eab71be28fd`. **No está ratificada**; no convertir las recomendaciones A/A/A+B/A en decisiones.
