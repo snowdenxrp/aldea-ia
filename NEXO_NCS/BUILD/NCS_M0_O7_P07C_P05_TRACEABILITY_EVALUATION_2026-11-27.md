@@ -378,3 +378,90 @@ The existing B2/B3 test-coverage inventory remains static inspection only. No te
 - `authorization: NOT_EVALUATED`; commissioning and protected effects: **STOP**; NCS M0: **INCOMPLETE**.
 
 **Next bounded task:** prepare a mechanism-neutral B2/B3 design decomposition that identifies the exact product seam, durable-state requirements, and owner-reserved recovery decisions. Do not select a primitive, introduce a marker/tombstone/epoch/daemon/journal, or execute a device observation by inference. Any new code/test work must stay within the separately ratified M0 authorization and use an explicitly pinned, clean source baseline; the dirty Termux worktree is not such a baseline.
+
+
+---
+
+## DELTA — B2/B3 DESIGN DECOMPOSITION AND OWNER-RESERVED RECOVERY BOUNDARY (2026-11-27)
+
+**Type:** design decomposition only. No primitive selected, no implementation, no harness, no test or device execution.
+
+### 1. B2 — bind validation to the exact destructive effect
+
+**Observed baseline (snapshot d8b5ca8, already inspected; not re-audited here):**
+- Continuity and Chronicle release validate an owner token and then remove the lock path recursively by name.
+- The check and destructive path operation are separate; the code does not prove that the object removed is the same object whose owner record was checked.
+- Temporary-file cleanup has separate attribution and substitution questions. A unique name, token, PID, age, hash, or prior stat is not sufficient authority.
+- V2.3 requires the actual product seam between the last relevant validation and the destructive syscall, with actor class fixed before the scenario.
+
+**B2 acceptance decomposition:**
+1. Identify each destructive operation separately: lock release, temporary cleanup, publication replacement, and any parent/namespace cleanup.
+2. For each operation, identify the exact object validated, the exact name/parent used by the syscall, and the object actually affected.
+3. Demonstrate either:
+   - an operation whose effect is intrinsically bound to the validated object; or
+   - an enforcement boundary that prevents any unadmitted actor from replacing/mutating the relevant namespace for the full operation window.
+4. If neither can be demonstrated, the operation must not destructively clean the uncertain name; preserve the residue and return UNKNOWN/BLOCKED.
+5. Exercise the real product seam with a pre-classified actor B, an independently retained sentinel, and before/after observations of fd, name, identity, namespace, hash and nlink as required by the object's role.
+6. Apply C3 by inode role. Any displacement of a protected name or nlink change to a protected inode is an affectation, even if later reversed.
+
+**Candidate implications (not selections):**
+- Node path APIs alone do not satisfy B2 when they validate and later remove by path.
+- dirfd/openat/openat2 can constrain resolution but do not by themselves create compare-and-unlink semantics.
+- flock/fcntl/OFD locks serialize only participants acquiring the same lock object; they do not stop a RAW actor from replacing a name.
+- A persistent lock object that is never unlinked could remove one lock-release deletion race, but does not automatically solve temporary cleanup, namespace replacement, alias policy, or RAW writer coverage. It is only a hypothesis requiring full contract analysis.
+- A policy of retaining every uncertain residue is required by P05-C, but retention alone is not P07-C prevention and cannot be scored PASS_GATE.
+
+**B2 result:** unresolved. No candidate has yet demonstrated the required binding or exclusion. The current path-based release seam remains a positive code contradiction for the pinned snapshot.
+
+### 2. B3 — durable BLOCKED across owner death
+
+**Observed baseline (snapshot d8b5ca8, already inspected; not re-audited here):**
+- The Continuity release-failure marker is process-local.
+- Existing tests cover fail-closed cases and same-process retry blocking, but do not prove that a fresh process after owner crash observes durable BLOCKED.
+- A kernel lock may provide live cooperative exclusion; automatic release on process death does not prove the prior operation completed safely.
+- Absence of a lock path or an ENOENT result cannot authorize readmission under P05-C.
+
+**B3 acceptance decomposition:**
+1. Before any protected mutation whose interrupted completion could make state ambiguous, establish a durable admission/operation state that a fresh process can observe.
+2. The state must survive owner process termination and be read before any protected operation by the next invocation.
+3. Any ambiguous state, missing/corrupt/unreadable state, replacement, or interrupted transition yields UNKNOWN/BLOCKED, never implicit READY.
+4. Persist and verify file contents and directory-entry durability as separate claims; do not infer either from a successful write or process-crash observation.
+5. Demonstrate the sequence using a real process boundary: owner reaches an announced cutpoint, is terminated/reaped, and an independent fresh process attempts admission and remains blocked.
+6. Separate business commit, release result, and readmission result (O9). A committed business operation may coexist with a failed release and durable BLOCKED.
+7. Do not equate process crash testing with power-loss durability.
+
+**Abstract state-machine requirement (not an implementation proposal):**
+- A new invocation may proceed only from a positively established admissible state.
+- An operation in progress, incomplete transition, failed release, or unclassifiable residue must be non-admissible.
+- Transition back to an admissible state requires a separately approved resolution procedure and sufficient evidence.
+- The state representation, location, persistence primitive and recovery protocol remain unselected.
+
+**B3 result:** unresolved. Existing process-local state and ephemeral locks do not satisfy durable BLOCKED after owner death. A persistent representation and crash-ordering contract are necessary, but introducing a marker, tombstone, epoch, journal, or daemon is not authorized by inference.
+
+### 3. Coupling of B2 and B3
+
+B2 and B3 cannot be solved independently by adding a stronger lock:
+- B2 asks whether release/cleanup can affect the exact object authorized, rather than a replacement.
+- B3 asks whether a fresh process remains blocked after the previous owner disappears without proving a safe release.
+- O4 requires the first; O1/O2/O5 require the second; O6/G5 govern any transition out of BLOCKED.
+- O7 must establish that every actor included in the claim either participates in the same admission protocol or is effectively excluded from the protected namespace.
+- O8 still requires a target fingerprint bound to an authorized execution; R1 acceptance alone does not provide it.
+
+A design that solves only live serialization is insufficient. A design that persists BLOCKED but permits a RAW writer to mutate the protected namespace is also insufficient.
+
+### 4. Owner-reserved decisions that must remain open
+
+The following must not be silently decided by implementation:
+1. **P07-A alias authority:** which root aliases/mount relationships are the same protected admission domain, prohibited, or separate.
+2. **O6/G5 reclas­sification authority:** who may move a state from BLOCKED/UNKNOWN to admissible, what exact evidence is required, and whether the owner must approve every instance.
+3. **Cleanup of product-owned temporary objects:** what evidence constitutes APP-OWNER attribution sufficient for cleanup, in addition to filesystem ownership.
+4. **Residual policy:** acceptable accumulation/retention limits and whether any maintenance operation may remove residues without changing the protected-state claim.
+5. **RAW-1 control:** whether the supported R1 launch contract must remove/deny the configurable alias route, or whether the relevant actor is excluded through another positively demonstrated boundary. Static capability remains confirmed; runtime use remains unobserved.
+
+These are distinct from the already ratified P05-C policy, C3 semantic rule, R1 boundary, O7 asset perimeter, and P07 V2.2+V2.3 documentary contract. Do not ask the owner to re-ratify those settled matters.
+
+### 5. Finite next step
+
+The next useful action is to prepare one owner decision sheet for items 1–4 above, with concrete bounded alternatives and consequences, while keeping item 5 as an implementation/evidence question unless an owner policy is needed. No mechanism selection or code change should precede that decision sheet.
+
+**Disposition:** B2 OPEN / CONTRADICTED-CODE GAP; B3 OPEN / GAP; O1/O2/O4/O5/O6/O7/O8 remain unresolved as mapped; P07-C UNKNOWN/BLOCKING; P05 OPEN; mechanism NONE; NCS M0 INCOMPLETE. `authorization: NOT_EVALUATED`; commissioning and protected effects STOP.
