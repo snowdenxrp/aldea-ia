@@ -1,3 +1,17 @@
+## DELTA PRIORITARIA — DESCOMPOSICIÓN B2/B3 Y SIGUIENTE DECISIÓN FINITA (2026-11-27)
+
+- Se descompusieron B2 (cleanup/release replacement-safe) y B3 (BLOCKED durable entre procesos) dentro de la evaluación canónica existente, sin repetir la inspección estática del snapshot `d8b5ca8`.
+- Evaluación actualizada: [NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md](BUILD/NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md), commit `a312e574f1f647611fbc135b574294e1c360afcc`, blob `ad12193e2e2f1bd9ebd3428d47a1e33b103ddcb9`.
+- B2: el seam path-based observado valida owner token y después elimina por nombre; no demuestra que el objeto eliminado sea el objeto validado. dirfd/openat2 no proporciona por sí solo compare-and-unlink. Un lock más fuerte tampoco cubre actores RAW.
+- B3: el marcador de release fallido es process-local; lock efímero no demuestra BLOCKED durable después de la muerte del dueño. Una nueva invocación debe observar estado durable antes de cualquier operación protegida; ausencia/ENOENT/ilegibilidad/sustitución nunca habilitan readmisión.
+- B2 y B3 no se resuelven solo con serialización viva. O4 requiere identidad del objeto realmente afectado; O1/O2/O5 requieren bloqueo observable por proceso nuevo; O6/G5 gobiernan reclasificación; O7 exige cobertura/exclusión efectiva de escritores.
+- **Siguiente acción única:** preparar una hoja de decisión del propietario, con alternativas acotadas y consecuencias, para P07-A (política de aliases), O6/G5 (autoridad/procedimiento de reclasificación), atribución APP-OWNER para cleanup propio y límites de retención de residuos. No volver a solicitar decisiones ya ratificadas (R1, P05-C, C3, perímetro O7, P07 V2.2+V2.3).
+- RAW-1 permanece capacidad estática condicional confirmada; uso runtime no observado; exclusión/enforcement no demostrado. No repetir el censo ni la captura Termux anterior.
+- Estados sin cambio: O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; O8 UNKNOWN; O9 PARTIAL; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+- Solo documentación y análisis de contratos ya ratificados. Sin cambios de código/tests, sin CI/runtime/Termux/POCO, sin bootstrap/publicación/cleanup/readmisión ni efectos protegidos.
+
+---
+
 ## DELTA PRIORITARIA — RATIFICACIÓN DOCUMENTAL P07 V2.2 + V2.3 Y SIGUIENTE BLOQUE TÉCNICO (2026-11-27)
 
 - El propietario ratificó expresamente los tres documentos P07 V2.2 como base documental y los tres documentos P07 V2.3 como delta normativo, de escenarios/oráculos y trazabilidad, prevaleciendo solo donde corrigen V2.2.
