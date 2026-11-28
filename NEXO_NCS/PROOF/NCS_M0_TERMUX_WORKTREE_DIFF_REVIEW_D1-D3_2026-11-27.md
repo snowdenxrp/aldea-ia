@@ -135,3 +135,37 @@ La salida original de D3 también mostró las líneas de contexto que calculan y
 
 ### Clasificación provisional
 Cambios del simulador/proyecto Lúmina, no evidencia directa de NCS M0. Mantenerlos aislados; no aplicar, restaurar, descartar, ejecutar ni mezclar con NCS. D4 recibido; D5–D8 siguen pendientes.
+
+## D4 — segunda revisión estática y estado del worktree (salida Termux recibida 2026-11-27)
+
+**Alcance:** lectura de src/simulation.js líneas 215–240 y 280–355, búsqueda de referencias a startDecisionCooldown, git status --short, rama y HEAD. No se ejecutaron pruebas, launcher ni simulador. No se modificó el worktree local.
+
+### Corrección de la observación de transcripción
+La expresión local reportada en la línea 235 es:
+
+```js
+Math.max(Number(agent.decisionCooldownHours ?? 0), FAILED_DECISION_COOLDOWN_HOURS)
+```
+
+La coma vacía de la transcripción previa no existe en la salida local. Se descarta el posible defecto sintáctico sugerido por aquella transcripción.
+
+### Hallazgo lógico confirmado en la estructura mostrada
+En performDecision, después de executeAction, la rama de éxito (if (result.success)) realiza mejoras de habilidad, registros y aprendizaje, pero no invoca startDecisionCooldown(agent). La rama else procesa el fallo y, dentro de ella, aparece if (result.success) startDecisionCooldown(agent); dado que esa rama se alcanza cuando result.success es falso, la condición es inalcanzable. En consecuencia, el cooldown normal de DECISION_COOLDOWN_HOURS = 0.25 no se establece en la ruta genérica de éxito mostrada. La rama de fallo sí asigna FAILED_DECISION_COOLDOWN_HOURS = 0.05.
+
+**Clasificación:** defecto lógico confirmado en el fragmento local mostrado; impacto probable: las acciones genéricas exitosas no reinician el cooldown normal previsto. No se afirma todavía el impacto global del simulador porque falta revisar el ciclo llamador y otros mecanismos que pudieran compensarlo. No se ha probado en ejecución.
+
+### Contexto de supervivencia recibido
+La salida de líneas 299–344 calcula disponibilidad de alimento usando foodTarget y simulation.world.resources.wild_plants.amount > 0, disponibilidad de agua desde waterTarget, umbrales de hambre/sed, compromisos actuales, tiempos estimados hasta cero y ratios de riesgo. Las funciones locales foodCriticalSafe y thirstCriticalSafe devuelven Infinity si el tiempo de viaje no es finito y, en otro caso, dividen el tiempo de viaje entre el tiempo restante protegido por un mínimo de 0.25. La salida termina antes de mostrar todas las ramas posteriores de selección de survivalIntent; la revisión de supervivencia queda incompleta y no se declara correcta.
+
+### Estado local del repositorio reportado
+- Rama: main.
+- HEAD: 1834182a2eaf4b1bfe59f9802ce3e49fc89b2ca7.
+- Ocho archivos tracked modificados: src/exploration.js, src/main-stable.js, src/movement.js, src/simulation.js y cuatro archivos tests/*audit.test.mjs.
+- Archivos untracked reportados: múltiples respaldos .bak*, lumina-test.log y dos nombres anómalos que contienen texto de comandos.
+- No se limpiaron, restauraron, descartaron, stagearon ni sobrescribieron esos elementos.
+
+### Próxima comprobación read-only
+Solicitar el resto del bloque de selección de supervivencia y el contexto del ciclo llamador/selección de decisiones, sin ejecutar pruebas ni simulador. Mantener D5–D8 detenidos hasta cerrar la revisión del archivo D4.
+
+### Límite NCS
+Este hallazgo corresponde a src/simulation.js del worktree local del simulador; no constituye evidencia de cierre ni cambio de estado de NCS M0. No altera gates, autorización, UNKNOWN/STOP ni el alcance ratificado.
