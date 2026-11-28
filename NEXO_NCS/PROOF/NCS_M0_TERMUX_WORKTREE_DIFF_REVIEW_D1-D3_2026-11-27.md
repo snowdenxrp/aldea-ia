@@ -197,3 +197,18 @@ Por tanto, el cooldown mostrado limita la **creación de una nueva intención cu
 - No se modificó código local ni se tocaron los archivos dirty/untracked.
 - D4 sigue abierto hasta completar la lectura de la función de supervivencia y valorar el contexto restante. D5–D8 no se inician.
 - Este análisis pertenece al simulador/worktree inspeccionado; no modifica ni acredita ningún gate de NCS M0.
+
+
+## D4 — cuarta revisión estática: aplicación de intención de supervivencia (salida D4-H, 2026-11-27)
+
+La salida local de líneas 385–430 confirma:
+
+1. Si existe `survivalIntent` y su nombre difiere de `agent.currentIntent?.name`, el código sustituye `agent.currentIntent` por `survivalIntent`, recalcula `currentActivity` como `moving` si el objetivo está a más de 1.5 unidades (o `idle` en otro caso), y reemplaza `decisionSnapshot` por una selección de score 999.
+2. Si no hay intención actual, existe `criticalFood`, el hambre es <= 60 y la sed no es crítica, asigna `criticalFood` como respuesta anticipada, también con actividad y snapshot recalculados.
+3. El fragmento termina al comenzar la condición de descanso `agent.needs.energy <= 10`; no muestra su cuerpo ni el cierre de la función.
+
+### Pregunta estática pendiente
+La sustitución de la intención de supervivencia está condicionada a que el nombre difiera del nombre de la intención actual. Si ambos nombres coinciden, este bloque no reemplaza el objeto `currentIntent`; por tanto, con la evidencia visible no se puede afirmar que actualice su objetivo/datos si cambian las circunstancias. Requiere contexto adicional para determinar si es deliberado o si existe actualización en otra parte.
+
+### Estado
+La aplicación de `survivalIntent` y la anticipación de hambre ya están documentadas; el cierre de la función sigue pendiente por truncamiento de la salida. D4 permanece abierto. Sin ejecución de pruebas/simulador y sin cambios al worktree local. D5–D8 siguen detenidos. Ningún efecto sobre gates o estado de NCS M0.
