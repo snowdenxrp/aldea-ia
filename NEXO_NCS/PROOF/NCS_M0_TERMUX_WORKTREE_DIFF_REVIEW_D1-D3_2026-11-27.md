@@ -169,3 +169,31 @@ Solicitar el resto del bloque de selección de supervivencia y el contexto del c
 
 ### Límite NCS
 Este hallazgo corresponde a src/simulation.js del worktree local del simulador; no constituye evidencia de cierre ni cambio de estado de NCS M0. No altera gates, autorización, UNKNOWN/STOP ni el alcance ratificado.
+
+## D4 — tercera revisión estática: selección de supervivencia y ciclo llamador (2026-11-27)
+
+**Nueva salida recibida:** Termux, fragmento de líneas 340–390, búsqueda de `performDecision(` y búsqueda de `decisionCooldownHours`.
+
+### Selección de supervivencia — fragmento recibido
+- Si existe un compromiso de alimento y el hambre es crítica, conserva `criticalFood`.
+- En caso contrario, si existe compromiso de agua y la sed es crítica, crea intención `drink`.
+- Si hambre y sed son críticas simultáneamente, compara `foodRiskRatio` y `thirstRiskRatio`; elige alimento cuando el primero es menor o igual, y agua en caso contrario.
+- Si solo la sed es crítica, elige agua; si solo el hambre es crítico, elige `criticalFood`.
+
+**Límite:** el fragmento termina después de la rama `hungerCritical`; no muestra el resto de la función ni el uso posterior de `survivalIntent`. La selección de supervivencia continúa incompleta. No se concluye si la intención se impone, se compara o se combina con la decisión ordinaria.
+
+### Ciclo llamador y cooldown — hallazgo confirmado
+La búsqueda mostró que el ciclo principal:
+- genera una nueva intención solo si `!agent.currentIntent && agent.decisionCooldownHours <= 0`;
+- en ese caso intenta primero `applyRoutinePressure`, y si no aplica, genera/evalúa opciones y elige una;
+- después, independientemente de esa condición, ejecuta `advanceSimulationMovement(agent, hours)` y `performDecision(simulation, agent, hours)`.
+
+Por tanto, el cooldown mostrado limita la **creación de una nueva intención cuando no existe una intención activa**, pero no evita por sí mismo que `performDecision` sea invocado en cada tick. Esto no invalida el defecto lógico previamente confirmado: la ruta genérica de éxito sigue sin llamar al cooldown normal, mientras que la condición `if (result.success)` dentro del `else` de fallo es inalcanzable.
+
+### Alcance y cautelas
+- El hallazgo describe el código local reportado; no se ejecutaron pruebas ni simulador.
+- No se ha cuantificado la frecuencia de decisiones ni demostrado impacto temporal global.
+- No se ha revisado aún el resto del bloque de supervivencia ni todos los efectos de `advanceActivityRoutine`/rutinas sobre el ciclo.
+- No se modificó código local ni se tocaron los archivos dirty/untracked.
+- D4 sigue abierto hasta completar la lectura de la función de supervivencia y valorar el contexto restante. D5–D8 no se inician.
+- Este análisis pertenece al simulador/worktree inspeccionado; no modifica ni acredita ningún gate de NCS M0.
