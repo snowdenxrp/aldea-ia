@@ -1,3 +1,15 @@
+## DELTA PRIORITARIA — HOJA DE DECISIONES P07-A / P05-O6 Y BASELINE DE CÓDIGO (2026-11-27)
+
+- Se preparó, sin ratificar en nombre del propietario, la hoja [NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md](BUILD/NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md), commit `a3bc8b7039b3dee5ce6499800b452eab71be28fd`.
+- Recomendación para revisión: P07-A raíz única y aliases no clasificados en STOP; O6/G5 reclasificación manual del propietario por incidente; APP-OWNER estricto con retención ante incertidumbre; residuos ambiguos retenidos durante M0, sin TTL ni purga automática. Es propuesta, no decisión vigente.
+- Se separó RAW-1 como obligación técnica: capacidad estática condicional confirmada en `scripts/assistants.mjs`; uso runtime no observado; exclusión/enforcement no demostrado. No repetir la captura anterior ni inferir que UNSET equivale a ausencia sostenida.
+- **Baseline de código:** la rama documental de trabajo parte del snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`; el compare con su rama documental HEAD `602afee4e0b8d995b7eafd98add338831dc100b2` muestra 92 commits de documentación, sin fuentes/tests en los archivos cambiados. En cambio, la rama remota `main` @ `49495f8105e80ad5a98c63fe5cc0ed64ecfd7cb6` diverge de `d8b5ca8` (750 commits ahead / 4,373 behind en la comparación) e incluye cambios de código/estado no reconciliados. El worktree Termux local ya está documentado como dirty. Por tanto, no hay aún un baseline limpio y acordado para implementar; no elegir `main` ni el worktree local por inferencia.
+- Antes de cualquier implementación, reconciliar de forma no destructiva el worktree local y seleccionar un SHA limpio que contenga los cambios M0 necesarios. No usar reset/clean ni descartar backups/cambios.
+- Estados sin cambio: P07-A OPEN; P07-C UNKNOWN/BLOCKING; P05 OPEN; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; O8 UNKNOWN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+- Esta delta y la hoja de decisión son documentales. No hubo cambios de código/tests/workflows ni ejecución CI/runtime/Termux/POCO/bootstrap/publicación/cleanup/readmisión.
+
+---
+
 ## DELTA PRIORITARIA — DESCOMPOSICIÓN B2/B3 Y SIGUIENTE DECISIÓN FINITA (2026-11-27)
 
 - Se descompusieron B2 (cleanup/release replacement-safe) y B3 (BLOCKED durable entre procesos) dentro de la evaluación canónica existente, sin repetir la inspección estática del snapshot `d8b5ca8`.
