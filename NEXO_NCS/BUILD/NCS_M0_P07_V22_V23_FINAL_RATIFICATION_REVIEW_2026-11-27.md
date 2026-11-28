@@ -87,7 +87,7 @@ Añade `NONE` para resultados sin clase positiva y exige `gate_basis` cuando se 
 
 ### 3.6 P07-18: fixtures de rename
 
-V2.3 exige declarar filesystem/mount, tipos de source/destination y estado previo del destino. Separa rename normal de `RENAME_NOREPLACE), y distingue atomicidad/visibilidad (P07-18a) de protección del objeto destino (P07-18b). `EXDEV` se trata como condición de fixture, no como fallo de atomicidad local.
+V2.3 exige declarar filesystem/mount, tipos de source/destination y estado previo del destino. Separa rename normal de `RENAME_NOREPLACE`, y distingue atomicidad/visibilidad (P07-18a) de protección del objeto destino (P07-18b). `EXDEV` se trata como condición de fixture, no como fallo de atomicidad local.
 
 **Dictamen:** corrección favorable. Evita confundir atomicidad de rename con protección replacement-safe.
 
