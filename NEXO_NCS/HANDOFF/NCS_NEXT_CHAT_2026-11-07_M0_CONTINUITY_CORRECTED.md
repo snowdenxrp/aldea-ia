@@ -1,3 +1,14 @@
+# ADDENDUM — HOJA DE DECISIÓN Y BLOQUEO DE BASELINE (2026-11-27)
+
+- Hoja de decisiones reservadas preparada para revisión del propietario: [NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md](../BUILD/NCS_M0_P07_A_P05_O6_OWNER_DECISION_SHEET_2026-11-27.md), commit `a3bc8b7039b3dee5ce6499800b452eab71be28fd`. **No está ratificada**; no convertir las recomendaciones A/A/A+B/A en decisiones.
+- Pregunta central: P07-A aliases; O6/G5 autoridad/procedimiento de reclasificación; APP-OWNER suficiente para cleanup de temporales propios; política de retención de residuos.
+- RAW-1 queda como tarea técnica, no como decisión de identidad: capacidad estática condicional confirmada, uso runtime no observado, enforcement/exclusión no demostrado. No repetir el censo ni la captura Termux anterior.
+- **No hay baseline de implementación seleccionado.** Snapshot estático de evaluación: `d8b5ca8720908d926acc18130614cce132a43b5d`. La rama documental está 92 commits por delante de ese snapshot y sus cambios comparados son documentales. La rama remota `main` @ `49495f8105e80ad5a98c63fe5cc0ed64ecfd7cb6` diverge (750 ahead / 4,373 behind) y no puede adoptarse sin reconciliación. El worktree Termux está dirty y contiene cambios/backups ya inventariados.
+- Próxima acción de continuidad: obtener del propietario revisión/decisión sobre la hoja; paralelamente, recuperar de forma no destructiva el worktree y elegir un SHA limpio antes de implementación. No usar reset/clean ni descartar cambios.
+- Estados sin cambio: P07-A OPEN; P07-C UNKNOWN/BLOCKING; P05 OPEN; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; O8 UNKNOWN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; M0 INCOMPLETO.
+
+---
+
 # ADDENDUM DE CONTINUIDAD — B2/B3 DESCOMPUESTOS; SIGUIENTE DECISIÓN (2026-11-27)
 
 - **Fuente de verdad:** leer `NEXO_NCS/STATUS.md` primero. La deltas más recientes registran la ratificación P07 V2.2+V2.3 y la descomposición B2/B3. Este handoff de 07-11 es histórico con addenda posteriores; no prevalece sobre STATUS.
