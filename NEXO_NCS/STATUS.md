@@ -1,3 +1,18 @@
+## DELTA PRIORITARIA — RATIFICACIÓN DOCUMENTAL P07 V2.2 + V2.3 Y SIGUIENTE BLOQUE TÉCNICO (2026-11-27)
+
+- El propietario ratificó expresamente los tres documentos P07 V2.2 como base documental y los tres documentos P07 V2.3 como delta normativo, de escenarios/oráculos y trazabilidad, prevaleciendo solo donde corrigen V2.2.
+- Acta: [NCS_M0_P07_V22_V23_OWNER_RATIFICATION_2026-11-27.md](DECISIONS/NCS_M0_P07_V22_V23_OWNER_RATIFICATION_2026-11-27.md), commit `228df5e100fa969b99e6acdfc746cb690307427c`, blob `3bcdcc4e547ea4e59deb8a794e8eb48e158e1e94`.
+- La ratificación sustituye los estados históricos «V2.3 NO RATIFICADA» de las fotografías documentales anteriores; no borra su historia ni amplía el alcance aprobado.
+- El perímetro O7/P07 continúa ratificado en su acta separada: Continuity principal, locks/coordinación, temporales/publicación/reemplazo, root/namespace relevante y Chronicle separado protegido contra interferencias/colisiones. Nexo/Lúmina mantienen stores separados.
+- Evaluación técnica reconciliada: [NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md](BUILD/NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md), commit `e10f9586bee15dcc2806c99e6a05fdec766e1c53`, blob `1106b0a6a05078b7598665dfc77758715e80262c`.
+- La comparación de mecanismos existente se revaluó contra V2.2+V2.3: ninguna familia aislada (Node path APIs, dirfd/openat2, flock/fcntl/OFD, lock file/dir, SQLite, daemon o hardlink token) satisface conjuntamente B1–B5 y O7. La combinación dirfd + lock de kernel sigue siendo candidata de investigación, no selección, y no resuelve por sí sola B2/B3 ni RAW-1.
+- El análisis de código/tests continúa limitado al snapshot `d8b5ca8720908d926acc18130614cce132a43b5d`. La comparación remota contra la rama documental indica 92 commits de documentación por delante, sin cambios de fuentes/tests listados; no proyectar esto a un checkout local sucio ni a otro SHA.
+- Siguiente unidad: descomponer B2/B3 sin seleccionar primitiva: seam destructivo exacto, identidad del objeto comprobado frente al afectado, persistencia de BLOCKED observable por proceso nuevo tras crash, y decisiones de reclasificación reservadas al propietario. No repetir el barrido estático del mismo snapshot ni inventar marker/tombstone/epoch/daemon/journal.
+- Estados sin cambio: O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; P07-C UNKNOWN/BLOCKING; P05-C RATIFICADA/P05 OPEN; O8 UNKNOWN; O9 PARTIAL; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; NCS M0 INCOMPLETO.
+- Esta actualización es documental. No se ejecutaron tests, CI, runtime, Termux/POCO, bootstrap, publicación, cleanup, readmisión ni efectos protegidos.
+
+---
+
 ## DELTA — RECONCILIACIÓN C3 / P07-21 HARDLINK-NLINK (2026-11-25)
 
 - C3 **NO ESTÁ PENDIENTE**: la decisión del propietario del 2026-11-07 ya establece que cualquier modificación de `nlink` del objeto protegido constituye afectación, aunque sea reversible.
