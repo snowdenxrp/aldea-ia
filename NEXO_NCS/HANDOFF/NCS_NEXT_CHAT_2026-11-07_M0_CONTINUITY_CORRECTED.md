@@ -1,3 +1,16 @@
+# ADDENDUM DE CONTINUIDAD — B2/B3 DESCOMPUESTOS; SIGUIENTE DECISIÓN (2026-11-27)
+
+- **Fuente de verdad:** leer `NEXO_NCS/STATUS.md` primero. La deltas más recientes registran la ratificación P07 V2.2+V2.3 y la descomposición B2/B3. Este handoff de 07-11 es histórico con addenda posteriores; no prevalece sobre STATUS.
+- **Evaluación canónica:** [NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md](../BUILD/NCS_M0_O7_P07C_P05_TRACEABILITY_EVALUATION_2026-11-27.md), commit `a312e574f1f647611fbc135b574294e1c360afcc`, blob `ad12193e2e2f1bd9ebd3428d47a1e33b103ddcb9`.
+- **B2:** release/cleanup debe demostrar que el objeto afectado es el objeto autorizado. El snapshot `d8b5ca8` contiene validación de owner token seguida de eliminación path-based; el vínculo de identidad no está demostrado. dirfd/openat2 por sí solo no equivale a compare-and-unlink.
+- **B3:** el estado de release fallido observado es process-local. Un lock efímero no demuestra BLOCKED durable después de crash. La nueva invocación debe comprobar estado durable antes de operar; ausencia, ENOENT, corrupción, ilegibilidad o sustitución implican UNKNOWN/BLOCKED, nunca readmisión automática.
+- **No repetir:** análisis estático lock/release, inventario P09, RAW-1 config/launcher trace, cobertura de tests B2/B3 ni C3/G2 para el mismo snapshot. Reabrir solo ante SHA/seam nuevo o evidencia nueva admisible.
+- **Siguiente acción única:** preparar hoja de decisión del propietario sobre P07-A aliases, O6/G5 reclasificación, APP-OWNER suficiente para cleanup propio y límites de retención de residuos. No pedir de nuevo decisiones ya ratificadas: R1, P05-C, C3, perímetro O7 y contrato P07 V2.2+V2.3.
+- **Estados:** P07-C UNKNOWN/BLOCKING; P05 OPEN; O7 UNKNOWN/OPEN; P09 OPEN/UNKNOWN; O8 UNKNOWN; E2/E3 PARTIAL; `authorization: NOT_EVALUATED`; commissioning/efectos protegidos STOP; M0 INCOMPLETO.
+- No seleccionar mecanismo ni introducir marker/tombstone/epoch/daemon/journal por inferencia. No usar el worktree Termux sucio como baseline; no ejecutar pruebas/dispositivo ni efectos protegidos bajo este trabajo documental.
+
+---
+
 # ADDENDUM DE PRECEDENCIA — RATIFICACIÓN P07 V2.2 + V2.3 (2026-11-27)
 
 > Este addendum es posterior al cuerpo histórico fechado 2026-11-07. Si una frase histórica del cuerpo indica que V2.3 está «NO RATIFICADA», esa frase conserva su valor cronológico, pero queda SUPERADA por la decisión del propietario registrada abajo y por el STATUS vigente.
