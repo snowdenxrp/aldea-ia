@@ -251,3 +251,33 @@ El `catch` mostrado pone `currentActivity = "idle"`, limpia `currentIntent`, reg
 Con D4-I queda recibido el cierre del bloque de la función de tick que faltaba. **La lectura del fragmento solicitado de `src/simulation.js` queda completa para esta ronda; D4 puede marcarse como revisión estática documental completada, con observaciones abiertas y sin validación dinámica.** No significa que el código sea correcto ni que los riesgos señalados estén resueltos.
 
 D5–D8 continúan pendientes y no se inician hasta la siguiente instrucción. No se ejecutaron pruebas, launcher ni simulador; no se modificó, restauró, stageó ni descartó ningún archivo local. Esta revisión corresponde al simulador inspeccionado y no cambia ni acredita el estado de NCS M0.
+
+## D5 — revisión estática: settlement-state-audit.test.mjs (2026-11-27)
+
+**Diff recibido desde Termux:** cambia la importación de `src/spatial.js` para incluir `getRegionKey` junto a `updateSettlementState`, y cambia la clave consultada por la prueba de `"4:4"` a `"5:5"`. El cuerpo mostrado sigue consultando `world.spatial.regions[key]` mediante la clave literal; no invoca `getRegionKey`.
+
+### Verificación estática de la clave regional
+La definición visible de `getRegionKey(position, world)` calcula cada índice como:
+
+```js
+Math.floor((Number(position?.x ?? 0) - world.bounds.minX) / regionSize)
+```
+
+El mundo base declara `minX: -46` y `minZ: -46`. La normalización espacial usa `DEFAULT_REGION_SIZE = 8` cuando no hay un tamaño configurado. Para el agente de la prueba en `{x:0,z:0}`:
+
+```
+floor((0 - (-46)) / 8) = floor(5.75) = 5
+```
+
+La clave calculada es, por tanto, `"5:5"`. El cambio de `"4:4"` a `"5:5"` concuerda con la implementación espacial y la posición usada por el test, bajo la configuración base observada.
+
+### Observación sobre la importación
+La salida de `grep -R -n "getRegionKey" tests src/spatial.js` muestra que `getRegionKey` no se invoca en `tests/settlement-state-audit.test.mjs`; aparece solo en su importación. La prueba mantiene una clave literal. Esto es una importación sin uso en el fragmento mostrado, posiblemente sobrante o señal de una refactorización incompleta. No se puede inferir intención. También aparece utilizada en `tests/exploration-audit.test.mjs`, pero eso no hace que la importación de este archivo esté usada.
+
+### Clasificación y límites
+- **Cambio de clave:** justificado por el cálculo estático de región para el mundo base y la posición del agente.
+- **Importación de `getRegionKey`:** aparentemente no utilizada; observación de limpieza, no defecto funcional demostrado.
+- No se ejecutó la prueba ni código del simulador. No se modificó el worktree local ni se alteró el archivo de test.
+- **D5: revisión estática documental completada**, con la observación de importación sin uso.
+- D6–D8 continúan pendientes; no se inspeccionan en esta anotación.
+- Esta prueba pertenece al simulador inspeccionado. La revisión no acredita, modifica ni cierra ningún gate de NCS M0.
