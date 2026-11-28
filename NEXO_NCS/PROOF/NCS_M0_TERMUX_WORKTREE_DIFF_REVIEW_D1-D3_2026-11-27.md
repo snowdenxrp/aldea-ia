@@ -212,3 +212,42 @@ La sustitución de la intención de supervivencia está condicionada a que el no
 
 ### Estado
 La aplicación de `survivalIntent` y la anticipación de hambre ya están documentadas; el cierre de la función sigue pendiente por truncamiento de la salida. D4 permanece abierto. Sin ejecución de pruebas/simulador y sin cambios al worktree local. D5–D8 siguen detenidos. Ningún efecto sobre gates o estado de NCS M0.
+
+
+## D4 — quinta revisión estática: descanso y cierre del tick (salida D4-I, 2026-11-27)
+
+**Salida recibida desde Termux:** líneas 420–455 de `src/simulation.js`. Se completa el fragmento que había quedado cortado al comenzar la condición de descanso.
+
+### Descanso y prioridad de supervivencia
+El descanso se asigna cuando `agent.needs.energy <= 10`, siempre que:
+- no exista `survivalIntent`;
+- la intención actual no comience por `eat`;
+- la intención actual no sea `drink`, `explore_plants` ni `explore_fishing`.
+
+Al asignarlo, `currentIntent` pasa a un objeto `rest` con `baseValue: 999`, efecto `energy: 7` y `target: null`; también se actualiza `decisionSnapshot` con score 999.
+
+**Interpretación:** el descanso queda subordinado a la intención de supervivencia y a varias intenciones explícitas de obtención de alimento/agua. La condición no excluye de forma general cualquier otra intención de supervivencia: protege las categorías enumeradas. No se concluye que la lista sea exhaustiva o correcta sin revisar el catálogo de acciones.
+
+### Cierre del ciclo por agente
+La salida muestra el orden posterior:
+1. Si no hay intención y el cooldown es <= 0, intenta aplicar presión de rutina autónoma.
+2. Si no se aplicó rutina y sigue sin intención con cooldown <= 0, genera opciones, crea contexto territorial, evalúa opciones, guarda las disponibles y elige una.
+3. Si la intención tiene objetivo, llama a `setMovementTarget`.
+4. Llama a `advanceSimulationMovement(agent, hours)`.
+5. Llama a `performDecision(simulation, agent, hours)`.
+6. Actualiza `autonomySnapshot`, aplica consecuencias de necesidades y procesa muerte si la salud llega a cero.
+
+La secuencia aparece compactada en una línea física en el archivo. Se registra como orden visible, no como prueba de comportamiento en ejecución.
+
+### Manejo de excepciones y recuperación
+El `catch` mostrado pone `currentActivity = "idle"`, limpia `currentIntent`, registra `lastActionResult = { success: false, reason: "simulation_error" }` y escribe un error en consola con el nombre/ID del agente. La función `recoverCoreAgent(agent)` normaliza actividad según `alive`, conserva o inicializa `currentIntent`, normaliza `activityRemainingHours`, inicializa `collectiveProjects` y sanea/clampa las necesidades a 0–100 (con valores por defecto 80 y salud 100).
+
+### Observaciones abiertas, no defectos confirmados
+- Al asignar `rest`, el bloque mostrado actualiza `currentIntent` y `decisionSnapshot`, pero no asigna explícitamente `currentActivity`. No se clasifica como defecto sin revisar cómo `performDecision` y los consumidores reflejan la actividad.
+- El `catch` limpia la intención y registra el error, pero no reinicia explícitamente `decisionCooldownHours` en el fragmento mostrado. No se concluye impacto sin examinar recuperación y ticks posteriores.
+- La recuperación conserva una intención existente incluso si la actividad se normaliza; su coherencia depende del ciclo de recuperación y validación posterior, no mostrado aquí.
+
+### Cierre de D4
+Con D4-I queda recibido el cierre del bloque de la función de tick que faltaba. **La lectura del fragmento solicitado de `src/simulation.js` queda completa para esta ronda; D4 puede marcarse como revisión estática documental completada, con observaciones abiertas y sin validación dinámica.** No significa que el código sea correcto ni que los riesgos señalados estén resueltos.
+
+D5–D8 continúan pendientes y no se inician hasta la siguiente instrucción. No se ejecutaron pruebas, launcher ni simulador; no se modificó, restauró, stageó ni descartó ningún archivo local. Esta revisión corresponde al simulador inspeccionado y no cambia ni acredita el estado de NCS M0.
